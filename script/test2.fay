@@ -1,0 +1,7 @@
+class MyTest {
+	public static void main()
+	{
+		print("Hello!");
+	}
+}
+

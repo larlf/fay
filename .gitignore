@@ -1,0 +1,17 @@
+**/build
+**/*.TMP
+**/*.tmp
+**/*.BAK
+**/*.bak
+**/*.backup
+**/*.suo
+**/.vs
+**/.vscode
+**/.DS_Store
+**/~*.*
+**/TestResults
+/fay.dir
+/win32
+cs/.vs
+cs/*/bin
+cs/*/obj

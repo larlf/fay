@@ -1,0 +1,58 @@
+using system;
+
+package com.larlf;
+
+public class TestA
+{ 
+	static public var str:string=fun1(""+"bb");
+	static public var i:int=5+8;  //这是个变量
+
+	func .create()
+	{
+	}
+
+	func .destory()
+	{
+	}
+
+	static public func testAssign():void
+	{
+		var a:byte='5';
+		var b:int[]=[1,2,3];
+		b[5+2][7]=8;
+	}
+
+	//这是个方法
+	static public func sayHello():void
+	{
+		var str:string="hello!";
+		var a=5;
+		var b=6;
+		print("abc");
+
+		//a=b+c+d;
+
+		if(a>b)
+		{
+			print(a+b);
+		}
+		elseif(b>a)
+		{
+			print(b-a);
+		}
+		else
+			print(a*b);
+
+		for(var i=0; i<100; ++i) 
+		{
+			print(i);
+		}
+	}
+
+	static private func test1(a:int, b:int):int
+	{
+		return a+b;
+	}
+}
+
+

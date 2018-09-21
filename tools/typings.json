@@ -1,0 +1,15 @@
+{
+  "globalDependencies": {
+    "node": "registry:dt/node#7.0.0+20170322231424"
+  },
+  "dependencies": {
+    "colors": "registry:dt/colors#1.1.0+20161228000716",
+    "dot": "registry:dt/dot#1.1.0+20170113200201",
+    "ejs": "registry:dt/ejs#2.3.3+20161128184045",
+    "fs-extra": "registry:dt/fs-extra#2.0.0+20170306033830",
+    "glob": "registry:dt/glob#5.0.10+20160708003644",
+    "iconv-lite": "registry:dt/iconv-lite#0.0.0+20161005205115",
+    "swig/index": "registry:dt/swig/index#0.0.0+20160427172501",
+    "xlsx": "registry:dt/xlsx#0.0.0+20170314180219"
+  }
+}

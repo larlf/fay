@@ -1,0 +1,5 @@
+var a:int;
+a=5+3;
+system.IO.Print(a);
+
+

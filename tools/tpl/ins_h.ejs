@@ -1,0 +1,11 @@
+
+class <%= name %> : public Instruction 
+{ 
+private:
+	<%props.forEach((it)=>{%><%= it.type %> <%= it.name %>;
+	<%});%>
+public:
+	<%= name %>(<% props.forEach((it, index)=>{ %><% if(index>0) { %>, <% } %><%= it.type %> <%= it.name %><% }); %>)
+		<% props.forEach((it, index)=>{ %><% if(index>0){%>, <%}else{%>: <%}%><%=it.name%>(<%=it.name%>)<% }); %> {}
+	~<%= name %>() {}
+};

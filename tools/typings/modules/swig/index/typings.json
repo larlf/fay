@@ -1,0 +1,8 @@
+{
+  "resolution": "main",
+  "tree": {
+    "src": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/5e8a00bf6631a612c6aa654d239a1b5f89ff4537/swig/index.d.ts",
+    "raw": "registry:dt/swig/index#0.0.0+20160427172501",
+    "typings": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/5e8a00bf6631a612c6aa654d239a1b5f89ff4537/swig/index.d.ts"
+  }
+}

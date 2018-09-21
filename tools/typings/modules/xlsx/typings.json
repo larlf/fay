@@ -1,0 +1,8 @@
+{
+  "resolution": "main",
+  "tree": {
+    "src": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/a0a6c9408e8dc706acb18b54b588070bdcd87a3c/xlsx/index.d.ts",
+    "raw": "registry:dt/xlsx#0.0.0+20170314180219",
+    "typings": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/a0a6c9408e8dc706acb18b54b588070bdcd87a3c/xlsx/index.d.ts"
+  }
+}

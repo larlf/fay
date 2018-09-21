@@ -1,0 +1,14 @@
+using system;
+
+package com.larlf;
+
+public class Test6
+{
+	static public func main():void
+	{
+		System.print("Hello!");
+		var a:int=5;
+		var b:long=6;
+		System.print(a+b);
+	}
+}

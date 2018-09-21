@@ -1,0 +1,23 @@
+{
+  "name": "tools",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/node": "^9.3.0",
+    "colors": "^1.1.2",
+    "dot": "^1.1.2",
+    "ejs": "^2.5.7",
+    "fs-extra": "^5.0.0",
+    "glob": "^7.1.2",
+    "iconv-lite": "^0.4.19",
+    "swig": "^1.4.2",
+    "xlsx": "^0.11.17"
+  }
+}

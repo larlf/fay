@@ -1,0 +1,28 @@
+class ClassA1 extends Object implements IAct, IOnFrame
+{
+	int aaa;
+	int bbb;
+	static int ccc;
+
+	static void fun1()
+	{
+		int a=15+5;
+	}
+
+	public static void fun2(int a, ClassB b)
+	{
+		print("Hello!");
+	}
+
+	int fun3();
+
+	static int ddd;
+}
+
+class ClassB1 extends Object implements IAct, IOnFrame
+{
+	static void fun1()
+	{
+		
+	}
+}
