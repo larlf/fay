@@ -20,7 +20,9 @@ namespace fay.compiler.runtime
 		public FayScope(FayScope parentScope)
 		{
 			this._parent = parentScope;
-			this._index = parentScope.Index;
+
+			if (parentScope != null)
+				this._index = parentScope.Index;
 		}
 
 		public void CreateVar(string name, string type)

@@ -16,8 +16,6 @@ namespace fay.compiler
 		FayFun _fun;
 		FayScope _scope;
 
-		List<FayInst> insts = new List<FayInst>();
-
 		public FayLib Lib => this._lib;
 
 		//_________________________________________________________
@@ -51,17 +49,12 @@ namespace fay.compiler
 
 		public void subScope()
 		{
-
+			this._scope = this._scope.parentScope;
 		}
 
 		public void AddInst(FayInst inst)
 		{
-			this.insts.Add(inst);
-		}
-
-		public List<FayInst> Build()
-		{
-			return this.insts;
+			this._fun.Insts.Add(inst);
 		}
 
 		public string ToString(string index)

@@ -54,7 +54,7 @@ namespace fay.compiler.runtime
 				foreach (var it in this.Insts)
 				{
 					sb.Append("\n");
-					sb.Append(it.ToString(index + "\t"));
+					it.ToString(sb, index + "\t");
 				}
 			}
 

@@ -20,16 +20,16 @@ namespace fay.lib.Instruction
 		public abstract void FromData(byte[] data, ref int pos);
 		public abstract void ToData(MemoryStream data);
 
-		public string ToString(string index)
+		virtual public void ToString(StringBuilder sb, string index)
 		{
-			StringBuilder sb = new StringBuilder();
 			sb.Append(index + this.GetType().Name);
-			return sb.ToString();
 		}
 
 		public override string ToString()
 		{
-			return this.ToString("");
+			StringBuilder sb = new StringBuilder();
+			this.ToString(sb, "");
+			return sb.ToString();
 		}
 	}
 }

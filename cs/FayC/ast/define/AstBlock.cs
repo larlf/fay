@@ -8,6 +8,13 @@ namespace fay.compiler.ast
 		{
 		}
 
+		public override void Build(CodeBuilder builder)
+		{
+			builder.addScope();
+			base.Build(builder);
+			builder.subScope();
+		}
+
 		public override void Format(StringBuilder sb, string indent = "")
 		{
 			sb.Append(indent).Append("{\n");
