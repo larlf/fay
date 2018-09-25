@@ -10,14 +10,16 @@ namespace fay.compiler.runtime
 {
 	public class FayClass : FayType, IDataObj
 	{
+		private FayFile _file;
 		private FayLib _lib;
 		public string Name;  //名称
 		public List<FayFun> methods = new List<FayFun>();
 
 		public FayDomain domain => this._lib.domain;
 
-		public FayClass(FayLib lib, string name)
+		public FayClass(FayFile file, FayLib lib, string name)
 		{
+			this._file = file;
 			this._lib = lib;
 			this.Name = name;
 		}

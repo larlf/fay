@@ -1,2 +1,2 @@
-# fay
-Fay program language
+# FAY
+Fay program language.

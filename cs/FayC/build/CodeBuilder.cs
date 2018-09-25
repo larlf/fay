@@ -33,7 +33,7 @@ namespace fay.compiler
 
 		public void bindFile(FayFile file)
 		{
-
+			this._file = file;
 		}
 
 		public void bindLib(FayLib lib)

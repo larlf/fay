@@ -19,7 +19,7 @@ namespace fay.compiler.ast
 
 		public override void Build(CodeBuilder builder)
 		{
-			FayClass type = new FayClass(builder.currentLib, this.text);
+			FayClass type = new FayClass(builder.currentFile, builder.currentLib, this.text);
 			type.Name = this.text;
 			builder.bindClass(type);
 

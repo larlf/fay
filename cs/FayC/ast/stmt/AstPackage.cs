@@ -11,6 +11,11 @@ namespace fay.compiler.ast
 		{
 		}
 
+		public override void Build(CodeBuilder builder)
+		{
+			builder.currentFile.setPackage(this.text);
+		}
+
 		public override void Format(StringBuilder sb = null, string indent = "")
 		{
 			sb.Append("package ").Append(this.text).Append(";\n");
