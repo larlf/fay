@@ -11,14 +11,11 @@ namespace fay.compiler.runtime
 	/// </summary>
 	public class FayDomain
     {
-		public List<FayLib> Libs = new List<FayLib>();
-		private Dictionary<string, FayClass> classes = new Dictionary<string, FayClass>();
+		private List<FayLib> _libs = new List<FayLib>();
 
-	
-
-		public void ReadFunctions(AstNode rootNode)
+		public void addLib(FayLib lib)
 		{
-
+			this._libs.Add(lib);
 		}
     }
 }

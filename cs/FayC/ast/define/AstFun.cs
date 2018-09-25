@@ -24,11 +24,9 @@ namespace fay.compiler.ast
 
 		public override void Build(CodeBuilder builder)
 		{
-			FayFun method = new FayFun(this.text);
+			FayFun method = new FayFun(this.text,this.nodes[0] as AstParamDefineList, this.nodes[1] as AstBlock);
 			method.Name = this.text;
 			builder.bindFun(method);
-
-			base.Build(builder);
 		}
 
 		public override void Format(StringBuilder sb = null, string indent = "")

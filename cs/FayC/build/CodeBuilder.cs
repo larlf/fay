@@ -11,12 +11,15 @@ namespace fay.compiler
 	/// </summary>
 	public class CodeBuilder
 	{
+		FayDomain _domain = new FayDomain();
 		FayLib _lib;
 		FayClass _class;
 		FayFun _fun;
 		FayScope _scope;
 
-		public FayLib Lib => this._lib;
+		public FayDomain domain => this._domain;
+
+		//public FayLib Lib => this._lib;
 
 		//_________________________________________________________
 
@@ -40,6 +43,14 @@ namespace fay.compiler
 		{
 			this._class.addFun(fun);
 			this._fun = fun;
+		}
+
+		/// <summary>
+		/// 第一次，生成类的结构信息
+		/// </summary>
+		public void build1()
+		{
+			this._domain.addLib(this._lib);
 		}
 
 		public void addScope()

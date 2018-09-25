@@ -12,12 +12,16 @@ namespace fay.compiler.runtime
 	public class FayFun : IDataObj
 	{
 		public string Name;
+		private AstParamDefineList ps;
+		private AstNode ast;
 		private List<FayInst> insts = new List<FayInst>();
 		private AstNode code = null;
 
-		public FayFun(string name)
+		public FayFun(string name, AstParamDefineList ps, AstNode ast=null)
 		{
 			this.Name = name;
+			this.ps = ps;
+			this.ast = ast;
 		}
 
 		public List<FayInst> Insts

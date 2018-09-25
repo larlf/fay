@@ -61,7 +61,7 @@ namespace fay.compiler
 
 					Console.WriteLine("********************");
 
-					Console.WriteLine(builder.Lib.ToString());
+					Console.WriteLine(lib.ToString());
 
 					//生成库文件
 					//FayLib lib = new FayLib();
