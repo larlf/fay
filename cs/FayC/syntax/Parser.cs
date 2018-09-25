@@ -341,10 +341,12 @@ namespace fay.compiler.syntax
 
 				if (stack.Now.Is(TokenType.BasicType))
 				{
+					node.AddChildNode(new AstType(stack.Now.Text));
 					stack.Next();
 				}
 				else if (stack.Now.Is(TokenType.ID))
 				{
+					node.AddChildNode(new AstType(stack.Now.Text));
 					stack.Next();
 				}
 				else
@@ -361,13 +363,15 @@ namespace fay.compiler.syntax
 		/// <returns></returns>
 		private AstNode paramDefineList(TokenStack stack)
 		{
-			AstParamDefineList node = new AstParamDefineList("<ParamsDefine>");
+			AstParamDefineList node = new AstParamDefineList();
 
 			while (true)
 			{
 				AstNode paramDefine = this.paramDefine(stack);
 				if (paramDefine == null)
 					break;
+
+				node.AddChildNode(paramDefine);
 
 				if (stack.Now.Is(TokenType.Comma))
 					stack.Next();

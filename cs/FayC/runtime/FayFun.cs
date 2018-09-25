@@ -11,17 +11,26 @@ namespace fay.compiler.runtime
 {
 	public class FayFun : IDataObj
 	{
+		private FayClass _class;
 		public string Name;
 		private AstParamDefineList ps;
 		private AstNode ast;
 		private List<FayInst> insts = new List<FayInst>();
-		private AstNode code = null;
+		private List<FayParamDefine> _paramDefineList = new List<FayParamDefine>();  //参数表
 
-		public FayFun(string name, AstParamDefineList ps, AstNode ast=null)
+		public FayDomain domain => this._class.domain;
+
+		public FayFun(FayClass clazz, string name, AstParamDefineList ps, AstNode ast=null)
 		{
+			this._class = clazz;
 			this.Name = name;
 			this.ps = ps;
 			this.ast = ast;
+		}
+
+		public void addParam(FayParamDefine param)
+		{
+			this._paramDefineList.Add(param);
 		}
 
 		public List<FayInst> Insts

@@ -8,13 +8,17 @@ using System.Text;
 
 namespace fay.compiler.runtime
 {
-	public class FayClass : IDataObj
+	public class FayClass : FayType, IDataObj
 	{
+		private FayLib _lib;
 		public string Name;  //名称
 		public List<FayFun> methods = new List<FayFun>();
 
-		public FayClass(string name)
+		public FayDomain domain => this._lib.domain;
+
+		public FayClass(FayLib lib, string name)
 		{
+			this._lib = lib;
 			this.Name = name;
 		}
 

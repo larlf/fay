@@ -24,7 +24,7 @@ namespace fay.compiler.ast
 
 		public override void Build(CodeBuilder builder)
 		{
-			FayFun method = new FayFun(this.text,this.nodes[0] as AstParamDefineList, this.nodes[1] as AstBlock);
+			FayFun method = new FayFun(builder.currentClass, this.text,this.nodes[0] as AstParamDefineList, this.nodes[1] as AstBlock);
 			method.Name = this.text;
 			builder.bindFun(method);
 		}

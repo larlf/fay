@@ -17,5 +17,17 @@ namespace fay.compiler.runtime
 		{
 			this._libs.Add(lib);
 		}
+
+		/// <summary>
+		/// 查找类型
+		/// </summary>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		public List<FayType> findType(string name)
+		{
+			List<FayType> types = new List<FayType>();
+
+			return types;
+		}
     }
 }

@@ -12,3 +12,11 @@ public class Test6
 		System.print(a+b);
 	}
 }
+
+public class Test7
+{
+	static public func fun1(a:int, b:string):void
+	{
+
+	}
+}

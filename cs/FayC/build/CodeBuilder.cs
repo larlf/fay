@@ -12,18 +12,26 @@ namespace fay.compiler
 	public class CodeBuilder
 	{
 		FayDomain _domain = new FayDomain();
+		FayFile _file;
 		FayLib _lib;
 		FayClass _class;
 		FayFun _fun;
 		FayScope _scope;
 
 		public FayDomain domain => this._domain;
-
-		//public FayLib Lib => this._lib;
+		public FayFile currentFile => this._file;
+		public FayLib currentLib => this._lib;
+		public FayClass currentClass => this._class;
+		public FayFun currentFun => this._fun;
 
 		//_________________________________________________________
 
 		public CodeBuilder()
+		{
+
+		}
+
+		public void bindFile(FayFile file)
 		{
 
 		}

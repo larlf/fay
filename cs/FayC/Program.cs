@@ -55,12 +55,13 @@ namespace fay.compiler
 
 					//编译
 					CodeBuilder builder = new CodeBuilder();
-					FayLib lib = new FayLib();
+					FayLib lib = new FayLib(builder.domain);
 					builder.bindLib(lib);
 					ast.Build(builder);
 
 					Console.WriteLine("********************");
 
+					builder.build1();
 					Console.WriteLine(lib.ToString());
 
 					//生成库文件

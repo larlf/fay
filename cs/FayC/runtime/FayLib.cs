@@ -13,6 +13,14 @@ namespace fay.compiler.runtime
 		public int Major;  //大版本
 		public int Minor;  //小版本
 		public Dictionary<string, FayClass> Classes = new Dictionary<string, FayClass>();
+		private FayDomain _domain;
+
+		public FayDomain domain => this._domain;
+
+		public FayLib(FayDomain domain)
+		{
+			this._domain = domain;
+		}
 
 		public void FromData(byte[] data, ref int pos)
 		{

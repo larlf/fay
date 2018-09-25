@@ -7,7 +7,7 @@ namespace fay.compiler.ast
 	/// </summary>
 	public class AstType : AstNode
 	{
-		public AstType(string text, bool isArray) : base(text)
+		public AstType(string text, bool isArray=false) : base(text)
 		{
 			if (isArray)
 				this.text = text + "[]";
