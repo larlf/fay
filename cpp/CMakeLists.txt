@@ -20,6 +20,12 @@ endif()
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 
+#########################################################
+
+
+
+#########################################################
+
 set(src
 	src/fay.l
 	src/fay.y
@@ -54,13 +60,18 @@ link_directories(
 	${PROJECT_SOURCE_DIR}/deps/${type}/iconv/lib
 	${PROJECT_SOURCE_DIR}/deps/${type}/vld/lib
 )
+
+add_executable(fay ${src})
+
+#########################################################
+
+
 include_directories(
 	deps/${type}/mirage/inc
 	deps/${type}/jansson/inc
 	deps/${type}/iconv/inc
 	deps/${type}/vld/inc
 )
-add_executable(fay ${src})
 
 if(WIN32)
 	#link_directories(${PROJECT_SOURCE_DIR}/deps/win32/lib ${PROJECT_BINARY_DIR}/../bin)
