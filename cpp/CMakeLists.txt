@@ -20,26 +20,6 @@ endif()
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 
-#########################################################
-
-set(mirror_src
-	src/mirror_sys_termcolor.h
-	src/mirror_sys_termcolor.cpp
-	src/mirror_sys_api.h
-	src/mirror_sys_api.cpp
-	src/mirror_sys_const.h
-	src/mirror_utils.h
-	src/mirror_utils.cpp
-)
-
-add_library(mirror STATIC ${mirror_src})
-
-#########################################################
-
-set(src
-	src/fay_main.cpp
-)
-
 include_directories(
 	${PROJECT_SOURCE_DIR}/src
 	${PROJECT_SOURCE_DIR}/deps/${type}/mirage/inc
@@ -54,6 +34,29 @@ link_directories(
 	${PROJECT_SOURCE_DIR}/deps/${type}/jansson/lib
 	${PROJECT_SOURCE_DIR}/deps/${type}/iconv/lib
 	${PROJECT_SOURCE_DIR}/deps/${type}/vld/lib
+)
+
+#########################################################
+
+set(mirror_src
+	src/mirror_sys_termcolor.h
+	src/mirror_sys_termcolor.cpp
+	src/mirror_sys_const.h
+	src/mirror_sys_const.cpp
+	src/mirror_util_string.h
+	src/mirror_util_string.cpp
+	src/mirror_util_time.h
+	src/mirror_util_time.cpp
+	src/mirror_util_log.h
+	src/mirror_util_log.cpp
+)
+
+add_library(mirror STATIC ${mirror_src})
+
+#########################################################
+
+set(src
+	src/fay_main.cpp
 )
 
 add_executable(fay ${src})
@@ -69,22 +72,6 @@ endif()
 
 set(test_src
 	src/test_main.cpp
-)
-
-include_directories(
-	${PROJECT_SOURCE_DIR}/src
-	${PROJECT_SOURCE_DIR}/deps/${type}/mirage/inc
-	${PROJECT_SOURCE_DIR}/deps/${type}/jansson/inc
-	${PROJECT_SOURCE_DIR}/deps/${type}/iconv/inc
-	${PROJECT_SOURCE_DIR}/deps/${type}/vld/inc
-)
-
-link_directories(
-	${PROJECT_BINARY_DIR}/bin/Debug
-	${PROJECT_SOURCE_DIR}/deps/${type}/mirage/lib
-	${PROJECT_SOURCE_DIR}/deps/${type}/jansson/lib
-	${PROJECT_SOURCE_DIR}/deps/${type}/iconv/lib
-	${PROJECT_SOURCE_DIR}/deps/${type}/vld/lib
 )
 
 add_executable(test ${test_src})
