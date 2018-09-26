@@ -23,10 +23,11 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 #########################################################
 
 set(mirror_src
-	src/mirror_termcolor.h
-	src/mirror_termcolor.cpp
-	src/mirror_system.h
-	src/mirror_system.cpp
+	src/mirror_sys_termcolor.h
+	src/mirror_sys_termcolor.cpp
+	src/mirror_sys_api.h
+	src/mirror_sys_api.cpp
+	src/mirror_sys_const.h
 	src/mirror_utils.h
 	src/mirror_utils.cpp
 )
@@ -40,10 +41,11 @@ set(src
 )
 
 include_directories(
-	deps/${type}/mirage/inc
-	deps/${type}/jansson/inc
-	deps/${type}/iconv/inc
-	deps/${type}/vld/inc
+	${PROJECT_SOURCE_DIR}/src
+	${PROJECT_SOURCE_DIR}/deps/${type}/mirage/inc
+	${PROJECT_SOURCE_DIR}/deps/${type}/jansson/inc
+	${PROJECT_SOURCE_DIR}/deps/${type}/iconv/inc
+	${PROJECT_SOURCE_DIR}/deps/${type}/vld/inc
 )
 
 link_directories(
@@ -65,7 +67,33 @@ endif()
 #########################################################
 
 
+set(test_src
+	src/test_main.cpp
+)
 
+include_directories(
+	${PROJECT_SOURCE_DIR}/src
+	${PROJECT_SOURCE_DIR}/deps/${type}/mirage/inc
+	${PROJECT_SOURCE_DIR}/deps/${type}/jansson/inc
+	${PROJECT_SOURCE_DIR}/deps/${type}/iconv/inc
+	${PROJECT_SOURCE_DIR}/deps/${type}/vld/inc
+)
+
+link_directories(
+	${PROJECT_BINARY_DIR}/bin/Debug
+	${PROJECT_SOURCE_DIR}/deps/${type}/mirage/lib
+	${PROJECT_SOURCE_DIR}/deps/${type}/jansson/lib
+	${PROJECT_SOURCE_DIR}/deps/${type}/iconv/lib
+	${PROJECT_SOURCE_DIR}/deps/${type}/vld/lib
+)
+
+add_executable(test ${test_src})
+
+if(WIN32)
+	target_link_libraries(test mirror.lib winmm.lib mirage.lib jansson.lib libiconv.lib)
+else()
+	target_link_libraries(test mirror.lib)
+endif()
 
 
 

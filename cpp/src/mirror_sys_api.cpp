@@ -1,6 +1,11 @@
-﻿#include "mirror_system.h"
+﻿#include "mirror_sys_api.h"
 
-uint64_t mirror::SystemInterface::MSTime()
+uint32_t mirror::sys::SystemInterface::Time()
+{
+	return time(0);
+}
+
+uint64_t mirror::sys::SystemInterface::MSTime()
 {
 #ifdef WIN32
 	struct timeb tp;

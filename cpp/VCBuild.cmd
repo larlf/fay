@@ -18,3 +18,4 @@ copy /y ..\deps\win32\vld\lib\*.dll bin\Debug
 copy /y ..\deps\win32\vld\lib\*.pdb bin\Debug
 copy /y ..\deps\win32\vld\lib\*.manifest bin\Debug
 cd ..
+pause
