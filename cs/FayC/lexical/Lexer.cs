@@ -27,7 +27,7 @@ namespace fay.compiler.lexical
 			lexer.AddRule(new WordTokenRule(LexMode.Program, TokenType.Class, "class"));
 			lexer.AddRule(new WordTokenRule(LexMode.Program, TokenType.Interface, "interface"));
 			lexer.AddRule(new WordTokenRule(LexMode.Program, TokenType.Var, "var"));
-			lexer.AddRule(new WordTokenRule(LexMode.Program, TokenType.Function, "func"));
+			lexer.AddRule(new WordTokenRule(LexMode.Program, TokenType.Function, "fun"));
 			lexer.AddRule(new WordTokenRule(LexMode.Program, TokenType.If, "if"));
 			lexer.AddRule(new WordTokenRule(LexMode.Program, TokenType.ElseIf, "elseif"));
 			lexer.AddRule(new WordTokenRule(LexMode.Program, TokenType.Else, "else"));

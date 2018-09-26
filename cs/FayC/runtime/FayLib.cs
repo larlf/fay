@@ -7,7 +7,7 @@ using System.Text;
 
 namespace fay.compiler.runtime
 {
-	public class FayLib : IDataObj
+	public class FayLib : FayNode
 	{
 		public string Name;  //名称
 		public int Major;  //大版本
@@ -22,13 +22,6 @@ namespace fay.compiler.runtime
 			this._domain = domain;
 		}
 
-		public void FromData(byte[] data, ref int pos)
-		{
-			this.Name = DataUtils.ReadString(data, ref pos);
-			this.Major = DataUtils.ReadInt32(data, ref pos);
-			this.Minor = DataUtils.ReadInt32(data, ref pos);
-		}
-
 		/// <summary>
 		/// 添加Class
 		/// </summary>
@@ -38,7 +31,14 @@ namespace fay.compiler.runtime
 			this.Classes[clazz.Name] = clazz;
 		}
 
-		public void ToData(MemoryStream data)
+		override public void FromData(byte[] data, ref int pos)
+		{
+			this.Name = DataUtils.ReadString(data, ref pos);
+			this.Major = DataUtils.ReadInt32(data, ref pos);
+			this.Minor = DataUtils.ReadInt32(data, ref pos);
+		}
+
+		override public void ToData(MemoryStream data)
 		{
 			DataUtils.Write(data, this.Name);
 			DataUtils.Write(data, this.Major);
