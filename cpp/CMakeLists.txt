@@ -22,49 +22,22 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 
 #########################################################
 
+set(mirror_src
+	src/mirror_termcolor.h
+	src/mirror_termcolor.cpp
+	src/mirror_system.h
+	src/mirror_system.cpp
+	src/mirror_utils.h
+	src/mirror_utils.cpp
+)
 
+add_library(mirror STATIC ${mirror_src})
 
 #########################################################
 
 set(src
-	src/fay.l
-	src/fay.y
-	src/fay_runtime.h
-	src/fay_runtime.cpp
-	src/fay_vm.h
-	src/fay_vm.cpp
-	src/fay_lang_const.h
-	src/fay_lang_const.cpp
-	src/fay_lang_utils.h
-	src/fay_lang_utils.cpp
-	src/fay_lang_ins.h
-	src/fay_lang_ins.cpp
-	src/fay_compiler.h
-	src/fay_compiler.cpp
-	src/fay_compiler_ast.h
-	src/fay_compiler_ast.cpp
-	src/fay_compiler_pst.h
-	src/fay_compiler_pst.cpp
-	src/fay_compiler_nodes.h
-	src/fay_compiler_nodes.cpp
-	src/fay_compiler_parser.h
-	src/fay_compiler_parser.cpp
-	src/fay_compiler_tokens.cpp
-	src/main.cpp
+	src/fay_main.cpp
 )
-
-link_directories(
-	${PROJECT_BINARY_DIR}/../bin
-	${PROJECT_SOURCE_DIR}/deps/${type}/mirage/lib
-	${PROJECT_SOURCE_DIR}/deps/${type}/jansson/lib
-	${PROJECT_SOURCE_DIR}/deps/${type}/iconv/lib
-	${PROJECT_SOURCE_DIR}/deps/${type}/vld/lib
-)
-
-add_executable(fay ${src})
-
-#########################################################
-
 
 include_directories(
 	deps/${type}/mirage/inc
@@ -73,12 +46,27 @@ include_directories(
 	deps/${type}/vld/inc
 )
 
+link_directories(
+	${PROJECT_BINARY_DIR}/bin/Debug
+	${PROJECT_SOURCE_DIR}/deps/${type}/mirage/lib
+	${PROJECT_SOURCE_DIR}/deps/${type}/jansson/lib
+	${PROJECT_SOURCE_DIR}/deps/${type}/iconv/lib
+	${PROJECT_SOURCE_DIR}/deps/${type}/vld/lib
+)
+
+add_executable(fay ${src})
+
 if(WIN32)
-	#link_directories(${PROJECT_SOURCE_DIR}/deps/win32/lib ${PROJECT_BINARY_DIR}/../bin)
-	target_link_libraries(fay winmm.lib mirage.lib jansson.lib libiconv.lib)
+	target_link_libraries(fay mirror.lib winmm.lib mirage.lib jansson.lib libiconv.lib)
 else()
-	#link_directories(${PROJECT_SOURCE_DIR}/deps/linux/lib ${PROJECT_BINARY_DIR}/../bin)
-	target_link_libraries(fay)
+	target_link_libraries(fay mirror.lib)
 endif()
+
+#########################################################
+
+
+
+
+
 
 
