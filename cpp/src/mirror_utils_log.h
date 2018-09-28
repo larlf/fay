@@ -3,8 +3,8 @@
 #include <iostream>
 #include <sstream>
 #include "mirror_sys_termcolor.h"
-#include "mirror_util_string.h"
-#include "mirror_util_time.h"
+#include "mirror_utils_string.h"
+#include "mirror_utils_time.h"
 
 #ifdef WIN32
 

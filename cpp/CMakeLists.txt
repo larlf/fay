@@ -69,9 +69,10 @@ endif()
 
 #########################################################
 
-
 set(test_src
 	src/test_main.cpp
+	src/test_utils.h
+	src/test_utils.cpp
 )
 
 add_executable(test ${test_src})
