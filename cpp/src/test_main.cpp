@@ -1,4 +1,7 @@
-﻿#include "test_utils.h"
+﻿#if WIN32
+#include <vld.h>
+#endif
+#include "test_utils.h"
 
 void main()
 {

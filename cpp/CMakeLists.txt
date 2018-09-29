@@ -43,28 +43,59 @@ set(mirror_src
 	src/mirror_sys_termcolor.cpp
 	src/mirror_sys_const.h
 	src/mirror_sys_const.cpp
-	src/mirror_util_string.h
-	src/mirror_util_string.cpp
-	src/mirror_util_time.h
-	src/mirror_util_time.cpp
-	src/mirror_util_log.h
-	src/mirror_util_log.cpp
+	src/mirror_utils_string.h
+	src/mirror_utils_string.cpp
+	src/mirror_utils_time.h
+	src/mirror_utils_time.cpp
+	src/mirror_utils_log.h
+	src/mirror_utils_log.cpp
+	src/mirror_data_buffer.h
+	src/mirror_data_buffer.cpp
 )
 
 add_library(mirror STATIC ${mirror_src})
 
 #########################################################
 
-set(src
+set(faylib_src
+	src/faylib_const.h
+	src/faylib_const.cpp
+)
+
+add_library(faylib STATIC ${faylib_src})
+
+#########################################################
+
+set(fay_src
 	src/fay_main.cpp
 )
 
-add_executable(fay ${src})
+add_executable(fay ${fay_src})
 
 if(WIN32)
 	target_link_libraries(fay mirror.lib winmm.lib mirage.lib jansson.lib libiconv.lib)
 else()
 	target_link_libraries(fay mirror.lib)
+endif()
+
+#########################################################
+
+set(fayc_src
+	src/fayc_main.cpp
+	src/fayc_const.h
+	src/fayc_const.cpp
+	src/fayc_lexer.h
+	src/fayc_lexer.cpp
+	src/fayc_token.h
+	src/fayc_token.cpp
+)
+
+add_executable(fayc ${fayc_src})
+
+if(WIN32)
+	target_link_libraries(fayc mirror.lib winmm.lib mirage.lib jansson.lib libiconv.lib)
+else()
+	target_link_libraries(fayc mirror.lib)
 endif()
 
 #########################################################
