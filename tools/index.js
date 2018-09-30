@@ -40,6 +40,29 @@ Cmds.help = function () {
         }
     }
 };
+Cmds._token_type = "生成Token类型的数据";
+Cmds.token_type = function () {
+    let file = xlsx.readFile(path.resolve(__dirname, "../doc/FayLang.xlsx"));
+    let json = xlsx.utils.sheet_to_json(file.Sheets['TokenType']);
+    console.log(json);
+    let str1 = "";
+    for (let i = 0; i < json.length; ++i) {
+        let it = json[i];
+        if (it.Code) {
+            if (str1.length > 0)
+                str1 += "\n";
+            str1 += it.Code + ",";
+        }
+    }
+    replaceFileBody("cpp/src/faylib_const.h", "TokenType", str1, "\t\t");
+};
+function replaceFileBody(filename, keyword, str, indent) {
+    filename = path.resolve(RootPath, filename);
+    let text = fs.readFileSync(filename).toString();
+    text = larlf.text.replaceBlock(text, new RegExp(keyword + "Start", "g"), new RegExp(keyword + "End", "g"), str, indent);
+    log.debug("Write : " + filename);
+    fs.writeFileSync(filename, text);
+}
 Cmds._ast_type = "生成AST的类型数据";
 Cmds.ast_type = function () {
     let file = xlsx.readFile(path.resolve(__dirname, "../doc/FayLang.xlsx"));
@@ -60,13 +83,13 @@ Cmds.ast_type = function () {
         }
     }
     //生成头文件中的定义
-    let filename = path.resolve(RootPath, "src\\fay_lang_const.h");
+    let filename = path.resolve(RootPath, "cpp\\src\\faylib_const.h");
     let text = fs.readFileSync(filename).toString();
     text = larlf.text.replaceBlock(text, /ASTType_Start/g, /ASTType_End/g, str1, "\t\t\t");
     log.debug("Write : " + filename);
     fs.writeFileSync(filename, text);
     //生成初始化的定义
-    filename = path.resolve(RootPath, "src\\fay_lang_const.cpp");
+    filename = path.resolve(RootPath, "cpp\\src\\faylib_const.cpp");
     text = fs.readFileSync(filename).toString();
     text = larlf.text.replaceBlock(text, /ASTTypeName_Init_Start/, /ASTTypeName_Init_End/, str2, "\t");
     log.debug("Write : " + filename);
@@ -257,3 +280,4 @@ Cmds.deps = function () {
     larlf.file.copyFiles(path.resolve(mirageDir, "build/bin/Debug"), "mirage.lib", path.resolve(__dirname, "../deps/win64/mirage/lib/"));
 };
 main();
+//# sourceMappingURL=index.js.map
