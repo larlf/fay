@@ -58,36 +58,34 @@ add_library(mirror STATIC ${mirror_src})
 #########################################################
 
 set(faylib_src
-	src/faylib_const.h
-	src/faylib_const.cpp
+	src/fay_const.h
+	src/fay_const.cpp
+	src/fay_lexer.h
+	src/fay_lexer.cpp
+	src/fay_token.h
+	src/fay_token.cpp
 )
 
-add_library(faylib STATIC ${faylib_src})
+add_library(fay STATIC ${faylib_src})
 
 #########################################################
 
-set(fay_src
-	src/fay_main.cpp
+set(fayvm_src
+	src/fayvm_main.cpp
 )
 
-add_executable(fay ${fay_src})
+add_executable(fayvm ${fayvm_src})
 
 if(WIN32)
-	target_link_libraries(fay mirror.lib winmm.lib mirage.lib jansson.lib libiconv.lib)
+	target_link_libraries(fayvm fay mirror.lib winmm.lib mirage.lib jansson.lib libiconv.lib)
 else()
-	target_link_libraries(fay mirror.lib)
+	target_link_libraries(fayvm fay mirror.lib)
 endif()
 
 #########################################################
 
 set(fayc_src
 	src/fayc_main.cpp
-	src/fayc_const.h
-	src/fayc_const.cpp
-	src/fayc_lexer.h
-	src/fayc_lexer.cpp
-	src/fayc_token.h
-	src/fayc_token.cpp
 )
 
 add_executable(fayc ${fayc_src})
@@ -104,6 +102,8 @@ set(test_src
 	src/test_main.cpp
 	src/test_utils.h
 	src/test_utils.cpp
+	src/test_fay.h
+	src/test_fay.cpp
 )
 
 add_executable(test ${test_src})

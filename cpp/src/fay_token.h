@@ -2,13 +2,12 @@
 
 #include <mirror_sys_const.h>
 #include <mirror_data_buffer.h>
-#include <faylib_const.h>
-#include "fayc_const.h"
+#include <fay_const.h>
 
 using namespace mirror::data;
 using namespace fay;
 
-namespace fayc
+namespace fay
 {
 	/**
 	 * 词法解析后的Token
@@ -45,10 +44,28 @@ namespace fayc
 	 */
 	class ITokenRule
 	{
+	protected:
+		TokenType _type = TokenType::None;
+		LexMode _mode = LexMode::Program;
+
 	public:
-		//在什么模式下有效
-		virtual LexMode mode() = 0;
+		TokenType type() { return this->_type; }
+		LexMode mode() { return this->_mode; }
+
+		ITokenRule(LexMode mode, TokenType type)
+			: _mode(mode), _type(type) {}
+
 		//是否生成Token
 		virtual PTR(Token) match(PTR(ByteData) data, int pos, int line, int col) = 0;
+	};
+
+	class CharTokenRule : ITokenRule
+	{
+	public:
+		using ITokenRule::ITokenRule;
+
+		// 通过 ITokenRule 继承
+		virtual PTR(Token) match(PTR(ByteData) data, int pos, int line, int col) override;
+
 	};
 }

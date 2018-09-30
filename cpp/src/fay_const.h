@@ -1,5 +1,8 @@
 ﻿#pragma once
 
+#include <iostream>
+#include <mirror_sys_const.h>
+
 namespace fay
 {
 	/**
@@ -49,6 +52,16 @@ namespace fay
 		String,
 		Char,
 		//TokenTypeEnd
+	};
+
+	class TypeDict
+	{
+	private:
+		static MAP<TokenType, std::string> TokenTypeName;
+
+	public:
+		static void Init();
+		static std::string ToName(TokenType value);
 	};
 }
 

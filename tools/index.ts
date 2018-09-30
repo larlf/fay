@@ -58,6 +58,7 @@ Cmds.token_type=function()
 	console.log(json);
 
 	let str1="";
+	let str2="";
 	for(let i=0; i<json.length; ++i)
 	{
 		let it:any=json[i];
@@ -66,10 +67,15 @@ Cmds.token_type=function()
 			if(str1.length>0)
 				str1+="\n";
 			str1+=it.Code+",";
+
+			if(str2.length>0)
+			str2+="\n";
+			str2+="TypeDict::TokenTypeName[TokenType::"+it.Code+"] = \""+it.Code+"\";";
 		}
 	}
 
-	replaceFileBody("cpp/src/faylib_const.h", "TokenType", str1, "\t\t");
+	replaceFileBody("cpp/src/fay_const.h", "TokenType", str1, "\t\t");
+	replaceFileBody("cpp/src/fay_const.cpp", "TokenTypeName", str2, "\t");
 }
 
 function replaceFileBody(filename:string, keyword:string, str:string, indent:string)
