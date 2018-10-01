@@ -6,5 +6,6 @@
 void main()
 {
 	test::UtilsTest::testLog();
+	test::UtilsTest::testString();
 }
 

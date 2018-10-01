@@ -12,12 +12,12 @@
 
 using namespace std;
 
-uint32_t mirror::util::TimeUtils::Time()
+uint32_t mirror::utils::TimeUtils::Time()
 {
 	return time(0);
 }
 
-uint64_t mirror::util::TimeUtils::MSTime()
+uint64_t mirror::utils::TimeUtils::MSTime()
 {
 #ifdef WIN32
 	struct timeb tp;
@@ -31,7 +31,7 @@ uint64_t mirror::util::TimeUtils::MSTime()
 #endif
 }
 
-std::string mirror::util::TimeUtils::TimeString(uint32_t t /*= 0*/)
+std::string mirror::utils::TimeUtils::TimeString(uint32_t t /*= 0*/)
 {
 	if (t < 1) t = TimeUtils::Time();
 
@@ -45,7 +45,7 @@ std::string mirror::util::TimeUtils::TimeString(uint32_t t /*= 0*/)
 	return string(str);
 }
 
-std::string mirror::util::TimeUtils::MSTimeString(uint64_t t /*= 0*/)
+std::string mirror::utils::TimeUtils::MSTimeString(uint64_t t /*= 0*/)
 {
 	if (t < 1) t = TimeUtils::MSTime();
 	long time = long(t / 1000);

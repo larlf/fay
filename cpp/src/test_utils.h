@@ -6,5 +6,6 @@ namespace test
 	{
 	public:
 		static void testLog();
+		static void testString();
 	};
 }

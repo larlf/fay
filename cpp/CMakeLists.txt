@@ -43,6 +43,8 @@ set(mirror_src
 	src/mirror_sys_termcolor.cpp
 	src/mirror_sys_const.h
 	src/mirror_sys_const.cpp
+	src/mirror_utils_lang.h
+	src/mirror_utils_lang.cpp
 	src/mirror_utils_string.h
 	src/mirror_utils_string.cpp
 	src/mirror_utils_time.h

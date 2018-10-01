@@ -5,7 +5,7 @@
 
 namespace mirror
 {
-	namespace util
+	namespace utils
 	{
 		/**
 		 * 字符串相关的公用方法

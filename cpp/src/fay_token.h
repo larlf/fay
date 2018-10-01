@@ -80,6 +80,61 @@ namespace fay
 	public:
 		using ITokenRule::ITokenRule;
 		// Inherited via ITokenRule
-		virtual Token * match(ByteData & data, int pos, int line, int col) override;
+		virtual Token* match(ByteData &data, int pos, int line, int col) override;
+	};
+
+	/**
+	* 字符串常量
+	*/
+	class StringTokenRule : ITokenRule
+	{
+	public:
+		using ITokenRule::ITokenRule;
+
+		// Inherited via ITokenRule
+		virtual Token* match(ByteData &data, int pos, int line, int col) override;
+	};
+
+	class SymbolTokenRule : ITokenRule
+	{
+	private:
+		char _value;
+
+	public:
+		SymbolTokenRule(const char &c, LexMode mode, TokenType type)
+			: ITokenRule(mode, type), _value(c) {}
+
+		// Inherited via ITokenRule
+		virtual Token* match(ByteData &data, int pos, int line, int col) override;
+	};
+	
+	/**
+	* 单个词的匹配规则
+	*/
+	class WordTokenRule : ITokenRule
+	{
+	private:
+		std::string _word;
+
+	public:
+		WordTokenRule(const std::string &word, LexMode mode, TokenType type)
+			: ITokenRule(mode, type), _word(word) {}
+
+		virtual Token* match(ByteData &data, int pos, int line, int col) override;
+	};
+
+	/**
+	* 多个词的匹配规则
+	*/
+	class WordsTokenRule : ITokenRule
+	{
+	private:
+		std::vector<std::string> _words;
+
+	public:
+		WordsTokenRule(const std::string words[], LexMode mode, TokenType type);
+
+		// Inherited via ITokenRule
+		virtual Token* match(ByteData &data, int pos, int line, int col) override;
 	};
 }

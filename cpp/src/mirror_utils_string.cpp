@@ -2,7 +2,7 @@
 
 #include <iconv.h>
 
-std::string mirror::util::StringUtils::Encoding(const std::string &source, const std::string &fromCode, const std::string &toCode)
+std::string mirror::utils::StringUtils::Encoding(const std::string &source, const std::string &fromCode, const std::string &toCode)
 {
 	if (fromCode == toCode)
 		return source;

@@ -5,7 +5,7 @@
 
 namespace mirror
 {
-	namespace util
+	namespace utils
 	{
 		class TimeUtils
 		{
