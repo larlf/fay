@@ -11,6 +11,7 @@ namespace mirror
 		class ByteData
 		{
 		private:
+			static byte _NullByte;
 			byte* _data = nullptr;
 			uint32_t _size = 0;
 
@@ -43,9 +44,12 @@ namespace mirror
 			/**
 			 * 取按定的位置的数据
 			 */
-			inline byte at(uint32_t index)
+			inline byte &operator [](int index)
 			{
-				return (index < 0 || index >= this->_size) ? 0 : this->_data[index];
+				if (index < 0 || index >= this->_size)
+					return _NullByte;
+
+				return this->_data[index];
 			}
 
 			void clear();

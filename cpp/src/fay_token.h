@@ -21,10 +21,10 @@ namespace fay
 		int _col = -1;
 
 	public:
-		Token(TokenType type, PTR(ByteData) data, int pos, int size, int line, int col)
+		Token(TokenType type, ByteData &data, int pos, int size, int line, int col)
 		{
 			this->_type = type;
-			this->_text = std::string((char*)data->data(), pos, size);
+			this->_text = std::string((char*)data.data(), pos, size);
 			this->_line = line;
 			this->_col = col;
 		}
@@ -56,16 +56,30 @@ namespace fay
 			: _mode(mode), _type(type) {}
 
 		//是否生成Token
-		virtual PTR(Token) match(PTR(ByteData) data, int pos, int line, int col) = 0;
+		virtual Token* match(ByteData &data, int pos, int line, int col) = 0;
 	};
 
+	/**
+	* 字符常量
+	*/
 	class CharTokenRule : ITokenRule
 	{
 	public:
 		using ITokenRule::ITokenRule;
 
 		// 通过 ITokenRule 继承
-		virtual PTR(Token) match(PTR(ByteData) data, int pos, int line, int col) override;
+		virtual Token* match(ByteData &data, int pos, int line, int col) override;
 
+	};
+
+	/**
+	* 数字常量
+	*/
+	class NumberTokenRule : ITokenRule
+	{
+	public:
+		using ITokenRule::ITokenRule;
+		// Inherited via ITokenRule
+		virtual Token * match(ByteData & data, int pos, int line, int col) override;
 	};
 }

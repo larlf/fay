@@ -40,6 +40,7 @@ void ByteData::set(const void* data, uint32_t size)
 
 }
 
+byte mirror::data::ByteData::_NullByte = 0;
 
 ByteBuffer::ByteBuffer()
 {
