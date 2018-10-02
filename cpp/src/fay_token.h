@@ -29,6 +29,7 @@ namespace fay
 			this->_col = col;
 		}
 
+		TokenType type() { return this->_type; }
 		int line() { return this->_line; }
 		int col() { return this->_col; }
 		size_t size() { return this->_text.size(); }
@@ -101,13 +102,13 @@ namespace fay
 		char _value;
 
 	public:
-		SymbolTokenRule(const char &c, LexMode mode, TokenType type)
+		SymbolTokenRule(LexMode mode, TokenType type, const char &c)
 			: ITokenRule(mode, type), _value(c) {}
 
 		// Inherited via ITokenRule
 		virtual Token* match(ByteData &data, int pos, int line, int col) override;
 	};
-	
+
 	/**
 	* 单个词的匹配规则
 	*/
@@ -117,7 +118,7 @@ namespace fay
 		std::string _word;
 
 	public:
-		WordTokenRule(const std::string &word, LexMode mode, TokenType type)
+		WordTokenRule(LexMode mode, TokenType type, const std::string &word)
 			: ITokenRule(mode, type), _word(word) {}
 
 		virtual Token* match(ByteData &data, int pos, int line, int col) override;
@@ -129,12 +130,39 @@ namespace fay
 	class WordsTokenRule : ITokenRule
 	{
 	private:
+		//std::vector<std::string> _words;
 		std::vector<std::string> _words;
 
 	public:
-		WordsTokenRule(const std::string words[], LexMode mode, TokenType type);
+		WordsTokenRule(LexMode mode, TokenType type, std::vector<std::string> words)
+			: ITokenRule(mode, type), _words(words) {}
 
 		// Inherited via ITokenRule
 		virtual Token* match(ByteData &data, int pos, int line, int col) override;
+	};
+
+	/**
+	* 变量名的匹配规则
+	*/
+	class IDTokenRule : ITokenRule
+	{
+	public:
+		using ITokenRule::ITokenRule;
+
+		// Inherited via ITokenRule
+		virtual Token* match(ByteData &data, int pos, int line, int col) override;
+	};
+
+	/**
+	* 单行注释的匹配规则
+	*/
+	class SingleCommentTokenRule : ITokenRule
+	{
+	public:
+		using ITokenRule::ITokenRule;
+
+		// Inherited via ITokenRule
+		virtual Token * match(ByteData & data, int pos, int line, int col) override;
+
 	};
 }

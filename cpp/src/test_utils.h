@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <iostream>
 
 namespace test
 {
@@ -7,5 +8,6 @@ namespace test
 	public:
 		static void testLog();
 		static void testString();
+		static void testString(std::string* strs);
 	};
 }

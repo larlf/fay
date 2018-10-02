@@ -28,11 +28,22 @@ void test::UtilsTest::testString()
 	int size= sizeof(strs) / sizeof(strs[0]);
 
 	for (auto i = 0; i < size; ++i)
-	{
 		LOG_DEBUG(strs[i]);
-	}
 
 	std::string strs2[] = {"abc","aaa","ccc","eee"};
 	auto s1 = utils::LangUtils::SizeOfArray(strs2);
 	LOG_DEBUG("Size : " << s1);
+
+	test::UtilsTest::testString(new std::string[3] { "aaa","bbb","ccc" });
+
+	std::vector<std::string> s3 = {"aaa","bbb","ccc"};
 }
+
+void test::UtilsTest::testString(std::string* strs)
+{
+	int size = utils::LangUtils::SizeOfArray(*strs);
+	LOG_DEBUG("Size : " << size);
+	delete[] strs;
+}
+
+

@@ -1,6 +1,8 @@
 ﻿#include "fay_token.h"
 #include <mirror_utils_lang.h>
 
+using namespace mirror;
+
 std::string fay::Token::toString()
 {
 	std::string str;
@@ -89,18 +91,13 @@ fay::Token* fay::SymbolTokenRule::match(ByteData &data, int pos, int line, int c
 	return nullptr;
 }
 
-fay::WordsTokenRule::WordsTokenRule(const std::string words[], LexMode mode, TokenType type)
-	: ITokenRule(mode, type)
+Token* fay::WordsTokenRule::match(ByteData &data, int pos, int line, int col)
 {
-	int size = mirror::utils::LangUtils::SizeOfArray(words);
-	for (auto i = 0; i < size; ++i)
-		this->_words.push_back(words[i]);
-}
+	int size = utils::LangUtils::SizeOfArray(this->_words);
 
-Token * fay::WordsTokenRule::match(ByteData & data, int pos, int line, int col)
-{
-	for each (auto word in this->_words)
+	for(auto i=0; i<size; ++i)
 	{
+		std::string word = this->_words[i];
 		bool isMatch = true;
 		for (auto i = 0; i < word.size(); ++i)
 		{
@@ -112,9 +109,7 @@ Token * fay::WordsTokenRule::match(ByteData & data, int pos, int line, int col)
 		}
 
 		if (isMatch)
-		{
 			return new Token(this->type(), data, pos, word.size(), line, col);
-		}
 	}
 
 	return nullptr;
@@ -129,4 +124,42 @@ fay::Token* fay::WordTokenRule::match(ByteData &data, int pos, int line, int col
 	}
 
 	return new Token(this->type(), data, pos, this->_word.size(), line, col);
+}
+
+Token* fay::IDTokenRule::match(ByteData &data, int pos, int line, int col)
+{
+
+	if ((data[pos] >= 'a' && data[pos] <= 'z') || (data[pos] >= 'A' && data[pos] <= 'Z'))
+	{
+		int p = pos + 1;
+		while (p<data.size())
+		{
+			if ((data[p] >= 'a' && data[p] <= 'z')
+				|| (data[p] >= 'A' && data[p] <= 'Z')
+				|| data[p] == '_'
+				|| data[p] == '.')
+				p++;
+			else
+				break;
+		}
+
+		return new Token(this->_type, data, pos, p - pos, line, col);
+	}
+
+	return nullptr;
+}
+
+Token* fay::SingleCommentTokenRule::match(ByteData &data, int pos, int line, int col)
+{
+	int p = pos;
+
+	while (p < data.size())
+	{
+		if (data[p] == '\n' || data[p] == '\r')
+			break;
+		else
+			p++;
+	}
+
+	return new Token(this->_type, data, pos, p-pos, line, col);
 }
