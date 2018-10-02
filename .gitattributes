@@ -1,0 +1,3 @@
+*.html linguist-language=cpp
+*.ts linguist-language=cpp
+*.js linguist-language=cpp
