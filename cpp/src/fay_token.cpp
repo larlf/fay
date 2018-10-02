@@ -5,12 +5,14 @@
 #include <string.h>
 
 using namespace mirror;
+using namespace mirror::data;
+using namespace fay;
 
 std::string fay::Token::toString()
 {
 	std::string text = utils::StringUtils::EncodeSpecialChar(this->_text);
 	int size = text.size() + 32;
-	std::shared_ptr<char> buffer(new char[size], std::default_delete<char[]>());
+	PTR(char) buffer(new char[size], std::default_delete<char[]>());
 
 	sprintf_s(&*buffer, size, "%-5i %-5i %-16s  %s",
 		this->_line,

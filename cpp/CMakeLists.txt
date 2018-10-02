@@ -68,6 +68,12 @@ set(faylib_src
 	src/fay_lexer.cpp
 	src/fay_token.h
 	src/fay_token.cpp
+	src/fay_token_stack.h
+	src/fay_token_stack.cpp
+	src/fay_ast.h
+	src/fay_ast.cpp
+	src/fay_parser.h
+	src/fay_parser.cpp
 )
 
 add_library(fay STATIC ${faylib_src})

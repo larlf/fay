@@ -3,6 +3,8 @@
 #include <mirror_utils_log.h>
 
 using namespace mirror;
+using namespace mirror::data;
+using namespace fay;
 
 PTR(Token) fay::Lexer::changeMode(PTR(Token) t)
 {

@@ -4,9 +4,6 @@
 #include <mirror_data_buffer.h>
 #include <fay_const.h>
 
-using namespace mirror::data;
-using namespace fay;
-
 namespace fay
 {
 	/**
@@ -16,12 +13,14 @@ namespace fay
 	{
 	private:
 		std::string _text;
-		TokenType _type;
+		TokenType _type = TokenType::None;
 		int _line = -1;
 		int _col = -1;
 
 	public:
-		Token(TokenType type, ByteData &data, int pos, int size, int line, int col)
+		Token() {}  //用于初始化空的Token
+
+		Token(TokenType type, mirror::data::ByteData &data, int pos, int size, int line, int col)
 		{
 			this->_type = type;
 			this->_text = std::string((char*)data.data(), pos, size);
@@ -58,7 +57,7 @@ namespace fay
 		virtual ~ITokenRule() {}
 
 		//是否生成Token
-		virtual Token* match(ByteData &data, int pos, int line, int col) = 0;
+		virtual Token* match(mirror::data::ByteData &data, int pos, int line, int col) = 0;
 	};
 
 	/**
@@ -70,7 +69,7 @@ namespace fay
 		using ITokenRule::ITokenRule;
 
 		// 通过 ITokenRule 继承
-		virtual Token* match(ByteData &data, int pos, int line, int col) override;
+		virtual Token* match(mirror::data::ByteData &data, int pos, int line, int col) override;
 
 	};
 
@@ -82,7 +81,7 @@ namespace fay
 	public:
 		using ITokenRule::ITokenRule;
 		// Inherited via ITokenRule
-		virtual Token* match(ByteData &data, int pos, int line, int col) override;
+		virtual Token* match(mirror::data::ByteData &data, int pos, int line, int col) override;
 	};
 
 	/**
@@ -94,7 +93,7 @@ namespace fay
 		using ITokenRule::ITokenRule;
 
 		// Inherited via ITokenRule
-		virtual Token* match(ByteData &data, int pos, int line, int col) override;
+		virtual Token* match(mirror::data::ByteData &data, int pos, int line, int col) override;
 	};
 
 	class SymbolTokenRule : public ITokenRule
@@ -107,7 +106,7 @@ namespace fay
 			: ITokenRule(mode, type), _value(c) {}
 
 		// Inherited via ITokenRule
-		virtual Token* match(ByteData &data, int pos, int line, int col) override;
+		virtual Token* match(mirror::data::ByteData &data, int pos, int line, int col) override;
 	};
 
 	/**
@@ -122,7 +121,7 @@ namespace fay
 		WordTokenRule(LexMode mode, TokenType type, const std::string &word)
 			: ITokenRule(mode, type), _word(word) {}
 
-		virtual Token* match(ByteData &data, int pos, int line, int col) override;
+		virtual Token* match(mirror::data::ByteData &data, int pos, int line, int col) override;
 	};
 
 	/**
@@ -139,7 +138,7 @@ namespace fay
 			: ITokenRule(mode, type), _words(words) {}
 
 		// Inherited via ITokenRule
-		virtual Token* match(ByteData &data, int pos, int line, int col) override;
+		virtual Token* match(mirror::data::ByteData &data, int pos, int line, int col) override;
 	};
 
 	/**
@@ -151,7 +150,7 @@ namespace fay
 		using ITokenRule::ITokenRule;
 
 		// Inherited via ITokenRule
-		virtual Token* match(ByteData &data, int pos, int line, int col) override;
+		virtual Token* match(mirror::data::ByteData &data, int pos, int line, int col) override;
 	};
 
 	/**
@@ -163,7 +162,7 @@ namespace fay
 		using ITokenRule::ITokenRule;
 
 		// Inherited via ITokenRule
-		virtual Token * match(ByteData & data, int pos, int line, int col) override;
+		virtual Token * match(mirror::data::ByteData & data, int pos, int line, int col) override;
 
 	};
 }
