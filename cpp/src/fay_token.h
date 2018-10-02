@@ -55,6 +55,7 @@ namespace fay
 
 		ITokenRule(LexMode mode, TokenType type)
 			: _mode(mode), _type(type) {}
+		virtual ~ITokenRule() {}
 
 		//是否生成Token
 		virtual Token* match(ByteData &data, int pos, int line, int col) = 0;
@@ -63,7 +64,7 @@ namespace fay
 	/**
 	* 字符常量
 	*/
-	class CharTokenRule : ITokenRule
+	class CharTokenRule : public ITokenRule
 	{
 	public:
 		using ITokenRule::ITokenRule;
@@ -76,7 +77,7 @@ namespace fay
 	/**
 	* 数字常量
 	*/
-	class NumberTokenRule : ITokenRule
+	class NumberTokenRule : public ITokenRule
 	{
 	public:
 		using ITokenRule::ITokenRule;
@@ -87,7 +88,7 @@ namespace fay
 	/**
 	* 字符串常量
 	*/
-	class StringTokenRule : ITokenRule
+	class StringTokenRule : public ITokenRule
 	{
 	public:
 		using ITokenRule::ITokenRule;
@@ -96,7 +97,7 @@ namespace fay
 		virtual Token* match(ByteData &data, int pos, int line, int col) override;
 	};
 
-	class SymbolTokenRule : ITokenRule
+	class SymbolTokenRule : public ITokenRule
 	{
 	private:
 		char _value;
@@ -112,7 +113,7 @@ namespace fay
 	/**
 	* 单个词的匹配规则
 	*/
-	class WordTokenRule : ITokenRule
+	class WordTokenRule : public ITokenRule
 	{
 	private:
 		std::string _word;
@@ -127,7 +128,7 @@ namespace fay
 	/**
 	* 多个词的匹配规则
 	*/
-	class WordsTokenRule : ITokenRule
+	class WordsTokenRule : public ITokenRule
 	{
 	private:
 		//std::vector<std::string> _words;
@@ -144,7 +145,7 @@ namespace fay
 	/**
 	* 变量名的匹配规则
 	*/
-	class IDTokenRule : ITokenRule
+	class IDTokenRule : public ITokenRule
 	{
 	public:
 		using ITokenRule::ITokenRule;
@@ -156,7 +157,7 @@ namespace fay
 	/**
 	* 单行注释的匹配规则
 	*/
-	class SingleCommentTokenRule : ITokenRule
+	class SingleCommentTokenRule : public ITokenRule
 	{
 	public:
 		using ITokenRule::ITokenRule;

@@ -1,5 +1,6 @@
 ﻿#include "fay_lexer.h"
 #include <mirror_utils_string.h>
+#include <mirror_utils_log.h>
 
 using namespace mirror;
 
@@ -88,6 +89,7 @@ fay::Lexer::Lexer()
 
 fay::Lexer::~Lexer()
 {
+	LOG_INFO("Destory Lexer");
 	for each(auto it in this->_rules)
 	{
 		if (it != nullptr)
@@ -177,7 +179,6 @@ PTR(std::vector<PTR(Token)>) fay::Lexer::Execute(std::string text)
 		}
 		else
 		{
-
 			utils::StringBuilder sb;
 			sb.add("Lexer error at line:")->add(line)->add(" column:")->add(col)->endl();
 
@@ -188,7 +189,7 @@ PTR(std::vector<PTR(Token)>) fay::Lexer::Execute(std::string text)
 				if (chars[strPos] == '\t')
 					sb.add(' ');
 				else
-					sb.add(chars[strPos]);
+					sb.add((char)chars[strPos]);
 
 				strPos++;
 			}
@@ -200,7 +201,7 @@ PTR(std::vector<PTR(Token)>) fay::Lexer::Execute(std::string text)
 			sb.add('^');
 
 			//生成错误信息
-			throw new LexerException(sb.toString().c_str());
+			throw LexerException(sb.toString().c_str());
 		}
 	}
 

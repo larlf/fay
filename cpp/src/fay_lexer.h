@@ -4,6 +4,18 @@
 
 namespace fay
 {
+	/**
+	* 词法解析错误后的异常处理
+	*/
+	class LexerException : public std::exception
+	{
+	public:
+		using std::exception::exception;
+
+		LexerException(const std::string &msg)
+			: std::exception(msg.c_str()) {}
+	};
+
 	class Lexer
 	{
 	private:
@@ -21,12 +33,6 @@ namespace fay
 		PTR(std::vector<PTR(Token)>) Execute(std::string text);
 	};
 
-	/**
-	* 词法解析错误后的异常处理
-	*/
-	class LexerException : std::exception
-	{
-		using std::exception::exception;
-	};
+
 }
 

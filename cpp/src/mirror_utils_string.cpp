@@ -1,6 +1,7 @@
 ﻿#include "mirror_utils_string.h"
 
 #include <iconv.h>
+#include <string>
 
 std::string mirror::utils::StringUtils::Encoding(const std::string &source, const std::string &fromCode, const std::string &toCode)
 {
@@ -55,4 +56,30 @@ std::string mirror::utils::StringUtils::Encoding(const std::string &source, cons
 #else
 	return source;
 #endif
+}
+
+std::string mirror::utils::StringUtils::EncodeSpecialChar(const std::string & str)
+{
+	std::string r;
+
+	for (auto i = 0; i < str.size(); ++i)
+	{
+		switch (str[i])
+		{
+		case '\r':
+			r += "\\r";
+			break;
+		case '\n':
+			r += "\\n";
+			break;
+		default:
+			if (str[i] >= 128)
+				r += '?';
+			else
+				r += str[i];
+			break;
+		}
+	}
+
+	return r;
 }

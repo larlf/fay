@@ -1,16 +1,23 @@
 ﻿#include "fay_token.h"
 #include <mirror_utils_lang.h>
+#include <mirror_utils_string.h>
+#include <stdio.h>
+#include <string.h>
 
 using namespace mirror;
 
 std::string fay::Token::toString()
 {
-	std::string str;
-	//str.append(this->_type);
-	str.append(TypeDict::ToName(this->_type));
-	str.append(" ");
-	str.append(this->_text);
-	return str;
+	std::string text = utils::StringUtils::EncodeSpecialChar(this->_text);
+	int size = text.size() + 32;
+	std::shared_ptr<char> buffer(new char[size], std::default_delete<char[]>());
+
+	sprintf_s(&*buffer, size, "%-5i %-5i %-16s  %s",
+		this->_line,
+		this->_col,
+		TypeDict::ToName(this->_type).c_str(),
+		text.c_str());
+	return std::string(&*buffer);
 }
 
 fay::Token* fay::CharTokenRule::match(ByteData &data, int pos, int line, int col)
@@ -93,15 +100,13 @@ fay::Token* fay::SymbolTokenRule::match(ByteData &data, int pos, int line, int c
 
 Token* fay::WordsTokenRule::match(ByteData &data, int pos, int line, int col)
 {
-	int size = utils::LangUtils::SizeOfArray(this->_words);
-
-	for(auto i=0; i<size; ++i)
+	for(auto i=0; i<this->_words.size(); ++i)
 	{
-		std::string word = this->_words[i];
+		std::string* word = &this->_words[i];
 		bool isMatch = true;
-		for (auto i = 0; i < word.size(); ++i)
+		for (auto i = 0; i < word->size(); ++i)
 		{
-			if (word[i] != data[pos + i])
+			if ((*word)[i] != data[pos + i])
 			{
 				isMatch = false;
 				break;
@@ -109,7 +114,7 @@ Token* fay::WordsTokenRule::match(ByteData &data, int pos, int line, int col)
 		}
 
 		if (isMatch)
-			return new Token(this->type(), data, pos, word.size(), line, col);
+			return new Token(this->type(), data, pos, word->size(), line, col);
 	}
 
 	return nullptr;
@@ -129,13 +134,14 @@ fay::Token* fay::WordTokenRule::match(ByteData &data, int pos, int line, int col
 Token* fay::IDTokenRule::match(ByteData &data, int pos, int line, int col)
 {
 
-	if ((data[pos] >= 'a' && data[pos] <= 'z') || (data[pos] >= 'A' && data[pos] <= 'Z'))
+	if ((data[pos] >= 'a' && data[pos] <= 'z') || (data[pos] >= 'A' && data[pos] <= 'Z') || data[pos]=='_')
 	{
 		int p = pos + 1;
 		while (p<data.size())
 		{
 			if ((data[p] >= 'a' && data[p] <= 'z')
 				|| (data[p] >= 'A' && data[p] <= 'Z')
+				|| (data[p] >= '0' && data[p] <= '9')
 				|| data[p] == '_'
 				|| data[p] == '.')
 				p++;
@@ -152,7 +158,6 @@ Token* fay::IDTokenRule::match(ByteData &data, int pos, int line, int col)
 Token* fay::SingleCommentTokenRule::match(ByteData &data, int pos, int line, int col)
 {
 	int p = pos;
-
 	while (p < data.size())
 	{
 		if (data[p] == '\n' || data[p] == '\r')
@@ -161,5 +166,8 @@ Token* fay::SingleCommentTokenRule::match(ByteData &data, int pos, int line, int
 			p++;
 	}
 
-	return new Token(this->_type, data, pos, p-pos, line, col);
+	if(p>pos)
+		return new Token(this->_type, data, pos, p-pos, line, col);
+
+	return nullptr;
 }

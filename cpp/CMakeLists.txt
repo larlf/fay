@@ -51,6 +51,8 @@ set(mirror_src
 	src/mirror_utils_time.cpp
 	src/mirror_utils_log.h
 	src/mirror_utils_log.cpp
+	src/mirror_utils_file.h
+	src/mirror_utils_file.cpp
 	src/mirror_data_buffer.h
 	src/mirror_data_buffer.cpp
 )
@@ -111,9 +113,9 @@ set(test_src
 add_executable(test ${test_src})
 
 if(WIN32)
-	target_link_libraries(test mirror.lib winmm.lib mirage.lib jansson.lib libiconv.lib)
+	target_link_libraries(test mirror fay winmm.lib mirage.lib jansson.lib libiconv.lib)
 else()
-	target_link_libraries(test mirror.lib)
+	target_link_libraries(test mirror fay)
 endif()
 
 

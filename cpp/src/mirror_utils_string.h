@@ -20,6 +20,10 @@ namespace mirror
 			* @param toCode 目标编码
 			*/
 			static std::string Encoding(const std::string &source, const std::string &fromCode, const std::string &toCode);
+			/**
+			* 对特殊字符进行转码
+			*/
+			static std::string EncodeSpecialChar(const std::string &str);
 		};
 
 		/**
