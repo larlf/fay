@@ -285,4 +285,3 @@ Cmds.deps = function () {
     larlf.file.copyFiles(path.resolve(mirageDir, "build/bin/Debug"), "mirage.lib", path.resolve(__dirname, "../deps/win64/mirage/lib/"));
 };
 main();
-//# sourceMappingURL=index.js.map
