@@ -22,7 +22,7 @@ namespace fay
 			:_text(text) {}
 		virtual ~AstNode() {}
 
-		const std::string& text() { return this->_text; }
+		const std::string &text() { return this->_text; }
 		size_t childNodesNum() { return this->_nodes.size(); }
 		template<typename T> bool is() { return typeid(*this) == typeid(T); }
 
@@ -30,14 +30,143 @@ namespace fay
 		void destory();
 		//添加子节点
 		void addChildNode(PTR(AstNode) node);
-		
+
 		virtual void toString(mirror::utils::StringBuilder &sb);
 	};
+
+	/******************************************************
+	* 文件结构类的AST节点
+	*******************************************************/
 
 	//文件节点
 	class AstFile : public AstNode
 	{
-	public:
 		using AstNode::AstNode;
 	};
+
+	class AstUsing : public AstNode
+	{
+		using AstNode::AstNode;
+	};
+
+	class AstPackage : public AstNode
+	{
+		using AstNode::AstNode;
+	};
+
+	class AstArray : public AstNode
+	{
+		using AstNode::AstNode;
+	};
+
+	class AstBlock : public AstNode
+	{
+		using AstNode::AstNode;
+	};
+
+	class AstClass : public AstNode
+	{
+		using AstNode::AstNode;
+	};
+
+	class AstCondition : public AstNode
+	{
+		using AstNode::AstNode;
+	};
+
+	class AstField : public AstNode
+	{
+		using AstNode::AstNode;
+	};
+
+	class AstFun : public AstNode
+	{
+		using AstNode::AstNode;
+	};
+
+	class AstParamDefine : public AstNode
+	{
+		using AstNode::AstNode;
+	};
+
+	class AstParamDefineList : public AstNode
+	{
+		using AstNode::AstNode;
+	};
+
+	class AstParams : public AstNode
+	{
+		using AstNode::AstNode;
+	};
+
+	class AstType : public AstNode
+	{
+		using AstNode::AstNode;
+	};
+
+	class AstBoolOP : public AstNode
+	{
+		using AstNode::AstNode;
+	};
+
+	class AstBracket : public AstNode
+	{
+		using AstNode::AstNode;
+	};
+
+	class AstLeftRightOP : public AstNode
+	{
+		using AstNode::AstNode;
+	};
+
+	class AstPostOP : public AstNode
+	{
+		using AstNode::AstNode;
+	};
+
+	class AstPreOP : public AstNode
+	{
+		using AstNode::AstNode;
+	};
+
+	class AstAssign : public AstNode
+	{
+		using AstNode::AstNode;
+	};
+
+	class AstCall : public AstNode
+	{
+		using AstNode::AstNode;
+	};
+
+	class AstIf : public AstNode
+	{
+		using AstNode::AstNode;
+	};
+
+	class AstReturn : public AstNode
+	{
+		using AstNode::AstNode;
+	};
+
+	class AstVar : public AstNode
+	{
+		using AstNode::AstNode;
+	};
+
+	class AstByte : public AstNode
+	{
+		using AstNode::AstNode;
+	};
+
+	class AstNumber : public AstNode
+	{
+		using AstNode::AstNode;
+	};
+
+	class AstString : public AstNode
+	{
+		using AstNode::AstNode;
+	};
+
 }

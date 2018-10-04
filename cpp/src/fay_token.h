@@ -29,6 +29,7 @@ namespace fay
 		}
 
 		TokenType type() { return this->_type; }
+		const std::string &text() { return this->_text; }
 		int line() { return this->_line; }
 		int col() { return this->_col; }
 		size_t size() { return this->_text.size(); }

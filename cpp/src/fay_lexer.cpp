@@ -91,7 +91,7 @@ fay::Lexer::Lexer()
 
 fay::Lexer::~Lexer()
 {
-	LOG_INFO("Destory Lexer");
+	//LOG_INFO("Destory Lexer");
 	for each(auto it in this->_rules)
 	{
 		if (it != nullptr)

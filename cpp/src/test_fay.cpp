@@ -32,8 +32,7 @@ void test::FayTests::TestLexer()
 	auto ast = fay::Parser::Parse(tokens, filename);
 	utils::StringBuilder sb;
 	ast->toString(sb);
-	LOG_DEBUG(sb.toString());
+	PRINT(sb.toString());
 
-	LOG_DEBUG(ast->is<fay::AstNode>());
-	LOG_DEBUG(ast->is<fay::AstFile>());
+	ast->destory();
 }
