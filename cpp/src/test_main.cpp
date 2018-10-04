@@ -1,8 +1,8 @@
 ﻿#if WIN32
 #include <vld.h>
 #endif
-#include "test_utils.h"
-#include "test_fay.h"
+#include <test_utils.h>
+#include <test_fay.h>
 #include <mirror_utils_log.h>
 #include <fay_lexer.h>
 

@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "fay_token.h"
+#include <fay_token.h>
 
 namespace fay
 {

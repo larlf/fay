@@ -1,4 +1,4 @@
-﻿#include "fay_const.h"
+﻿#include <fay_const.h>
 
 MAP<fay::TokenType, std::string> fay::TypeDict::TokenTypeName;
 

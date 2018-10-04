@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "mirror_sys_const.h"
+#include <mirror_sys_const.h>
 
 typedef unsigned char byte;		///< 字节数据类型
 
