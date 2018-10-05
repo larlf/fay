@@ -30,8 +30,33 @@ namespace fay
 		static PTR(AstNode) _Using(TokenStack* stack);
 		//Package语句
 		static PTR(AstNode) _Package(TokenStack* stack);
+		static PTR(AstNode) _Class(TokenStack* stack);
+		static PTR(AstNode) _Field(TokenStack* stack);
+		static PTR(AstNode) _Fun(TokenStack* stack);
+
+		//支持的各种语句
+		static PTR(AstNode) _Stmt(TokenStack* stack);
+		static PTR(AstNode) _StmtBlock(TokenStack* stack);
+		static PTR(AstNode) _StmtVar(TokenStack* stack);
+		static PTR(AstNode) _StmtAssign(TokenStack* stack);
+		static PTR(AstNode) _StmtIf(TokenStack* stack);
+		static PTR(AstNode) _StmtFor(TokenStack* stack);
+		static PTR(AstNode) _StmtReturn(TokenStack* stack);
+		
+		//数组
+		static PTR(AstNode) _Array(TokenStack* stack);
+		//类型定义
+		static PTR(AstNode) _Type(TokenStack* stack);
+
+		//参数定义
+		static PTR(AstNode) _ParamDef(TokenStack* stack);
+		//参数定义 列表
+		static PTR(AstNode) _ParamDefList(TokenStack* stack);
+		//调用方法时的参数列表
+		static PTR(AstNode) _ParamList(TokenStack* stack);
 		//调用语句
 		static PTR(AstNode) _Call(TokenStack* stack);
+
 
 		//表达式中的各项基本值
 		static PTR(AstNode) _ExprPrimary(TokenStack* stack);

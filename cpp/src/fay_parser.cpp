@@ -122,12 +122,187 @@ PTR(AstNode) fay::Parser::_Package(TokenStack* stack)
 	return node;
 }
 
-PTR(AstNode) fay::Parser::_Call(TokenStack* stack)
+PTR(AstNode) fay::Parser::_Class(TokenStack * stack)
 {
 	return PTR(AstNode)();
 }
 
+PTR(AstNode) fay::Parser::_Field(TokenStack * stack)
+{
+	return PTR(AstNode)();
+}
 
+PTR(AstNode) fay::Parser::_Fun(TokenStack * stack)
+{
+	return PTR(AstNode)();
+}
+
+PTR(AstNode) fay::Parser::_Call(TokenStack* stack)
+{
+	if (stack->now()->is(TokenType::ID))
+	{
+		PTR(AstCall) node = MKPTR(AstCall)(stack->now()->text());
+		stack->next();
+
+		if (!stack->now()->is("("))
+			throw ParseException(stack, "expect ( with call");
+
+		stack->next();
+		node->addChildNode(_ParamList((stack)));
+
+		if (!stack->now()->is(")"))
+			throw ParseException(stack, "expect ) with call");
+
+		stack->next();
+		return node;
+	}
+
+	return nullptr;
+}
+
+PTR(AstNode) fay::Parser::_Stmt(TokenStack * stack)
+{
+	return PTR(AstNode)();
+}
+
+PTR(AstNode) fay::Parser::_StmtBlock(TokenStack * stack)
+{
+	return PTR(AstNode)();
+}
+
+PTR(AstNode) fay::Parser::_StmtVar(TokenStack * stack)
+{
+	return PTR(AstNode)();
+}
+
+PTR(AstNode) fay::Parser::_StmtAssign(TokenStack * stack)
+{
+	return PTR(AstNode)();
+}
+
+PTR(AstNode) fay::Parser::_StmtIf(TokenStack * stack)
+{
+	return PTR(AstNode)();
+}
+
+PTR(AstNode) fay::Parser::_StmtFor(TokenStack * stack)
+{
+	return PTR(AstNode)();
+}
+
+PTR(AstNode) fay::Parser::_StmtReturn(TokenStack * stack)
+{
+	return PTR(AstNode)();
+}
+
+PTR(AstNode) fay::Parser::_Array(TokenStack* stack)
+{
+	if (!stack->now()->is("["))
+		throw ParseException(stack, "expect array start with [");
+	stack->next();
+
+	auto node = MKPTR(AstArray)();
+	while (stack->now() && !stack->now()->is("]"))
+	{
+		auto expr1 = _Expr(stack);
+		if (!expr1)
+			throw ParseException(stack, "bad array index");
+
+		node->addChildNode(expr1);
+
+		//处理多个下标
+		if (stack->now()->is(","))
+			stack->next();
+	}
+
+	if (!stack->now()->is("]"))
+		throw ParseException(stack, "expect array end with ]");
+
+	stack->next();
+	return node;
+}
+
+PTR(AstNode) fay::Parser::_Type(TokenStack* stack)
+{
+	if (stack->now()->is(TokenType::BasicType)
+		|| stack->now()->is(TokenType::ID))
+	{
+		std::string name = stack->now()->text();
+		stack->next();
+
+		if (stack->now()->is("[") && stack->after()->is("]"))
+		{
+			stack->next();
+			stack->next();
+			return MKPTR(AstArrayType)(name);
+		}
+		else
+			return MKPTR(AstType)(name);
+	}
+
+	throw ParseException(stack, "bad type");
+}
+
+PTR(AstNode) fay::Parser::_ParamDef(TokenStack* stack)
+{
+	if (stack->now()->is(TokenType::ID) && stack->after()->is(TokenType::Colon))
+	{
+		auto node = MKPTR(AstParamDefine)(stack->now()->text());
+		stack->next();
+		stack->next();
+
+		auto typeNode = _Type(stack);
+		if (typeNode)
+			node->addChildNode(typeNode);
+	}
+
+	return nullptr;
+}
+
+PTR(AstNode) fay::Parser::_ParamDefList(TokenStack* stack)
+{
+	PTR(AstParamDefineList) node = MKPTR(AstParamDefineList)();
+
+	while (true)
+	{
+		auto pd = _ParamDef(stack);
+		if (!pd)
+			break;
+
+		node->addChildNode(pd);
+
+		if (stack->now()->is(TokenType::Comma))
+			stack->next();
+		else
+			break;
+	}
+
+	return node;
+}
+
+PTR(AstNode) fay::Parser::_ParamList(TokenStack* stack)
+{
+	PTR(AstParams) node = MKPTR(AstParams)();
+
+	while (true)
+	{
+		if (stack->now()->is(")"))
+			return node;
+
+		auto param = _Expr(stack);
+		if (!param)
+			throw ParseException(stack, "bad param");
+
+		node->addChildNode(param);
+
+		if (stack->now()->is(TokenType::Comma))
+			stack->next();
+		else
+			break;
+	}
+
+	return node;
+}
 
 PTR(AstNode) fay::Parser::_ExprPrimary(TokenStack* stack)
 {
@@ -213,22 +388,22 @@ PTR(AstNode) fay::Parser::_ExprPre(TokenStack* stack)
 	return _ExprPost(stack);
 }
 
-PTR(AstNode) fay::Parser::_ExprMulDiv(TokenStack * stack)
+PTR(AstNode) fay::Parser::_ExprMulDiv(TokenStack* stack)
 {
 	return _MakeLeftRightOPNode(_ExprPre, {"*","/","%"}, stack);
 }
 
-PTR(AstNode) fay::Parser::_ExprAddSub(TokenStack * stack)
+PTR(AstNode) fay::Parser::_ExprAddSub(TokenStack* stack)
 {
 	return _MakeLeftRightOPNode(_ExprMulDiv, { "+","-" }, stack);
 }
 
-PTR(AstNode) fay::Parser::_ExprLeftRightMove(TokenStack * stack)
+PTR(AstNode) fay::Parser::_ExprLeftRightMove(TokenStack* stack)
 {
 	return _MakeLeftRightOPNode(_ExprAddSub, { ">>","<<" }, stack);
 }
 
-PTR(AstNode) fay::Parser::_ExprBool(TokenStack * stack)
+PTR(AstNode) fay::Parser::_ExprBool(TokenStack* stack)
 {
 	return _MakeBoolOPNode(_ExprLeftRightMove, { ">","<","==",">=","<=" }, stack);
 }
@@ -238,7 +413,7 @@ PTR(AstNode) fay::Parser::_Expr(TokenStack* stack)
 	return _ExprBool(stack);
 }
 
-PTR(AstNode) fay::Parser::_AddrExprItem(TokenStack * stack)
+PTR(AstNode) fay::Parser::_AddrExprItem(TokenStack* stack)
 {
 	if (stack->now()->is(TokenType::ID))
 	{
@@ -256,13 +431,13 @@ PTR(AstNode) fay::Parser::_AddrExprItem(TokenStack * stack)
 		if (!stack->move()->is(")"))
 			throw ParseException(stack, "expect )");
 
-		return MKPTR(AstBracket)(std::vector<PTR(AstNode)>{ expr1 });
+		return MKPTR(AstBracket)(std::vector<PTR(AstNode)> { expr1 });
 	}
 
 	return nullptr;
 }
 
-PTR(AstNode) fay::Parser::_AddrExprBracket(TokenStack * stack)
+PTR(AstNode) fay::Parser::_AddrExprBracket(TokenStack* stack)
 {
 	auto leftNode = _AddrExprItem(stack);
 	while (leftNode && stack->now()->is("["))
@@ -274,13 +449,13 @@ PTR(AstNode) fay::Parser::_AddrExprBracket(TokenStack * stack)
 
 		if (!stack->move()->is("]"))
 			throw ParseException(stack, "expect ]");
-		leftNode = MKPTR(AstBracket)(std::vector<PTR(AstNode)>{leftNode, index});
+		leftNode = MKPTR(AstBracket)(std::vector<PTR(AstNode)> {leftNode, index});
 	}
 
 	return leftNode;
 }
 
-PTR(AstNode) fay::Parser::_AddrExpr(TokenStack * stack)
+PTR(AstNode) fay::Parser::_AddrExpr(TokenStack* stack)
 {
 	return _AddrExprBracket(stack);
 }

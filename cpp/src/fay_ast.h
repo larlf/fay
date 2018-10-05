@@ -121,6 +121,11 @@ namespace fay
 		using AstNode::AstNode;
 	};
 
+	class AstArrayType : public AstNode
+	{
+		using AstNode::AstNode;
+	};
+
 	class AstID : public AstNode
 	{
 		using AstNode::AstNode;
