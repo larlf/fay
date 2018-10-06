@@ -33,7 +33,7 @@ namespace fay
 		Using,
 		Package,
 		Var,
-		Function,
+		Fun,
 		Class,
 		Interface,
 		DescSymbol,

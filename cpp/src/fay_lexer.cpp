@@ -28,7 +28,7 @@ fay::Lexer::Lexer()
 	this->_rules.push_back((ITokenRule*)new WordTokenRule(LexMode::Program, TokenType::Class, "class"));
 	this->_rules.push_back((ITokenRule*)new WordTokenRule(LexMode::Program, TokenType::Interface, "interface"));
 	this->_rules.push_back((ITokenRule*)new WordTokenRule(LexMode::Program, TokenType::Var, "var"));
-	this->_rules.push_back((ITokenRule*)new WordTokenRule(LexMode::Program, TokenType::Function, "fun"));
+	this->_rules.push_back((ITokenRule*)new WordTokenRule(LexMode::Program, TokenType::Fun, "fun"));
 	this->_rules.push_back((ITokenRule*)new WordTokenRule(LexMode::Program, TokenType::If, "if"));
 	this->_rules.push_back((ITokenRule*)new WordTokenRule(LexMode::Program, TokenType::ElseIf, "elseif"));
 	this->_rules.push_back((ITokenRule*)new WordTokenRule(LexMode::Program, TokenType::Else, "else"));

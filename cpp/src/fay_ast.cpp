@@ -30,8 +30,8 @@ void fay::AstNode::destory()
 void fay::AstNode::addChildNode(PTR(AstNode) node)
 {
 	//可能会添加空节点用于占位
-	if (node != nullptr)
-		node->_parent = this->shared_from_this();
+	//if (node != nullptr)
+	//	node->_parent = this->shared_from_this();
 
 	this->_nodes.push_back(node);
 }

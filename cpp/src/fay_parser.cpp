@@ -113,7 +113,7 @@ PTR(AstNode) fay::Parser::_Class(TokenStack* stack)
 		auto nextToken = stack->findNextToken(
 		{
 			TokenType::Var,
-			TokenType::Function,
+			TokenType::Fun,
 			TokenType::Class,
 			TokenType::Interface
 		});
@@ -136,7 +136,7 @@ PTR(AstNode) fay::Parser::_Class(TokenStack* stack)
 					node->addChildNode(subNode);
 				break;
 			}
-			case TokenType::Function:
+			case TokenType::Fun:
 			{
 				auto subNode = _Fun(stack);
 				if (subNode)
@@ -146,8 +146,6 @@ PTR(AstNode) fay::Parser::_Class(TokenStack* stack)
 			default:
 				throw ParseException(stack, "unknow token type : "+ TypeDict::ToName(nextToken->type()));
 		}
-
-		break;
 	}
 
 	if (!stack->now()->is("}"))
@@ -159,12 +157,87 @@ PTR(AstNode) fay::Parser::_Class(TokenStack* stack)
 
 PTR(AstNode) fay::Parser::_Field(TokenStack* stack)
 {
-	return PTR(AstNode)();
+	std::vector<std::string> descWords;
+	while (stack->now()->is(TokenType::DescSymbol))
+		descWords.push_back(stack->move()->text());
+
+	if (!stack->now()->is(TokenType::Var))
+		throw ParseException(stack, "unknow desc symbol");
+	stack->next();
+
+	if (!stack->now()->is(TokenType::ID))
+		throw ParseException(stack, "connot find var name");
+	PTR(AstField) node = MKPTR(AstField)(stack->now()->text());
+	stack->next();
+
+	//处理类型，也可能没有，这样的话需要由数据进行推断
+	if (stack->now()->is(":"))
+	{
+		stack->next();
+		auto typeNode = _Type(stack);
+		node->addChildNode(typeNode);
+	}
+	else
+		node->addChildNode(nullptr);
+
+	if (stack->now()->is("="))
+	{
+		stack->next();
+		auto valueNode = _Expr(stack);
+		node->addChildNode(valueNode);
+	}
+
+	if (!stack->now()->is(";"))
+		throw ParseException(stack, "expert ;");
+
+	return node;
 }
 
 PTR(AstNode) fay::Parser::_Fun(TokenStack* stack)
 {
-	return PTR(AstNode)();
+	std::vector<std::string> descWords;
+	while (stack->now()->is(TokenType::DescSymbol))
+		descWords.push_back(stack->move()->text());
+
+	if (!stack->now()->is(TokenType::Fun))
+		throw ParseException(stack, "unknow desc word");
+	stack->next();
+
+	if (!stack->now()->is(TokenType::ID) && !stack->now()->is(TokenType::SystemName))
+		throw ParseException(stack, "bad function name");
+
+	PTR(AstFun) node = MKPTR(AstFun)(stack->move()->text());
+
+	//参数列表
+	if (!stack->now()->is("("))
+		throw ParseException(stack, "expect (");
+	stack->next();
+	auto pds = _ParamDefList(stack);
+	if (pds)
+		node->addChildNode(pds);
+	else
+		node->addChildNode(nullptr);
+	if (!stack->now()->is(")"))
+		throw ParseException(stack, "expect )");
+	stack->next();
+
+	//返回值
+	if (stack->now()->is(":"))
+	{
+		stack->next();
+		auto typeNode = _Type(stack);
+		node->addChildNode(typeNode);
+	}
+	else
+		node->addChildNode(nullptr);
+
+	//函数体
+	auto bodyNode = _StmtBlock(stack);
+	if (!bodyNode)
+		throw ParseException(stack, "Cannot find function body");
+	node->addChildNode(bodyNode);
+
+	return node;
 }
 
 PTR(AstNode) fay::Parser::_Call(TokenStack* stack)
