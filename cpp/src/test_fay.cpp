@@ -28,11 +28,12 @@ void test::FayTests::TestLexer()
 
 	PRINT("----------------------------------------");
 
-	//PTR(fay::TokenStack) stack = MKPTR(fay::TokenStack)(tokens);
-	auto ast = fay::Parser::Parse(tokens, filename);
-	utils::StringBuilder sb;
-	ast->toString(sb);
-	PRINT(sb.toString());
-
-	ast->destory();
+	PTR(fay::AstNode) ast = fay::Parser::Parse(tokens, filename);
+	if (ast)
+	{
+		utils::StringBuilder sb;
+		ast->toString(sb);
+		PRINT(sb.toString());
+		ast->destory();
+	}
 }

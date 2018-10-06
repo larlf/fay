@@ -24,8 +24,6 @@ namespace fay
 		//生成布尔操作的节点
 		static PTR(AstNode) _MakeBoolOPNode(std::function<PTR(AstNode)(TokenStack*)> subExpr, std::vector<std::string> ops, TokenStack* stack);
 
-		//文件节点
-		static PTR(AstNode) _File(TokenStack* stack, const std::string &filename);
 		//Using语句
 		static PTR(AstNode) _Using(TokenStack* stack);
 		//Package语句

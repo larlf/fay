@@ -47,41 +47,6 @@ PTR(AstNode) fay::Parser::_MakeBoolOPNode(std::function<PTR(AstNode)(TokenStack*
 	return leftNode;
 }
 
-PTR(AstNode) fay::Parser::_File(TokenStack* stack, const std::string &filename)
-{
-	PTR(AstFile) ast = MKPTR(AstFile)(filename);
-
-	while (true)
-	{
-		PTR(Token) token = stack->findNextToken(
-		{
-			TokenType::Class,
-			TokenType::Using,
-			TokenType::Package
-		});
-
-		PTR(AstNode) node;
-		switch (token->type())
-		{
-			case TokenType::Class:
-				break;
-			case TokenType::Using:
-				node = Parser::_Using(stack);
-				break;
-			case TokenType::Package:
-				node = Parser::_Package(stack);
-				break;
-		}
-
-		if (node)
-			ast->addChildNode(node);
-		else
-			break;
-	}
-
-	return ast;
-}
-
 PTR(AstNode) fay::Parser::_Using(TokenStack* stack)
 {
 	PTR(AstNode) node;
@@ -122,17 +87,82 @@ PTR(AstNode) fay::Parser::_Package(TokenStack* stack)
 	return node;
 }
 
-PTR(AstNode) fay::Parser::_Class(TokenStack * stack)
+PTR(AstNode) fay::Parser::_Class(TokenStack* stack)
+{
+	std::vector<std::string> descWords;
+	while (stack->now()->is(TokenType::DescSymbol))
+		descWords.push_back(stack->move()->text());
+
+	if (!stack->now()->is(TokenType::Class))
+		throw ParseException(stack, "cannot find keyword : class");
+	stack->next();
+
+	//Class name
+	if (!stack->now()->is(TokenType::ID))
+		throw ParseException(stack, "bad class name");
+	PTR(AstClass) node = MKPTR(AstClass)(stack->now()->text(), descWords);
+	stack->next();
+
+	//开始的括号
+	if (!stack->now()->is("{"))
+		throw ParseException(stack, "cannot find start brace for class");
+	stack->next();
+
+	while (true)
+	{
+		auto nextToken = stack->findNextToken(
+		{
+			TokenType::Var,
+			TokenType::Function,
+			TokenType::Class,
+			TokenType::Interface
+		});
+
+		//如果什么也没找到，退出
+		if (!nextToken || nextToken->is(TokenType::None))
+			break;
+
+		//如果下面是一个新的Class，退出
+		if (nextToken->is(TokenType::Class) || nextToken->is(TokenType::Interface))
+			break;
+
+		//处理函数和字段
+		switch (nextToken->type())
+		{
+			case TokenType::Var:
+			{
+				auto subNode = _Field(stack);
+				if (subNode)
+					node->addChildNode(subNode);
+				break;
+			}
+			case TokenType::Function:
+			{
+				auto subNode = _Fun(stack);
+				if (subNode)
+					node->addChildNode(subNode);
+				break;
+			}
+			default:
+				throw ParseException(stack, "unknow token type : "+ TypeDict::ToName(nextToken->type()));
+		}
+
+		break;
+	}
+
+	if (!stack->now()->is("}"))
+		throw ParseException(stack, "cannot find end brace for class");
+	stack->next();
+
+	return node;
+}
+
+PTR(AstNode) fay::Parser::_Field(TokenStack* stack)
 {
 	return PTR(AstNode)();
 }
 
-PTR(AstNode) fay::Parser::_Field(TokenStack * stack)
-{
-	return PTR(AstNode)();
-}
-
-PTR(AstNode) fay::Parser::_Fun(TokenStack * stack)
+PTR(AstNode) fay::Parser::_Fun(TokenStack* stack)
 {
 	return PTR(AstNode)();
 }
@@ -160,37 +190,37 @@ PTR(AstNode) fay::Parser::_Call(TokenStack* stack)
 	return nullptr;
 }
 
-PTR(AstNode) fay::Parser::_Stmt(TokenStack * stack)
+PTR(AstNode) fay::Parser::_Stmt(TokenStack* stack)
 {
 	return PTR(AstNode)();
 }
 
-PTR(AstNode) fay::Parser::_StmtBlock(TokenStack * stack)
+PTR(AstNode) fay::Parser::_StmtBlock(TokenStack* stack)
 {
 	return PTR(AstNode)();
 }
 
-PTR(AstNode) fay::Parser::_StmtVar(TokenStack * stack)
+PTR(AstNode) fay::Parser::_StmtVar(TokenStack* stack)
 {
 	return PTR(AstNode)();
 }
 
-PTR(AstNode) fay::Parser::_StmtAssign(TokenStack * stack)
+PTR(AstNode) fay::Parser::_StmtAssign(TokenStack* stack)
 {
 	return PTR(AstNode)();
 }
 
-PTR(AstNode) fay::Parser::_StmtIf(TokenStack * stack)
+PTR(AstNode) fay::Parser::_StmtIf(TokenStack* stack)
 {
 	return PTR(AstNode)();
 }
 
-PTR(AstNode) fay::Parser::_StmtFor(TokenStack * stack)
+PTR(AstNode) fay::Parser::_StmtFor(TokenStack* stack)
 {
 	return PTR(AstNode)();
 }
 
-PTR(AstNode) fay::Parser::_StmtReturn(TokenStack * stack)
+PTR(AstNode) fay::Parser::_StmtReturn(TokenStack* stack)
 {
 	return PTR(AstNode)();
 }
@@ -463,7 +493,46 @@ PTR(AstNode) fay::Parser::_AddrExpr(TokenStack* stack)
 PTR(AstNode) fay::Parser::Parse(PTR(std::vector<PTR(Token)>) tokens, const std::string &filename)
 {
 	TokenStack stack(tokens);
-	return Parser::_File(&stack, filename);
+	PTR(AstFile) ast = MKPTR(AstFile)(filename);
+
+	try
+	{
+		while (true)
+		{
+			PTR(Token) token = stack.findNextToken(
+			{
+				TokenType::Class,
+				TokenType::Using,
+				TokenType::Package
+			});
+
+			PTR(AstNode) node;
+			switch (token->type())
+			{
+				case TokenType::Class:
+					node = _Class(&stack);
+					break;
+				case TokenType::Using:
+					node = _Using(&stack);
+					break;
+				case TokenType::Package:
+					node = _Package(&stack);
+					break;
+			}
+
+			if (node)
+				ast->addChildNode(node);
+			else
+				break;
+		}
+	}
+	catch (const std::exception &ex)
+	{
+		ast->destory();
+		throw ex;
+	}
+
+	return ast;
 }
 
 

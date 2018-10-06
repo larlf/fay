@@ -4,6 +4,7 @@
 #include <mirror_utils_string.h>
 #include <mirror_utils_log.h>
 #include <string>
+#include <vector>
 
 namespace fay
 {
@@ -83,7 +84,11 @@ namespace fay
 
 	class AstClass : public AstNode
 	{
-		using AstNode::AstNode;
+	private:
+		std::vector<std::string> _descWords;
+	public:
+		AstClass(const std::string &name, std::vector<std::string> &descWords)
+			: AstNode(name), _descWords(descWords) {}
 	};
 
 	class AstCondition : public AstNode
