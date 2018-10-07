@@ -11,7 +11,7 @@
 //智能指针
 #define PTR(T) std::shared_ptr<T>
 #define MKPTR(T) std::make_shared<T>
-#define WPTR std::weak_ptr<T>
+#define WPTR(T) std::weak_ptr<T>
 #define TOPTR(T1, T2) std::static_pointer_cast<T1>(T2)
 
 //动态绑定

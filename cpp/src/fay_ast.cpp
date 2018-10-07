@@ -9,29 +9,11 @@ std::string fay::AstNode::className()
 	return name;
 }
 
-void fay::AstNode::destory()
-{
-	//清除对子节点的引用
-	for each(auto it in this->_nodes)
-	{
-		if (it)
-		{
-			it->destory();
-			it.reset();
-		}
-	}
-	this->_nodes.clear();
-
-	//清除对父节点的引用
-	if (this->_parent)
-		this->_parent.reset();
-}
-
 void fay::AstNode::addChildNode(PTR(AstNode) node)
 {
 	//可能会添加空节点用于占位
-	//if (node != nullptr)
-	//	node->_parent = this->shared_from_this();
+	if (node != nullptr)
+		node->_parent = this->shared_from_this();
 
 	this->_nodes.push_back(node);
 }

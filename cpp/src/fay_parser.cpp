@@ -568,41 +568,33 @@ PTR(AstNode) fay::Parser::Parse(PTR(std::vector<PTR(Token)>) tokens, const std::
 	TokenStack stack(tokens);
 	PTR(AstFile) ast = MKPTR(AstFile)(filename);
 
-	try
+	while (true)
 	{
-		while (true)
+		PTR(Token) token = stack.findNextToken(
 		{
-			PTR(Token) token = stack.findNextToken(
-			{
-				TokenType::Class,
-				TokenType::Using,
-				TokenType::Package
-			});
+			TokenType::Class,
+			TokenType::Using,
+			TokenType::Package
+		});
 
-			PTR(AstNode) node;
-			switch (token->type())
-			{
-				case TokenType::Class:
-					node = _Class(&stack);
-					break;
-				case TokenType::Using:
-					node = _Using(&stack);
-					break;
-				case TokenType::Package:
-					node = _Package(&stack);
-					break;
-			}
-
-			if (node)
-				ast->addChildNode(node);
-			else
+		PTR(AstNode) node;
+		switch (token->type())
+		{
+			case TokenType::Class:
+				node = _Class(&stack);
+				break;
+			case TokenType::Using:
+				node = _Using(&stack);
+				break;
+			case TokenType::Package:
+				node = _Package(&stack);
 				break;
 		}
-	}
-	catch (const std::exception &ex)
-	{
-		ast->destory();
-		throw ex;
+
+		if (node)
+			ast->addChildNode(node);
+		else
+			break;
 	}
 
 	return ast;

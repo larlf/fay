@@ -12,7 +12,7 @@ namespace fay
 	{
 	protected:
 		std::string _text;
-		PTR(AstNode) _parent;
+		WPTR(AstNode) _parent;
 		std::vector<PTR(AstNode)> _nodes;
 
 		//取当前Class的名字，需要启用RTTI
@@ -44,8 +44,6 @@ namespace fay
 		size_t childNodesNum() { return this->_nodes.size(); }
 		template<typename T> bool is() { return typeid(*this) == typeid(T); }
 
-		//销毁引用关系
-		void destory();
 		//添加子节点
 		void addChildNode(PTR(AstNode) node);
 

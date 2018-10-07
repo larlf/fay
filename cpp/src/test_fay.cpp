@@ -34,6 +34,5 @@ void test::FayTests::TestLexer()
 		utils::StringBuilder sb;
 		ast->toString(sb);
 		PRINT(sb.toString());
-		ast->destory();
 	}
 }
