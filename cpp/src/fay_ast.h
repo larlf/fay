@@ -24,20 +24,6 @@ namespace fay
 		AstNode(const std::string &text)
 			:_text(text) {}
 
-		AstNode(std::vector<PTR(AstNode)> nodes)
-		{
-			for each(auto it in nodes)
-			{
-				this->addChildNode(it);
-			}
-		}
-
-		AstNode(const std::string &text, std::vector<PTR(AstNode)> nodes)
-			:_text(text)
-		{
-			new (this)AstNode(nodes);
-		}
-
 		virtual ~AstNode() {}
 
 		const std::string &text() { return this->_text; }

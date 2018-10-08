@@ -66,7 +66,7 @@ Token* fay::NumberTokenRule::match(ByteData &data, int pos, int line, int col)
 	if (data[pos] == 'l' || data[pos] == 'L' || data[pos] == 'd' || data[pos] == 'D')
 		pos++;
 
-	return new Token(this->_type, data, startPos, pos - startPos + 1, line, col);
+	return new Token(this->_type, data, startPos, pos - startPos, line, col);
 }
 
 Token* fay::StringTokenRule::match(ByteData &data, int pos, int line, int col)

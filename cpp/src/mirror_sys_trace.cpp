@@ -33,6 +33,7 @@ std::string mirror::sys::SysTrace::TraceInfo()
 
 	//生成堆栈信息
 	std::string str;
+	std::string indent;
 	for (auto i = 0; i < frames; i++)
 	{
 		DWORD64 address = (DWORD64)(stack[i]);
@@ -45,7 +46,12 @@ std::string mirror::sys::SysTrace::TraceInfo()
 		if (SymGetLineFromAddr64(process, address, &displacement, line))
 		{
 			if (str.size())
+			{
 				str.append("\n");
+				str.append(indent);
+				indent.append(" ");
+				str.append("┖ ");
+			}
 
 			str.append(symbol->Name).append("() at ");
 			str.append(line->FileName).append(":").append(std::to_string(line->LineNumber));

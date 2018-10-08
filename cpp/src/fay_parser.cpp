@@ -1,4 +1,5 @@
 ﻿#include <fay_parser.h>
+#include <mirror_sys_trace.h>
 #include <mirror_utils_string.h>
 #include <algorithm>
 
@@ -249,14 +250,14 @@ PTR(AstNode) fay::Parser::_Call(TokenStack* stack)
 
 		if (!stack->now()->is("("))
 			throw ParseException(stack, "expect ( with call");
-
 		stack->next();
+
 		node->addChildNode(_ParamList((stack)));
 
 		if (!stack->now()->is(")"))
 			throw ParseException(stack, "expect ) with call");
-
 		stack->next();
+
 		return node;
 	}
 
@@ -354,7 +355,9 @@ PTR(AstNode) fay::Parser::_StmtVar(TokenStack* stack)
 	if (!stack->now()->is(TokenType::Semicolon))
 		throw ParseException(stack, "expect ;");
 
-	PTR(AstVar) node = MKPTR(AstVar)(varName, std::vector<PTR(AstNode)>{typeNode, valueNode});
+	PTR(AstVar) node = MKPTR(AstVar)(varName);
+	node->addChildNode(typeNode);
+	node->addChildNode(valueNode);
 	return node;
 }
 
@@ -375,7 +378,27 @@ PTR(AstNode) fay::Parser::_StmtFor(TokenStack* stack)
 
 PTR(AstNode) fay::Parser::_StmtReturn(TokenStack* stack)
 {
-	return PTR(AstNode)();
+	PTR(AstReturn) node = MKPTR(AstReturn)();
+	stack->next();
+
+	//是否有参数
+	if (stack->now()->is(TokenType::Semicolon))
+		stack->next();
+	else
+	{
+		auto valueNode = _Expr(stack);
+		if (!valueNode)
+			throw ParseException(stack, "bad return value");
+
+		node->addChildNode(valueNode);
+	}
+
+	//;
+	if (!stack->now()->is(TokenType::Semicolon))
+		throw ParseException(stack, "expect ;");
+	stack->next();
+
+	return node;
 }
 
 PTR(AstNode) fay::Parser::_Array(TokenStack* stack)
@@ -437,6 +460,8 @@ PTR(AstNode) fay::Parser::_ParamDef(TokenStack* stack)
 		auto typeNode = _Type(stack);
 		if (typeNode)
 			node->addChildNode(typeNode);
+
+		return node;
 	}
 
 	return nullptr;
@@ -469,6 +494,7 @@ PTR(AstNode) fay::Parser::_ParamList(TokenStack* stack)
 
 	while (true)
 	{
+		//没有参数
 		if (stack->now()->is(")"))
 			return node;
 
@@ -502,7 +528,7 @@ PTR(AstNode) fay::Parser::_ExprPrimary(TokenStack* stack)
 			return Parser::_Call(stack);
 
 		//不然就是一个ID
-		return MKPTR(AstID)(stack->now()->text());
+		return MKPTR(AstID)(stack->move()->text());
 	}
 	else if (stack->now()->is("("))  //处理括号里的内容
 	{
@@ -534,7 +560,9 @@ PTR(AstNode) fay::Parser::_ExprBracket(TokenStack* stack)
 			throw ParseException(stack, "except ]");
 
 		stack->next();
-		leftNode = MKPTR(AstBracket)(std::vector<PTR(AstNode)> {leftNode, n});
+		leftNode = MKPTR(AstBracket)();
+		leftNode->addChildNode(leftNode);
+		leftNode->addChildNode(n);
 	}
 
 	return leftNode;
@@ -547,7 +575,8 @@ PTR(AstNode) fay::Parser::_ExprPost(TokenStack* stack)
 	if (stack->now()->is(TokenType::OP) &&
 		(stack->now()->is("++") || stack->now()->is("--")))
 	{
-		node = MKPTR(AstPostOP)(stack->now()->text(), std::vector<PTR(AstNode)> { node });
+		node = MKPTR(AstPostOP)(stack->now()->text());
+		node->addChildNode(node);
 		stack->next();
 	}
 
@@ -614,7 +643,9 @@ PTR(AstNode) fay::Parser::_AddrExprItem(TokenStack* stack)
 		if (!stack->move()->is(")"))
 			throw ParseException(stack, "expect )");
 
-		return MKPTR(AstBracket)(std::vector<PTR(AstNode)> { expr1 });
+		PTR(AstBracket) node = MKPTR(AstBracket)();
+		node->addChildNode(expr1);
+		return node;
 	}
 
 	return nullptr;
@@ -632,7 +663,9 @@ PTR(AstNode) fay::Parser::_AddrExprBracket(TokenStack* stack)
 
 		if (!stack->move()->is("]"))
 			throw ParseException(stack, "expect ]");
-		leftNode = MKPTR(AstBracket)(std::vector<PTR(AstNode)> {leftNode, index});
+		leftNode = MKPTR(AstBracket)();
+		leftNode->addChildNode(leftNode);
+		leftNode->addChildNode(index);
 	}
 
 	return leftNode;
@@ -657,22 +690,27 @@ PTR(AstNode) fay::Parser::Parse(PTR(std::vector<PTR(Token)>) tokens, const std::
 				TokenType::Package
 			});
 
-		PTR(AstNode) node;
-		switch (token->type())
+		if (token)
 		{
-		case TokenType::Class:
-			node = _Class(&stack);
-			break;
-		case TokenType::Using:
-			node = _Using(&stack);
-			break;
-		case TokenType::Package:
-			node = _Package(&stack);
-			break;
-		}
+			PTR(AstNode) node;
+			switch (token->type())
+			{
+			case TokenType::Class:
+				node = _Class(&stack);
+				break;
+			case TokenType::Using:
+				node = _Using(&stack);
+				break;
+			case TokenType::Package:
+				node = _Package(&stack);
+				break;
+			}
 
-		if (node)
-			ast->addChildNode(node);
+			if (node)
+				ast->addChildNode(node);
+			else
+				break;
+		}
 		else
 			break;
 	}
@@ -680,4 +718,9 @@ PTR(AstNode) fay::Parser::Parse(PTR(std::vector<PTR(Token)>) tokens, const std::
 	return ast;
 }
 
+fay::ParseException::ParseException(TokenStack * stack, const std::string & msg)
+	: std::exception::exception((msg + "\n" + stack->now()->toString()).c_str())
+{
+	this->_trace = mirror::sys::SysTrace::TraceInfo();
+}
 

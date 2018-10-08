@@ -2,7 +2,6 @@
 
 #include <fay_ast.h>
 #include <fay_token_stack.h>
-#include <mirror_sys_trace.h>
 
 namespace fay
 {
@@ -15,12 +14,9 @@ namespace fay
 	public:
 		//stack : 当前正在处理的TokenStack
 		//msg : 错误信息
-		ParseException(TokenStack* stack, const std::string &msg)
-			: std::exception::exception((msg + "\n" + stack->now()->toString()).c_str()) 
-		{
-			this->_trace = mirror::sys::SysTrace::TraceInfo();
-		}
+		ParseException(TokenStack* stack, const std::string &msg);
 
+		//取抛出异常的堆栈
 		const std::string trace() { return _trace; }
 	};
 

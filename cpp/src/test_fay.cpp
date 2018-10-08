@@ -23,8 +23,10 @@ void test::FayTests::TestLexer()
 	fay::Lexer lexer;
 	auto tokens=lexer.Execute(text);
 
-	for each(auto it in (*tokens))
-		PRINT(it->toString());
+	for (auto i = 0; i < tokens->size(); ++i)
+	{
+		PRINT(i<<"\t"<<(*tokens)[i]->toString());
+	}
 
 	PRINT("----------------------------------------");
 
