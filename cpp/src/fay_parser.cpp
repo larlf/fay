@@ -5,7 +5,7 @@
 using namespace fay;
 using namespace mirror;
 
-PTR(AstNode) fay::Parser::_MakeLeftRightOPNode(std::function<PTR(AstNode)(TokenStack*)> subExpr,const std::vector<std::string> &ops, TokenStack* stack)
+PTR(AstNode) fay::Parser::_MakeLeftRightOPNode(std::function<PTR(AstNode)(TokenStack*)> subExpr, const std::vector<std::string> &ops, TokenStack* stack)
 {
 	auto leftNode = subExpr(stack);
 	while (stack->now()->is(TokenType::OP)
@@ -111,12 +111,12 @@ PTR(AstNode) fay::Parser::_Class(TokenStack* stack)
 	while (true)
 	{
 		auto nextToken = stack->findNextToken(
-		{
-			TokenType::Var,
-			TokenType::Fun,
-			TokenType::Class,
-			TokenType::Interface
-		});
+			{
+				TokenType::Var,
+				TokenType::Fun,
+				TokenType::Class,
+				TokenType::Interface
+			});
 
 		//如果什么也没找到，退出
 		if (!nextToken || nextToken->is(TokenType::None))
@@ -129,22 +129,22 @@ PTR(AstNode) fay::Parser::_Class(TokenStack* stack)
 		//处理函数和字段
 		switch (nextToken->type())
 		{
-			case TokenType::Var:
-			{
-				auto subNode = _Field(stack);
-				if (subNode)
-					node->addChildNode(subNode);
-				break;
-			}
-			case TokenType::Fun:
-			{
-				auto subNode = _Fun(stack);
-				if (subNode)
-					node->addChildNode(subNode);
-				break;
-			}
-			default:
-				throw ParseException(stack, "unknow token type : "+ TypeDict::ToName(nextToken->type()));
+		case TokenType::Var:
+		{
+			auto subNode = _Field(stack);
+			if (subNode)
+				node->addChildNode(subNode);
+			break;
+		}
+		case TokenType::Fun:
+		{
+			auto subNode = _Fun(stack);
+			if (subNode)
+				node->addChildNode(subNode);
+			break;
+		}
+		default:
+			throw ParseException(stack, "unknow token type : " + TypeDict::ToName(nextToken->type()));
 		}
 	}
 
@@ -265,17 +265,97 @@ PTR(AstNode) fay::Parser::_Call(TokenStack* stack)
 
 PTR(AstNode) fay::Parser::_Stmt(TokenStack* stack)
 {
-	return PTR(AstNode)();
+	if (stack->now()->is(TokenType::LeftBrace))
+		return _StmtBlock(stack);
+	else if (stack->now()->is(TokenType::Var))
+		return _StmtVar(stack);
+	else if (stack->now()->is(TokenType::Return))
+		return _StmtReturn(stack);
+	else if (stack->now()->is(TokenType::If))
+		return _StmtIf(stack);
+	else if (stack->now()->is(TokenType::For))
+		return _StmtFor(stack);
+
+	auto nextToken = stack->findNextToken({ TokenType::Assign, TokenType::Semicolon });
+	switch (nextToken->type())
+	{
+	case TokenType::Assign:
+		return _StmtAssign(stack);
+	default:
+		return _Expr(stack);
+	}
+
+	//throw ParseException(stack, "unknow statement");
 }
 
 PTR(AstNode) fay::Parser::_StmtBlock(TokenStack* stack)
 {
-	return PTR(AstNode)();
+	PTR(AstBlock) node = MKPTR(AstBlock)();
+
+	if (!stack->now()->is(TokenType::LeftBrace))
+		throw ParseException(stack, "expect {");
+	stack->next();
+
+	while (true)
+	{
+		if (stack->now()->is(TokenType::RightBrace))
+			break;
+
+		//跳过空语句
+		while (stack->now()->is(TokenType::Semicolon))
+			stack->next();
+
+		auto subNode = _Stmt(stack);
+		if (subNode)
+			node->addChildNode(subNode);
+		else
+			break;
+
+		//跳过空语句
+		while (stack->now()->is(TokenType::Semicolon))
+			stack->next();
+	}
+
+	if (!stack->now()->is(TokenType::RightBrace))
+		throw ParseException(stack, "expect }");
+	stack->next();
+
+	return node;
 }
 
 PTR(AstNode) fay::Parser::_StmtVar(TokenStack* stack)
 {
-	return PTR(AstNode)();
+	if (!stack->now()->is(TokenType::Var))
+		throw ParseException(stack, "expect var");
+	stack->next();
+
+	//变量名
+	if (!stack->now()->is(TokenType::ID))
+		throw ParseException(stack, "cannt find var name");
+	std::string varName = stack->now()->text();
+	stack->next();
+
+	//数据类型
+	PTR(AstNode) typeNode;
+	if (stack->now()->is(TokenType::Colon))
+	{
+		stack->next();
+		typeNode = _Type(stack);
+	}
+
+	//处理赋值
+	PTR(AstNode) valueNode;
+	if (stack->now()->is(TokenType::Assign))
+	{
+		stack->next();
+		valueNode = _Expr(stack);
+	}
+
+	if (!stack->now()->is(TokenType::Semicolon))
+		throw ParseException(stack, "expect ;");
+
+	PTR(AstVar) node = MKPTR(AstVar)(varName, std::vector<PTR(AstNode)>{typeNode, valueNode});
+	return node;
 }
 
 PTR(AstNode) fay::Parser::_StmtAssign(TokenStack* stack)
@@ -493,7 +573,7 @@ PTR(AstNode) fay::Parser::_ExprPre(TokenStack* stack)
 
 PTR(AstNode) fay::Parser::_ExprMulDiv(TokenStack* stack)
 {
-	return _MakeLeftRightOPNode(_ExprPre, {"*","/","%"}, stack);
+	return _MakeLeftRightOPNode(_ExprPre, { "*","/","%" }, stack);
 }
 
 PTR(AstNode) fay::Parser::_ExprAddSub(TokenStack* stack)
@@ -571,24 +651,24 @@ PTR(AstNode) fay::Parser::Parse(PTR(std::vector<PTR(Token)>) tokens, const std::
 	while (true)
 	{
 		PTR(Token) token = stack.findNextToken(
-		{
-			TokenType::Class,
-			TokenType::Using,
-			TokenType::Package
-		});
+			{
+				TokenType::Class,
+				TokenType::Using,
+				TokenType::Package
+			});
 
 		PTR(AstNode) node;
 		switch (token->type())
 		{
-			case TokenType::Class:
-				node = _Class(&stack);
-				break;
-			case TokenType::Using:
-				node = _Using(&stack);
-				break;
-			case TokenType::Package:
-				node = _Package(&stack);
-				break;
+		case TokenType::Class:
+			node = _Class(&stack);
+			break;
+		case TokenType::Using:
+			node = _Using(&stack);
+			break;
+		case TokenType::Package:
+			node = _Package(&stack);
+			break;
 		}
 
 		if (node)

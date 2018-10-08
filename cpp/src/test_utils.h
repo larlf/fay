@@ -9,5 +9,6 @@ namespace test
 		static void testLog();
 		static void testString();
 		static void testString(std::string* strs);
+		static void testTrace();
 	};
 }

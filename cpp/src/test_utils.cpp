@@ -2,6 +2,7 @@
 #include <mirror_utils_log.h>
 #include <mirror_utils_lang.h>
 #include <vector>
+#include <mirror_sys_trace.h>
 
 using namespace mirror;
 
@@ -37,6 +38,13 @@ void test::UtilsTest::testString()
 	test::UtilsTest::testString(new std::string[3] { "aaa","bbb","ccc" });
 
 	std::vector<std::string> s3 = {"aaa","bbb","ccc"};
+}
+
+void test::UtilsTest::testTrace()
+{
+	LOG_INFO("Test Trace");
+	std::string stackMsg = mirror::sys::SysTrace::TraceInfo();
+	LOG_DEBUG(stackMsg);
 }
 
 void test::UtilsTest::testString(std::string* strs)

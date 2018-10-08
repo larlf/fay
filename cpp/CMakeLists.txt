@@ -5,9 +5,9 @@ cmake_minimum_required(VERSION 2.6)
 
 #设置Debug版的编译参数，Windows下只支持Debug版
 if(WIN32)
-	set(CMAKE_C_FLAGS 				"-DWIN32 /MT /EHsc -D_WIN32_WINNT=0x0501")
+	set(CMAKE_C_FLAGS 				"-DWIN32 /MT /EHsc -D_WIN32_WINNT=0x0502")
 	set(CMAKE_C_FLAGS_DEBUG			"/MTd -DDEBUG /Zi")
-	set(CMAKE_CXX_FLAGS				"-DWIN32 /GR /MT /EHsc -D_WIN32_WINNT=0x0501")
+	set(CMAKE_CXX_FLAGS				"-DWIN32 /GR /MT /EHsc -D_WIN32_WINNT=0x0502")
 	set(CMAKE_CXX_FLAGS_DEBUG		"/MTd -DDEBUG /Zi")
 	set(type win64)
 else()
@@ -43,6 +43,8 @@ set(mirror_src
 	src/mirror_sys_termcolor.cpp
 	src/mirror_sys_const.h
 	src/mirror_sys_const.cpp
+	src/mirror_sys_trace.h
+	src/mirror_sys_trace.cpp
 	src/mirror_utils_lang.h
 	src/mirror_utils_lang.cpp
 	src/mirror_utils_string.h

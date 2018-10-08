@@ -18,7 +18,7 @@ void fay::TypeDict::Init()
 	TypeDict::TokenTypeName[TokenType::Using] = "Using";
 	TypeDict::TokenTypeName[TokenType::Package] = "Package";
 	TypeDict::TokenTypeName[TokenType::Var] = "Var";
-	TypeDict::TokenTypeName[TokenType::Fun] = "Function";
+	TypeDict::TokenTypeName[TokenType::Fun] = "Fun";
 	TypeDict::TokenTypeName[TokenType::Class] = "Class";
 	TypeDict::TokenTypeName[TokenType::Interface] = "Interface";
 	TypeDict::TokenTypeName[TokenType::DescSymbol] = "DescSymbol";

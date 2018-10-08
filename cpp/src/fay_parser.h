@@ -2,17 +2,26 @@
 
 #include <fay_ast.h>
 #include <fay_token_stack.h>
+#include <mirror_sys_trace.h>
 
 namespace fay
 {
 	//语法解析中的异常
 	class ParseException : public std::exception
 	{
+	private:
+		std::string _trace;
+
 	public:
 		//stack : 当前正在处理的TokenStack
 		//msg : 错误信息
 		ParseException(TokenStack* stack, const std::string &msg)
-			: std::exception::exception((msg + "\n" + stack->now()->toString()).c_str()) {}
+			: std::exception::exception((msg + "\n" + stack->now()->toString()).c_str()) 
+		{
+			this->_trace = mirror::sys::SysTrace::TraceInfo();
+		}
+
+		const std::string trace() { return _trace; }
 	};
 
 	//语法解析器

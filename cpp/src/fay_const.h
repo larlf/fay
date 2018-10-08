@@ -23,7 +23,7 @@ namespace fay
 		None,
 		Assign,
 		Colon,
-		Semicolon,  //;
+		Semicolon,
 		Comma,
 		LeftBrace,
 		RightBrace,
