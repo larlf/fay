@@ -1,6 +1,7 @@
 ﻿#include <fay_const.h>
 
 MAP<fay::TokenType, std::string> fay::TypeDict::TokenTypeName;
+MAP<fay::ValueType, std::string> fay::TypeDict::ValueTypeName;
 
 void fay::TypeDict::Init()
 {
@@ -37,9 +38,27 @@ void fay::TypeDict::Init()
 	TypeDict::TokenTypeName[TokenType::String] = "String";
 	TypeDict::TokenTypeName[TokenType::Char] = "Char";
 	//TokenTypeNameEnd
+
+	//ValueTypeNameStart
+	TypeDict::ValueTypeName[ValueType::Void] = "Void";
+	TypeDict::ValueTypeName[ValueType::Byte] = "Byte";
+	TypeDict::ValueTypeName[ValueType::Int] = "Int";
+	TypeDict::ValueTypeName[ValueType::Long] = "Long";
+	TypeDict::ValueTypeName[ValueType::Float] = "Float";
+	TypeDict::ValueTypeName[ValueType::Double] = "Double";
+	TypeDict::ValueTypeName[ValueType::Bool] = "Bool";
+	TypeDict::ValueTypeName[ValueType::String] = "String";
+	TypeDict::ValueTypeName[ValueType::Object] = "Object";
+	TypeDict::ValueTypeName[ValueType::Function] = "Function";
+	//ValueTypeNameEnd
 }
 
-std::string fay::TypeDict::ToName(TokenType value)
+const std::string &fay::TypeDict::ToName(TokenType value)
 {
 	return TypeDict::TokenTypeName[value];
+}
+
+const std::string & fay::TypeDict::ToName(ValueType value)
+{
+	return TypeDict::ValueTypeName[value];
 }

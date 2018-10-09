@@ -1,13 +1,13 @@
 "use strict";
 /// <reference path="typings/index.d.ts" />
 Object.defineProperty(exports, "__esModule", { value: true });
-const os = require("os");
+const ejs = require("ejs");
 const fs = require("fs");
+const fs_extra = require("fs-extra");
+const larlf = require("larlf");
+const os = require("os");
 const path = require("path");
 const xlsx = require("xlsx");
-const larlf = require("larlf");
-const fs_extra = require("fs-extra");
-const ejs = require("ejs");
 let log = larlf.log;
 let Cmds = {};
 let RootPath = path.resolve(__dirname, "..");
@@ -40,6 +40,11 @@ Cmds.help = function () {
         }
     }
 };
+Cmds._run = "运行的所有";
+Cmds.run = function () {
+    Cmds.token_type();
+    Cmds.value_type();
+};
 Cmds._token_type = "生成Token类型的数据";
 Cmds.token_type = function () {
     let file = xlsx.readFile(path.resolve(__dirname, "../doc/FayLang.xlsx"));
@@ -53,6 +58,8 @@ Cmds.token_type = function () {
             if (str1.length > 0)
                 str1 += "\n";
             str1 += it.Code + ",";
+            if (it.Comment)
+                str1 += "  //" + it.Comment;
             if (str2.length > 0)
                 str2 += "\n";
             str2 += "TypeDict::TokenTypeName[TokenType::" + it.Code + "] = \"" + it.Code + "\";";
@@ -135,7 +142,7 @@ Cmds.pst_type = function () {
 };
 Cmds.value_type = function () {
     let file = xlsx.readFile(path.resolve(__dirname, "../doc/FayLang.xlsx"));
-    let json = xlsx.utils.sheet_to_json(file.Sheets['Type']);
+    let json = xlsx.utils.sheet_to_json(file.Sheets['ValueType']);
     log.info("Prase Value Type");
     let str1 = "", str2 = "", str3 = "";
     let index = 1;
@@ -144,31 +151,16 @@ Cmds.value_type = function () {
         log.debug("Value Type : " + it['Name']);
         if (it['Name']) {
             if (str1.length > 0)
-                str1 += ",\n";
-            str1 += "VAL_" + it['Name'] + " = " + index++;
-            //FayConst::ValueTypeName
+                str1 += "\n";
+            str1 += it.Name + ",";
+            if (it.Comment)
+                str1 += "  //" + it.Comment;
             str2 += str2.length ? "\n" : "";
-            str2 += larlf.text.format("FayConst::ValueTypeName[VAL_{0}] = \"{0}\";", it['Name']);
-            str3 += str3.length ? "\n" : "";
-            str3 += larlf.text.format("FayConst::ValueTypeValue[\"{0}\"] = VAL_{0};\n", it['Name']);
-            str3 += larlf.text.format("FayConst::ValueTypeValue[\"{0}\"] = VAL_{1};", ("" + it['Name']).toLowerCase(), it['Name']);
+            str2 += larlf.text.format("TypeDict::ValueTypeName[ValueType::{0}] = \"{0}\";", it['Name']);
         }
     }
-    {
-        let filename = path.resolve(RootPath, "src\\fay_lang_const.h");
-        let text = fs.readFileSync(filename).toString();
-        text = larlf.text.replaceBlock(text, /ValueType_Start/, /ValueType_End/, str1, "\t\t\t");
-        log.debug("Write : " + filename);
-        fs.writeFileSync(filename, text);
-    }
-    {
-        let filename = path.resolve(RootPath, "src\\fay_lang_const.cpp");
-        let text = fs.readFileSync(filename).toString();
-        text = larlf.text.replaceBlock(text, /ValueTypeName_Init_Start/, /ValueTypeName_Init_End/, str2, "\t");
-        text = larlf.text.replaceBlock(text, /ValueTypeValue_Init_Start/, /ValueTypeValue_Init_End/, str3, "\t");
-        log.debug("Write : " + filename);
-        fs.writeFileSync(filename, text);
-    }
+    replaceFileBody("cpp/src/fay_const.h", "ValueType", str1, "\t\t");
+    replaceFileBody("cpp/src/fay_const.cpp", "ValueTypeName", str2, "\t");
 };
 Cmds.instruct_type = function () {
     let file = xlsx.readFile(path.resolve(__dirname, "../doc/FayLang.xlsx"));
@@ -270,9 +262,6 @@ Cmds.build_vs = function () {
     task.configName = "Debug";
     task.build();
 };
-Cmds.run = function () {
-    larlf.project.execCmd("bin\\Debug\\fay.exe", path.resolve(RootPath, "build"));
-};
 Cmds._deps = "处理依赖关系";
 Cmds.deps = function () {
     //检查是不是有mirage项目
@@ -285,3 +274,4 @@ Cmds.deps = function () {
     larlf.file.copyFiles(path.resolve(mirageDir, "build/bin/Debug"), "mirage.lib", path.resolve(__dirname, "../deps/win64/mirage/lib/"));
 };
 main();
+//# sourceMappingURL=index.js.map

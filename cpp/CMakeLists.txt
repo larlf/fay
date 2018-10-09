@@ -76,6 +76,12 @@ set(faylib_src
 	src/fay_ast.cpp
 	src/fay_parser.h
 	src/fay_parser.cpp
+	src/fay_lang.h
+	src/fay_lang.cpp
+	src/fay_builder.h
+	src/fay_builder.cpp
+	src/fay_inst.h
+	src/fay_inst.cpp
 )
 
 add_library(fay STATIC ${faylib_src})

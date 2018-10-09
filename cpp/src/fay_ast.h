@@ -1,10 +1,12 @@
 ﻿#pragma once
 
-#include <mirror_sys_const.h>
-#include <mirror_utils_string.h>
-#include <mirror_utils_log.h>
 #include <string>
 #include <vector>
+#include <mirror_sys_const.h>
+#include <mirror_utils_log.h>
+#include <mirror_utils_string.h>
+#include <fay_const.h>
+#include <fay_builder.h>
 
 namespace fay
 {
@@ -33,7 +35,14 @@ namespace fay
 		//添加子节点
 		void addChildNode(PTR(AstNode) node);
 
+		//节点的数值类型
+		virtual ValueType valueType() { return ValueType::Void; }
+		//转换成字符串
 		virtual void toString(mirror::utils::StringBuilder &sb);
+		//生成代码的结构
+		virtual void makeOutline(OutlineBuilder &builder) {}
+		//生成语句代码
+		virtual void makeInst(InstBuilder &builder) {}
 	};
 
 	/******************************************************

@@ -11,6 +11,11 @@ public class Test6
 		var b:long=6;
 		System.print(a+b);
 	}
+
+	static public fun .main():void
+	{
+		system.print("Hello, World!");
+	}
 }
 
 public class Test7
