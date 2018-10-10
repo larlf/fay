@@ -20,18 +20,18 @@ void fay::AstNode::addChildNode(PTR(AstNode) node)
 	this->_nodes.push_back(node);
 }
 
-void fay::AstNode::toString(mirror::utils::StringBuilder & sb)
+void fay::AstNode::toString(mirror::utils::StringBuilder* sb)
 {
-	sb.add(this->className())
+	sb->add(this->className())
 		->add("(")->add(this->_text)->add(")");
 
-	sb.indentAdd();
+	sb->increaseIndent();
 	for each(auto it in this->_nodes)
 	{
-		sb.endl();
+		sb->endl();
 		it->toString(sb);
 	}
-	sb.indentSub();
+	sb->decreaseIndent();
 }
 
 void fay::AstNode::makeOutline(OutlineBuilder* builder)
@@ -83,4 +83,26 @@ std::vector<PTR(FayInst)> fay::FayAstCode::insts()
 void fay::AstString::makeInst(InstBuilder* builder)
 {
 	builder->addInst(MKPTR(InstPushString)(this->_text));
+}
+
+PTR(FayType) fay::AstString::valueType()
+{
+	return SimpleType::Get(ValueType::String);
+}
+
+std::vector<PTR(FayType)> fay::AstParams::paramsType()
+{
+	std::vector<PTR(FayType)> types;
+	for each(auto it in this->_nodes)
+	{
+		types.push_back(it->valueType());
+	}
+
+	return types;
+}
+
+void fay::AstParamDefine::makeOutline(OutlineBuilder* builder)
+{
+	PTR(FayParamDef) p = MKPTR(FayParamDef)(this->_text, this->_nodes[0]->valueType());
+	builder->fun()->addParam(p);
 }

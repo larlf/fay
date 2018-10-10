@@ -25,10 +25,11 @@ namespace mirror
 			*/
 			static std::string EncodeSpecialChar(const std::string &str);
 		};
-
-		/**
-		 * 字符串构造类
-		 */
+		
+		//字符串构造类
+		//比普通字符串增强了：
+		//1. 一些自动转换
+		//2. 对缩进的处理
 		class StringBuilder
 		{
 		private:
@@ -86,7 +87,8 @@ namespace mirror
 				return this;
 			}
 
-			StringBuilder *indentAdd()
+			//增加缩进
+			StringBuilder *increaseIndent()
 			{
 				this->indent++;
 				this->indentStr.clear();
@@ -95,7 +97,8 @@ namespace mirror
 				return this;
 			}
 
-			StringBuilder *indentSub()
+			//减少缩进
+			StringBuilder *decreaseIndent()
 			{
 				this->indent--;
 				this->indentStr.clear();

@@ -66,6 +66,10 @@ add_library(mirror STATIC ${mirror_src})
 set(faylib_src
 	src/fay_const.h
 	src/fay_const.cpp
+	src/fay_object.h
+	src/fay_object.cpp
+	src/fay_type.h
+	src/fay_type.cpp
 	src/fay_lexer.h
 	src/fay_lexer.cpp
 	src/fay_token.h

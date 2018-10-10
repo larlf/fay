@@ -1,4 +1,4 @@
-using system;
+using fay.system;
 
 package com.larlf;
 
@@ -14,7 +14,7 @@ public class Test6
 
 	static public fun .main():void
 	{
-		system.print("Hello, World!");
+		fay.system.IO.print("Hello, World!");
 	}
 }
 

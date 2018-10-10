@@ -21,10 +21,11 @@ namespace fay
 	{
 	private:
 		std::string _p1;
-		int32_t _p2;
+		std::string _p2;
+		int32_t _p3;
 	public:
-		InstCall(const std::string &p1, int32_t p2)
-			: _p1(p1), _p2(p2) {}
+		InstCall(const std::string &p1, const std::string &p2, int32_t p3)
+			: _p1(p1), _p2(p2), _p3(p3) {}
 
 	};
 }

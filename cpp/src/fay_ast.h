@@ -6,11 +6,13 @@
 #include <mirror_utils_log.h>
 #include <mirror_utils_string.h>
 #include <fay_const.h>
+#include <fay_object.h>
+#include <fay_type.h>
 #include <fay_builder.h>
 
 namespace fay
 {
-	class AstNode : public std::enable_shared_from_this<AstNode>
+	class AstNode : public FayObject, public std::enable_shared_from_this<AstNode>
 	{
 	protected:
 		std::string _text;
@@ -36,9 +38,9 @@ namespace fay
 		void addChildNode(PTR(AstNode) node);
 
 		//节点的数值类型
-		virtual ValueType valueType() { return ValueType::Void; }
+		virtual PTR(FayType) valueType() { return SimpleType::Get(ValueType::Void); }
 		//转换成字符串
-		virtual void toString(mirror::utils::StringBuilder &sb);
+		virtual void toString(mirror::utils::StringBuilder* sb) override;
 		//生成代码的结构
 		virtual void makeOutline(OutlineBuilder* builder);
 		//生成语句代码
@@ -100,6 +102,8 @@ namespace fay
 		using AstNode::AstNode;
 	};
 
+	//函数
+	//下面会有三个节点：<参数表><返回值><函数体>
 	class AstFun : public AstNode
 	{
 		using AstNode::AstNode;
@@ -111,6 +115,9 @@ namespace fay
 	class AstParamDefine : public AstNode
 	{
 		using AstNode::AstNode;
+	public:
+		virtual void makeOutline(OutlineBuilder* builder) override;
+
 	};
 
 	class AstParamDefineList : public AstNode
@@ -121,6 +128,8 @@ namespace fay
 	class AstParams : public AstNode
 	{
 		using AstNode::AstNode;
+	public:
+		std::vector<PTR(FayType)> paramsType();
 	};
 
 	class AstType : public AstNode
@@ -203,7 +212,7 @@ namespace fay
 		using AstNode::AstNode;
 	public:
 		virtual void makeInst(InstBuilder* builder) override;
-
+		virtual PTR(FayType) valueType() override;
 	};
 
 	//______________________________________________

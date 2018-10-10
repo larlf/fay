@@ -34,13 +34,23 @@ void test::FayTests::TestLexer()
 	if (ast)
 	{
 		utils::StringBuilder sb;
-		ast->toString(sb);
+		ast->toString(&sb);
 		PRINT(sb.toString());
 	}
 
 	PRINT("----------------------------------------");
 
+	PTR(fay::FayDomain) domain = MKPTR(fay::FayDomain)();
 	PTR(fay::FayLib) lib = MKPTR(fay::FayLib)("TestLib");
+	domain->addLib(lib);
+
 	PTR(fay::OutlineBuilder) builder = MKPTR(fay::OutlineBuilder)(lib);
 	ast->makeOutline(builder.get());
+
+	{
+		utils::StringBuilder sb;
+		domain->toString(&sb);
+		PRINT(sb.toString());
+	}
+
 }
