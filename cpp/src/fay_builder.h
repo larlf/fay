@@ -9,20 +9,38 @@ namespace fay
 	class OutlineBuilder
 	{
 	private:
+		std::string _filename;
 		PTR(FayLib) _lib;
 		PTR(FayClass) _class;
+		PTR(FayFun) _fun;
 
 	public:
 		OutlineBuilder(PTR(FayLib) lib);
 		~OutlineBuilder();
 
-		void bindClass(const std::string &name);
+		PTR(FayLib) lib() { return this->_lib; }
+		PTR(FayClass) clazz() { return this->_class; }
+		PTR(FayFun) fun() { return this->_fun; }
+
+		void beginFile(const std::string &filename);
+		void endFile();
+
+		void beginClass(const std::string &name);
+		void endClass();
+
+		void beginFun(const std::string &name, PTR(FayCode) code);
+		void endFun();
 	};
 
 	//用于生成中间代码
 	class InstBuilder
 	{
+	private:
+		std::vector<PTR(FayInst)> _insts;
 
+	public:
+		void addInst(PTR(FayInst) inst);
+		std::vector<PTR(FayInst)> insts();
 	};
 }
 

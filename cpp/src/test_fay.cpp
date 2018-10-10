@@ -37,4 +37,10 @@ void test::FayTests::TestLexer()
 		ast->toString(sb);
 		PRINT(sb.toString());
 	}
+
+	PRINT("----------------------------------------");
+
+	PTR(fay::FayLib) lib = MKPTR(fay::FayLib)("TestLib");
+	PTR(fay::OutlineBuilder) builder = MKPTR(fay::OutlineBuilder)(lib);
+	ast->makeOutline(builder.get());
 }

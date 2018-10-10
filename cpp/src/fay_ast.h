@@ -40,9 +40,9 @@ namespace fay
 		//转换成字符串
 		virtual void toString(mirror::utils::StringBuilder &sb);
 		//生成代码的结构
-		virtual void makeOutline(OutlineBuilder &builder) {}
+		virtual void makeOutline(OutlineBuilder* builder);
 		//生成语句代码
-		virtual void makeInst(InstBuilder &builder) {}
+		virtual void makeInst(InstBuilder* builder);
 	};
 
 	/******************************************************
@@ -53,6 +53,9 @@ namespace fay
 	class AstFile : public AstNode
 	{
 		using AstNode::AstNode;
+	public:
+		virtual void makeOutline(OutlineBuilder* builder) override;
+
 	};
 
 	class AstUsing : public AstNode
@@ -82,6 +85,9 @@ namespace fay
 	public:
 		AstClass(const std::string &name, std::vector<std::string> &descWords)
 			: AstNode(name), _descWords(descWords) {}
+
+		virtual void makeOutline(OutlineBuilder* builder) override;
+
 	};
 
 	class AstCondition : public AstNode
@@ -97,6 +103,9 @@ namespace fay
 	class AstFun : public AstNode
 	{
 		using AstNode::AstNode;
+	public:
+		virtual void makeOutline(OutlineBuilder* builder) override;
+
 	};
 
 	class AstParamDefine : public AstNode
@@ -192,6 +201,23 @@ namespace fay
 	class AstString : public AstNode
 	{
 		using AstNode::AstNode;
+	public:
+		virtual void makeInst(InstBuilder* builder) override;
+
+	};
+
+	//______________________________________________
+
+	class FayAstCode : public FayCode
+	{
+	private:
+		PTR(AstNode) _ast;
+
+	public:
+		FayAstCode(PTR(AstNode) ast) : _ast(ast) {}
+
+		// 通过 FayCode 继承
+		virtual std::vector<PTR(FayInst)> insts() override;
 	};
 
 }
