@@ -4,7 +4,7 @@
 using namespace fay;
 
 fay::FayLib::FayLib(const std::string &name)
-	: _name(name)
+	: name(name)
 {
 }
 
@@ -15,7 +15,7 @@ fay::FayLib::~FayLib()
 void fay::FayLib::addClass(PTR(FayClass) clazz)
 {
 	//LOG_DEBUG("Add class : " << clazz->name() << " to " << this->name());
-	this->_classes.push_back(clazz);
+	this->classes.push_back(clazz);
 }
 
 PTR(FayFun) fay::FayLib::findFun(const std::string & className, const std::string & funName, std::vector<PTR(FayType)> paramsType)
@@ -25,9 +25,9 @@ PTR(FayFun) fay::FayLib::findFun(const std::string & className, const std::strin
 
 void fay::FayLib::toString(mirror::utils::StringBuilder* sb)
 {
-	sb->add("[FayLib]")->add(this->_name)->endl();
+	sb->add("[FayLib]")->add(this->name)->endl();
 	sb->increaseIndent();
-	for each(auto it in this->_classes)
+	for each(auto it in this->classes)
 		it->toString(sb);
 	sb->decreaseIndent();
 }
@@ -69,7 +69,7 @@ void fay::FayFun::toString(mirror::utils::StringBuilder* sb)
 void fay::FayClass::addFun(PTR(FayFun) fun)
 {
 	//LOG_DEBUG("Add fun " << fun->name() << " to class " << this->name());
-	this->_funs.push_back(fun);
+	this->funs.push_back(fun);
 }
 
 PTR(FayFun) fay::FayClass::findFun(const std::string & funName, std::vector<PTR(FayType)> paramsType)
@@ -79,9 +79,9 @@ PTR(FayFun) fay::FayClass::findFun(const std::string & funName, std::vector<PTR(
 
 void fay::FayClass::toString(mirror::utils::StringBuilder* sb)
 {
-	sb->add("[FayClass]")->add(this->_name)->endl();
+	sb->add("[FayClass]")->add(this->name)->endl();
 	sb->increaseIndent();
-	for each(auto it in this->_funs)
+	for each(auto it in this->funs)
 		it->toString(sb);
 	sb->decreaseIndent();
 }

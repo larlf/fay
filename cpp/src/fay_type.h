@@ -1,16 +1,15 @@
 ﻿#pragma once
 #include <mirror_sys_const.h>
 #include <fay_const.h>
+#include <fay_object.h>
 
 //语言中的数据类型
 
 namespace fay
 {
 	//数据类型
-	class FayType
+	class FayType : public FayObject
 	{
-	public:
-		virtual const std::string &toString() { return ""; }
 	};
 
 	//简单类型

@@ -25,18 +25,26 @@ namespace fay
 		PTR(FayFun) findFun(const std::string &className, const std::string &funName, std::vector<PTR(FayType)> paramsType);
 	};
 
+	//函数信息
+	class OutsideFun
+	{
+	public:
+		pos_t index;
+		std::string funFullname;
+		pos_t classPos;
+		pos_t funPos;
+	};
+
+	//一个的信息
 	class FayLib : public FayObject, public std::enable_shared_from_this<FayLib>
 	{
-	private:
-		std::string _name;
-		std::vector<PTR(FayClass)> _classes;
-
 	public:
+		std::string name;
+		std::vector<PTR(FayClass)> classes;
 		WPTR(FayDomain) domain;
+
 		FayLib(const std::string &name);
 		~FayLib();
-
-		const std::string &name() { return this->_name; }
 
 		void addClass(PTR(FayClass) clazz);
 		PTR(FayFun) findFun(const std::string &className, const std::string &funName, std::vector<PTR(FayType)> paramsType);
@@ -44,15 +52,13 @@ namespace fay
 		virtual void toString(mirror::utils::StringBuilder* sb) override;
 	};
 
-	class FayClass : public FayObject, public std::enable_shared_from_this<FayClass>
+	class FayClass : public FayType, public std::enable_shared_from_this<FayClass>
 	{
-	private:
-		std::string _name;
-		std::vector<PTR(FayFun)> _funs;
-
 	public:
-		FayClass(const std::string &name) : _name(name) {}
-		const std::string &name() { return this->_name; }
+		std::string name;  //类的名称
+		std::vector<PTR(FayFun)> funs;  //类里的函数列表
+
+		FayClass(const std::string &name) : name(name) {}
 
 		void addFun(PTR(FayFun) fun);
 
