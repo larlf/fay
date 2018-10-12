@@ -9,6 +9,7 @@ namespace fay
 	class OutlineBuilder
 	{
 	private:
+		std::string _package;
 		std::string _filename;
 		PTR(FayLib) _lib;
 		PTR(FayClass) _class;
@@ -21,6 +22,8 @@ namespace fay
 		PTR(FayLib) lib() { return this->_lib; }
 		PTR(FayClass) clazz() { return this->_class; }
 		PTR(FayFun) fun() { return this->_fun; }
+
+		void package(const std::string &name);
 
 		void beginFile(const std::string &filename);
 		void endFile();

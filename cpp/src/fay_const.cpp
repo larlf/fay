@@ -2,6 +2,7 @@
 
 MAP<fay::TokenType, std::string> fay::TypeDict::TokenTypeName;
 MAP<fay::ValueType, std::string> fay::TypeDict::ValueTypeName;
+MAP<std::string, fay::ValueType> fay::TypeDict::ValueTypeMap;
 
 void fay::TypeDict::Init()
 {
@@ -51,6 +52,19 @@ void fay::TypeDict::Init()
 	TypeDict::ValueTypeName[ValueType::Object] = "Object";
 	TypeDict::ValueTypeName[ValueType::Function] = "Function";
 	//ValueTypeNameEnd
+
+	//ValueTypeMapStart
+	TypeDict::ValueTypeMap["void"] = ValueType::Void;
+	TypeDict::ValueTypeMap["byte"] = ValueType::Byte;
+	TypeDict::ValueTypeMap["int"] = ValueType::Int;
+	TypeDict::ValueTypeMap["long"] = ValueType::Long;
+	TypeDict::ValueTypeMap["float"] = ValueType::Float;
+	TypeDict::ValueTypeMap["double"] = ValueType::Double;
+	TypeDict::ValueTypeMap["bool"] = ValueType::Bool;
+	TypeDict::ValueTypeMap["string"] = ValueType::String;
+	TypeDict::ValueTypeMap["object"] = ValueType::Object;
+	TypeDict::ValueTypeMap["function"] = ValueType::Function;
+	//ValueTypeMapEnd
 }
 
 const std::string &fay::TypeDict::ToName(TokenType value)

@@ -14,6 +14,11 @@ fay::OutlineBuilder::~OutlineBuilder()
 {
 }
 
+void fay::OutlineBuilder::package(const std::string & name)
+{
+	this->_package = name;
+}
+
 void fay::OutlineBuilder::beginFile(const std::string & filename)
 {
 	this->_filename = filename;
@@ -26,7 +31,7 @@ void fay::OutlineBuilder::endFile()
 
 void fay::OutlineBuilder::beginClass(const std::string & name)
 {
-	PTR(FayClass) clazz = MKPTR(FayClass)(name);
+	PTR(FayClass) clazz = MKPTR(FayClass)(this->_package, name);
 	this->_class = clazz;
 }
 
@@ -37,7 +42,7 @@ void fay::OutlineBuilder::endClass()
 
 void fay::OutlineBuilder::beginFun(const std::string & name, PTR(FayCode) code)
 {
-	this->_fun = MKPTR(FayFun)(name, code);
+	this->_fun = MKPTR(FayFun)(this->_class, name, code);
 }
 
 void fay::OutlineBuilder::endFun()

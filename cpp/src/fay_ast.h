@@ -38,7 +38,7 @@ namespace fay
 		void addChildNode(PTR(AstNode) node);
 
 		//节点的数值类型
-		virtual PTR(FayType) valueType() { return SimpleType::Get(ValueType::Void); }
+		virtual ValueType valueType() { return ValueType::Void; }
 		//转换成字符串
 		virtual void toString(mirror::utils::StringBuilder* sb) override;
 		//生成代码的结构
@@ -68,6 +68,9 @@ namespace fay
 	class AstPackage : public AstNode
 	{
 		using AstNode::AstNode;
+	public:
+		virtual void makeOutline(OutlineBuilder* builder) override;
+
 	};
 
 	class AstArray : public AstNode
@@ -128,13 +131,14 @@ namespace fay
 	class AstParams : public AstNode
 	{
 		using AstNode::AstNode;
-	public:
-		std::vector<PTR(FayType)> paramsType();
 	};
 
 	class AstType : public AstNode
 	{
 		using AstNode::AstNode;
+	public:
+		virtual ValueType valueType() override;
+
 	};
 
 	class AstArrayType : public AstNode
@@ -212,7 +216,7 @@ namespace fay
 		using AstNode::AstNode;
 	public:
 		virtual void makeInst(InstBuilder* builder) override;
-		virtual PTR(FayType) valueType() override;
+		virtual ValueType valueType() override;
 	};
 
 	//______________________________________________

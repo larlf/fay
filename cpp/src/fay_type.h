@@ -10,6 +10,8 @@ namespace fay
 	//数据类型
 	class FayType : public FayObject
 	{
+	public:
+		virtual const std::string &fullname() = 0;
 	};
 
 	//简单类型
@@ -26,5 +28,8 @@ namespace fay
 
 	public:
 		static PTR(FayType) Get(ValueType valueType);
+
+		// 通过 FayType 继承
+		virtual const std::string & fullname() override;
 	};
 }

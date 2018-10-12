@@ -202,11 +202,15 @@ Cmds.value_type = function()
 
 			str2 += str2.length ? "\n" : "";
 			str2 += larlf.text.format("TypeDict::ValueTypeName[ValueType::{0}] = \"{0}\";", it['Name']);
+
+			str3 += str3.length ? "\n" : "";
+			str3 += larlf.text.format("TypeDict::ValueTypeMap[\"{0}\"] = ValueType::{1};", (it.Name + "").toLowerCase(), it.Name);
 		}
 	}
 
 	replaceFileBody("cpp/src/fay_const.h", "ValueType", str1, "\t\t");
 	replaceFileBody("cpp/src/fay_const.cpp", "ValueTypeName", str2, "\t");
+	replaceFileBody("cpp/src/fay_const.cpp", "ValueTypeMap", str3, "\t");
 }
 
 Cmds.instruct_type = function()

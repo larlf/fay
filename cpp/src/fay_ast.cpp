@@ -85,24 +85,27 @@ void fay::AstString::makeInst(InstBuilder* builder)
 	builder->addInst(MKPTR(InstPushString)(this->_text));
 }
 
-PTR(FayType) fay::AstString::valueType()
+ValueType fay::AstString::valueType()
 {
-	return SimpleType::Get(ValueType::String);
-}
-
-std::vector<PTR(FayType)> fay::AstParams::paramsType()
-{
-	std::vector<PTR(FayType)> types;
-	for each(auto it in this->_nodes)
-	{
-		types.push_back(it->valueType());
-	}
-
-	return types;
+	return ValueType::String;
 }
 
 void fay::AstParamDefine::makeOutline(OutlineBuilder* builder)
 {
-	PTR(FayParamDef) p = MKPTR(FayParamDef)(this->_text, this->_nodes[0]->valueType());
+	PTR(FayParamDef) p = MKPTR(FayParamDef)(this->_text, this->_nodes[0]->text());
 	builder->fun()->addParam(p);
+}
+
+void fay::AstPackage::makeOutline(OutlineBuilder* builder)
+{
+	builder->package(this->_text);
+}
+
+ValueType fay::AstType::valueType()
+{
+	auto it = TypeDict::ValueTypeMap.find(this->_text);
+	if (it != TypeDict::ValueTypeMap.end())
+		return it->second;
+
+	return ValueType::Object;
 }

@@ -15,3 +15,8 @@ PTR(FayType) fay::SimpleType::Get(ValueType valueType)
 	_Types[valueType] = type;
 	return type;
 }
+
+const std::string & fay::SimpleType::fullname()
+{
+	return TypeDict::ToName(this->_type);
+}
