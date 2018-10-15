@@ -1,5 +1,5 @@
 ﻿#include <fay_ast.h>
-#include <typeinfo> 
+#include <typeinfo>
 
 using namespace fay;
 
@@ -23,7 +23,7 @@ void fay::AstNode::addChildNode(PTR(AstNode) node)
 void fay::AstNode::toString(mirror::utils::StringBuilder* sb)
 {
 	sb->add(this->className())
-		->add("(")->add(this->_text)->add(")");
+	->add("(")->add(this->_text)->add(")");
 
 	sb->increaseIndent();
 	for each(auto it in this->_nodes)
@@ -34,55 +34,42 @@ void fay::AstNode::toString(mirror::utils::StringBuilder* sb)
 	sb->decreaseIndent();
 }
 
-void fay::AstNode::makeOutline(OutlineBuilder* builder)
+void fay::AstNode::dig1(FayBuilder* builder)
 {
 	for each(auto it in this->_nodes)
-	{
-		it->makeOutline(builder);
-	}
+		it->dig1(builder);
 }
 
-void fay::AstNode::makeInst(InstBuilder* builder)
+void fay::AstNode::dig2(FayBuilder* builder)
 {
 	for each(auto it in this->_nodes)
-	{
-		it->makeInst(builder);
-	}
+		it->dig2(builder);
 }
 
-void fay::AstClass::makeOutline(OutlineBuilder* builder)
+void fay::AstNode::dig3(FayBuilder* builder)
 {
-	builder->beginClass(this->_text);
-	AstNode::makeOutline(builder);
-	builder->endClass();
+	for each(auto it in this->_nodes)
+		it->dig3(builder);
 }
 
-void fay::AstFun::makeOutline(OutlineBuilder* builder)
+void fay::AstClass::dig1(FayBuilder* builder)
 {
-	PTR(FayAstCode) code = MKPTR(FayAstCode)(this->_nodes[2]);
-	builder->beginFun(this->_text, code);
-	AstNode::makeOutline(builder);
+	this->typeIndex = builder->beginClass(this->_text);
+	AstNode::dig1(builder);
+}
+
+void fay::AstFun::dig1(FayBuilder* builder)
+{
+	builder->beginFun(this->_text);
+	AstNode::dig1(builder);
 	builder->endFun();
 }
 
-void fay::AstFile::makeOutline(OutlineBuilder* builder)
+void fay::AstFile::dig1(FayBuilder* builder)
 {
 	builder->beginFile(this->_text);
-	AstNode::makeOutline(builder);
+	AstNode::dig1(builder);
 	builder->endFile();
-}
-
-std::vector<PTR(FayInst)> fay::FayAstCode::insts()
-{
-	PTR(InstBuilder) builder = MKPTR(InstBuilder)();
-	this->_ast->makeInst(builder.get());
-
-	return builder->insts();
-}
-
-void fay::AstString::makeInst(InstBuilder* builder)
-{
-	builder->addInst(MKPTR(InstPushString)(this->_text));
 }
 
 ValueType fay::AstString::valueType()
@@ -90,13 +77,13 @@ ValueType fay::AstString::valueType()
 	return ValueType::String;
 }
 
-void fay::AstParamDefine::makeOutline(OutlineBuilder* builder)
+void fay::AstParamDefine::dig1(FayBuilder* builder)
 {
 	PTR(FayParamDef) p = MKPTR(FayParamDef)(this->_text, this->_nodes[0]->text());
 	builder->fun()->addParam(p);
 }
 
-void fay::AstPackage::makeOutline(OutlineBuilder* builder)
+void fay::AstPackage::dig1(FayBuilder* builder)
 {
 	builder->package(this->_text);
 }

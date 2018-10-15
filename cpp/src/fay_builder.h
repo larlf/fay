@@ -6,18 +6,20 @@
 namespace fay
 {
 	//用于生成整体的代码结构
-	class OutlineBuilder
+	class FayBuilder
 	{
 	private:
 		std::string _package;
 		std::string _filename;
+		PTR(FayDomain) _domain;
 		PTR(FayLib) _lib;
 		PTR(FayClass) _class;
 		PTR(FayFun) _fun;
 
 	public:
-		OutlineBuilder(PTR(FayLib) lib);
-		~OutlineBuilder();
+		FayBuilder(PTR(FayDomain) domain)
+			: _domain(domain) {}
+		~FayBuilder() {}
 
 		PTR(FayLib) lib() { return this->_lib; }
 		PTR(FayClass) clazz() { return this->_class; }
@@ -28,22 +30,13 @@ namespace fay
 		void beginFile(const std::string &filename);
 		void endFile();
 
-		void beginClass(const std::string &name);
-		void endClass();
+		void beginLib(const std::string &name);
 
-		void beginFun(const std::string &name, PTR(FayCode) code);
+		pos_t beginClass(const std::string &name);
+		void bindClass(pos_t index);
+
+		void beginFun(const std::string &name);
 		void endFun();
-	};
-
-	//用于生成中间代码
-	class InstBuilder
-	{
-	private:
-		std::vector<PTR(FayInst)> _insts;
-
-	public:
-		void addInst(PTR(FayInst) inst);
-		std::vector<PTR(FayInst)> insts();
 	};
 }
 

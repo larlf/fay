@@ -53,7 +53,7 @@ namespace fay
 
 		T find(pos_t index)
 		{
-			if (index > 0 && index < this._list.size())
+			if (index >= 0 && index < this->_list.size())
 				return this->_list[index];
 
 			return nullptr;

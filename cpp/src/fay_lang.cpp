@@ -1,12 +1,16 @@
-﻿#include "fay_lang.h"
-#include <fay_lang.h>
+﻿#include <fay_lang.h>
 #include <mirror_utils_log.h>
 
 using namespace fay;
 
-const void fay::FayLib::addClass(PTR(FayClass) clazz)
+pos_t fay::FayLib::addClass(PTR(FayClass) clazz)
 {
 	this->classes.push_back(clazz);
+
+	if (!this->domain.expired())
+		return this->domain.lock()->addType(clazz);
+
+	return -1;
 }
 
 PTR(FayFun) fay::FayLib::findFun(const std::string & className, const std::string & funName, std::vector<PTR(FayType)> paramsType)
@@ -107,6 +111,8 @@ fay::FayDomain::FayDomain()
 
 void fay::FayDomain::addLib(PTR(FayLib) lib)
 {
+	lib->domain = this->shared_from_this();
+
 	//先生成相互的引用关系
 	this->_libs.push_back(lib);
 
@@ -132,9 +138,26 @@ void fay::FayDomain::toString(mirror::utils::StringBuilder* sb)
 	sb->decreaseIndent();
 }
 
+pos_t fay::FayDomain::addType(PTR(FayType) t)
+{
+	std::string fullname = t->fullname();
+
+	//如果已经有了，就返回现有的位置
+	pos_t index=this->_types.findIndex(fullname);
+	if (index >= 0)
+		return index;
+
+	return this->_types.add(fullname, t);
+}
+
 PTR(FayType) fay::FayDomain::findType(const std::string & typeFullname)
 {
 	return this->_types.find(typeFullname);
+}
+
+PTR(FayType) fay::FayDomain::findType(pos_t index)
+{
+	return this->_types.find(index);
 }
 
 std::vector<PTR(FayType)> fay::FayDomain::findType(std::vector<std::string>& imports, const std::string & typeName)

@@ -41,12 +41,11 @@ void test::FayTests::TestLexer()
 	PRINT("----------------------------------------");
 
 	PTR(fay::FayDomain) domain = MKPTR(fay::FayDomain)();
-	PTR(fay::FayLib) lib = MKPTR(fay::FayLib)(domain, "TestLib");
-
-	PTR(fay::OutlineBuilder) builder = MKPTR(fay::OutlineBuilder)(lib);
-	ast->makeOutline(builder.get());
-
-	domain->addLib(lib);
+	PTR(fay::FayBuilder) builder = MKPTR(fay::FayBuilder)(domain);
+	builder->beginLib("TestLib");
+	ast->dig1(builder.get());
+	ast->dig2(builder.get());
+	ast->dig3(builder.get());
 
 	{
 		utils::StringBuilder sb;

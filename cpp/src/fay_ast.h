@@ -41,10 +41,16 @@ namespace fay
 		virtual ValueType valueType() { return ValueType::Void; }
 		//转换成字符串
 		virtual void toString(mirror::utils::StringBuilder* sb) override;
-		//生成代码的结构
-		virtual void makeOutline(OutlineBuilder* builder);
-		//生成语句代码
-		virtual void makeInst(InstBuilder* builder);
+
+		//因为生成数据的时候对结构会有依赖，只能先生成结构，再生成代码
+		//就像在田里挖土豆，挖一遍再挖一遍，需要经过多次dig()才能生成最终的结构
+		//第一次，只产生Class这一级的信息
+		virtual void dig1(FayBuilder* builder);
+		//第二次，生成函数和函数参数列表
+		virtual void dig2(FayBuilder* builder);
+		//第三次，生成中间代码
+		virtual void dig3(FayBuilder* builder);
+		//会不会有第四次，拭目以待……
 	};
 
 	/******************************************************
@@ -56,7 +62,7 @@ namespace fay
 	{
 		using AstNode::AstNode;
 	public:
-		virtual void makeOutline(OutlineBuilder* builder) override;
+		virtual void dig1(FayBuilder* builder) override;
 
 	};
 
@@ -69,7 +75,7 @@ namespace fay
 	{
 		using AstNode::AstNode;
 	public:
-		virtual void makeOutline(OutlineBuilder* builder) override;
+		virtual void dig1(FayBuilder* builder) override;
 
 	};
 
@@ -87,11 +93,12 @@ namespace fay
 	{
 	private:
 		std::vector<std::string> _descWords;
+		pos_t typeIndex = -1;  //用于记录在domain中的位置
 	public:
 		AstClass(const std::string &name, std::vector<std::string> &descWords)
 			: AstNode(name), _descWords(descWords) {}
 
-		virtual void makeOutline(OutlineBuilder* builder) override;
+		virtual void dig1(FayBuilder* builder) override;
 
 	};
 
@@ -111,7 +118,7 @@ namespace fay
 	{
 		using AstNode::AstNode;
 	public:
-		virtual void makeOutline(OutlineBuilder* builder) override;
+		virtual void dig1(FayBuilder* builder) override;
 
 	};
 
@@ -119,7 +126,7 @@ namespace fay
 	{
 		using AstNode::AstNode;
 	public:
-		virtual void makeOutline(OutlineBuilder* builder) override;
+		virtual void dig1(FayBuilder* builder) override;
 
 	};
 
@@ -215,22 +222,7 @@ namespace fay
 	{
 		using AstNode::AstNode;
 	public:
-		virtual void makeInst(InstBuilder* builder) override;
 		virtual ValueType valueType() override;
-	};
-
-	//______________________________________________
-
-	class FayAstCode : public FayCode
-	{
-	private:
-		PTR(AstNode) _ast;
-
-	public:
-		FayAstCode(PTR(AstNode) ast) : _ast(ast) {}
-
-		// 通过 FayCode 继承
-		virtual std::vector<PTR(FayInst)> insts() override;
 	};
 
 }

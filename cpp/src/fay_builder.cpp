@@ -2,60 +2,47 @@
 #include "fay_builder.h"
 #include <fay_builder.h>
 
-
 using namespace fay;
 
-fay::OutlineBuilder::OutlineBuilder(PTR(FayLib) lib)
-{
-	this->_lib = lib;
-}
-
-fay::OutlineBuilder::~OutlineBuilder()
-{
-}
-
-void fay::OutlineBuilder::package(const std::string & name)
+void fay::FayBuilder::package(const std::string & name)
 {
 	this->_package = name;
 }
 
-void fay::OutlineBuilder::beginFile(const std::string & filename)
+void fay::FayBuilder::beginFile(const std::string & filename)
 {
 	this->_filename = filename;
 }
 
-void fay::OutlineBuilder::endFile()
+void fay::FayBuilder::endFile()
 {
 	this->_filename = "";
 }
 
-void fay::OutlineBuilder::beginClass(const std::string & name)
+void fay::FayBuilder::beginLib(const std::string & name)
+{
+	this->_lib = MKPTR(FayLib)(name);
+	this->_domain->addLib(this->_lib);
+}
+
+pos_t fay::FayBuilder::beginClass(const std::string & name)
 {
 	PTR(FayClass) clazz = MKPTR(FayClass)(this->_package, name);
 	this->_class = clazz;
+	return this->_lib->addClass(clazz);
 }
 
-void fay::OutlineBuilder::endClass()
+void fay::FayBuilder::bindClass(pos_t index)
 {
-	this->_lib->addClass(this->_class);
+	this->_class = TOPTR(FayClass, this->_domain->findType(index));
 }
 
-void fay::OutlineBuilder::beginFun(const std::string & name, PTR(FayCode) code)
+void fay::FayBuilder::beginFun(const std::string & name)
 {
-	this->_fun = MKPTR(FayFun)(this->_class, name, code);
+	this->_fun = MKPTR(FayFun)(this->_class, name);
 }
 
-void fay::OutlineBuilder::endFun()
+void fay::FayBuilder::endFun()
 {
 	this->_class->addFun(this->_fun);
-}
-
-void fay::InstBuilder::addInst(PTR(FayInst) inst)
-{
-	this->_insts.push_back(inst);
-}
-
-std::vector<PTR(FayInst)> fay::InstBuilder::insts()
-{
-	return this->_insts;
 }

@@ -20,7 +20,7 @@ public class Test6
 
 public class Test7
 {
-	static public fun fun1(a:int, b:string):void
+	static public fun fun1(a:int, b:string, c:com.larlf.Test6):void
 	{
 
 	}

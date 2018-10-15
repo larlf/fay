@@ -23,14 +23,20 @@ namespace fay
 
 	public:
 		FayDomain();
+		//添加Lib
 		void addLib(PTR(FayLib) lib);
-		virtual void toString(mirror::utils::StringBuilder* sb) override;
+		//添加新的类型
+		//返回类型在Domain里的序号
+		pos_t addType(PTR(FayType) t);
 		//根据类型的全称查找类型定义
 		PTR(FayType) findType(const std::string &typeFullname);
+		PTR(FayType) findType(pos_t index);
 		//根据引用和类型名，查找类型的定义
 		std::vector<PTR(FayType)> findType(std::vector<std::string> &imports, const std::string &typeName);
 		//从函数表中查找指定的函数
 		PTR(FayFun) findFun(const std::string &className, const std::string &funName, std::vector<PTR(FayType)> paramsType);
+
+		virtual void toString(mirror::utils::StringBuilder* sb) override;
 	};
 
 	//函数信息
@@ -47,17 +53,17 @@ namespace fay
 	{
 	private:
 		IndexMap<PTR(OutsideFun)> _outsideFuns;  //外部函数的列表
-		WPTR(FayDomain) _domain;
 
 	public:
 		std::string name;
+		WPTR(FayDomain) domain;
 		std::vector<PTR(FayClass)> classes;
 
-		FayLib(PTR(FayDomain) domain, const std::string &name)
-			: _domain(domain), name(name) {}
+		FayLib(const std::string &name)
+			:  name(name) {}
 		~FayLib() {}
 
-		const void addClass(PTR(FayClass) clazz);
+		pos_t addClass(PTR(FayClass) clazz);
 		PTR(FayFun) findFun(const std::string &className, const std::string &funName, std::vector<PTR(FayType)> paramsType);
 
 		virtual void toString(mirror::utils::StringBuilder* sb) override;
@@ -96,14 +102,13 @@ namespace fay
 	private:
 		std::string _name;
 		std::string _fullname;
-		PTR(FayCode) _code;
 		std::vector<PTR(FayParamDef)> _params;
 
 	public:
 		WPTR(FayType) clazz;  //所属的类
 
-		FayFun(PTR(FayType) clazz, const std::string &name, PTR(FayCode) code)
-			: clazz(clazz), _name(name), _code(code) {}
+		FayFun(PTR(FayType) clazz, const std::string &name)
+			: clazz(clazz), _name(name) {}
 		~FayFun();
 
 		const std::string &name() { return this->_name; }
