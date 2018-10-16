@@ -1,12 +1,10 @@
 ﻿#pragma once
 
+#include <fay_object.h>
+
 namespace fay
 {
-	//指令
-	class FayInst
-	{
 
-	};
 
 	class InstPushString : public FayInst
 	{

@@ -35,8 +35,10 @@ namespace fay
 		pos_t beginClass(const std::string &name);
 		void bindClass(pos_t index);
 
-		void beginFun(const std::string &name);
-		void endFun();
+		pos_t beginFun(const std::string &name);
+		void bindFun(pos_t index);
+
+		void addParamDefine(const std::string &name, const std::string &type);
 	};
 }
 

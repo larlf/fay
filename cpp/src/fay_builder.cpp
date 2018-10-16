@@ -1,6 +1,5 @@
-﻿#include "fay_builder.h"
-#include "fay_builder.h"
-#include <fay_builder.h>
+﻿#include <fay_builder.h>
+#include <mirror_utils_log.h>
 
 using namespace fay;
 
@@ -37,12 +36,26 @@ void fay::FayBuilder::bindClass(pos_t index)
 	this->_class = TOPTR(FayClass, this->_domain->findType(index));
 }
 
-void fay::FayBuilder::beginFun(const std::string & name)
+pos_t fay::FayBuilder::beginFun(const std::string & name)
 {
-	this->_fun = MKPTR(FayFun)(this->_class, name);
+	this->_fun = MKPTR(FayFun)(name);
+	return this->_class->addFun(this->_fun);
 }
 
-void fay::FayBuilder::endFun()
+void fay::FayBuilder::bindFun(pos_t index)
 {
-	this->_class->addFun(this->_fun);
+	if (index < 0)
+	{
+		LOG_ERROR("Bad fun index : "<<index);
+		return;
+	}
+
+	this->_fun = this->_class->findFun(index);
+}
+
+void fay::FayBuilder::addParamDefine(const std::string & name, const std::string & type)
+{
+	PTR(FayType) t=this->_domain->findType(type);
+	PTR(FayParamDef) def = MKPTR(FayParamDef)(name, t);
+	this->_fun->addParam(def);
 }

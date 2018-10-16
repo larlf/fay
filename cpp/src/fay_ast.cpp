@@ -1,4 +1,5 @@
-﻿#include <fay_ast.h>
+﻿#include "fay_ast.h"
+#include <fay_ast.h>
 #include <typeinfo>
 
 using namespace fay;
@@ -58,11 +59,16 @@ void fay::AstClass::dig1(FayBuilder* builder)
 	AstNode::dig1(builder);
 }
 
-void fay::AstFun::dig1(FayBuilder* builder)
+void fay::AstClass::dig2(FayBuilder * builder)
 {
-	builder->beginFun(this->_text);
-	AstNode::dig1(builder);
-	builder->endFun();
+	builder->bindClass(this->typeIndex);
+	AstNode::dig2(builder);
+}
+
+void fay::AstFun::dig2(FayBuilder* builder)
+{
+	this->_index = builder->beginFun(this->_text);
+	AstNode::dig2(builder);
 }
 
 void fay::AstFile::dig1(FayBuilder* builder)
@@ -77,10 +83,10 @@ ValueType fay::AstString::valueType()
 	return ValueType::String;
 }
 
-void fay::AstParamDefine::dig1(FayBuilder* builder)
+void fay::AstParamDefine::dig2(FayBuilder* builder)
 {
-	PTR(FayParamDef) p = MKPTR(FayParamDef)(this->_text, this->_nodes[0]->text());
-	builder->fun()->addParam(p);
+	builder->addParamDefine(this->text(), this->_nodes[0]->text());
+	AstNode::dig2(builder);
 }
 
 void fay::AstPackage::dig1(FayBuilder* builder)

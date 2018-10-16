@@ -73,14 +73,14 @@ namespace fay
 	{
 	private:
 		std::string _fullname;  //全名
-		IndexMap<WPTR(FayFun)> _funsMap;  //函数的映射
+		IndexMap<PTR(FayFun)> _funs;  //函数的映射
 
 	public:
 		WPTR(FayDomain) domain; //所在的Domain
 		WPTR(FayLib) lib;  //所属的Lib
+
 		std::string package;  //所在的名
 		std::string name;  //类的名称
-		std::vector<PTR(FayFun)> funs;  //类里的函数列表
 
 		FayClass(const std::string &package, const std::string &name)
 			: package(package), name(name)
@@ -88,9 +88,9 @@ namespace fay
 			this->_fullname = (package.size() > 0 ? package + "." : "") + name;
 		}
 
-		void addFun(PTR(FayFun) fun);
-
+		pos_t addFun(PTR(FayFun) fun);
 		PTR(FayFun) findFun(const std::string &funName, std::vector<PTR(FayType)> paramsType);
+		PTR(FayFun) findFun(pos_t index);
 
 		virtual const std::string &fullname() override;
 		virtual void toString(mirror::utils::StringBuilder* sb) override;
@@ -105,19 +105,20 @@ namespace fay
 		std::vector<PTR(FayParamDef)> _params;
 
 	public:
+		WPTR(FayDomain) domain;
 		WPTR(FayType) clazz;  //所属的类
+		std::vector<PTR(FayInst)> insts;  //代码
 
-		FayFun(PTR(FayType) clazz, const std::string &name)
-			: clazz(clazz), _name(name) {}
+		FayFun(const std::string &name)
+			: _name(name) {}
 		~FayFun();
 
 		const std::string &name() { return this->_name; }
-		const std::string &fullname();
 
-		void addParam(PTR(FayParamDef) p1);
-
+		void addParam(PTR(FayParamDef) def);
 		bool matchParams(std::vector<PTR(FayType)> paramsType);
 
+		virtual const std::string &fullname() override;
 		virtual void toString(mirror::utils::StringBuilder* sb) override;
 	};
 
@@ -125,31 +126,17 @@ namespace fay
 	class FayParamDef : public FayObject, public std::enable_shared_from_this<FayParamDef>
 	{
 	private:
-		std::string _name;
 		std::string _fullname;
-		std::string _typeName;
 
 	public:
-		FayParamDef(const std::string &name, std::string typeName)
-			: _name(name), _typeName(typeName) {}
+		std::string name;
+		WPTR(FayType) type;
 
-		const std::string &name() { return this->_name; }
+		FayParamDef(const std::string &name, PTR(FayType) type)
+			: name(name), type(type) {}
 
-		const std::string &fullname();
+		virtual const std::string &fullname() override;
 		virtual void toString(mirror::utils::StringBuilder* sb) override;
-
-	};
-
-	//代码生成器的父类
-	class FayCode : public FayObject, public std::enable_shared_from_this<FayCode>
-	{
-	public:
-		virtual std::vector<PTR(FayInst)> insts() = 0;
-	};
-
-	class FayScope : public FayObject, public std::enable_shared_from_this<FayScope>
-	{
-
 	};
 }
 

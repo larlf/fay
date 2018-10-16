@@ -24,9 +24,7 @@ void test::FayTests::TestLexer()
 	auto tokens=lexer.Execute(text);
 
 	for (auto i = 0; i < tokens->size(); ++i)
-	{
 		PRINT(i<<"\t"<<(*tokens)[i]->toString());
-	}
 
 	PRINT("----------------------------------------");
 
@@ -43,14 +41,17 @@ void test::FayTests::TestLexer()
 	PTR(fay::FayDomain) domain = MKPTR(fay::FayDomain)();
 	PTR(fay::FayBuilder) builder = MKPTR(fay::FayBuilder)(domain);
 	builder->beginLib("TestLib");
+
 	ast->dig1(builder.get());
+
+	utils::StringBuilder sb;
+	domain->toString(&sb);
+	PRINT(sb.toString());
+
 	ast->dig2(builder.get());
 	ast->dig3(builder.get());
 
-	{
-		utils::StringBuilder sb;
-		domain->toString(&sb);
-		PRINT(sb.toString());
-	}
-
+	sb.clear();
+	domain->toString(&sb);
+	PRINT(sb.toString());
 }

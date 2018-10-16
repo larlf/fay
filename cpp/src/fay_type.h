@@ -11,7 +11,6 @@ namespace fay
 	class FayType : public FayObject
 	{
 	public:
-		virtual const std::string &fullname() = 0;
 	};
 
 	//简单类型

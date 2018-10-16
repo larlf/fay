@@ -5,6 +5,9 @@ using namespace fay;
 
 pos_t fay::FayLib::addClass(PTR(FayClass) clazz)
 {
+	clazz->domain = this->domain;
+	clazz->lib = this->shared_from_this();
+
 	this->classes.push_back(clazz);
 
 	if (!this->domain.expired())
@@ -13,7 +16,7 @@ pos_t fay::FayLib::addClass(PTR(FayClass) clazz)
 	return -1;
 }
 
-PTR(FayFun) fay::FayLib::findFun(const std::string & className, const std::string & funName, std::vector<PTR(FayType)> paramsType)
+PTR(FayFun) fay::FayLib::findFun(const std::string &className, const std::string &funName, std::vector<PTR(FayType)> paramsType)
 {
 	return nullptr;
 }
@@ -31,7 +34,7 @@ fay::FayFun::~FayFun()
 {
 }
 
-const std::string & fay::FayFun::fullname()
+const std::string &fay::FayFun::fullname()
 {
 	if (this->_fullname.size() <= 0)
 	{
@@ -52,9 +55,9 @@ const std::string & fay::FayFun::fullname()
 	return this->_fullname;
 }
 
-void fay::FayFun::addParam(PTR(FayParamDef) p1)
+void fay::FayFun::addParam(PTR(FayParamDef) def)
 {
-	this->_params.push_back(p1);
+	this->_params.push_back(def);
 }
 
 bool fay::FayFun::matchParams(std::vector<PTR(FayType)> paramsType)
@@ -70,29 +73,42 @@ bool fay::FayFun::matchParams(std::vector<PTR(FayType)> paramsType)
 void fay::FayFun::toString(mirror::utils::StringBuilder* sb)
 {
 	sb->add("[FayFun]")->add(this->fullname())->endl();
+	sb->increaseIndent();
+	for each(auto it in this->_params)
+		it->toString(sb);
+	sb->decreaseIndent();
 }
 
-void fay::FayClass::addFun(PTR(FayFun) fun)
+pos_t fay::FayClass::addFun(PTR(FayFun) fun)
 {
 	//LOG_DEBUG("Add fun " << fun->name() << " to class " << this->name());
-	this->funs.push_back(fun);
+	fun->domain = this->domain;
+	fun->clazz = this->shared_from_this();
+
+	pos_t index=this->_funs.add(fun->fullname(), fun);
+	return index;
 }
 
-PTR(FayFun) fay::FayClass::findFun(const std::string & funName, std::vector<PTR(FayType)> paramsType)
+PTR(FayFun) fay::FayClass::findFun(const std::string &funName, std::vector<PTR(FayType)> paramsType)
 {
-	return PTR(FayFun)();
+	return nullptr;
+}
+
+PTR(FayFun) fay::FayClass::findFun(pos_t index)
+{
+	return this->_funs.find(index);
 }
 
 void fay::FayClass::toString(mirror::utils::StringBuilder* sb)
 {
 	sb->add("[FayClass]")->add(this->_fullname)->endl();
 	sb->increaseIndent();
-	for each(auto it in this->funs)
+	for each(auto it in this->_funs.list())
 		it->toString(sb);
 	sb->decreaseIndent();
 }
 
-const std::string & fay::FayClass::fullname()
+const std::string &fay::FayClass::fullname()
 {
 	return this->_fullname;
 }
@@ -118,9 +134,7 @@ void fay::FayDomain::addLib(PTR(FayLib) lib)
 
 	//然后对Lib里的东西进行一下排序
 	for each(auto it in lib->classes)
-	{
 		this->_types.add(it->fullname(), it);
-	}
 }
 
 void fay::FayDomain::toString(mirror::utils::StringBuilder* sb)
@@ -150,7 +164,7 @@ pos_t fay::FayDomain::addType(PTR(FayType) t)
 	return this->_types.add(fullname, t);
 }
 
-PTR(FayType) fay::FayDomain::findType(const std::string & typeFullname)
+PTR(FayType) fay::FayDomain::findType(const std::string &typeFullname)
 {
 	return this->_types.find(typeFullname);
 }
@@ -160,7 +174,7 @@ PTR(FayType) fay::FayDomain::findType(pos_t index)
 	return this->_types.find(index);
 }
 
-std::vector<PTR(FayType)> fay::FayDomain::findType(std::vector<std::string>& imports, const std::string & typeName)
+std::vector<PTR(FayType)> fay::FayDomain::findType(std::vector<std::string> &imports, const std::string &typeName)
 {
 	std::vector<PTR(FayType)> types;
 
@@ -175,18 +189,18 @@ std::vector<PTR(FayType)> fay::FayDomain::findType(std::vector<std::string>& imp
 	return types;
 }
 
-PTR(FayFun) fay::FayDomain::findFun(const std::string & className, const std::string & funName, std::vector<PTR(FayType)> paramsType)
+PTR(FayFun) fay::FayDomain::findFun(const std::string &className, const std::string &funName, std::vector<PTR(FayType)> paramsType)
 {
 	return nullptr;
 }
 
-const std::string & fay::FayParamDef::fullname()
+const std::string &fay::FayParamDef::fullname()
 {
 	if (this->_fullname.size() <= 0)
 	{
-		this->_fullname += this->_name;
+		this->_fullname += this->name;
 		this->_fullname += ":";
-		this->_fullname += this->_typeName;
+		this->_fullname += this->type.expired()?"?":this->type.lock()->fullname();
 	}
 
 	return this->_fullname;
@@ -194,5 +208,5 @@ const std::string & fay::FayParamDef::fullname()
 
 void fay::FayParamDef::toString(mirror::utils::StringBuilder* sb)
 {
-	sb->add("[FayParamDef] ")->add(this->_name)->endl();
+	sb->add("[FayParamDef] ")->add(this->fullname())->endl();
 }

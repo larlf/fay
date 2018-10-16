@@ -99,6 +99,7 @@ namespace fay
 			: AstNode(name), _descWords(descWords) {}
 
 		virtual void dig1(FayBuilder* builder) override;
+		virtual void dig2(FayBuilder* builder) override;
 
 	};
 
@@ -117,8 +118,10 @@ namespace fay
 	class AstFun : public AstNode
 	{
 		using AstNode::AstNode;
+	private:
+		pos_t _index = -1;
 	public:
-		virtual void dig1(FayBuilder* builder) override;
+		virtual void dig2(FayBuilder* builder) override;
 
 	};
 
@@ -126,7 +129,7 @@ namespace fay
 	{
 		using AstNode::AstNode;
 	public:
-		virtual void dig1(FayBuilder* builder) override;
+		virtual void dig2(FayBuilder* builder) override;
 
 	};
 
