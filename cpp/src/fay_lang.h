@@ -14,6 +14,40 @@ namespace fay
 	class FayCode;
 	class FayParamDef;
 
+	//数据类型
+	class FayType : public FayObject
+	{
+	protected:
+		IndexMap<PTR(FayFun)> _funs;  //函数的映射
+
+	public:
+		//是否匹配
+		//当传入的类型和自己一样或是此类型的子类的时候为True
+		virtual bool match(PTR(FayType) type);
+		//查找符合要求的
+		std::vector<PTR(FayFun)> findFun(const std::string &funName, const std::vector<PTR(FayType)> &paramsType);
+		PTR(FayFun) findFun(pos_t index);
+	};
+
+	//简单类型
+	class SimpleType : public FayType
+	{
+	private:
+		static MAP<ValueType, PTR(FayType)> _Types;
+
+		ValueType _type;
+
+		//这种类型，不能从外部创建
+		SimpleType(ValueType valueType)
+			: _type(valueType) {}
+
+	public:
+		static PTR(FayType) Get(ValueType valueType);
+
+		// 通过 FayType 继承
+		virtual const std::string &fullname() override;
+	};
+
 	//当前总体管理类
 	class FayDomain : public FayObject, public std::enable_shared_from_this<FayDomain>
 	{
@@ -34,7 +68,7 @@ namespace fay
 		//根据引用和类型名，查找类型的定义
 		std::vector<PTR(FayType)> findType(std::vector<std::string> &imports, const std::string &typeName);
 		//从函数表中查找指定的函数
-		PTR(FayFun) findFun(const std::string &className, const std::string &funName, std::vector<PTR(FayType)> paramsType);
+		std::vector<PTR(FayFun)> findFun(const std::string &className, const std::string &funName, const std::vector<PTR(FayType)> &paramsType);
 
 		virtual void toString(mirror::utils::StringBuilder* sb) override;
 	};
@@ -52,7 +86,9 @@ namespace fay
 	class FayLib : public FayObject, public std::enable_shared_from_this<FayLib>
 	{
 	private:
-		IndexMap<PTR(OutsideFun)> _outsideFuns;  //外部函数的列表
+		//外部函数的列表
+		//这个表的主要用处，是把本Lib中的函数调用转换成索引值
+		IndexMap<PTR(OutsideFun)> _outsideFuns;
 
 	public:
 		std::string name;
@@ -64,7 +100,8 @@ namespace fay
 		~FayLib() {}
 
 		pos_t addClass(PTR(FayClass) clazz);
-		PTR(FayFun) findFun(const std::string &className, const std::string &funName, std::vector<PTR(FayType)> paramsType);
+		//返回调用方法在外部函数表中的索引
+		pos_t findOutsideFun(const std::string &className, const std::string &funName, const std::vector<PTR(FayType)> &paramsType);
 
 		virtual void toString(mirror::utils::StringBuilder* sb) override;
 	};
@@ -73,7 +110,7 @@ namespace fay
 	{
 	private:
 		std::string _fullname;  //全名
-		IndexMap<PTR(FayFun)> _funs;  //函数的映射
+		
 
 	public:
 		WPTR(FayDomain) domain; //所在的Domain
@@ -89,8 +126,7 @@ namespace fay
 		}
 
 		pos_t addFun(PTR(FayFun) fun);
-		PTR(FayFun) findFun(const std::string &funName, std::vector<PTR(FayType)> paramsType);
-		PTR(FayFun) findFun(pos_t index);
+
 
 		virtual const std::string &fullname() override;
 		virtual void toString(mirror::utils::StringBuilder* sb) override;
@@ -116,7 +152,7 @@ namespace fay
 		const std::string &name() { return this->_name; }
 
 		void addParam(PTR(FayParamDef) def);
-		bool matchParams(std::vector<PTR(FayType)> paramsType);
+		bool matchParams(const std::vector<PTR(FayType)> &paramsType);
 
 		virtual const std::string &fullname() override;
 		virtual void toString(mirror::utils::StringBuilder* sb) override;

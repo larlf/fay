@@ -55,3 +55,11 @@ void test::FayTests::TestLexer()
 	domain->toString(&sb);
 	PRINT(sb.toString());
 }
+
+void test::FayTests::Test1()
+{
+	WPTR(TestA) p1;
+	PTR(TestA) p2 = p1.lock();
+	if (p2==nullptr)
+		LOG_DEBUG("P1 is OK");
+}

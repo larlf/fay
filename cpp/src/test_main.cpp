@@ -13,10 +13,11 @@ void main()
 	{
 		//test::UtilsTest::testLog();
 		//test::UtilsTest::testString();
-		test::UtilsTest::testTrace();
+		//test::UtilsTest::testTrace();
 
 		test::FayTests::Init();
-		test::FayTests::TestLexer();
+		//test::FayTests::TestLexer();
+		test::FayTests::Test1();
 	}
 	catch (fay::ParseException &e)
 	{
