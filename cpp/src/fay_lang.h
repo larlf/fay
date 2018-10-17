@@ -143,11 +143,11 @@ namespace fay
 	public:
 		WPTR(FayDomain) domain;
 		WPTR(FayType) clazz;  //所属的类
-		std::vector<PTR(FayInst)> insts;  //代码
+		std::vector<FayInst*> insts;  //代码，注意这里考虑到性能，没用智能指针，因此所有地方也不存对指令的引用
 
 		FayFun(const std::string &name)
 			: _name(name) {}
-		~FayFun();
+		virtual ~FayFun();
 
 		const std::string &name() { return this->_name; }
 

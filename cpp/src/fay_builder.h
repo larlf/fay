@@ -39,6 +39,7 @@ namespace fay
 		void bindFun(pos_t index);
 
 		void addParamDefine(const std::string &name, const std::string &type);
+		void addInst(FayInst *inst);
 	};
 }
 

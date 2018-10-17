@@ -100,7 +100,7 @@ namespace fay
 
 		virtual void dig1(FayBuilder* builder) override;
 		virtual void dig2(FayBuilder* builder) override;
-
+		virtual void dig3(FayBuilder* builder) override;
 	};
 
 	class AstCondition : public AstNode
@@ -122,6 +122,7 @@ namespace fay
 		pos_t _index = -1;
 	public:
 		virtual void dig2(FayBuilder* builder) override;
+		virtual void dig3(FayBuilder* builder) override;
 
 	};
 
@@ -226,6 +227,9 @@ namespace fay
 		using AstNode::AstNode;
 	public:
 		virtual ValueType valueType() override;
+
+		virtual void dig3(FayBuilder* builder) override;
+
 	};
 
 }

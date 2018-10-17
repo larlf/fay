@@ -108,6 +108,12 @@ void fay::FayLib::toString(mirror::utils::StringBuilder* sb)
 
 fay::FayFun::~FayFun()
 {
+	for each(auto it in this->insts)
+	{
+		delete it;
+	}
+
+	this->insts.clear();
 }
 
 const std::string &fay::FayFun::fullname()
@@ -157,6 +163,8 @@ void fay::FayFun::toString(mirror::utils::StringBuilder* sb)
 	sb->add("[FayFun]")->add(this->fullname())->endl();
 	sb->increaseIndent();
 	for each(auto it in this->_params)
+		it->toString(sb);
+	for each(auto it in this->insts)
 		it->toString(sb);
 	sb->decreaseIndent();
 }

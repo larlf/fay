@@ -13,6 +13,9 @@ namespace fay
 	public:
 		InstPushString(const std::string &p1)
 			: _p1(p1) {}
+
+		virtual void toString(mirror::utils::StringBuilder* sb) override;
+
 	};
 
 	class InstCall : public FayInst

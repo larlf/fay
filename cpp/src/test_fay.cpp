@@ -44,13 +44,21 @@ void test::FayTests::TestLexer()
 
 	ast->dig1(builder.get());
 
+	PRINT("--------------------Dig1--------------------");
 	utils::StringBuilder sb;
 	domain->toString(&sb);
 	PRINT(sb.toString());
 
 	ast->dig2(builder.get());
+
+	PRINT("--------------------Dig2--------------------");
+	sb.clear();
+	domain->toString(&sb);
+	PRINT(sb.toString());
+
 	ast->dig3(builder.get());
 
+	PRINT("--------------------Dig3--------------------");
 	sb.clear();
 	domain->toString(&sb);
 	PRINT(sb.toString());

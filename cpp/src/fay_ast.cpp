@@ -65,10 +65,22 @@ void fay::AstClass::dig2(FayBuilder * builder)
 	AstNode::dig2(builder);
 }
 
+void fay::AstClass::dig3(FayBuilder * builder)
+{
+	builder->bindClass(this->typeIndex);
+	AstNode::dig3(builder);
+}
+
 void fay::AstFun::dig2(FayBuilder* builder)
 {
 	this->_index = builder->beginFun(this->_text);
 	AstNode::dig2(builder);
+}
+
+void fay::AstFun::dig3(FayBuilder * builder)
+{
+	builder->bindFun(this->_index);
+	AstNode::dig3(builder);
 }
 
 void fay::AstFile::dig1(FayBuilder* builder)
@@ -81,6 +93,12 @@ void fay::AstFile::dig1(FayBuilder* builder)
 ValueType fay::AstString::valueType()
 {
 	return ValueType::String;
+}
+
+void fay::AstString::dig3(FayBuilder* builder)
+{
+	InstPushString* inst = new InstPushString(this->text());
+	builder->addInst(inst);
 }
 
 void fay::AstParamDefine::dig2(FayBuilder* builder)

@@ -14,6 +14,9 @@ namespace fay
 		static std::string _EmptyStr;
 
 	public:
+		FayObject() {}
+		virtual ~FayObject() {}
+
 		//全名
 		virtual const std::string &fullname() { return FayObject::_EmptyStr;  }
 		//生成字符串的方法
@@ -23,7 +26,7 @@ namespace fay
 	//指令
 	class FayInst : public FayObject
 	{
-
+	public:
 	};
 
 	//有索引的Mpa结构

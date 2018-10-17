@@ -59,3 +59,8 @@ void fay::FayBuilder::addParamDefine(const std::string & name, const std::string
 	PTR(FayParamDef) def = MKPTR(FayParamDef)(name, t);
 	this->_fun->addParam(def);
 }
+
+void fay::FayBuilder::addInst(FayInst * inst)
+{
+	this->_fun->insts.push_back(inst);
+}
