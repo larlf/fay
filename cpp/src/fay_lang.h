@@ -17,12 +17,23 @@ namespace fay
 	class FayType;
 
 	//函数信息
-	class OutsideFun
+	class OutsideFun : public FayObject
 	{
+	private:
+		std::string _fullname;
+		pos_t _index;
+		std::string _typeFullname;
+		pos_t _typeIndex;
+		std::string _funFullname;
+		pos_t _funIndex;
+
 	public:
-		pos_t index;
-		std::string funFullname;
-		WPTR(FayFun) fun;
+		OutsideFun(pos_t index, const std::string &typeFullname, pos_t typeIndex, const std::string &funName, pos_t funIndex)
+			: _index(index), _typeFullname(typeFullname), _typeIndex(typeIndex), _funFullname(funName), _funIndex(funIndex) {}
+
+		const pos_t index() { return this->_index; }
+
+		virtual const std::string &fullname() override;
 	};
 
 	//////////////////////////////////////////////////////////////
@@ -56,7 +67,7 @@ namespace fay
 
 		pos_t addClass(PTR(FayClass) clazz);
 		//返回调用方法在外部函数表中的索引
-		pos_t findOutsideFun(const std::string &className, const std::string &funName, const std::vector<PTR(FayType)> &paramsType);
+		PTR(OutsideFun) findOutsideFun(const std::string &className, const std::string &funName, const std::vector<PTR(FayType)> &paramsType);
 
 		virtual void toString(mirror::utils::StringBuilder *sb) override;
 	};
@@ -76,6 +87,8 @@ namespace fay
 		//查找符合要求的
 		std::vector<PTR(FayFun)> findFun(const std::string &funName, const std::vector<PTR(FayType)> &paramsType);
 		PTR(FayFun) findFun(pos_t index);
+		pos_t getFunIndex(const std::string &funname);
+		pos_t getFunIndex(const PTR(FayFun) &fun);
 	};
 
 	//简单类型
@@ -174,6 +187,8 @@ namespace fay
 		//添加新的类型
 		//返回类型在Domain里的序号
 		pos_t addType(PTR(FayType) t);
+		//查找类型在Domain中的位置
+		pos_t getTypeIndex(PTR(FayType) t);
 		//根据类型的全称查找类型定义
 		PTR(FayType) findType(const std::string &typeFullname);
 		PTR(FayType) findType(pos_t index);

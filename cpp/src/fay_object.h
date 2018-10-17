@@ -36,7 +36,7 @@ namespace fay
 		MAP<std::string, pos_t> _map;
 
 	public:
-
+		pos_t size() { return this->_list.size(); }
 		const std::vector<T> &list() { return this->_list; }
 
 		pos_t add(const std::string &key, T obj)

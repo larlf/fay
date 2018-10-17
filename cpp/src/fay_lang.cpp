@@ -48,6 +48,16 @@ PTR(FayFun) fay::FayType::findFun(pos_t index)
 	return this->_funs.find(index);
 }
 
+pos_t fay::FayType::getFunIndex(const std::string & funname)
+{
+	return this->_funs.findIndex(funname);
+}
+
+pos_t fay::FayType::getFunIndex(const PTR(FayFun)& fun)
+{
+	return FayType::getFunIndex(fun->fullname());
+}
+
 pos_t fay::FayLib::addClass(PTR(FayClass) clazz)
 {
 	this->classes.push_back(clazz);
@@ -59,40 +69,43 @@ pos_t fay::FayLib::addClass(PTR(FayClass) clazz)
 	return -1;
 }
 
-pos_t fay::FayLib::findOutsideFun(const std::string &className, const std::string &funName, const std::vector<PTR(FayType)> &paramsType)
+PTR(OutsideFun) fay::FayLib::findOutsideFun(const std::string &className, const std::string &funName, const std::vector<PTR(FayType)> &paramsType)
 {
 	//检查domain是否正常
 	auto domain = this->domain();
 	if (!domain)
 	{
 		LOG_ERROR("Cannot find domain");
-		return -1;
+		return nullptr;
 	}
 
-	//没找到或有多个都不对
-	auto funs = domain->findFun(className, funName, paramsType);
+	auto clazz=domain->findType(className);
+	if (!clazz)
+	{
+		LOG_ERROR("Cannot find type : " << className);
+		return nullptr;
+	}
+
+	auto funs=clazz->findFun(funName, paramsType);
 	if (funs.size() <= 0)
 	{
 		LOG_ERROR("Cannot find fun "<<funName<<" in class "<<className);
-		return -1;
+		return nullptr;
 	}
 	else if (funs.size() > 1)
 	{
 		LOG_ERROR("Too many fun " << funName << " in class " << className);
-		return -1;
+		return nullptr;
 	}
 
-	auto fun = funs[0];
-	std::string fullname = fun->fullname();
+	//添加外部函数
+	PTR(OutsideFun) ofun = MKPTR(OutsideFun)(
+		this->_outsideFuns.size(), 
+		className, domain->getTypeIndex(clazz),
+		funName, clazz->getFunIndex(funs[0]));
+	this->_outsideFuns.add(ofun->fullname(), ofun);
 
-	pos_t index=this->_outsideFuns.findIndex(fullname);
-	if (index >= 0)
-		return index;
-
-	//添加对外部函数的引用
-	PTR(OutsideFun) ofun = MKPTR(OutsideFun)();
-	ofun->fun = fun;
-	return this->_outsideFuns.add(fullname, ofun);
+	return ofun;
 }
 
 void fay::FayLib::toString(mirror::utils::StringBuilder *sb)
@@ -242,6 +255,11 @@ pos_t fay::FayDomain::addType(PTR(FayType) t)
 	return this->_types.add(fullname, t);
 }
 
+pos_t fay::FayDomain::getTypeIndex(PTR(FayType) t)
+{
+	return this->_types.findIndex(t->fullname());
+}
+
 PTR(FayType) fay::FayDomain::findType(const std::string &typeFullname)
 {
 	auto type = this->_types.find(typeFullname);
@@ -313,4 +331,16 @@ void fay::FaySystemLib::init()
 	PTR(FaySystemClass) c = MKPTR(FaySystemClass)(this->domain());
 	this->addClass(c);
 	c->init();
+}
+
+const std::string & fay::OutsideFun::fullname()
+{
+	if (this->_fullname.empty())
+	{
+		this->_fullname.append(this->_typeFullname);
+		this->_fullname.append(".");
+		this->_fullname.append(this->_funFullname);
+	}
+
+	return this->_fullname;
 }
