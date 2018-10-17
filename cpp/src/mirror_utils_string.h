@@ -13,6 +13,8 @@ namespace mirror
 		class StringUtils
 		{
 		public:
+			//空字符串
+			const static std::string Blank;
 			/**
 			* 对字符串进行转码
 			* @param source 源字符串

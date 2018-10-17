@@ -10,15 +10,12 @@ namespace fay
 	//所有对象的基类
 	class FayObject
 	{
-	private:
-		static std::string _EmptyStr;
-
 	public:
 		FayObject() {}
 		virtual ~FayObject() {}
 
 		//全名
-		virtual const std::string &fullname() { return FayObject::_EmptyStr;  }
+		virtual const std::string &fullname() { return mirror::utils::StringUtils::Blank;  }
 		//生成字符串的方法
 		virtual void toString(mirror::utils::StringBuilder* sb) {}
 	};

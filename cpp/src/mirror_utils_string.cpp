@@ -3,6 +3,10 @@
 #include <iconv.h>
 #include <string>
 
+using namespace mirror::utils;
+
+const std::string StringUtils::Blank;
+
 std::string mirror::utils::StringUtils::Encoding(const std::string &source, const std::string &fromCode, const std::string &toCode)
 {
 	if (fromCode == toCode)
