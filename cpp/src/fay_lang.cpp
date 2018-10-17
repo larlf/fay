@@ -50,21 +50,19 @@ PTR(FayFun) fay::FayType::findFun(pos_t index)
 
 pos_t fay::FayLib::addClass(PTR(FayClass) clazz)
 {
-	clazz->domain = this->domain;
-	clazz->lib = this->shared_from_this();
-
 	this->classes.push_back(clazz);
 
-	if (!this->domain.expired())
-		return this->domain.lock()->addType(clazz);
+	auto domain = this->domain();
+	if (domain)
+		return domain->addType(clazz);
 
 	return -1;
 }
 
-pos_t fay::FayLib::findOutsideFun(const std::string & className, const std::string & funName, const std::vector<PTR(FayType)> &paramsType)
+pos_t fay::FayLib::findOutsideFun(const std::string &className, const std::string &funName, const std::vector<PTR(FayType)> &paramsType)
 {
 	//检查domain是否正常
-	auto domain = this->domain.lock();
+	auto domain = this->domain();
 	if (!domain)
 	{
 		LOG_ERROR("Cannot find domain");
@@ -97,7 +95,7 @@ pos_t fay::FayLib::findOutsideFun(const std::string & className, const std::stri
 	return this->_outsideFuns.add(fullname, ofun);
 }
 
-void fay::FayLib::toString(mirror::utils::StringBuilder* sb)
+void fay::FayLib::toString(mirror::utils::StringBuilder *sb)
 {
 	sb->add("[FayLib]")->add(this->name)->endl();
 	sb->increaseIndent();
@@ -109,9 +107,7 @@ void fay::FayLib::toString(mirror::utils::StringBuilder* sb)
 fay::FayFun::~FayFun()
 {
 	for each(auto it in this->insts)
-	{
 		delete it;
-	}
 
 	this->insts.clear();
 }
@@ -128,8 +124,6 @@ const std::string &fay::FayFun::fullname()
 			str += it->fullname();
 		}
 
-		this->_fullname += this->clazz.lock()->fullname();
-		this->_fullname += ".";
 		this->_fullname += this->_name;
 		this->_fullname += "(" + str + ")";
 	}
@@ -158,7 +152,7 @@ bool fay::FayFun::matchParams(const std::vector<PTR(FayType)> &paramsType)
 	return true;
 }
 
-void fay::FayFun::toString(mirror::utils::StringBuilder* sb)
+void fay::FayFun::toString(mirror::utils::StringBuilder *sb)
 {
 	sb->add("[FayFun]")->add(this->fullname())->endl();
 
@@ -179,17 +173,13 @@ void fay::FayFun::toString(mirror::utils::StringBuilder* sb)
 
 pos_t fay::FayClass::addFun(PTR(FayFun) fun)
 {
-	//LOG_DEBUG("Add fun " << fun->name() << " to class " << this->name());
-	fun->domain = this->domain;
-	fun->clazz = this->shared_from_this();
-
 	pos_t index=this->_funs.add(fun->fullname(), fun);
 	return index;
 }
 
 
 
-void fay::FayClass::toString(mirror::utils::StringBuilder* sb)
+void fay::FayClass::toString(mirror::utils::StringBuilder *sb)
 {
 	sb->add("[FayClass]")->add(this->_fullname)->endl();
 	sb->increaseIndent();
@@ -217,8 +207,6 @@ fay::FayDomain::FayDomain()
 
 void fay::FayDomain::addLib(PTR(FayLib) lib)
 {
-	lib->domain = this->shared_from_this();
-
 	//先生成相互的引用关系
 	this->_libs.push_back(lib);
 
@@ -227,7 +215,7 @@ void fay::FayDomain::addLib(PTR(FayLib) lib)
 		this->_types.add(it->fullname(), it);
 }
 
-void fay::FayDomain::toString(mirror::utils::StringBuilder* sb)
+void fay::FayDomain::toString(mirror::utils::StringBuilder *sb)
 {
 	sb->add("[FayDomain]")->endl();
 	sb->increaseIndent();
@@ -308,31 +296,21 @@ const std::string &fay::FayParamDef::fullname()
 	return this->_fullname;
 }
 
-void fay::FayParamDef::toString(mirror::utils::StringBuilder* sb)
+void fay::FayParamDef::toString(mirror::utils::StringBuilder *sb)
 {
 	sb->add("[FayParamDef] ")->add(this->fullname())->endl();
 }
 
-fay::FaySystemClass::FaySystemClass()
-	: FayClass("fay","System")
-{
-}
-
 void fay::FaySystemClass::init()
 {
-	PTR(FayFun) fun = MKPTR(FayFun)("Print");
+	PTR(FayFun) fun = MKPTR(FayFun)(this->domain(), "Print");
 	fun->addParam(MKPTR(FayParamDef)("str", SimpleType::Get(ValueType::String)));
 	this->addFun(fun);
 }
 
-fay::FaySystemLib::FaySystemLib()
-	: FayLib("System")
-{
-}
-
 void fay::FaySystemLib::init()
 {
-	PTR(FaySystemClass) c = MKPTR(FaySystemClass)();
+	PTR(FaySystemClass) c = MKPTR(FaySystemClass)(this->domain());
 	this->addClass(c);
 	c->init();
 }

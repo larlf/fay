@@ -20,13 +20,13 @@ void fay::FayBuilder::endFile()
 
 void fay::FayBuilder::beginLib(const std::string &name)
 {
-	this->_lib = MKPTR(FayLib)(name);
+	this->_lib = MKPTR(FayLib)(this->_domain, name);
 	this->_domain->addLib(this->_lib);
 }
 
 pos_t fay::FayBuilder::beginClass(const std::string &name)
 {
-	PTR(FayClass) clazz = MKPTR(FayClass)(this->_package, name);
+	PTR(FayClass) clazz = MKPTR(FayClass)(this->_domain, this->_package, name);
 	this->_class = clazz;
 	return this->_lib->addClass(clazz);
 }
@@ -38,7 +38,7 @@ void fay::FayBuilder::bindClass(pos_t index)
 
 pos_t fay::FayBuilder::beginFun(const std::string &name)
 {
-	this->_fun = MKPTR(FayFun)(name);
+	this->_fun = MKPTR(FayFun)(this->_domain, name);
 	return this->_class->addFun(this->_fun);
 }
 
@@ -80,11 +80,7 @@ pos_t fay::FayBuilder::findFun(const std::string &name, const std::vector<std::s
 
 	std::vector<PTR(FayType)> types;
 	for each(auto it in paramsTypeName)
-	{
 		types.push_back(this->_domain->findType(it));
-	}
 
-	this->_lib->findOutsideFun(className, funName, types);
-
-	return -1;
+	return this->_lib->findOutsideFun(className, funName, types);
 }

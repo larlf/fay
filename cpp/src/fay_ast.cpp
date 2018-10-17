@@ -121,7 +121,10 @@ ValueType fay::AstType::valueType()
 void fay::AstCall::dig3(FayBuilder *builder)
 {
 	std::vector<std::string> paramsType;
+	paramsType.push_back("string");
 
 	pos_t index = builder->findFun(this->text(), paramsType);
+	LOG_DEBUG("Index : " << index);
+
 	AstNode::dig3(builder);
 }
