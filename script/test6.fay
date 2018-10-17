@@ -6,15 +6,15 @@ public class Test6
 {
 	static public fun main():void
 	{
-		System.print("Hello!");
+		fay.System.Print("Hello!");
 		var a:int=5;
 		var b:long=6;
-		System.print(a+b);
+		fay.System.Print(a+b);
 	}
 
 	static public fun .main():void
 	{
-		fay.system.IO.print("Hello, World!");
+		fay.System.Print("Hello, World!");
 	}
 }
 

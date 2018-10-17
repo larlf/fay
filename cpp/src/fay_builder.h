@@ -40,6 +40,8 @@ namespace fay
 
 		void addParamDefine(const std::string &name, const std::string &type);
 		void addInst(FayInst *inst);
+
+		pos_t findFun(const std::string &name, const std::vector<std::string> paramsTypeName);
 	};
 }
 

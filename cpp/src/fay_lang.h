@@ -174,5 +174,22 @@ namespace fay
 		virtual const std::string &fullname() override;
 		virtual void toString(mirror::utils::StringBuilder* sb) override;
 	};
+
+	/////////////////////////////////////////////////
+
+	class FaySystemClass : public FayClass
+	{
+	public:
+		FaySystemClass();
+		void init();
+	};
+
+	class FaySystemLib : public FayLib
+	{
+	public:
+		FaySystemLib();
+		void init();
+	};
+
 }
 

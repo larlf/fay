@@ -161,11 +161,19 @@ bool fay::FayFun::matchParams(const std::vector<PTR(FayType)> &paramsType)
 void fay::FayFun::toString(mirror::utils::StringBuilder* sb)
 {
 	sb->add("[FayFun]")->add(this->fullname())->endl();
+
 	sb->increaseIndent();
+
 	for each(auto it in this->_params)
 		it->toString(sb);
-	for each(auto it in this->insts)
+
+	for (auto i = 0; i < this->insts.size(); ++i)
+	{
+		auto it = this->insts[i];
+		sb->add(i)->add(" : ");
 		it->toString(sb);
+	}
+
 	sb->decreaseIndent();
 }
 
@@ -303,4 +311,28 @@ const std::string &fay::FayParamDef::fullname()
 void fay::FayParamDef::toString(mirror::utils::StringBuilder* sb)
 {
 	sb->add("[FayParamDef] ")->add(this->fullname())->endl();
+}
+
+fay::FaySystemClass::FaySystemClass()
+	: FayClass("fay","System")
+{
+}
+
+void fay::FaySystemClass::init()
+{
+	PTR(FayFun) fun = MKPTR(FayFun)("Print");
+	fun->addParam(MKPTR(FayParamDef)("str", SimpleType::Get(ValueType::String)));
+	this->addFun(fun);
+}
+
+fay::FaySystemLib::FaySystemLib()
+	: FayLib("System")
+{
+}
+
+void fay::FaySystemLib::init()
+{
+	PTR(FaySystemClass) c = MKPTR(FaySystemClass)();
+	this->addClass(c);
+	c->init();
 }

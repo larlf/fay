@@ -40,16 +40,16 @@ namespace fay
 		//节点的数值类型
 		virtual ValueType valueType() { return ValueType::Void; }
 		//转换成字符串
-		virtual void toString(mirror::utils::StringBuilder* sb) override;
+		virtual void toString(mirror::utils::StringBuilder *sb) override;
 
 		//因为生成数据的时候对结构会有依赖，只能先生成结构，再生成代码
 		//就像在田里挖土豆，挖一遍再挖一遍，需要经过多次dig()才能生成最终的结构
 		//第一次，只产生Class这一级的信息
-		virtual void dig1(FayBuilder* builder);
+		virtual void dig1(FayBuilder *builder);
 		//第二次，生成函数和函数参数列表
-		virtual void dig2(FayBuilder* builder);
+		virtual void dig2(FayBuilder *builder);
 		//第三次，生成中间代码
-		virtual void dig3(FayBuilder* builder);
+		virtual void dig3(FayBuilder *builder);
 		//会不会有第四次，拭目以待……
 	};
 
@@ -62,7 +62,7 @@ namespace fay
 	{
 		using AstNode::AstNode;
 	public:
-		virtual void dig1(FayBuilder* builder) override;
+		virtual void dig1(FayBuilder *builder) override;
 
 	};
 
@@ -75,7 +75,7 @@ namespace fay
 	{
 		using AstNode::AstNode;
 	public:
-		virtual void dig1(FayBuilder* builder) override;
+		virtual void dig1(FayBuilder *builder) override;
 
 	};
 
@@ -98,9 +98,9 @@ namespace fay
 		AstClass(const std::string &name, std::vector<std::string> &descWords)
 			: AstNode(name), _descWords(descWords) {}
 
-		virtual void dig1(FayBuilder* builder) override;
-		virtual void dig2(FayBuilder* builder) override;
-		virtual void dig3(FayBuilder* builder) override;
+		virtual void dig1(FayBuilder *builder) override;
+		virtual void dig2(FayBuilder *builder) override;
+		virtual void dig3(FayBuilder *builder) override;
 	};
 
 	class AstCondition : public AstNode
@@ -121,8 +121,8 @@ namespace fay
 	private:
 		pos_t _index = -1;
 	public:
-		virtual void dig2(FayBuilder* builder) override;
-		virtual void dig3(FayBuilder* builder) override;
+		virtual void dig2(FayBuilder *builder) override;
+		virtual void dig3(FayBuilder *builder) override;
 
 	};
 
@@ -130,7 +130,7 @@ namespace fay
 	{
 		using AstNode::AstNode;
 	public:
-		virtual void dig2(FayBuilder* builder) override;
+		virtual void dig2(FayBuilder *builder) override;
 
 	};
 
@@ -195,6 +195,9 @@ namespace fay
 	class AstCall : public AstNode
 	{
 		using AstNode::AstNode;
+	public:
+		virtual void dig3(FayBuilder *builder) override;
+
 	};
 
 	class AstIf : public AstNode
@@ -228,7 +231,7 @@ namespace fay
 	public:
 		virtual ValueType valueType() override;
 
-		virtual void dig3(FayBuilder* builder) override;
+		virtual void dig3(FayBuilder *builder) override;
 
 	};
 
