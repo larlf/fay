@@ -9,15 +9,34 @@
 #include <fay_object.h>
 #include <fay_type.h>
 #include <fay_builder.h>
+#include <fay_token.h>
 
 namespace fay
 {
+	class AstNode;
+
+	//语法解析中的异常
+	class BuildException : public std::exception
+	{
+	private:
+		std::string _trace;
+
+	public:
+		//stack : 当前正在处理的TokenStack
+		//msg : 错误信息
+		BuildException(PTR(AstNode) ast, const std::string &msg) {}
+
+		//取抛出异常的堆栈
+		const std::string trace() { return _trace; }
+	};
+
 	class AstNode : public FayObject, public std::enable_shared_from_this<AstNode>
 	{
 	protected:
 		std::string _text;
 		WPTR(AstNode) _parent;
 		std::vector<PTR(AstNode)> _nodes;
+		PTR(fay::Token) _token;
 
 		//取当前Class的名字，需要启用RTTI
 		std::string className();
@@ -27,6 +46,9 @@ namespace fay
 
 		AstNode(const std::string &text)
 			:_text(text) {}
+
+		AstNode(PTR(Token) token)
+			:_token(token), _text(token->text()) {}
 
 		virtual ~AstNode() {}
 

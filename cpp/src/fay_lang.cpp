@@ -69,48 +69,45 @@ pos_t fay::FayLib::addClass(PTR(FayClass) clazz)
 	return -1;
 }
 
-PTR(OutsideFun) fay::FayLib::findOutsideFun(const std::string &className, const std::string &funName, const std::vector<PTR(FayType)> &paramsType)
+pos_t fay::FayLib::findOutsideFun(const std::string &className, const std::string &funName, const std::vector<PTR(FayType)> &paramsType)
 {
 	//查找当前是否已经有了
 	std::string fullname = FayLangUtils::Fullname(className, funName, paramsType);
-	PTR(OutsideFun) fun=this->_outsideFuns.find(fullname);
-	if (fun) return fun;
+	pos_t index=this->_outsideFuns.findIndex(fullname);
+	if (index>=0) return index;
 
 	//检查domain是否正常
 	auto domain = this->domain();
 	if (!domain)
 	{
 		LOG_ERROR("Cannot find domain");
-		return nullptr;
+		return -1;
 	}
 
 	auto clazz=domain->findType(className);
 	if (!clazz)
 	{
 		LOG_ERROR("Cannot find type : " << className);
-		return nullptr;
+		return -1;
 	}
 
 	auto funs=clazz->findFun(funName, paramsType);
 	if (funs.size() <= 0)
 	{
 		LOG_ERROR("Cannot find fun "<<funName<<" in class "<<className);
-		return nullptr;
+		return -1;
 	}
 	else if (funs.size() > 1)
 	{
 		LOG_ERROR("Too many fun " << funName << " in class " << className);
-		return nullptr;
+		return -1;
 	}
 
 	//添加外部函数
 	PTR(OutsideFun) ofun = MKPTR(OutsideFun)(
-			this->_outsideFuns.size(),
 			className, domain->getTypeIndex(clazz),
 			funName, clazz->getFunIndex(funs[0]));
-	this->_outsideFuns.add(fullname, ofun);
-
-	return ofun;
+	return this->_outsideFuns.add(fullname, ofun);
 }
 
 void fay::FayLib::toString(mirror::utils::StringBuilder *sb)

@@ -21,17 +21,14 @@ namespace fay
 	{
 	private:
 		std::string _fullname;
-		pos_t _index;
 		std::string _typeFullname;
 		pos_t _typeIndex;
 		std::string _funFullname;
 		pos_t _funIndex;
 
 	public:
-		OutsideFun(pos_t index, const std::string &typeFullname, pos_t typeIndex, const std::string &funName, pos_t funIndex)
-			: _index(index), _typeFullname(typeFullname), _typeIndex(typeIndex), _funFullname(funName), _funIndex(funIndex) {}
-
-		const pos_t index() { return this->_index; }
+		OutsideFun(const std::string &typeFullname, pos_t typeIndex, const std::string &funName, pos_t funIndex)
+			: _typeFullname(typeFullname), _typeIndex(typeIndex), _funFullname(funName), _funIndex(funIndex) {}
 	};
 
 	//工具类
@@ -74,7 +71,7 @@ namespace fay
 
 		pos_t addClass(PTR(FayClass) clazz);
 		//返回调用方法在外部函数表中的索引
-		PTR(OutsideFun) findOutsideFun(const std::string &className, const std::string &funName, const std::vector<PTR(FayType)> &paramsType);
+		pos_t findOutsideFun(const std::string &className, const std::string &funName, const std::vector<PTR(FayType)> &paramsType);
 
 		virtual void toString(mirror::utils::StringBuilder *sb) override;
 	};

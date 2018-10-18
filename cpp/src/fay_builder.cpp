@@ -80,7 +80,10 @@ pos_t fay::FayBuilder::findFun(const std::string &name, const std::vector<std::s
 
 	std::vector<PTR(FayType)> types;
 	for each(auto it in paramsTypeName)
-		types.push_back(this->_domain->findType(it));
+	{
+		auto t = this->_domain->findType(it);
+		types.push_back(t);
+	}
 
-	return this->_lib->findOutsideFun(className, funName, types)->index();
+	return this->_lib->findOutsideFun(className, funName, types);
 }
