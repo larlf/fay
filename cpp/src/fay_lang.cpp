@@ -48,7 +48,7 @@ PTR(FayFun) fay::FayType::findFun(pos_t index)
 	return this->_funs.find(index);
 }
 
-pos_t fay::FayType::getFunIndex(const std::string & funname)
+pos_t fay::FayType::getFunIndex(const std::string &funname)
 {
 	return this->_funs.findIndex(funname);
 }
@@ -71,6 +71,11 @@ pos_t fay::FayLib::addClass(PTR(FayClass) clazz)
 
 PTR(OutsideFun) fay::FayLib::findOutsideFun(const std::string &className, const std::string &funName, const std::vector<PTR(FayType)> &paramsType)
 {
+	//查找当前是否已经有了
+	std::string fullname = FayLangUtils::Fullname(className, funName, paramsType);
+	PTR(OutsideFun) fun=this->_outsideFuns.find(fullname);
+	if (fun) return fun;
+
 	//检查domain是否正常
 	auto domain = this->domain();
 	if (!domain)
@@ -100,10 +105,10 @@ PTR(OutsideFun) fay::FayLib::findOutsideFun(const std::string &className, const 
 
 	//添加外部函数
 	PTR(OutsideFun) ofun = MKPTR(OutsideFun)(
-		this->_outsideFuns.size(), 
-		className, domain->getTypeIndex(clazz),
-		funName, clazz->getFunIndex(funs[0]));
-	this->_outsideFuns.add(ofun->fullname(), ofun);
+			this->_outsideFuns.size(),
+			className, domain->getTypeIndex(clazz),
+			funName, clazz->getFunIndex(funs[0]));
+	this->_outsideFuns.add(fullname, ofun);
 
 	return ofun;
 }
@@ -333,14 +338,21 @@ void fay::FaySystemLib::init()
 	c->init();
 }
 
-const std::string & fay::OutsideFun::fullname()
+std::string fay::FayLangUtils::Fullname(const std::string &funName, const std::vector<PTR(FayType)> &params)
 {
-	if (this->_fullname.empty())
+	std::string str;
+	for each(auto it in params)
 	{
-		this->_fullname.append(this->_typeFullname);
-		this->_fullname.append(".");
-		this->_fullname.append(this->_funFullname);
+		if (str.size() > 0)
+			str.append(",");
+		str.append(it->fullname());
 	}
 
-	return this->_fullname;
+	str = funName + "(" + str + ")" + funName;
+	return str;
+}
+
+std::string fay::FayLangUtils::Fullname(const std::string &className, const std::string &funName, const std::vector<PTR(FayType)> &params)
+{
+	return className + "." + FayLangUtils::Fullname(funName, params);
 }

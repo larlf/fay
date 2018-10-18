@@ -17,7 +17,7 @@ namespace fay
 	class FayType;
 
 	//函数信息
-	class OutsideFun : public FayObject
+	class OutsideFun
 	{
 	private:
 		std::string _fullname;
@@ -32,8 +32,15 @@ namespace fay
 			: _index(index), _typeFullname(typeFullname), _typeIndex(typeIndex), _funFullname(funName), _funIndex(funIndex) {}
 
 		const pos_t index() { return this->_index; }
+	};
 
-		virtual const std::string &fullname() override;
+	//工具类
+	class FayLangUtils
+	{
+	public:
+		//用于生成名称的方法
+		static std::string Fullname(const std::string &funName, const std::vector<PTR(FayType)> &params);
+		static std::string Fullname(const std::string &className, const std::string &funName, const std::vector<PTR(FayType)> &params);
 	};
 
 	//////////////////////////////////////////////////////////////
@@ -132,8 +139,16 @@ namespace fay
 		virtual void toString(mirror::utils::StringBuilder *sb) override;
 	};
 
+	//代码块，包括函数、内部函数、匿名函数等
+	class FayCode : public FayLangObject
+	{
+		using FayLangObject::FayLangObject;
+	public:
+		virtual void Invoke(const std::vector<FayValue> &params) {}
+	};
+
 	//函数
-	class FayFun : public FayLangObject, public std::enable_shared_from_this<FayFun>
+	class FayFun : public FayCode, public std::enable_shared_from_this<FayFun>
 	{
 	private:
 		std::string _name;
@@ -144,7 +159,7 @@ namespace fay
 		std::vector<FayInst *> insts; //代码，注意这里考虑到性能，没用智能指针，因此所有地方也不存对指令的引用
 
 		FayFun(PTR(FayDomain) domain, const std::string &name)
-			: FayLangObject(domain), _name(name) {}
+			: FayCode(domain), _name(name) {}
 		virtual ~FayFun();
 
 		const std::string &name() { return this->_name; }
