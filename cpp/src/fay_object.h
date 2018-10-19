@@ -24,6 +24,7 @@ namespace fay
 	class FayInst : public FayObject
 	{
 	public:
+		virtual void toString(mirror::utils::StringBuilder* sb) { sb->endl(); }
 	};
 
 	//值

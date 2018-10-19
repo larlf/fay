@@ -13,7 +13,7 @@ PTR(AstNode) fay::Parser::_MakeLeftRightOPNode(std::function<PTR(AstNode)(TokenS
 		&& (std::find(ops.begin(), ops.end(), stack->now()->text()) != ops.end()))
 	{
 		//生成节点
-		auto node = MKPTR(AstLeftRightOP)(stack->now()->text());
+		auto node = MKPTR(AstLeftRightOP)(stack->now());
 		node->addChildNode(leftNode);
 
 		//取右值
@@ -57,7 +57,7 @@ PTR(AstNode) fay::Parser::_Using(TokenStack* stack)
 		if (!stack->next()->is(TokenType::ID))
 			throw ParseException(stack, "using format error");
 
-		node = MKPTR(AstUsing)(stack->now()->text());
+		node = MKPTR(AstUsing)(stack->now());
 
 		if (!stack->next()->is(TokenType::Semicolon))
 			throw ParseException(stack, "using not stop with ;");
@@ -77,7 +77,7 @@ PTR(AstNode) fay::Parser::_Package(TokenStack* stack)
 		if (!stack->next()->is(TokenType::ID))
 			throw ParseException(stack, "package format error");
 
-		node = MKPTR(AstPackage)(stack->now()->text());
+		node = MKPTR(AstPackage)(stack->now());
 
 		if (!stack->next()->is(TokenType::Semicolon))
 			throw ParseException(stack, "package not stop with ;");
@@ -101,7 +101,7 @@ PTR(AstNode) fay::Parser::_Class(TokenStack* stack)
 	//Class name
 	if (!stack->now()->is(TokenType::ID))
 		throw ParseException(stack, "bad class name");
-	PTR(AstClass) node = MKPTR(AstClass)(stack->now()->text(), descWords);
+	PTR(AstClass) node = MKPTR(AstClass)(stack->now(), descWords);
 	stack->next();
 
 	//开始的括号
@@ -168,7 +168,7 @@ PTR(AstNode) fay::Parser::_Field(TokenStack* stack)
 
 	if (!stack->now()->is(TokenType::ID))
 		throw ParseException(stack, "connot find var name");
-	PTR(AstField) node = MKPTR(AstField)(stack->now()->text());
+	PTR(AstField) node = MKPTR(AstField)(stack->now());
 	stack->next();
 
 	//处理类型，也可能没有，这样的话需要由数据进行推断
@@ -207,7 +207,7 @@ PTR(AstNode) fay::Parser::_Fun(TokenStack* stack)
 	if (!stack->now()->is(TokenType::ID) && !stack->now()->is(TokenType::SystemName))
 		throw ParseException(stack, "bad function name");
 
-	PTR(AstFun) node = MKPTR(AstFun)(stack->move()->text());
+	PTR(AstFun) node = MKPTR(AstFun)(stack->move());
 
 	//参数列表
 	if (!stack->now()->is("("))
@@ -245,7 +245,7 @@ PTR(AstNode) fay::Parser::_Call(TokenStack* stack)
 {
 	if (stack->now()->is(TokenType::ID))
 	{
-		PTR(AstCall) node = MKPTR(AstCall)(stack->now()->text());
+		PTR(AstCall) node = MKPTR(AstCall)(stack->now());
 		stack->next();
 
 		if (!stack->now()->is("("))
@@ -453,7 +453,7 @@ PTR(AstNode) fay::Parser::_ParamDef(TokenStack* stack)
 {
 	if (stack->now()->is(TokenType::ID) && stack->after()->is(TokenType::Colon))
 	{
-		auto node = MKPTR(AstParamDefine)(stack->now()->text());
+		auto node = MKPTR(AstParamDefine)(stack->now());
 		stack->next();
 		stack->next();
 
@@ -516,11 +516,11 @@ PTR(AstNode) fay::Parser::_ParamList(TokenStack* stack)
 PTR(AstNode) fay::Parser::_ExprPrimary(TokenStack* stack)
 {
 	if (stack->now()->is(TokenType::Number))
-		return MKPTR(AstNumber)(stack->move()->text());
+		return MKPTR(AstNumber)(stack->move());
 	else if (stack->now()->is(TokenType::String))
-		return MKPTR(AstString)(stack->move()->text());
+		return MKPTR(AstString)(stack->move());
 	else if (stack->now()->is(TokenType::Char))
-		return MKPTR(AstByte)(stack->move()->text());
+		return MKPTR(AstByte)(stack->move());
 	else if (stack->now()->is(TokenType::ID))
 	{
 		//如果下面是括号，应该是个调用
@@ -528,7 +528,7 @@ PTR(AstNode) fay::Parser::_ExprPrimary(TokenStack* stack)
 			return Parser::_Call(stack);
 
 		//不然就是一个ID
-		return MKPTR(AstID)(stack->move()->text());
+		return MKPTR(AstID)(stack->move());
 	}
 	else if (stack->now()->is("("))  //处理括号里的内容
 	{
@@ -575,7 +575,7 @@ PTR(AstNode) fay::Parser::_ExprPost(TokenStack* stack)
 	if (stack->now()->is(TokenType::OP) &&
 		(stack->now()->is("++") || stack->now()->is("--")))
 	{
-		node = MKPTR(AstPostOP)(stack->now()->text());
+		node = MKPTR(AstPostOP)(stack->now());
 		node->addChildNode(node);
 		stack->next();
 	}
@@ -591,7 +591,7 @@ PTR(AstNode) fay::Parser::_ExprPre(TokenStack* stack)
 			|| stack->now()->is("!")
 			|| stack->now()->is("~")))
 	{
-		auto node = MKPTR(AstPreOP)(stack->move()->text());
+		auto node = MKPTR(AstPreOP)(stack->move());
 		auto rightNode = _ExprPost(stack);
 		node->addChildNode(rightNode);
 		return node;
@@ -634,7 +634,7 @@ PTR(AstNode) fay::Parser::_AddrExprItem(TokenStack* stack)
 			return _Call(stack);
 
 		//不然就是一个ID
-		return MKPTR(AstID)(stack->move()->text());
+		return MKPTR(AstID)(stack->move());
 	}
 	else if (stack->now()->is("("))  //处理括号里的内容
 	{

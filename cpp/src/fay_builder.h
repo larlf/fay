@@ -21,6 +21,7 @@ namespace fay
 			: _domain(domain) {}
 		~FayBuilder() {}
 
+		PTR(FayDomain) domain() { return this->_domain; }
 		PTR(FayLib) lib() { return this->_lib; }
 		PTR(FayClass) clazz() { return this->_class; }
 		PTR(FayFun) fun() { return this->_fun; }

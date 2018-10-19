@@ -4,8 +4,6 @@
 
 namespace fay
 {
-
-
 	class InstPushString : public FayInst
 	{
 	private:
@@ -21,12 +19,11 @@ namespace fay
 	class InstCall : public FayInst
 	{
 	private:
-		std::string _p1;
-		std::string _p2;
-		int32_t _p3;
+		pos_t _p1;
+		int32_t _p2;
 	public:
-		InstCall(const std::string &p1, const std::string &p2, int32_t p3)
-			: _p1(p1), _p2(p2), _p3(p3) {}
+		InstCall(pos_t p1, int32_t p2)
+			: _p1(p1), _p2(p2) {}
 
 	};
 }

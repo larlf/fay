@@ -24,7 +24,7 @@ namespace fay
 	public:
 		//stack : 当前正在处理的TokenStack
 		//msg : 错误信息
-		BuildException(PTR(AstNode) ast, const std::string &msg) {}
+		BuildException(PTR(fay::AstNode) ast, const std::string &msg);
 
 		//取抛出异常的堆栈
 		const std::string trace() { return _trace; }
@@ -38,26 +38,37 @@ namespace fay
 		std::vector<PTR(AstNode)> _nodes;
 		PTR(fay::Token) _token;
 
-		//取当前Class的名字，需要启用RTTI
-		std::string className();
-
 	public:
 		AstNode() {}
 
 		AstNode(const std::string &text)
 			:_text(text) {}
 
-		AstNode(PTR(Token) token)
+		AstNode(const PTR(Token) &token)
 			:_token(token), _text(token->text()) {}
 
 		virtual ~AstNode() {}
 
 		const std::string &text() { return this->_text; }
+		const PTR(fay::Token) &token() { return this->_token; }
 		size_t childNodesNum() { return this->_nodes.size(); }
+
+		//取子节点
+		PTR(AstNode) childNode(size_t index) { return (index >= 0 && index < this->_nodes.size()) ? this->_nodes[index] : nullptr; }
+		//取子节点并自带类型转换
+		template<typename T> PTR(T) childNode(size_t index) { return (typeid(*this->_nodes[index]) == typeid(T)) ? TOPTR(T, this->_nodes[index]) : nullptr; }
+
+		//取当前Class的名字，需要启用RTTI
+		virtual std::string className();
+
+		//用于判断类型
 		template<typename T> bool is() { return typeid(*this) == typeid(T); }
+		virtual bool is(const type_info &type);
 
 		//添加子节点
 		void addChildNode(PTR(AstNode) node);
+		//生成当前节点的信息
+		std::string traceInfo();
 
 		//节点的数值类型
 		virtual ValueType valueType() { return ValueType::Void; }
@@ -117,8 +128,8 @@ namespace fay
 		std::vector<std::string> _descWords;
 		pos_t typeIndex = -1;  //用于记录在domain中的位置
 	public:
-		AstClass(const std::string &name, std::vector<std::string> &descWords)
-			: AstNode(name), _descWords(descWords) {}
+		AstClass(const PTR(fay::Token) &token, std::vector<std::string> &descWords)
+			: AstNode(token), _descWords(descWords) {}
 
 		virtual void dig1(FayBuilder *builder) override;
 		virtual void dig2(FayBuilder *builder) override;
@@ -152,18 +163,22 @@ namespace fay
 	{
 		using AstNode::AstNode;
 	public:
+		PTR(FayType) getType(FayBuilder *builder);
 		virtual void dig2(FayBuilder *builder) override;
-
 	};
 
 	class AstParamDefineList : public AstNode
 	{
 		using AstNode::AstNode;
+	public:
+		std::vector<PTR(FayType)> getTypeList(fay::FayBuilder *builder);
 	};
 
 	class AstParams : public AstNode
 	{
 		using AstNode::AstNode;
+	public:
+		size_t size() { return this->childNodesNum(); }
 	};
 
 	class AstType : public AstNode
@@ -171,7 +186,7 @@ namespace fay
 		using AstNode::AstNode;
 	public:
 		virtual ValueType valueType() override;
-
+		PTR(FayType) toFayType(FayBuilder *builder);
 	};
 
 	class AstArrayType : public AstNode

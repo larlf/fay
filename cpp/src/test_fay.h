@@ -23,11 +23,26 @@ namespace test
 		}
 	};
 
+	class ClassA
+	{
+	};
+
+	class ClassB : public ClassA
+	{
+
+	};
+
+	class ClassC : public ClassB
+	{
+
+	};
+
 	class FayTests
 	{
 	public:
 		static void Init();
 		static void TestLexer();
 		static void Test1();
+		static void TestRTTI();
 	};
 }

@@ -75,3 +75,10 @@ void test::FayTests::Test1()
 	if (p2==nullptr)
 		LOG_DEBUG("P1 is OK");
 }
+
+void test::FayTests::TestRTTI()
+{
+	PTR(AstNode) node = MKPTR(AstFile)("aabbccdd");
+	LOG_DEBUG(node->className());
+	LOG_DEBUG(node->is(typeid(AstNode)));
+}
