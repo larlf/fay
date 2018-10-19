@@ -19,11 +19,13 @@ namespace fay
 	class InstCall : public FayInst
 	{
 	private:
-		pos_t _p1;
+		int32_t _p1;
 		int32_t _p2;
 	public:
 		InstCall(pos_t p1, int32_t p2)
 			: _p1(p1), _p2(p2) {}
+
+		virtual void toString(mirror::utils::StringBuilder* sb) override;
 
 	};
 }

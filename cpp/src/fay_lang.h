@@ -17,18 +17,20 @@ namespace fay
 	class FayType;
 
 	//函数信息
-	class OutsideFun
+	class OutsideFun : public FayObject
 	{
 	private:
 		std::string _fullname;
 		std::string _typeFullname;
-		pos_t _typeIndex;
+		int32_t _typeIndex;
 		std::string _funFullname;
-		pos_t _funIndex;
+		int32_t _funIndex;
 
 	public:
-		OutsideFun(const std::string &typeFullname, pos_t typeIndex, const std::string &funName, pos_t funIndex)
+		OutsideFun(const std::string &typeFullname, int32_t typeIndex, const std::string &funName, int32_t funIndex)
 			: _typeFullname(typeFullname), _typeIndex(typeIndex), _funFullname(funName), _funIndex(funIndex) {}
+
+		virtual void toString(mirror::utils::StringBuilder* sb) override;
 	};
 
 	//工具类

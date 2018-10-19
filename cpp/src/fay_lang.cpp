@@ -114,8 +114,21 @@ void fay::FayLib::toString(mirror::utils::StringBuilder *sb)
 {
 	sb->add("[FayLib]")->add(this->name)->endl();
 	sb->increaseIndent();
+	//显示外部函数
+	sb->add("[OutSideFun]")->endl();
+	sb->increaseIndent();
+	for (auto i = 0; i < this->_outsideFuns.list().size(); ++i)
+	{
+		sb->add(i)->add(" : ");
+		this->_outsideFuns.list()[i]->toString(sb);
+	}
+	sb->decreaseIndent();
+	//显示Class的内容
+	sb->add("[Classes]")->endl();
+	sb->increaseIndent();
 	for each(auto it in this->classes)
 		it->toString(sb);
+	sb->decreaseIndent();
 	sb->decreaseIndent();
 }
 
@@ -352,4 +365,10 @@ std::string fay::FayLangUtils::Fullname(const std::string &funName, const std::v
 std::string fay::FayLangUtils::Fullname(const std::string &className, const std::string &funName, const std::vector<PTR(FayType)> &params)
 {
 	return className + "." + FayLangUtils::Fullname(funName, params);
+}
+
+void fay::OutsideFun::toString(mirror::utils::StringBuilder *sb)
+{
+	sb->add(this->_typeFullname)->add(":")->add(this->_typeIndex)->add(" ");
+	sb->add(this->_funFullname)->add(":")->add(this->_funIndex)->endl();
 }
