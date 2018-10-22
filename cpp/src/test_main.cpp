@@ -19,6 +19,7 @@ void main()
 		test::FayTests::TestLexer();
 		//test::FayTests::Test1();
 		//test::FayTests::TestRTTI();
+		//test::FayTests::TestInternalFun();
 	}
 	catch (fay::ParseException &e)
 	{

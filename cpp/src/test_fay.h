@@ -44,5 +44,6 @@ namespace test
 		static void TestLexer();
 		static void Test1();
 		static void TestRTTI();
+		static void TestInternalFun();
 	};
 }

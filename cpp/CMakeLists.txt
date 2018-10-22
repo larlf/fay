@@ -86,6 +86,10 @@ set(faylib_src
 	src/fay_builder.cpp
 	src/fay_inst.h
 	src/fay_inst.cpp
+	src/fay_stack.h
+	src/fay_stack.cpp
+	src/fay_internal_fun.h
+	src/fay_internal_fun.cpp
 )
 
 add_library(fay STATIC ${faylib_src})

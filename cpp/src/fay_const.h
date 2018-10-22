@@ -7,6 +7,8 @@ typedef int64_t pos_t;
 
 namespace fay
 {
+	const size_t STACK_INIT_SIZE = 1024;  //堆栈初始化的长度
+
 	/**
 	* 词法分析器的模式
 	*/

@@ -27,13 +27,6 @@ namespace fay
 		virtual void toString(mirror::utils::StringBuilder* sb) { sb->endl(); }
 	};
 
-	//值
-	class FayValue
-	{
-	private:
-		int64_t _value;
-	};
-
 	//有索引的Mpa结构
 	template<class T>
 	class IndexMap
