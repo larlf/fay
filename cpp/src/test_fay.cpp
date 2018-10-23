@@ -6,6 +6,7 @@
 #include <fay_parser.h>
 #include <fay_stack.h>
 #include <fay_internal_fun.h>
+#include <fay_vm.h>
 
 using namespace mirror;
 using namespace fay;
@@ -68,6 +69,8 @@ void test::FayTests::TestLexer()
 	sb.clear();
 	domain->toString(&sb);
 	PRINT(sb.toString());
+
+	fay::FayVM vm;
 }
 
 void test::FayTests::Test1()

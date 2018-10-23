@@ -17,25 +17,6 @@ namespace fay
 	class FayDomain;
 	class FayType;
 
-	//外部函数信息
-	//在lib的内部，会创建所有的调用方法的快速索引
-	//这个索引在call的时候，用于对方法进行快速的定位
-	class OutsideFun : public FayObject
-	{
-	private:
-		std::string _fullname;
-		std::string _typeFullname;
-		int32_t _typeIndex;
-		std::string _funFullname;
-		int32_t _funIndex;
-
-	public:
-		OutsideFun(const std::string &typeFullname, int32_t typeIndex, const std::string &funName, int32_t funIndex)
-			: _typeFullname(typeFullname), _typeIndex(typeIndex), _funFullname(funName), _funIndex(funIndex) {}
-
-		virtual void toString(mirror::utils::StringBuilder *sb) override;
-	};
-
 	//工具类
 	class FayLangUtils
 	{
@@ -65,28 +46,7 @@ namespace fay
 		virtual const std::string &fullname() { return mirror::utils::StringUtils::Blank; }
 	};
 
-	//库
-	class FayLib : public FayLangObject, public std::enable_shared_from_this<FayLib>
-	{
-	private:
-		//外部函数的列表
-		//这个表的主要用处，是把本Lib中的函数调用转换成索引值
-		IndexMap<PTR(OutsideFun)> _outsideFuns;
-
-	public:
-		std::string name;
-		std::vector<PTR(FayClass)> classes;
-
-		FayLib(PTR(FayDomain) domain, const std::string &name)
-			: FayLangObject(domain), name(name) {}
-		~FayLib() {}
-
-		pos_t addClass(PTR(FayClass) clazz);
-		//返回调用方法在外部函数表中的索引
-		pos_t findOutsideFun(const std::string &className, const std::string &funName, const std::vector<PTR(FayType)> &paramsType);
-
-		virtual void toString(mirror::utils::StringBuilder *sb) override;
-	};
+	////////////////////////////////////////////////////////////////
 
 	//数据类型
 	class FayType : public FayLangObject
@@ -148,6 +108,25 @@ namespace fay
 		virtual void toString(mirror::utils::StringBuilder *sb) override;
 	};
 
+	//////////////////////////////////////////////////////////////////
+
+	//函数的参数定义
+	class FayParamDef : public FayLangObject, public std::enable_shared_from_this<FayParamDef>
+	{
+	private:
+		std::string _fullname;
+
+	public:
+		std::string name;
+		WPTR(FayType) type;
+
+		FayParamDef(PTR(FayDomain) domain, const std::string &name, PTR(FayType) type)
+			: FayLangObject(domain), name(name), type(type) {}
+
+		virtual const std::string &fullname() override;
+		virtual void toString(mirror::utils::StringBuilder *sb) override;
+	};
+
 	//函数
 	//包括函数、内部函数、匿名函数等
 	class FayFun : public FayLangObject, public std::enable_shared_from_this<FayFun>
@@ -188,7 +167,7 @@ namespace fay
 	public:
 		virtual ~FayInstFun();
 
-		std::vector<FayInst*> &insts() { return this->_insts;  }
+		std::vector<FayInst *> &insts() { return this->_insts;  }
 
 		virtual void toString(mirror::utils::StringBuilder *sb) override;
 	};
@@ -197,26 +176,57 @@ namespace fay
 	class FayInternalFun : public FayFun
 	{
 	private:
-		std::function<void(VMStack*)> _fun;
+		std::function<void(VMStack *)> _fun;
 
 	public:
-		FayInternalFun(PTR(FayDomain) domain, const std::string &name, std::function<void(VMStack*)> fun, std::vector<std::string> params);
+		FayInternalFun(PTR(FayDomain) domain, const std::string &name, std::function<void(VMStack *)> fun, std::vector<std::string> params);
+
+		//执行内部函数
+		virtual void Invoke(VMStack *stack) { this->_fun(stack); }
 	};
 
-	//参数定义
-	class FayParamDef : public FayLangObject, public std::enable_shared_from_this<FayParamDef>
+	//////////////////////////////////////////////////////////////////////
+
+	//外部函数信息
+	//在lib的内部，会创建所有的调用方法的快速索引
+	//这个索引在call的时候，用于对方法进行快速的定位
+	class OutsideFun : public FayObject
 	{
 	private:
 		std::string _fullname;
+		std::string _typeFullname;
+		int32_t _typeIndex;
+		std::string _funFullname;
+		int32_t _funIndex;
+		bool _resolved = false;  //是否已经确定是函数的位置
+
+	public:
+		OutsideFun(const std::string &typeFullname, int32_t typeIndex, const std::string &funName, int32_t funIndex)
+			: _resolved(true), _typeFullname(typeFullname), _typeIndex(typeIndex), _funFullname(funName), _funIndex(funIndex) {}
+
+		virtual void toString(mirror::utils::StringBuilder *sb) override;
+	};
+
+	//库
+	class FayLib : public FayLangObject, public std::enable_shared_from_this<FayLib>
+	{
+	private:
+		//外部函数的列表
+		//这个表的主要用处，是把本Lib中的函数调用转换成索引值
+		IndexMap<PTR(OutsideFun)> _outsideFuns;
 
 	public:
 		std::string name;
-		WPTR(FayType) type;
+		std::vector<PTR(FayClass)> classes;
 
-		FayParamDef(PTR(FayDomain) domain, const std::string &name, PTR(FayType) type)
-			: FayLangObject(domain), name(name), type(type) {}
+		FayLib(PTR(FayDomain) domain, const std::string &name)
+			: FayLangObject(domain), name(name) {}
+		~FayLib() {}
 
-		virtual const std::string &fullname() override;
+		pos_t addClass(PTR(FayClass) clazz);
+		//返回调用方法在外部函数表中的索引
+		pos_t findOutsideFun(const std::string &className, const std::string &funName, const std::vector<PTR(FayType)> &paramsType);
+
 		virtual void toString(mirror::utils::StringBuilder *sb) override;
 	};
 
@@ -248,6 +258,17 @@ namespace fay
 	};
 
 	/////////////////////////////////////////////////
+
+	//类型的实例
+	class FayInstance : public FayObject, public std::enable_shared_from_this<FayInstance>
+	{
+	public:
+		PTR(FayType) type;
+	};
+
+
+	/////////////////////////////////////////////////
+
 
 	class FaySystemClass : public FayClass
 	{

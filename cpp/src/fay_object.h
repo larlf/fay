@@ -19,12 +19,7 @@ namespace fay
 		virtual void toString(mirror::utils::StringBuilder* sb) {}
 	};
 
-	//指令
-	class FayInst : public FayObject
-	{
-	public:
-		virtual void toString(mirror::utils::StringBuilder* sb) { sb->endl(); }
-	};
+
 
 	//有索引的Mpa结构
 	template<class T>

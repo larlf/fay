@@ -73,6 +73,18 @@ namespace fay
 		//ValueTypeEnd
 	};
 
+	enum class FunType
+	{
+		Internal,  //内部方法
+		Code  //代码中的方法
+	};
+
+	enum class InstType
+	{
+		PushString,
+		Call
+	};
+
 	class TypeDict
 	{
 	private:
