@@ -38,7 +38,7 @@ void fay::FayBuilder::bindClass(pos_t index)
 
 pos_t fay::FayBuilder::beginFun(const std::string &name)
 {
-	this->_fun = MKPTR(FayFun)(this->_domain, name);
+	this->_fun = MKPTR(FayInstFun)(this->_domain, name);
 	return this->_class->addFun(this->_fun);
 }
 
@@ -50,19 +50,19 @@ void fay::FayBuilder::bindFun(pos_t index)
 		return;
 	}
 
-	this->_fun = this->_class->findFun(index);
+	this->_fun = TOPTR(FayInstFun, this->_class->findFun(index));
 }
 
 void fay::FayBuilder::addParamDefine(const std::string &name, const std::string &type)
 {
 	PTR(FayType) t=this->_domain->findType(type);
-	PTR(FayParamDef) def = MKPTR(FayParamDef)(name, t);
+	PTR(FayParamDef) def = MKPTR(FayParamDef)(this->_domain, name, t);
 	this->_fun->addParam(def);
 }
 
 void fay::FayBuilder::addInst(FayInst *inst)
 {
-	this->_fun->insts.push_back(inst);
+	this->_fun->insts().push_back(inst);
 }
 
 pos_t fay::FayBuilder::findFun(const std::string &name, const std::vector<std::string> paramsTypeName)

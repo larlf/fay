@@ -5,6 +5,7 @@
 #include <fay_inst.h>
 #include <fay_const.h>
 #include <fay_object.h>
+#include <fay_stack.h>
 
 namespace fay
 {
@@ -16,7 +17,9 @@ namespace fay
 	class FayDomain;
 	class FayType;
 
-	//函数信息
+	//外部函数信息
+	//在lib的内部，会创建所有的调用方法的快速索引
+	//这个索引在call的时候，用于对方法进行快速的定位
 	class OutsideFun : public FayObject
 	{
 	private:
@@ -30,7 +33,7 @@ namespace fay
 		OutsideFun(const std::string &typeFullname, int32_t typeIndex, const std::string &funName, int32_t funIndex)
 			: _typeFullname(typeFullname), _typeIndex(typeIndex), _funFullname(funName), _funIndex(funIndex) {}
 
-		virtual void toString(mirror::utils::StringBuilder* sb) override;
+		virtual void toString(mirror::utils::StringBuilder *sb) override;
 	};
 
 	//工具类
@@ -44,6 +47,10 @@ namespace fay
 
 	//////////////////////////////////////////////////////////////
 
+	//Fay语言中所有运行时对象的父类
+	//此类对象有两个特点：
+	//一、对Domain有引用，以方便进行各种操作
+	//二、有fullname()方法，可以取出全名进行各处理以string为key的处理
 	class FayLangObject : public FayObject
 	{
 	private:
@@ -53,9 +60,12 @@ namespace fay
 			: _domain(domain) {}
 
 		PTR(FayDomain) domain() { return this->_domain.lock(); }
+
+		//全名
+		virtual const std::string &fullname() { return mirror::utils::StringUtils::Blank; }
 	};
 
-	//一个的信息
+	//库
 	class FayLib : public FayLangObject, public std::enable_shared_from_this<FayLib>
 	{
 	private:
@@ -138,40 +148,63 @@ namespace fay
 		virtual void toString(mirror::utils::StringBuilder *sb) override;
 	};
 
-	//代码块，包括函数、内部函数、匿名函数等
-	class FayCode : public FayLangObject
-	{
-		using FayLangObject::FayLangObject;
-	public:
-		virtual void Invoke(const std::vector<FayValue> &params) {}
-	};
-
 	//函数
-	class FayFun : public FayCode, public std::enable_shared_from_this<FayFun>
+	//包括函数、内部函数、匿名函数等
+	class FayFun : public FayLangObject, public std::enable_shared_from_this<FayFun>
 	{
-	private:
+	protected:
 		std::string _name;
 		std::string _fullname;
 		std::vector<PTR(FayParamDef)> _params;
 
 	public:
-		std::vector<FayInst *> insts; //代码，注意这里考虑到性能，没用智能指针，因此所有地方也不存对指令的引用
-
 		FayFun(PTR(FayDomain) domain, const std::string &name)
-			: FayCode(domain), _name(name) {}
-		virtual ~FayFun();
+			: FayLangObject(domain), _name(name) {}
+		virtual ~FayFun() {}
 
 		const std::string &name() { return this->_name; }
 
+		//添加参数描述
 		void addParam(PTR(FayParamDef) def);
+		//检查参数是否匹配
 		bool matchParams(const std::vector<PTR(FayType)> &paramsType);
+		//执行函数
+		virtual void Invoke(VMStack *stack) {}
 
 		virtual const std::string &fullname() override;
 		virtual void toString(mirror::utils::StringBuilder *sb) override;
 	};
 
+	//指令函数
+	class FayInstFun : public FayFun
+	{
+		using FayFun::FayFun;
+
+	private:
+		//代码，注意这里考虑到性能，没用智能指针
+		//除此所有地方不存对指令的引用，以防止出非法引用
+		std::vector<FayInst *> _insts;
+
+	public:
+		virtual ~FayInstFun();
+
+		std::vector<FayInst*> &insts() { return this->_insts;  }
+
+		virtual void toString(mirror::utils::StringBuilder *sb) override;
+	};
+
+	//内部函数
+	class FayInternalFun : public FayFun
+	{
+	private:
+		std::function<void(VMStack*)> _fun;
+
+	public:
+		FayInternalFun(PTR(FayDomain) domain, const std::string &name, std::function<void(VMStack*)> fun, std::vector<std::string> params);
+	};
+
 	//参数定义
-	class FayParamDef : public FayObject, public std::enable_shared_from_this<FayParamDef>
+	class FayParamDef : public FayLangObject, public std::enable_shared_from_this<FayParamDef>
 	{
 	private:
 		std::string _fullname;
@@ -180,8 +213,8 @@ namespace fay
 		std::string name;
 		WPTR(FayType) type;
 
-		FayParamDef(const std::string &name, PTR(FayType) type)
-			: name(name), type(type) {}
+		FayParamDef(PTR(FayDomain) domain, const std::string &name, PTR(FayType) type)
+			: FayLangObject(domain), name(name), type(type) {}
 
 		virtual const std::string &fullname() override;
 		virtual void toString(mirror::utils::StringBuilder *sb) override;
@@ -219,17 +252,13 @@ namespace fay
 	class FaySystemClass : public FayClass
 	{
 	public:
-		FaySystemClass(PTR(FayDomain) domain)
-			: FayClass(domain, "fay", "System") {}
-		void init();
+		FaySystemClass(PTR(FayDomain) domain);
 	};
 
 	class FaySystemLib : public FayLib
 	{
 	public:
-		FaySystemLib(PTR(FayDomain) domain)
-			: FayLib(domain, "System") {}
-		void init();
+		FaySystemLib(PTR(FayDomain) domain);
 	};
 
 }

@@ -14,7 +14,7 @@ namespace fay
 		PTR(FayDomain) _domain;
 		PTR(FayLib) _lib;
 		PTR(FayClass) _class;
-		PTR(FayFun) _fun;
+		PTR(FayInstFun) _fun;
 
 	public:
 		FayBuilder(PTR(FayDomain) domain)

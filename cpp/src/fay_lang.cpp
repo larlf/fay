@@ -1,5 +1,6 @@
 ﻿#include <fay_lang.h>
 #include <mirror_utils_log.h>
+#include <fay_internal_fun.h>
 
 using namespace fay;
 
@@ -132,12 +133,31 @@ void fay::FayLib::toString(mirror::utils::StringBuilder *sb)
 	sb->decreaseIndent();
 }
 
-fay::FayFun::~FayFun()
+fay::FayInstFun::~FayInstFun()
 {
-	for each(auto it in this->insts)
+	for each(auto it in this->_insts)
 		delete it;
 
-	this->insts.clear();
+	this->_insts.clear();
+}
+
+void fay::FayInstFun::toString(mirror::utils::StringBuilder *sb)
+{
+	sb->add("[FayInstFun]")->add(this->fullname())->endl();
+
+	sb->increaseIndent();
+
+	for each(auto it in this->_params)
+		it->toString(sb);
+
+	for (auto i = 0; i < this->_insts.size(); ++i)
+	{
+		auto it = this->_insts[i];
+		sb->add(i)->add(" : ");
+		it->toString(sb);
+	}
+
+	sb->decreaseIndent();
 }
 
 const std::string &fay::FayFun::fullname()
@@ -188,13 +208,6 @@ void fay::FayFun::toString(mirror::utils::StringBuilder *sb)
 
 	for each(auto it in this->_params)
 		it->toString(sb);
-
-	for (auto i = 0; i < this->insts.size(); ++i)
-	{
-		auto it = this->insts[i];
-		sb->add(i)->add(" : ");
-		it->toString(sb);
-	}
 
 	sb->decreaseIndent();
 }
@@ -334,18 +347,18 @@ void fay::FayParamDef::toString(mirror::utils::StringBuilder *sb)
 	sb->add("[FayParamDef] ")->add(this->fullname())->endl();
 }
 
-void fay::FaySystemClass::init()
+fay::FaySystemClass::FaySystemClass(PTR(FayDomain) domain)
+	: FayClass(domain, "fay", "System") 
 {
-	PTR(FayFun) fun = MKPTR(FayFun)(this->domain(), "Print");
-	fun->addParam(MKPTR(FayParamDef)("str", SimpleType::Get(ValueType::String)));
+	PTR(FayInternalFun) fun = MKPTR(FayInternalFun)(this->domain(), "Print", InternalFun::Print, std::vector<std::string>({ "string" }));
 	this->addFun(fun);
 }
 
-void fay::FaySystemLib::init()
+fay::FaySystemLib::FaySystemLib(PTR(FayDomain) domain)
+	: FayLib(domain, "System") 
 {
 	PTR(FaySystemClass) c = MKPTR(FaySystemClass)(this->domain());
 	this->addClass(c);
-	c->init();
 }
 
 std::string fay::FayLangUtils::Fullname(const std::string &funName, const std::vector<PTR(FayType)> &params)
@@ -372,3 +385,17 @@ void fay::OutsideFun::toString(mirror::utils::StringBuilder *sb)
 	sb->add(this->_typeFullname)->add(":")->add(this->_typeIndex)->add(" ");
 	sb->add(this->_funFullname)->add(":")->add(this->_funIndex)->endl();
 }
+
+fay::FayInternalFun::FayInternalFun(PTR(FayDomain) domain, const std::string & name, std::function<void(VMStack*)> fun, std::vector<std::string> params)
+	: FayFun(domain, name), _fun(fun)
+{
+	for(auto i=0; i<params.size(); ++i)
+	{
+		auto it = params[i];
+		std::string paramName = "p" + std::to_string(i);
+		auto t=domain->findType(it);
+		PTR(FayParamDef) p = MKPTR(FayParamDef)(domain, paramName, t);
+		this->addParam(p);
+	}
+}
+
