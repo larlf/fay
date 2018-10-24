@@ -69,7 +69,10 @@ void test::FayTests::TestLexer()
 	domain->toString(&sb);
 	PRINT(sb.toString());
 
-	fay::FayVM vm;
+	fay::FayVM vm(domain);
+	auto funs = domain->findFun("com.larlf.Test6", ".main", std::vector<PTR(FayType)>({}));
+	LOG_DEBUG("Size : " << funs.size());
+	vm.run(funs[0]);
 }
 
 void test::FayTests::Test1()

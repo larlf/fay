@@ -109,7 +109,7 @@ namespace fay
 		pos_t addFun(PTR(FayFun) fun);
 
 		virtual const std::string &fullname() override;
-		virtual void toString(mirror::utils::StringBuilder *sb) override;
+		virtual void toString(mirror::utils::StringBuilder* sb) override;
 	};
 
 	//////////////////////////////////////////////////////////////////
@@ -128,7 +128,7 @@ namespace fay
 			: FayLangObject(domain), name(name), type(type) {}
 
 		virtual const std::string &fullname() override;
-		virtual void toString(mirror::utils::StringBuilder *sb) override;
+		virtual void toString(mirror::utils::StringBuilder* sb) override;
 	};
 
 	//函数
@@ -149,6 +149,7 @@ namespace fay
 
 		//Get & Set
 		const std::string &name() { return this->_name; }
+		FunType type() { return this->_type; }
 		void clazz(PTR(FayClass) v) { this->_class = v; }
 		PTR(FayClass) clazz() { return this->_class.lock(); }
 
@@ -158,7 +159,7 @@ namespace fay
 		bool matchParams(const std::vector<PTR(FayType)> &paramsType);
 
 		virtual const std::string &fullname() override;
-		virtual void toString(mirror::utils::StringBuilder *sb) override;
+		virtual void toString(mirror::utils::StringBuilder* sb) override;
 	};
 
 	//指令函数
@@ -167,7 +168,7 @@ namespace fay
 	private:
 		//代码，注意这里考虑到性能，没用智能指针
 		//除此所有地方不存对指令的引用，以防止出非法引用
-		std::vector<FayInst *> _insts;
+		std::vector<FayInst*> _insts;
 		//是否已经准备过
 		bool isPrepared = false;
 		//对代码运行前做一些预处理
@@ -180,22 +181,22 @@ namespace fay
 
 		void insts(std::vector<FayInst*> v) { this->_insts = v; }
 
-		std::vector<FayInst *> &getPreparedInsts();
+		std::vector<FayInst*>* getPreparedInsts();
 
-		virtual void toString(mirror::utils::StringBuilder *sb) override;
+		virtual void toString(mirror::utils::StringBuilder* sb) override;
 	};
 
 	//内部函数
 	class FayInternalFun : public FayFun
 	{
 	private:
-		std::function<void(VMStack *)> _fun;
+		std::function<void(VMStack*)> _fun;
 
 	public:
-		FayInternalFun(PTR(FayDomain) domain, const std::string &name, std::function<void(VMStack *)> fun, std::vector<std::string> params);
+		FayInternalFun(PTR(FayDomain) domain, const std::string &name, std::function<void(VMStack*)> fun, std::vector<std::string> params);
 
 		//执行内部函数
-		inline void Invoke(VMStack *stack) { this->_fun(stack); }
+		inline void Invoke(VMStack* stack) { this->_fun(stack); }
 	};
 
 	//////////////////////////////////////////////////////////////////////
@@ -220,7 +221,7 @@ namespace fay
 		int32_t typeIndex() { return this->_typeIndex; }
 		int32_t funIndex() { return this->_funIndex; }
 
-		virtual void toString(mirror::utils::StringBuilder *sb) override;
+		virtual void toString(mirror::utils::StringBuilder* sb) override;
 	};
 
 	//库
@@ -244,7 +245,7 @@ namespace fay
 		pos_t findOutsideFun(const std::string &className, const std::string &funName, const std::vector<PTR(FayType)> &paramsType);
 		PTR(OutsideFun) findOutsideFun(pos_t index) { return this->_outsideFuns.find(index); }
 
-		virtual void toString(mirror::utils::StringBuilder *sb) override;
+		virtual void toString(mirror::utils::StringBuilder* sb) override;
 	};
 
 	//当前总体管理类
@@ -272,8 +273,9 @@ namespace fay
 		std::vector<PTR(FayType)> findType(std::vector<std::string> &imports, const std::string &typeName);
 		//从函数表中查找指定的函数
 		std::vector<PTR(FayFun)> findFun(const std::string &className, const std::string &funName, const std::vector<PTR(FayType)> &paramsType);
+		PTR(FayFun) findFun(pos_t typeIndex, pos_t funIndex);
 
-		virtual void toString(mirror::utils::StringBuilder *sb) override;
+		virtual void toString(mirror::utils::StringBuilder* sb) override;
 	};
 
 	/////////////////////////////////////////////////

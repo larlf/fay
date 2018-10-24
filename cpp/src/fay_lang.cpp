@@ -112,7 +112,7 @@ pos_t fay::FayLib::findOutsideFun(const std::string &className, const std::strin
 	return this->_outsideFuns.add(fullname, ofun);
 }
 
-void fay::FayLib::toString(mirror::utils::StringBuilder *sb)
+void fay::FayLib::toString(mirror::utils::StringBuilder* sb)
 {
 	sb->add("[FayLib]")->add(this->name)->endl();
 	sb->increaseIndent();
@@ -138,13 +138,13 @@ void fay::FayInstFun::prepareInsts()
 {
 	for (auto i = 0; i < this->_insts.size(); ++i)
 	{
-		FayInst *inst = this->_insts[i];
+		FayInst* inst = this->_insts[i];
 		switch (inst->type())
 		{
 			case InstType::Call:
 			{
 				//取出调用方法的索引值
-				InstCall *i = static_cast<InstCall*>(inst);
+				InstCall* i = static_cast<InstCall*>(inst);
 				PTR(OutsideFun) fun = this->clazz()->lib()->findOutsideFun(i->p1);
 				i->v1 = fun->typeIndex();
 				i->v2 = fun->funIndex();
@@ -162,7 +162,7 @@ fay::FayInstFun::~FayInstFun()
 	this->_insts.clear();
 }
 
-std::vector<FayInst*>& fay::FayInstFun::getPreparedInsts()
+std::vector<FayInst*>* fay::FayInstFun::getPreparedInsts()
 {
 	if (!this->isPrepared)
 	{
@@ -170,10 +170,10 @@ std::vector<FayInst*>& fay::FayInstFun::getPreparedInsts()
 		this->isPrepared = true;
 	}
 
-	return this->_insts;
+	return &this->_insts;
 }
 
-void fay::FayInstFun::toString(mirror::utils::StringBuilder *sb)
+void fay::FayInstFun::toString(mirror::utils::StringBuilder* sb)
 {
 	sb->add("[FayInstFun]")->add(this->fullname())->endl();
 
@@ -232,7 +232,7 @@ bool fay::FayFun::matchParams(const std::vector<PTR(FayType)> &paramsType)
 	return true;
 }
 
-void fay::FayFun::toString(mirror::utils::StringBuilder *sb)
+void fay::FayFun::toString(mirror::utils::StringBuilder* sb)
 {
 	sb->add("[FayFun]")->add(this->fullname())->endl();
 
@@ -251,7 +251,7 @@ pos_t fay::FayClass::addFun(PTR(FayFun) fun)
 	return index;
 }
 
-void fay::FayClass::toString(mirror::utils::StringBuilder *sb)
+void fay::FayClass::toString(mirror::utils::StringBuilder* sb)
 {
 	sb->add("[FayClass]")->add(this->_fullname)->endl();
 	sb->increaseIndent();
@@ -282,7 +282,7 @@ void fay::FayDomain::initSysLib()
 	PTR(FayLib) lib(new FayLib(MYPTR, "System"));
 	PTR(FayClass) clazz(new FayClass(MYPTR, "fay", "System"));
 	clazz->addFun(MKPTR(FayInternalFun)(MYPTR, "Print", InternalFun::Print, std::vector<std::string>({ "string" })));
-	
+
 	lib->addClass(clazz);
 	this->addLib(lib);
 }
@@ -297,7 +297,7 @@ void fay::FayDomain::addLib(PTR(FayLib) lib)
 		this->_types.add(it->fullname(), it);
 }
 
-void fay::FayDomain::toString(mirror::utils::StringBuilder *sb)
+void fay::FayDomain::toString(mirror::utils::StringBuilder* sb)
 {
 	sb->add("[FayDomain]")->endl();
 	sb->increaseIndent();
@@ -371,6 +371,17 @@ std::vector<PTR(FayFun)> fay::FayDomain::findFun(const std::string &className, c
 	return std::vector<PTR(FayFun)>();
 }
 
+PTR(FayFun) fay::FayDomain::findFun(pos_t typeIndex, pos_t funIndex)
+{
+	auto type = this->findType(typeIndex);
+	if (type)
+	{
+		return type->findFun(funIndex);
+	}
+
+	return nullptr;
+}
+
 const std::string &fay::FayParamDef::fullname()
 {
 	if (this->_fullname.size() <= 0)
@@ -383,7 +394,7 @@ const std::string &fay::FayParamDef::fullname()
 	return this->_fullname;
 }
 
-void fay::FayParamDef::toString(mirror::utils::StringBuilder *sb)
+void fay::FayParamDef::toString(mirror::utils::StringBuilder* sb)
 {
 	sb->add("[FayParamDef] ")->add(this->fullname())->endl();
 }
@@ -407,13 +418,13 @@ std::string fay::FayLangUtils::Fullname(const std::string &className, const std:
 	return className + "." + FayLangUtils::Fullname(funName, params);
 }
 
-void fay::OutsideFun::toString(mirror::utils::StringBuilder *sb)
+void fay::OutsideFun::toString(mirror::utils::StringBuilder* sb)
 {
 	sb->add(this->_typeFullname)->add(":")->add(this->_typeIndex)->add(" ");
 	sb->add(this->_funFullname)->add(":")->add(this->_funIndex)->endl();
 }
 
-fay::FayInternalFun::FayInternalFun(PTR(FayDomain) domain, const std::string &name, std::function<void(VMStack *)> fun, std::vector<std::string> params)
+fay::FayInternalFun::FayInternalFun(PTR(FayDomain) domain, const std::string &name, std::function<void(VMStack*)> fun, std::vector<std::string> params)
 	: FayFun(domain, name, FunType::Internal), _fun(fun)
 {
 	for(auto i=0; i<params.size(); ++i)

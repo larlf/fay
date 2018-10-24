@@ -3,7 +3,7 @@
 #include <iostream>
 #include <mirror_sys_const.h>
 
-typedef int64_t pos_t;
+typedef int32_t pos_t;
 
 namespace fay
 {

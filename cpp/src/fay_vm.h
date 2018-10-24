@@ -7,9 +7,15 @@ namespace fay
 	class FayVM
 	{
 	private:
+		PTR(FayDomain) _domain;
 		VMStack stack;
 
+		void _run(std::vector<FayInst*>* insts);
+
 	public:
-		void run(std::vector<fay::FayInst *> *insts, PTR(FayLib) lib);
+		FayVM(PTR(FayDomain) domain)
+			: _domain(domain) {}
+
+		void run(PTR(FayFun) fun);
 	};
 }
