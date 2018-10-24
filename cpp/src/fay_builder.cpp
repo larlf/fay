@@ -51,6 +51,10 @@ void fay::FayBuilder::bindFun(pos_t index)
 	}
 
 	this->_fun = TOPTR(FayInstFun, this->_class->findFun(index));
+
+	//清空指令集
+	if (this->_insts.size() > 0)
+		this->_insts.clear();
 }
 
 void fay::FayBuilder::addParamDefine(const std::string &name, const std::string &type)
@@ -62,7 +66,14 @@ void fay::FayBuilder::addParamDefine(const std::string &name, const std::string 
 
 void fay::FayBuilder::addInst(FayInst *inst)
 {
-	this->_fun->insts().push_back(inst);
+	this->_insts.push_back(inst);
+}
+
+void fay::FayBuilder::optimizeInsts()
+{
+	//TODO 这里有对代码进行优化的过程
+	this->_fun->insts(this->_insts);
+	this->_insts.clear();
 }
 
 pos_t fay::FayBuilder::findFun(const std::string &name, const std::vector<std::string> paramsTypeName)

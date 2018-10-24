@@ -13,6 +13,7 @@
 #define MKPTR(T) std::make_shared<T>
 #define WPTR(T) std::weak_ptr<T>
 #define TOPTR(T1, T2) std::static_pointer_cast<T1>(T2)
+#define MYPTR this->shared_from_this()
 
 //动态绑定
 #ifndef BIND

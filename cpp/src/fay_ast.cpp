@@ -101,6 +101,7 @@ void fay::AstFun::dig3(FayBuilder *builder)
 {
 	builder->bindFun(this->_index);
 	AstNode::dig3(builder);
+	builder->optimizeInsts();
 }
 
 void fay::AstFile::dig1(FayBuilder *builder)

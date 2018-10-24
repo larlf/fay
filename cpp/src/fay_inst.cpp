@@ -7,5 +7,5 @@ void fay::InstPushString::toString(mirror::utils::StringBuilder* sb)
 
 void fay::InstCall::toString(mirror::utils::StringBuilder * sb)
 {
-	sb->add("InstCall ")->add(this->_p1)->add(" ")->add(this->_p2)->endl();
+	sb->add("InstCall ")->add(this->p1)->add(" ")->add(this->p2)->endl();
 }

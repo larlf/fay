@@ -90,6 +90,7 @@ namespace fay
 	class FayClass : public FayType, public std::enable_shared_from_this<FayClass>
 	{
 	private:
+		WPTR(FayLib) _lib;
 		std::string _fullname;  //全名
 
 	public:
@@ -101,6 +102,9 @@ namespace fay
 		{
 			this->_fullname = (package.size() > 0 ? package + "." : "") + name;
 		}
+
+		void lib(PTR(FayLib) v) { this->_lib = v; }
+		PTR(FayLib) lib() { return this->_lib.lock(); }
 
 		pos_t addFun(PTR(FayFun) fun);
 
@@ -132,23 +136,26 @@ namespace fay
 	class FayFun : public FayLangObject, public std::enable_shared_from_this<FayFun>
 	{
 	protected:
+		WPTR(FayClass) _class;  //所属的Class
 		std::string _name;
 		std::string _fullname;
 		std::vector<PTR(FayParamDef)> _params;
+		FunType _type;
 
 	public:
-		FayFun(PTR(FayDomain) domain, const std::string &name)
-			: FayLangObject(domain), _name(name) {}
+		FayFun(PTR(FayDomain) domain, const std::string &name, FunType type)
+			: FayLangObject(domain), _name(name), _type(type) {}
 		virtual ~FayFun() {}
 
+		//Get & Set
 		const std::string &name() { return this->_name; }
+		void clazz(PTR(FayClass) v) { this->_class = v; }
+		PTR(FayClass) clazz() { return this->_class.lock(); }
 
 		//添加参数描述
 		void addParam(PTR(FayParamDef) def);
 		//检查参数是否匹配
 		bool matchParams(const std::vector<PTR(FayType)> &paramsType);
-		//执行函数
-		virtual void Invoke(VMStack *stack) {}
 
 		virtual const std::string &fullname() override;
 		virtual void toString(mirror::utils::StringBuilder *sb) override;
@@ -157,17 +164,23 @@ namespace fay
 	//指令函数
 	class FayInstFun : public FayFun
 	{
-		using FayFun::FayFun;
-
 	private:
 		//代码，注意这里考虑到性能，没用智能指针
 		//除此所有地方不存对指令的引用，以防止出非法引用
 		std::vector<FayInst *> _insts;
+		//是否已经准备过
+		bool isPrepared = false;
+		//对代码运行前做一些预处理
+		void prepareInsts();
 
 	public:
+		FayInstFun(PTR(FayDomain) domain, const std::string &name)
+			: FayFun(domain, name, FunType::Code) {}
 		virtual ~FayInstFun();
 
-		std::vector<FayInst *> &insts() { return this->_insts;  }
+		void insts(std::vector<FayInst*> v) { this->_insts = v; }
+
+		std::vector<FayInst *> &getPreparedInsts();
 
 		virtual void toString(mirror::utils::StringBuilder *sb) override;
 	};
@@ -182,7 +195,7 @@ namespace fay
 		FayInternalFun(PTR(FayDomain) domain, const std::string &name, std::function<void(VMStack *)> fun, std::vector<std::string> params);
 
 		//执行内部函数
-		virtual void Invoke(VMStack *stack) { this->_fun(stack); }
+		inline void Invoke(VMStack *stack) { this->_fun(stack); }
 	};
 
 	//////////////////////////////////////////////////////////////////////
@@ -203,6 +216,9 @@ namespace fay
 	public:
 		OutsideFun(const std::string &typeFullname, int32_t typeIndex, const std::string &funName, int32_t funIndex)
 			: _resolved(true), _typeFullname(typeFullname), _typeIndex(typeIndex), _funFullname(funName), _funIndex(funIndex) {}
+
+		int32_t typeIndex() { return this->_typeIndex; }
+		int32_t funIndex() { return this->_funIndex; }
 
 		virtual void toString(mirror::utils::StringBuilder *sb) override;
 	};
@@ -226,6 +242,7 @@ namespace fay
 		pos_t addClass(PTR(FayClass) clazz);
 		//返回调用方法在外部函数表中的索引
 		pos_t findOutsideFun(const std::string &className, const std::string &funName, const std::vector<PTR(FayType)> &paramsType);
+		PTR(OutsideFun) findOutsideFun(pos_t index) { return this->_outsideFuns.find(index); }
 
 		virtual void toString(mirror::utils::StringBuilder *sb) override;
 	};
@@ -239,6 +256,8 @@ namespace fay
 
 	public:
 		FayDomain();
+		//初始化系统库
+		void initSysLib();
 		//添加Lib
 		void addLib(PTR(FayLib) lib);
 		//添加新的类型
@@ -264,22 +283,6 @@ namespace fay
 	{
 	public:
 		PTR(FayType) type;
-	};
-
-
-	/////////////////////////////////////////////////
-
-
-	class FaySystemClass : public FayClass
-	{
-	public:
-		FaySystemClass(PTR(FayDomain) domain);
-	};
-
-	class FaySystemLib : public FayLib
-	{
-	public:
-		FaySystemLib(PTR(FayDomain) domain);
 	};
 
 }

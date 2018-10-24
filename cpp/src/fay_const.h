@@ -73,6 +73,7 @@ namespace fay
 		//ValueTypeEnd
 	};
 
+	//方法的类型
 	enum class FunType
 	{
 		Internal,  //内部方法

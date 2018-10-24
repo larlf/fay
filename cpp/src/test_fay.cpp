@@ -43,8 +43,7 @@ void test::FayTests::TestLexer()
 	PRINT("----------------------------------------");
 
 	PTR(fay::FayDomain) domain = MKPTR(fay::FayDomain)();
-	PTR(fay::FaySystemLib) systemLib = MKPTR(fay::FaySystemLib)(domain);
-	domain->addLib(systemLib);
+	domain->initSysLib();
 
 	PTR(fay::FayBuilder) builder = MKPTR(fay::FayBuilder)(domain);
 	builder->beginLib("TestLib");

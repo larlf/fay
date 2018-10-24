@@ -15,6 +15,7 @@ namespace fay
 		PTR(FayLib) _lib;
 		PTR(FayClass) _class;
 		PTR(FayInstFun) _fun;
+		std::vector<FayInst*> _insts;
 
 	public:
 		FayBuilder(PTR(FayDomain) domain)
@@ -41,6 +42,7 @@ namespace fay
 
 		void addParamDefine(const std::string &name, const std::string &type);
 		void addInst(FayInst *inst);
+		void optimizeInsts();
 
 		pos_t findFun(const std::string &name, const std::vector<std::string> paramsTypeName);
 	};
