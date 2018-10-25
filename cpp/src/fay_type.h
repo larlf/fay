@@ -33,6 +33,10 @@ namespace fay
 		FayValue() : _type(ValueType::Void) {}
 		FayValue(int32_t val) : _type(ValueType::Int) { _val.intVal = val; }
 		FayValue(int64_t val) : _type(ValueType::Long) { _val.longVal = val; }
+		FayValue(float val) : _type(ValueType::Float) { _val.flaotVal = val; }
+		FayValue(double val) : _type(ValueType::Double) { _val.doubleVal = val; }
+		FayValue(bool val) : _type(ValueType::Bool) { _val.boolVal = val; }
+		FayValue(unsigned char val) : _type(ValueType::Byte) { _val.byteVal = val; }
 		FayValue(const std::string &str) : _type(ValueType::String) { _val.strVal = new std::string(str); }
 		~FayValue()
 		{

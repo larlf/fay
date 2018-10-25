@@ -65,6 +65,7 @@ class FayInst {
         this.values = [];
         this.code = code;
         this.name = data.Code1 + (data.Code2 ? data.Code2 : "");
+        this.action = data.Action ? data.Action.toString() : "";
         for (let i = 1; i <= 3; ++i) {
             let propName = "P" + i;
             if (data[propName]) {
@@ -116,6 +117,24 @@ class FayInst {
             str += ",";
             str += it.name + "(" + it.name + ")";
         });
+        return str;
+    }
+    makeCaseCode() {
+        let str = this.action;
+        if (this.props[0])
+            str = str.replace(/\#p1/g, "((inst::" + this.name + "*)inst)->" + this.props[0].name);
+        if (this.props[1])
+            str = str.replace(/\#p2/g, "((inst::" + this.name + "*)inst)->" + this.props[1].name);
+        if (this.props[2])
+            str = str.replace(/\#p3/g, "((inst::" + this.name + "*)inst)->" + this.props[2].name);
+        if (this.values[0])
+            str = str.replace(/\#v1/g, "((inst::" + this.name + "*)inst)->" + this.values[0].name);
+        if (this.values[1])
+            str = str.replace(/\#v2/g, "((inst::" + this.name + "*)inst)->" + this.values[1].name);
+        if (this.values[2])
+            str = str.replace(/\#v2/g, "((inst::" + this.name + "*)inst)->" + this.values[2].name);
+        str = str.replace(/\n/g, "\n\t"); //缩进
+        str = "case InstType::" + this.name + ":\n{" + (str ? "\n\t" + str : str) + "\n\tbreak;\n}";
         return str;
     }
 }
@@ -263,6 +282,7 @@ Cmds.inst = function () {
     let hText = "";
     let cppText = "";
     let typeText = "";
+    let caseText = "";
     for (let i = 0; i < json.length; ++i) {
         let it = json[i];
         //log.dump(it);
@@ -276,11 +296,13 @@ Cmds.inst = function () {
             hText += inst.makeHeadCode();
             cppText += inst.makeCppCode();
             typeText += (typeText ? "\n" : "") + inst.name + " = " + inst.code + ",";
+            caseText += (caseText ? "\n" : "") + inst.makeCaseCode();
         }
     }
     replaceFileBody("cpp/src/fay_inst.h", "Inst", hText, "\t\t");
     replaceFileBody("cpp/src/fay_inst.cpp", "Inst", cppText, "");
     replaceFileBody("cpp/src/fay_const.h", "InstType", typeText, "\t\t");
+    replaceFileBody("cpp/src/fay_vm.cpp", "InstCode", caseText, "\t\t\t");
 };
 Cmds.parse = function () {
     if (os.platform() == "win32") {

@@ -8,7 +8,7 @@ namespace fay
 	class VMStack
 	{
 	private:
-		FayValue **_container = nullptr;
+		FayValue** _container = nullptr;
 		size_t _capacity = 0;
 		size_t _size = 0;
 
@@ -25,7 +25,7 @@ namespace fay
 
 		size_t size() { return this->_size; }
 
-		void push(FayValue *value)
+		void push(FayValue* value)
 		{
 			if (this->_size >= this->_capacity)
 				this->_expand();
@@ -33,7 +33,7 @@ namespace fay
 			this->_container[this->_size++] = value;
 		}
 
-		FayValue *push()
+		FayValue* pop()
 		{
 			if (this->_size > 0)
 				return this->_container[this->_size-- - 1];
@@ -43,7 +43,7 @@ namespace fay
 			return nullptr;
 		}
 
-		FayValue *operator[](size_t index)
+		FayValue* operator[](size_t index)
 		{
 			if (index < this->_size)
 				return this->_container[this->_size - index - 1];
