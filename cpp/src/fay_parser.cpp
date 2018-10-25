@@ -1,5 +1,4 @@
 ﻿#include <fay_parser.h>
-#include <mirror_sys_trace.h>
 #include <mirror_utils_string.h>
 #include <algorithm>
 
@@ -721,6 +720,6 @@ PTR(AstNode) fay::Parser::Parse(PTR(std::vector<PTR(Token)>) tokens, const std::
 fay::ParseException::ParseException(TokenStack * stack, const std::string & msg)
 	: std::exception::exception((msg + "\n" + stack->now()->toString()).c_str())
 {
-	this->_trace = mirror::sys::SysTrace::TraceInfo();
+	this->_trace = mirror::log::SysTrace::TraceInfo();
 }
 

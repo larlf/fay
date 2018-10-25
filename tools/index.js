@@ -19,6 +19,103 @@ let TypeMap = {
     "bool": "char",
     "double": "double"
 };
+class FayCfg {
+    constructor() {
+        this.dataType = new Map();
+        let file = xlsx.readFile(path.resolve(__dirname, "../doc/FayLang.xlsx"));
+        let json = xlsx.utils.sheet_to_json(file.Sheets['ValueType']);
+        for (let key in json) {
+            let it = json[key];
+            this.dataType.set(it.Name.toString().toLowerCase(), it);
+        }
+    }
+    getType(name) {
+        let it = this.dataType.get(name);
+        if (!it)
+            log.error("Cannot find type : " + name);
+        return it;
+    }
+}
+//指令中的字段
+class FayInstField {
+    constructor(index, text) {
+        this.index = index;
+        if (text.indexOf(":") > 0) {
+            let textArray = text.split(":");
+            this.name = textArray[0];
+            this.type = textArray[1];
+        }
+        else {
+            this.name = "p" + this.index;
+            this.type = text;
+        }
+    }
+    //生成字段字符串
+    fieldDefStr() {
+        return this.getCType() + " " + this.name + ";";
+    }
+    getCType() {
+        return CFG.getType(this.type).CType;
+    }
+}
+//Fay语言指令定义
+class FayInst {
+    constructor(code, data) {
+        this.props = [];
+        this.values = [];
+        this.code = code;
+        this.name = data.Code1 + (data.Code2 ? data.Code2 : "");
+        for (let i = 1; i <= 3; ++i) {
+            let propName = "P" + i;
+            if (data[propName]) {
+                this.props.push(new FayInstField(i, data[propName]));
+            }
+        }
+        for (let i = 1; i <= 3; ++i) {
+            let propName = "V" + i;
+            if (data[propName]) {
+                this.values.push(new FayInstField(i, data[propName]));
+            }
+        }
+    }
+    makeHeadCode() {
+        let tpl = fs.readFileSync(path.resolve(RootPath, "tools/tpl/inst_h.ejs")).toString();
+        let text = ejs.render(tpl, {
+            "data": this
+        });
+        //去除空行
+        text = text.replace(/\n\s*\n/g, "\n");
+        return text;
+    }
+    makeCppCode() {
+        let tpl = fs.readFileSync(path.resolve(RootPath, "tools/tpl/inst_c.ejs")).toString();
+        let text = ejs.render(tpl, {
+            "data": this
+        });
+        //去除空行
+        text = text.replace(/\n\s*\n/g, "\n");
+        return text;
+    }
+    makeParamStr() {
+        let str = "";
+        this.props.forEach(it => {
+            if (str.length)
+                str += ",";
+            str += it.getCType() + " " + it.name;
+        });
+        return str;
+    }
+    makeInitParamStr() {
+        let str = "";
+        this.props.forEach(it => {
+            str += ",";
+            str += it.name + "(" + it.name + ")";
+        });
+        return str;
+    }
+}
+////////////////////////////////////////////////////////////////////////////
+let CFG = new FayCfg();
 function main() {
     let cmd = process.argv[2];
     if (cmd) {
@@ -44,6 +141,7 @@ Cmds._run = "运行的所有";
 Cmds.run = function () {
     Cmds.token_type();
     Cmds.value_type();
+    Cmds.inst();
 };
 Cmds._token_type = "生成Token类型的数据";
 Cmds.token_type = function () {
@@ -107,39 +205,6 @@ Cmds.ast_type = function () {
     log.debug("Write : " + filename);
     fs.writeFileSync(filename, text);
 };
-Cmds._pst_type = "生成PST的类型数据";
-Cmds.pst_type = function () {
-    let file = xlsx.readFile(path.resolve(__dirname, "../doc/FayLang.xlsx"));
-    let json = xlsx.utils.sheet_to_json(file.Sheets['PSTType']);
-    log.info("Parse PST Type");
-    let str1 = "", str2 = "";
-    let index = 1;
-    for (let i = 0; i < json.length; ++i) {
-        let code = json[i]['Code'];
-        if (code) {
-            log.debug("PST : " + code);
-            str1 += str1.length ? ",\n" : "";
-            str1 += "PST_" + code + " = " + index;
-            index *= 2;
-            str2 += str2.length ? "\n" : "";
-            str2 += larlf.text.format("FayConst::PSTTypeName[PST_{0}] = \"{0}\";", code);
-        }
-    }
-    {
-        let filename = path.resolve(RootPath, "src\\fay_lang_const.h");
-        let text = fs.readFileSync(filename).toString();
-        text = larlf.text.replaceBlock(text, /PSTType_Start/g, /PSTType_End/g, str1, "\t\t\t");
-        log.debug("Write : " + filename);
-        fs.writeFileSync(filename, text);
-    }
-    {
-        let filename = path.resolve(RootPath, "src\\fay_lang_const.cpp");
-        let text = fs.readFileSync(filename).toString();
-        text = larlf.text.replaceBlock(text, /PSTTypeName_Init_Start/g, /PSTTypeName_Init_End/g, str2, "\t");
-        log.debug("Write : " + filename);
-        fs.writeFileSync(filename, text);
-    }
-};
 Cmds.value_type = function () {
     let file = xlsx.readFile(path.resolve(__dirname, "../doc/FayLang.xlsx"));
     let json = xlsx.utils.sheet_to_json(file.Sheets['ValueType']);
@@ -152,7 +217,7 @@ Cmds.value_type = function () {
         if (it['Name']) {
             if (str1.length > 0)
                 str1 += "\n";
-            str1 += it.Name + ",";
+            str1 += it.Name + " = " + it.Value + ",";
             if (it.Comment)
                 str1 += "  //" + it.Comment;
             str2 += str2.length ? "\n" : "";
@@ -165,69 +230,52 @@ Cmds.value_type = function () {
     replaceFileBody("cpp/src/fay_const.cpp", "ValueTypeName", str2, "\t");
     replaceFileBody("cpp/src/fay_const.cpp", "ValueTypeMap", str3, "\t");
 };
-Cmds.instruct_type = function () {
-    let file = xlsx.readFile(path.resolve(__dirname, "../doc/FayLang.xlsx"));
-    let json = xlsx.utils.sheet_to_json(file.Sheets['Instruct']);
-    log.info("Parse Instruction");
-    let str1 = "";
-    let str2 = ""; //FayConst::InstructTypeName[instruct::AddByte] = "AddByte";
-    let str3 = ""; //用于生成Class
-    let tpl = fs.readFileSync(path.resolve(RootPath, "tools/tpl/ins_h.ejs")).toString();
-    let index = 1;
-    for (let i = 0; i < json.length; ++i) {
-        let it = json[i];
-        if (it["Code1"]) {
-            let code = it["Code1"] + (it["Code2"] ? (it["Code2"]) : "");
-            log.debug("Instruction : " + code);
-            str1 += str1.length > 0 ? ",\n" : "";
-            str1 += "INS_" + code + " = " + index++;
-            str2 += str2.length > 0 ? "\n" : "";
-            str2 += larlf.text.format("FayConst::InstructTypeName[INS_{0}] = \"{0}\";", code);
-            let props = [];
-            for (let j = 1; j <= 5; ++j) {
-                let pType = json[i]['P' + j];
-                if (!pType)
-                    break;
-                props.push({
-                    name: 'p' + j,
-                    type: TypeMap[pType]
-                });
-            }
-            str3 += ejs.render(tpl, {
-                name: code,
-                props: props
-            });
+//取指令的编码
+function getInstCode(codeStr, valueStr, Code1Value) {
+    if (codeStr) {
+        if (valueStr) {
+            let value = parseInt(valueStr);
+            if (Code1Value.has(codeStr) && Code1Value.get(codeStr) != value)
+                log.error("Diff code value : " + codeStr + " = " + Code1Value.get(codeStr) + " or " + value);
+            Code1Value.set(codeStr, value);
+            return value;
+        }
+        else {
+            if (!Code1Value.has(codeStr))
+                log.error("Cannot find code value : " + codeStr);
+            else
+                return Code1Value.get(codeStr);
         }
     }
-    //保存到文件
-    {
-        let filename = path.resolve(RootPath, "src/fay_lang_const.h");
-        let text = fs.readFileSync(filename).toString();
-        text = larlf.text.replaceBlock(text, /InstructType_Start/, /InstructType_End/, str1, "\t\t\t");
-        log.debug("Write : " + filename);
-        fs.writeFileSync(filename, text);
+    return 0;
+}
+Cmds.inst = function () {
+    let file = xlsx.readFile(path.resolve(__dirname, "../doc/FayLang.xlsx"));
+    let json = xlsx.utils.sheet_to_json(file.Sheets['Inst']);
+    //用于处理Code到Value的转换
+    let Code1Value = new Map();
+    let Code2Value = new Map();
+    let hText = "";
+    let cppText = "";
+    let typeText = "";
+    for (let i = 0; i < json.length; ++i) {
+        let it = json[i];
+        //log.dump(it);
+        let value1 = getInstCode(it.Code1, it.Value1, Code1Value);
+        let value2 = getInstCode(it.Code2, it.Value2, Code2Value);
+        //检查限制，需要在4个字节以内
+        if (value2 < 0 || value2 >= 16)
+            log.error("Bad value2 code : " + value2);
+        if (it.Code1 && !it.Disabled) {
+            let inst = new FayInst((value1 << 4) + value2, it);
+            hText += inst.makeHeadCode();
+            cppText += inst.makeCppCode();
+            typeText += (typeText ? "\n" : "") + inst.name + " = " + inst.code + ",";
+        }
     }
-    {
-        let filename = path.resolve(RootPath, "src/fay_lang_const.cpp");
-        let text = fs.readFileSync(filename).toString();
-        text = larlf.text.replaceBlock(text, /InstructTypeName_Init_Start/, /InstructTypeName_Init_End/, str2, "\t");
-        log.debug("Write : " + filename);
-        fs.writeFileSync(filename, text);
-    }
-    {
-        let filename = path.resolve(RootPath, "src/fay_lang_ins.h");
-        let text = fs.readFileSync(filename).toString();
-        text = larlf.text.replaceBlock(text, /InstructionDefine_Start/, /InstructionDefine_End/, str3, "\t\t\t");
-        log.debug("Write : " + filename);
-        fs.writeFileSync(filename, text);
-    }
-    {
-        // let tpl=fs.readFileSync(path.resolve(RootPath, "tools/tpl/ins_h.ejs")).toString();
-        // let text=ejs.render(tpl, {
-        // 	"name":"Larlf"
-        // });
-        // log.debug(text);
-    }
+    replaceFileBody("cpp/src/fay_inst.h", "Inst", hText, "\t\t");
+    replaceFileBody("cpp/src/fay_inst.cpp", "Inst", cppText, "");
+    replaceFileBody("cpp/src/fay_const.h", "InstType", typeText, "\t\t");
 };
 Cmds.parse = function () {
     if (os.platform() == "win32") {
@@ -251,13 +299,6 @@ Cmds.parse = function () {
         cmd = "flex -o fay_tokens.cpp fay.l";
         larlf.project.execCmd(cmd, path.resolve(RootPath, "src"));
     }
-};
-Cmds.build = function () {
-    //生成代码
-    Cmds.value_type();
-    Cmds.ast_type();
-    Cmds.instruct_type();
-    Cmds.parse();
 };
 Cmds.build_vs = function () {
     let task = new larlf.project.VSTask(path.resolve(RootPath, "build/fay.sln"));

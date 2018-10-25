@@ -60,16 +60,16 @@ namespace fay
 	enum class ValueType
 	{
 		//ValueTypeStart
-		Void,  //没有值类型
-		Byte,  //字节值
-		Int,  //整形
-		Long,  //长整型
-		Float,  //浮点数
-		Double,  //双精度浮点数
-		Bool,  //布尔
-		String,  //字符串
-		Object,  //对象
-		Function,  //函数
+		Void = 1,  //没有值类型
+		Byte = 2,  //字节值
+		Int = 3,  //整形
+		Long = 4,  //长整型
+		Float = 5,  //浮点数
+		Double = 6,  //双精度浮点数
+		Bool = 7,  //布尔
+		String = 8,  //字符串
+		Object = 9,  //对象
+		Function = 10,  //函数
 		//ValueTypeEnd
 	};
 
@@ -82,8 +82,42 @@ namespace fay
 
 	enum class InstType
 	{
-		PushString,
-		Call
+		//InstTypeStart
+		PushByte = 17,
+		PushInt = 18,
+		PushLong = 19,
+		PushFloat = 20,
+		PushDouble = 21,
+		PushBool = 22,
+		PushString = 23,
+		Pop = 32,
+		PopTo = 48,
+		IntToByte = 65,
+		IntToInt = 66,
+		IntToLong = 67,
+		IntToFloat = 68,
+		IntToDouble = 69,
+		IntToBool = 70,
+		IntToString = 71,
+		AddByte = 81,
+		AddInt = 82,
+		AddLong = 83,
+		AddFloat = 84,
+		AddDouble = 85,
+		AddBool = 86,
+		AddString = 87,
+		SubByte = 97,
+		SubInt = 98,
+		SubLong = 99,
+		SubFloat = 100,
+		SubDouble = 101,
+		SubBool = 102,
+		SubString = 103,
+		CallStatic = 113,
+		CallSpecial = 114,
+		CallVirtual = 115,
+		CallInterface = 116,
+		//InstTypeEnd
 	};
 
 	class TypeDict

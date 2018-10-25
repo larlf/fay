@@ -2,7 +2,6 @@
 #include <mirror_utils_log.h>
 #include <mirror_utils_lang.h>
 #include <vector>
-#include <mirror_sys_trace.h>
 
 using namespace mirror;
 
@@ -43,7 +42,7 @@ void test::UtilsTest::testString()
 void test::UtilsTest::testTrace()
 {
 	LOG_INFO("Test Trace");
-	std::string stackMsg = mirror::sys::SysTrace::TraceInfo();
+	std::string stackMsg = mirror::log::SysTrace::TraceInfo();
 	LOG_DEBUG(stackMsg);
 }
 

@@ -118,7 +118,7 @@ ValueType fay::AstString::valueType()
 
 void fay::AstString::dig3(FayBuilder *builder)
 {
-	InstPushString *inst = new InstPushString(this->text());
+	inst::PushString *inst = new inst::PushString(this->text());
 	builder->addInst(inst);
 }
 
@@ -171,13 +171,13 @@ void fay::AstCall::dig3(FayBuilder *builder)
 	PTR(AstParams) n1 = this->childNode<AstParams>(0);
 	size_t paramSize = n1->size();
 
-	builder->addInst(new InstCall(index, paramSize));
+	builder->addInst(new inst::CallStatic(index, paramSize));
 }
 
 fay::BuildException::BuildException(PTR(fay::AstNode) ast, const std::string & msg)
 	: std::exception::exception((msg+"\n"+ast->traceInfo()).c_str())
 {
-	this->_trace = mirror::sys::SysTrace::TraceInfo();
+	this->_trace = mirror::log::SysTrace::TraceInfo();
 }
 
 std::vector<PTR(FayType)> fay::AstParamDefineList::getTypeList(FayBuilder *builder)

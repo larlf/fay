@@ -9,12 +9,12 @@ void fay::FayVM::_run(std::vector<FayInst*>* insts)
 		switch (inst->type())
 		{
 			case InstType::PushString:
-				this->stack.push(new FayValue(((InstPushString*)inst)->p1()));
+				this->stack.push(new FayValue(((inst::PushString*)inst)->val));
 				break;
-			case InstType::Call:
+			case InstType::CallStatic:
 			{
-				InstCall* i = (InstCall*)inst;
-				PTR(FayFun) fun=this->_domain->findFun(i->v1, i->v2);
+				inst::CallStatic* i = (inst::CallStatic*)inst;
+				PTR(FayFun) fun=this->_domain->findFun(i->typeIndex, i->funIndex);
 				this->run(fun);
 				break;
 			}
@@ -36,6 +36,7 @@ void fay::FayVM::run(PTR(FayFun) fun)
 		{
 			PTR(FayInternalFun) f = TOPTR(FayInternalFun, fun);
 			f->Invoke(&this->stack);
+			break;
 		}
 		default:
 			LOG_ERROR("Unknow function type : " << (int)fun->type());

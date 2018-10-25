@@ -3,9 +3,21 @@
 #include <iostream>
 #include <sstream>
 #include <mirror_sys_termcolor.h>
-#include <mirror_sys_trace.h>
 #include <mirror_utils_string.h>
 #include <mirror_utils_time.h>
+
+namespace mirror
+{
+	namespace log
+	{
+		class SysTrace
+		{
+		public:
+			static std::string TraceInfo();
+		};
+	}
+}
+
 
 #ifdef WIN32
 
@@ -42,6 +54,7 @@
 	<<" | "<<p1; cout<<termcolor::red \
 	<<mirror::utils::StringUtils::Encoding(__FUNCTION____LINE__.str(), "UTF-8", "GBK") \
 	<<termcolor::reset<<" ... "<< __FUNCTION__<<"() "<<__FILE__<<"("<<__LINE__<<")" \
+	<< std::endl << mirror::log::SysTrace::TraceInfo() \
 	<<std::endl<<std::flush; }
 /** 根据条件判断输出信息 */
 #define LOG_ASSERT(p1, p2, p3)	{ bool __FUNCTION____LINE__VALUE=(p1==p2); std::ostringstream __FUNCTION____LINE__; __FUNCTION____LINE__<<" ?| C "<<mirror::utils::TimeUtils::MSTimeString()<<" | "<<p3<<" ("<<(__FUNCTION____LINE__VALUE?"OK : ":"Fail : ")<<p1<<(__FUNCTION____LINE__VALUE?" == ":" != ")<<p2<<") "; cout<<(__FUNCTION____LINE__VALUE?termcolor::on_green:termcolor::on_red)<<mirror::utils::StringUtils::Encoding(__FUNCTION____LINE__.str(), "UTF-8", "GBK")<<termcolor::reset<<" ... "<< __FUNCTION__<<"() "<<__FILE__<<"("<<__LINE__<<")"<<std::endl<<std::flush; }

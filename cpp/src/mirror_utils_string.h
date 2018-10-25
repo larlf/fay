@@ -82,6 +82,27 @@ namespace mirror
 				return this;
 			}
 
+			StringBuilder *add(int64_t v)
+			{
+				this->checkNewline();
+				text.append(std::to_string(v));
+				return this;
+			}
+
+			StringBuilder *add(float v)
+			{
+				this->checkNewline();
+				text.append(std::to_string(v));
+				return this;
+			}
+
+			StringBuilder *add(double v)
+			{
+				this->checkNewline();
+				text.append(std::to_string(v));
+				return this;
+			}
+
 			StringBuilder *endl()
 			{
 				text.append("\n");

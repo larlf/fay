@@ -141,13 +141,13 @@ void fay::FayInstFun::prepareInsts()
 		FayInst* inst = this->_insts[i];
 		switch (inst->type())
 		{
-			case InstType::Call:
+			case InstType::CallStatic:
 			{
 				//取出调用方法的索引值
-				InstCall* i = static_cast<InstCall*>(inst);
-				PTR(OutsideFun) fun = this->clazz()->lib()->findOutsideFun(i->p1);
-				i->v1 = fun->typeIndex();
-				i->v2 = fun->funIndex();
+				inst::CallStatic* i = static_cast<inst::CallStatic*>(inst);
+				PTR(OutsideFun) fun = this->clazz()->lib()->findOutsideFun(i->outsideFunIndex);
+				i->typeIndex = fun->typeIndex();
+				i->funIndex = fun->funIndex();
 				break;
 			}
 		}
@@ -375,9 +375,7 @@ PTR(FayFun) fay::FayDomain::findFun(pos_t typeIndex, pos_t funIndex)
 {
 	auto type = this->findType(typeIndex);
 	if (type)
-	{
 		return type->findFun(funIndex);
-	}
 
 	return nullptr;
 }

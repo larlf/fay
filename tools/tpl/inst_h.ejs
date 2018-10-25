@@ -1,0 +1,13 @@
+
+class <%=data.name%> : public fay::FayInst 
+{ 
+public:
+	<%data.props.forEach(it=>{%>
+	<%=it.fieldDefStr()%>
+	<%})%>
+	<%data.values.forEach(it=>{%>
+	<%=it.fieldDefStr()%>
+	<%})%>
+	<%=data.name%>(<%=data.makeParamStr()%>) : FayInst(InstType::<%=data.name%>)<%=data.makeInitParamStr()%> {}
+	virtual void toString(mirror::utils::StringBuilder* sb) override;
+};

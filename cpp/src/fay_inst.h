@@ -6,7 +6,7 @@
 namespace fay
 {
 	//指令
-	class FayInst : public FayObject
+	class FayInst : public fay::FayObject
 	{
 	private:
 		InstType _type;
@@ -19,33 +19,276 @@ namespace fay
 
 		virtual void toString(mirror::utils::StringBuilder* sb) { sb->endl(); }
 	};
+}
 
-	class InstPushString : public FayInst
+namespace fay
+{
+	namespace inst
 	{
-	private:
-		std::string _p1;
-	public:
-		InstPushString(const std::string &p1)
-			: FayInst(InstType::PushString), _p1(p1) {}
-
-		inline const std::string &p1() { return this->_p1; }
-
-		virtual void toString(mirror::utils::StringBuilder* sb) override;
-
-	};
-
-	class InstCall : public FayInst
-	{
-	public:
-		int32_t p1;
-		int32_t p2;
-		int32_t v1;
-		int32_t v2;
-
-		InstCall(pos_t p1, int32_t p2)
-			: FayInst(InstType::Call), p1(p1), p2(p2) {}
-
-		virtual void toString(mirror::utils::StringBuilder* sb) override;
-
-	};
+		//InstStart
+		
+		class PushByte : public fay::FayInst 
+		{ 
+		public:
+			unsigned char val;
+			PushByte(unsigned char val) : FayInst(InstType::PushByte),val(val) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class PushInt : public fay::FayInst 
+		{ 
+		public:
+			int32_t val;
+			PushInt(int32_t val) : FayInst(InstType::PushInt),val(val) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class PushLong : public fay::FayInst 
+		{ 
+		public:
+			int64_t val;
+			PushLong(int64_t val) : FayInst(InstType::PushLong),val(val) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class PushFloat : public fay::FayInst 
+		{ 
+		public:
+			float val;
+			PushFloat(float val) : FayInst(InstType::PushFloat),val(val) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class PushDouble : public fay::FayInst 
+		{ 
+		public:
+			double val;
+			PushDouble(double val) : FayInst(InstType::PushDouble),val(val) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class PushBool : public fay::FayInst 
+		{ 
+		public:
+			bool val;
+			PushBool(bool val) : FayInst(InstType::PushBool),val(val) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class PushString : public fay::FayInst 
+		{ 
+		public:
+			std::string val;
+			PushString(std::string val) : FayInst(InstType::PushString),val(val) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class Pop : public fay::FayInst 
+		{ 
+		public:
+			Pop() : FayInst(InstType::Pop) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class PopTo : public fay::FayInst 
+		{ 
+		public:
+			int32_t count;
+			PopTo(int32_t count) : FayInst(InstType::PopTo),count(count) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class IntToByte : public fay::FayInst 
+		{ 
+		public:
+			IntToByte() : FayInst(InstType::IntToByte) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class IntToInt : public fay::FayInst 
+		{ 
+		public:
+			IntToInt() : FayInst(InstType::IntToInt) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class IntToLong : public fay::FayInst 
+		{ 
+		public:
+			IntToLong() : FayInst(InstType::IntToLong) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class IntToFloat : public fay::FayInst 
+		{ 
+		public:
+			IntToFloat() : FayInst(InstType::IntToFloat) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class IntToDouble : public fay::FayInst 
+		{ 
+		public:
+			IntToDouble() : FayInst(InstType::IntToDouble) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class IntToBool : public fay::FayInst 
+		{ 
+		public:
+			IntToBool() : FayInst(InstType::IntToBool) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class IntToString : public fay::FayInst 
+		{ 
+		public:
+			IntToString() : FayInst(InstType::IntToString) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class AddByte : public fay::FayInst 
+		{ 
+		public:
+			AddByte() : FayInst(InstType::AddByte) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class AddInt : public fay::FayInst 
+		{ 
+		public:
+			AddInt() : FayInst(InstType::AddInt) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class AddLong : public fay::FayInst 
+		{ 
+		public:
+			AddLong() : FayInst(InstType::AddLong) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class AddFloat : public fay::FayInst 
+		{ 
+		public:
+			AddFloat() : FayInst(InstType::AddFloat) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class AddDouble : public fay::FayInst 
+		{ 
+		public:
+			AddDouble() : FayInst(InstType::AddDouble) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class AddBool : public fay::FayInst 
+		{ 
+		public:
+			AddBool() : FayInst(InstType::AddBool) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class AddString : public fay::FayInst 
+		{ 
+		public:
+			AddString() : FayInst(InstType::AddString) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class SubByte : public fay::FayInst 
+		{ 
+		public:
+			SubByte() : FayInst(InstType::SubByte) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class SubInt : public fay::FayInst 
+		{ 
+		public:
+			SubInt() : FayInst(InstType::SubInt) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class SubLong : public fay::FayInst 
+		{ 
+		public:
+			SubLong() : FayInst(InstType::SubLong) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class SubFloat : public fay::FayInst 
+		{ 
+		public:
+			SubFloat() : FayInst(InstType::SubFloat) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class SubDouble : public fay::FayInst 
+		{ 
+		public:
+			SubDouble() : FayInst(InstType::SubDouble) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class SubBool : public fay::FayInst 
+		{ 
+		public:
+			SubBool() : FayInst(InstType::SubBool) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class SubString : public fay::FayInst 
+		{ 
+		public:
+			SubString() : FayInst(InstType::SubString) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class CallStatic : public fay::FayInst 
+		{ 
+		public:
+			int32_t outsideFunIndex;
+			int32_t paramCount;
+			int32_t typeIndex;
+			int32_t funIndex;
+			CallStatic(int32_t outsideFunIndex,int32_t paramCount) : FayInst(InstType::CallStatic),outsideFunIndex(outsideFunIndex),paramCount(paramCount) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class CallSpecial : public fay::FayInst 
+		{ 
+		public:
+			int32_t outsideFunIndex;
+			int32_t paramCount;
+			int32_t typeIndex;
+			int32_t funIndex;
+			CallSpecial(int32_t outsideFunIndex,int32_t paramCount) : FayInst(InstType::CallSpecial),outsideFunIndex(outsideFunIndex),paramCount(paramCount) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class CallVirtual : public fay::FayInst 
+		{ 
+		public:
+			int32_t outsideFunIndex;
+			int32_t paramCount;
+			int32_t typeIndex;
+			int32_t funIndex;
+			CallVirtual(int32_t outsideFunIndex,int32_t paramCount) : FayInst(InstType::CallVirtual),outsideFunIndex(outsideFunIndex),paramCount(paramCount) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class CallInterface : public fay::FayInst 
+		{ 
+		public:
+			int32_t outsideFunIndex;
+			int32_t paramCount;
+			int32_t typeIndex;
+			int32_t funIndex;
+			CallInterface(int32_t outsideFunIndex,int32_t paramCount) : FayInst(InstType::CallInterface),outsideFunIndex(outsideFunIndex),paramCount(paramCount) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		//InstEnd
+	}
 }
