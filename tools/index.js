@@ -85,6 +85,7 @@ class FayInst {
         });
         //去除空行
         text = text.replace(/\n\s*\n/g, "\n");
+        text = text.replace(/\&amp\;/g, "&");
         return text;
     }
     makeCppCode() {
@@ -94,6 +95,7 @@ class FayInst {
         });
         //去除空行
         text = text.replace(/\n\s*\n/g, "\n");
+        text = text.replace(/\&amp\;/g, "&");
         return text;
     }
     makeParamStr() {
@@ -101,7 +103,10 @@ class FayInst {
         this.props.forEach(it => {
             if (str.length)
                 str += ",";
-            str += it.getCType() + " " + it.name;
+            if (it.type == "string")
+                str += "const std::string &" + it.name;
+            else
+                str += it.getCType() + " " + it.name;
         });
         return str;
     }

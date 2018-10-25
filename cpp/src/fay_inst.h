@@ -79,7 +79,7 @@ namespace fay
 		{ 
 		public:
 			std::string val;
-			PushString(std::string val) : FayInst(InstType::PushString),val(val) {}
+			PushString(const std::string &val) : FayInst(InstType::PushString),val(val) {}
 			virtual void toString(mirror::utils::StringBuilder* sb) override;
 		};
 		
