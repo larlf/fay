@@ -27,6 +27,14 @@ namespace fay
 	{
 		//InstStart
 		
+		class PushBool : public fay::FayInst 
+		{ 
+		public:
+			bool val;
+			PushBool(bool val) : FayInst(InstType::PushBool),val(val) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
 		class PushByte : public fay::FayInst 
 		{ 
 		public:
@@ -64,14 +72,6 @@ namespace fay
 		public:
 			double val;
 			PushDouble(double val) : FayInst(InstType::PushDouble),val(val) {}
-			virtual void toString(mirror::utils::StringBuilder* sb) override;
-		};
-		
-		class PushBool : public fay::FayInst 
-		{ 
-		public:
-			bool val;
-			PushBool(bool val) : FayInst(InstType::PushBool),val(val) {}
 			virtual void toString(mirror::utils::StringBuilder* sb) override;
 		};
 		
@@ -256,14 +256,14 @@ namespace fay
 			virtual void toString(mirror::utils::StringBuilder* sb) override;
 		};
 		
-		class CallSpecial : public fay::FayInst 
+		class CallFun : public fay::FayInst 
 		{ 
 		public:
 			int32_t outsideFunIndex;
 			int32_t paramCount;
 			int32_t typeIndex;
 			int32_t funIndex;
-			CallSpecial(int32_t outsideFunIndex,int32_t paramCount) : FayInst(InstType::CallSpecial),outsideFunIndex(outsideFunIndex),paramCount(paramCount) {}
+			CallFun(int32_t outsideFunIndex,int32_t paramCount) : FayInst(InstType::CallFun),outsideFunIndex(outsideFunIndex),paramCount(paramCount) {}
 			virtual void toString(mirror::utils::StringBuilder* sb) override;
 		};
 		

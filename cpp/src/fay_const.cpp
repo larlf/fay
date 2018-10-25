@@ -42,12 +42,12 @@ void fay::TypeDict::Init()
 
 	//ValueTypeNameStart
 	TypeDict::ValueTypeName[ValueType::Void] = "Void";
+	TypeDict::ValueTypeName[ValueType::Bool] = "Bool";
 	TypeDict::ValueTypeName[ValueType::Byte] = "Byte";
 	TypeDict::ValueTypeName[ValueType::Int] = "Int";
 	TypeDict::ValueTypeName[ValueType::Long] = "Long";
 	TypeDict::ValueTypeName[ValueType::Float] = "Float";
 	TypeDict::ValueTypeName[ValueType::Double] = "Double";
-	TypeDict::ValueTypeName[ValueType::Bool] = "Bool";
 	TypeDict::ValueTypeName[ValueType::String] = "String";
 	TypeDict::ValueTypeName[ValueType::Object] = "Object";
 	TypeDict::ValueTypeName[ValueType::Function] = "Function";
@@ -55,12 +55,12 @@ void fay::TypeDict::Init()
 
 	//ValueTypeMapStart
 	TypeDict::ValueTypeMap["void"] = ValueType::Void;
+	TypeDict::ValueTypeMap["bool"] = ValueType::Bool;
 	TypeDict::ValueTypeMap["byte"] = ValueType::Byte;
 	TypeDict::ValueTypeMap["int"] = ValueType::Int;
 	TypeDict::ValueTypeMap["long"] = ValueType::Long;
 	TypeDict::ValueTypeMap["float"] = ValueType::Float;
 	TypeDict::ValueTypeMap["double"] = ValueType::Double;
-	TypeDict::ValueTypeMap["bool"] = ValueType::Bool;
 	TypeDict::ValueTypeMap["string"] = ValueType::String;
 	TypeDict::ValueTypeMap["object"] = ValueType::Object;
 	TypeDict::ValueTypeMap["function"] = ValueType::Function;

@@ -2,6 +2,13 @@
 
 //InstStart
 
+void fay::inst::PushBool::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("PushBool")
+		->add(" ")->add(this->val)
+		->endl();
+}
+
 void fay::inst::PushByte::toString(mirror::utils::StringBuilder * sb)
 {
 	sb->add("PushByte")
@@ -33,13 +40,6 @@ void fay::inst::PushFloat::toString(mirror::utils::StringBuilder * sb)
 void fay::inst::PushDouble::toString(mirror::utils::StringBuilder * sb)
 {
 	sb->add("PushDouble")
-		->add(" ")->add(this->val)
-		->endl();
-}
-
-void fay::inst::PushBool::toString(mirror::utils::StringBuilder * sb)
-{
-	sb->add("PushBool")
 		->add(" ")->add(this->val)
 		->endl();
 }
@@ -198,9 +198,9 @@ void fay::inst::CallStatic::toString(mirror::utils::StringBuilder * sb)
 		->endl();
 }
 
-void fay::inst::CallSpecial::toString(mirror::utils::StringBuilder * sb)
+void fay::inst::CallFun::toString(mirror::utils::StringBuilder * sb)
 {
-	sb->add("CallSpecial")
+	sb->add("CallFun")
 		->add(" ")->add(this->outsideFunIndex)
 		->add(" ")->add(this->paramCount)
 		->endl();

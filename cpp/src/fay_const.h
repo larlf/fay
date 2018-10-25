@@ -7,7 +7,7 @@ typedef int32_t pos_t;
 
 namespace fay
 {
-	const size_t STACK_INIT_SIZE = 1024;  //堆栈初始化的长度
+	const size_t STACK_INIT_SIZE = 8;  //堆栈初始化的长度
 
 	/**
 	* 词法分析器的模式
@@ -61,12 +61,12 @@ namespace fay
 	{
 		//ValueTypeStart
 		Void = 1,  //没有值类型
-		Byte = 2,  //字节值
-		Int = 3,  //整形
-		Long = 4,  //长整型
-		Float = 5,  //浮点数
-		Double = 6,  //双精度浮点数
-		Bool = 7,  //布尔
+		Bool = 2,  //布尔
+		Byte = 3,  //字节值
+		Int = 4,  //整形
+		Long = 5,  //长整型
+		Float = 6,  //浮点数
+		Double = 7,  //双精度浮点数
 		String = 8,  //字符串
 		Object = 9,  //对象
 		Function = 10,  //函数
@@ -83,38 +83,38 @@ namespace fay
 	enum class InstType
 	{
 		//InstTypeStart
-		PushByte = 17,
-		PushInt = 18,
-		PushLong = 19,
-		PushFloat = 20,
-		PushDouble = 21,
-		PushBool = 22,
-		PushString = 23,
+		PushBool = 18,
+		PushByte = 19,
+		PushInt = 20,
+		PushLong = 21,
+		PushFloat = 22,
+		PushDouble = 23,
+		PushString = 24,
 		Pop = 32,
 		PopTo = 48,
-		IntToByte = 65,
-		IntToInt = 66,
-		IntToLong = 67,
-		IntToFloat = 68,
-		IntToDouble = 69,
-		IntToBool = 70,
-		IntToString = 71,
-		AddByte = 81,
-		AddInt = 82,
-		AddLong = 83,
-		AddFloat = 84,
-		AddDouble = 85,
-		AddBool = 86,
-		AddString = 87,
-		SubByte = 97,
-		SubInt = 98,
-		SubLong = 99,
-		SubFloat = 100,
-		SubDouble = 101,
-		SubBool = 102,
-		SubString = 103,
+		IntToByte = 67,
+		IntToInt = 68,
+		IntToLong = 69,
+		IntToFloat = 70,
+		IntToDouble = 71,
+		IntToBool = 66,
+		IntToString = 72,
+		AddByte = 83,
+		AddInt = 84,
+		AddLong = 85,
+		AddFloat = 86,
+		AddDouble = 87,
+		AddBool = 82,
+		AddString = 88,
+		SubByte = 99,
+		SubInt = 100,
+		SubLong = 101,
+		SubFloat = 102,
+		SubDouble = 103,
+		SubBool = 98,
+		SubString = 104,
 		CallStatic = 113,
-		CallSpecial = 114,
+		CallFun = 114,
 		CallVirtual = 115,
 		CallInterface = 116,
 		//InstTypeEnd

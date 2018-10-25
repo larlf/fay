@@ -9,6 +9,11 @@ void fay::FayVM::_run(std::vector<FayInst*>* insts)
 		switch (inst->type())
 		{
 			//InstCodeStart
+			case InstType::PushBool:
+			{
+				stack.push(new FayValue(((inst::PushBool*)inst)->val));
+				break;
+			}
 			case InstType::PushByte:
 			{
 				stack.push(new FayValue(((inst::PushByte*)inst)->val));
@@ -32,11 +37,6 @@ void fay::FayVM::_run(std::vector<FayInst*>* insts)
 			case InstType::PushDouble:
 			{
 				stack.push(new FayValue(((inst::PushDouble*)inst)->val));
-				break;
-			}
-			case InstType::PushBool:
-			{
-				stack.push(new FayValue(((inst::PushBool*)inst)->val));
 				break;
 			}
 			case InstType::PushString:
@@ -143,7 +143,7 @@ void fay::FayVM::_run(std::vector<FayInst*>* insts)
 				this->run(fun);
 				break;
 			}
-			case InstType::CallSpecial:
+			case InstType::CallFun:
 			{
 				break;
 			}
