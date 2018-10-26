@@ -63,7 +63,8 @@ namespace fay
 		void rebuild(std::vector<PTR(FayFun)> &parentFuns);
 		//匹配函数
 		std::vector<pos_t> matchFun(const std::string &funName, const std::vector<PTR(FayType)> &paramsType);
-		pos_t matchFun(const std::string &fullname);
+		pos_t findFunIndex(const std::string &fullname);
+		PTR(FayFun) findFun(const std::string &fullname);
 
 		virtual void toString(mirror::utils::StringBuilder* sb);
 	};
@@ -91,6 +92,7 @@ namespace fay
 		std::vector<pos_t> matchFun(const std::string &funName, const std::vector<PTR(FayType)> &paramsType, bool isStatic);
 		//根据Index取得函数
 		PTR(FayFun) findFun(pos_t index, bool isStatic);
+		PTR(FayFun) findFun(const std::string &fullname, bool isStatic);
 		pos_t getFunIndex(const std::string &fullname, bool isStatic);
 	};
 
@@ -309,6 +311,7 @@ namespace fay
 		std::vector<PTR(FayType)> findType(std::vector<std::string> &imports, const std::string &typeName);
 		//从函数表中查找指定的函数
 		std::vector<PTR(FayFun)> findFun(const std::string &className, const std::string &funName, const std::vector<PTR(FayType)> &paramsType);
+		PTR(FayFun) findFun(const std::string &typeFullname, const std::string & funFullname, bool isStatic);
 		PTR(FayFun) findFun(pos_t typeIndex, pos_t funIndex, bool isStatic);
 
 		virtual void toString(mirror::utils::StringBuilder* sb) override;

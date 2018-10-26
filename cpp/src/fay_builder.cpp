@@ -38,7 +38,7 @@ void fay::FayBuilder::bindClass(pos_t index)
 
 pos_t fay::FayBuilder::beginFun(const std::string &name)
 {
-	this->_fun = MKPTR(FayInstFun)(this->_domain, name);
+	this->_fun = MKPTR(FayInstFun)(this->_domain, name, false);
 	return this->_class->addFun(this->_fun);
 }
 
