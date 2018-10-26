@@ -50,7 +50,7 @@ void fay::FayBuilder::bindFun(pos_t index)
 		return;
 	}
 
-	this->_fun = TOPTR(FayInstFun, this->_class->findFun(index));
+	this->_fun = TOPTR(FayInstFun, this->_class->findFun(index, false));
 
 	//清空指令集
 	if (this->_insts.size() > 0)

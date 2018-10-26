@@ -25,38 +25,40 @@ const std::string &fay::SimpleType::fullname()
 
 bool fay::FayType::match(PTR(FayType) type)
 {
+	//TODO ：对接口的处理
+
 	if (type && type.get() == this)
+		return true;
+
+	PTR(FayType) parent = this->_parent.lock();
+	if (parent && parent->match(type))
 		return true;
 
 	return false;
 }
 
-std::vector<PTR(FayFun)> fay::FayType::findFun(const std::string &funName, const std::vector<PTR(FayType)> &paramsType)
+std::vector<pos_t> fay::FayType::matchFun(const std::string &funName, const std::vector<PTR(FayType)> &paramsType, bool isStatic)
 {
-	std::vector<PTR(FayFun)> funs;
-
-	for each(auto it in this->_funs.list())
-	{
-		if (it->name() == funName && it->matchParams(paramsType))
-			funs.push_back(it);
-	}
-
-	return funs;
+	if (isStatic)
+		return this->_sft.matchFun(funName, paramsType);
+	else
+		return this->_vft.matchFun(funName, paramsType);
 }
 
-PTR(FayFun) fay::FayType::findFun(pos_t index)
+PTR(FayFun) fay::FayType::findFun(pos_t index, bool isStatic)
 {
-	return this->_funs.find(index);
+	if (isStatic)
+		return this->_sft.getFun(index);
+	else
+		return this->_vft.getFun(index);
 }
 
-pos_t fay::FayType::getFunIndex(const std::string &funname)
+pos_t fay::FayType::getFunIndex(const std::string &fullname, bool isStatic)
 {
-	return this->_funs.findIndex(funname);
-}
-
-pos_t fay::FayType::getFunIndex(const PTR(FayFun)& fun)
-{
-	return FayType::getFunIndex(fun->fullname());
+	if (isStatic)
+		return this->_sft.matchFun(fullname);
+	else
+		return this->_vft.matchFun(fullname);
 }
 
 pos_t fay::FayLib::addClass(PTR(FayClass) clazz)
@@ -93,7 +95,7 @@ pos_t fay::FayLib::findOutsideFun(const std::string &className, const std::strin
 		return -1;
 	}
 
-	auto funs=clazz->findFun(funName, paramsType);
+	auto funs=clazz->matchFun(funName, paramsType, true);
 	if (funs.size() <= 0)
 	{
 		LOG_ERROR("Cannot find fun "<<funName<<" in class "<<className);
@@ -108,7 +110,7 @@ pos_t fay::FayLib::findOutsideFun(const std::string &className, const std::strin
 	//添加外部函数
 	PTR(OutsideFun) ofun = MKPTR(OutsideFun)(
 			className, domain->getTypeIndex(clazz),
-			funName, clazz->getFunIndex(funs[0]));
+			funName, funs[0]);
 	return this->_outsideFuns.add(fullname, ofun);
 }
 
@@ -216,7 +218,12 @@ void fay::FayFun::addParam(PTR(FayParamDef) def)
 	this->_params.push_back(def);
 }
 
-bool fay::FayFun::matchParams(const std::vector<PTR(FayType)> &paramsType)
+void fay::FayFun::addReturn(PTR(FayType) type)
+{
+	this->_returns.push_back(type);
+}
+
+bool fay::FayFun::match(const std::vector<PTR(FayType)> &paramsType)
 {
 	//参数不一致
 	if (paramsType.size() != this->_params.size())
@@ -225,7 +232,7 @@ bool fay::FayFun::matchParams(const std::vector<PTR(FayType)> &paramsType)
 	for (auto i = 0; i < this->_params.size(); ++i)
 	{
 		PTR(FayParamDef) p = this->_params[i];
-		if (p->type.expired() || !p->type.lock()->match(paramsType[i]))
+		if (!p->type()->match(paramsType[i]))
 			return false;
 	}
 
@@ -247,16 +254,27 @@ void fay::FayFun::toString(mirror::utils::StringBuilder* sb)
 pos_t fay::FayClass::addFun(PTR(FayFun) fun)
 {
 	fun->clazz(this->shared_from_this());
-	pos_t index=this->_funs.add(fun->fullname(), fun);
-	return index;
+	if (fun->isStatic())
+		return this->_sft.addFun(fun);
+	else
+		return this->_vft.addFun(fun);
 }
 
 void fay::FayClass::toString(mirror::utils::StringBuilder* sb)
 {
 	sb->add("[FayClass]")->add(this->_fullname)->endl();
 	sb->increaseIndent();
-	for each(auto it in this->_funs.list())
-		it->toString(sb);
+
+	sb->add("SFT : ")->endl();
+	sb->increaseIndent();
+	this->_sft.toString(sb);
+	sb->decreaseIndent();
+
+	sb->add("VFT : ")->endl();
+	sb->increaseIndent();
+	this->_vft.toString(sb);
+	sb->decreaseIndent();
+
 	sb->decreaseIndent();
 }
 
@@ -362,20 +380,18 @@ std::vector<PTR(FayType)> fay::FayDomain::findType(std::vector<std::string> &imp
 	return types;
 }
 
-std::vector<PTR(FayFun)> fay::FayDomain::findFun(const std::string &className, const std::string &funName, const std::vector<PTR(FayType)> &paramsType)
+std::vector<PTR(FayFun)> fay::FayDomain::findFun(const std::string & className, const std::string & funName, const std::vector<PTR(FayType)>& paramsType)
 {
-	auto clazz=this->_types.find(className);
-	if (clazz)
-		return clazz->findFun(funName, paramsType);
+	std::vector<PTR(FayFun)> funs;
 
-	return std::vector<PTR(FayFun)>();
+	return funs;
 }
 
-PTR(FayFun) fay::FayDomain::findFun(pos_t typeIndex, pos_t funIndex)
+PTR(FayFun) fay::FayDomain::findFun(pos_t typeIndex, pos_t funIndex, bool isStatic)
 {
 	auto type = this->findType(typeIndex);
 	if (type)
-		return type->findFun(funIndex);
+		return type->findFun(funIndex, isStatic);
 
 	return nullptr;
 }
@@ -384,9 +400,9 @@ const std::string &fay::FayParamDef::fullname()
 {
 	if (this->_fullname.size() <= 0)
 	{
-		this->_fullname += this->name;
+		this->_fullname += this->_name;
 		this->_fullname += ":";
-		this->_fullname += this->type.expired()?"?":this->type.lock()->fullname();
+		this->_fullname += this->_type.expired()?"?":this->_type.lock()->fullname();
 	}
 
 	return this->_fullname;
@@ -423,7 +439,7 @@ void fay::OutsideFun::toString(mirror::utils::StringBuilder* sb)
 }
 
 fay::FayInternalFun::FayInternalFun(PTR(FayDomain) domain, const std::string &name, std::function<void(VMStack*)> fun, std::vector<std::string> params)
-	: FayFun(domain, name, FunType::Internal), _fun(fun)
+	: FayFun(domain, name, FunType::Internal, true), _fun(fun)
 {
 	for(auto i=0; i<params.size(); ++i)
 	{
@@ -432,5 +448,75 @@ fay::FayInternalFun::FayInternalFun(PTR(FayDomain) domain, const std::string &na
 		auto t=domain->findType(it);
 		PTR(FayParamDef) p = MKPTR(FayParamDef)(domain, paramName, t);
 		this->addParam(p);
+	}
+}
+
+pos_t fay::FunTable::addFun(PTR(FayFun) fun)
+{
+	for (auto i = 0; i < this->_funs.size(); ++i)
+	{
+		//如果是同一个函数，用新的替换旧的
+		if (this->_funs[i]->fullname() == fun->fullname())
+		{
+			this->_funs[i] = fun;
+			return i;
+		}
+	}
+
+	//如果当前没有这个函数，就加到最后
+	this->_funs.push_back(fun);
+	return this->_funs.size() - 1;
+}
+
+PTR(FayFun) fay::FunTable::getFun(pos_t index)
+{
+	if (index >= 0 && index < this->_funs.size())
+		return this->_funs[index];
+
+	return nullptr;
+}
+
+void fay::FunTable::rebuild(std::vector<PTR(FayFun)>& parentFuns)
+{
+	std::vector<PTR(FayFun)> funs = this->_funs;
+	this->_funs = parentFuns;
+
+	for (auto i = 0; i < funs.size(); ++i)
+	{
+		this->addFun(funs[i]);
+	}
+}
+
+std::vector<pos_t> fay::FunTable::matchFun(const std::string & funName, const std::vector<PTR(FayType)>& paramsType)
+{
+	std::vector<pos_t> funs;
+
+	for(auto i = 0; i < this->_funs.size(); ++i)
+	{
+		auto it = this->_funs[i];
+		if (it->name() == funName && it->match(paramsType))
+			funs.push_back(i);
+	}
+
+	return funs;
+}
+
+pos_t fay::FunTable::matchFun(const std::string & fullname)
+{
+	for (auto i = 0; i < this->_funs.size(); ++i)
+	{
+		if (this->_funs[i]->fullname() == fullname)
+			return i;
+	}
+
+	return -1;
+}
+
+void fay::FunTable::toString(mirror::utils::StringBuilder * sb)
+{
+	for each(auto it in this->_funs)
+	{
+		it->toString(sb);
+		sb->endl();
 	}
 }
