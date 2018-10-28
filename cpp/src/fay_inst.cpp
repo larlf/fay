@@ -198,25 +198,9 @@ void fay::inst::CallStatic::toString(mirror::utils::StringBuilder * sb)
 		->endl();
 }
 
-void fay::inst::CallFun::toString(mirror::utils::StringBuilder * sb)
-{
-	sb->add("CallFun")
-		->add(" ")->add(this->outsideFunIndex)
-		->add(" ")->add(this->paramCount)
-		->endl();
-}
-
 void fay::inst::CallVirtual::toString(mirror::utils::StringBuilder * sb)
 {
 	sb->add("CallVirtual")
-		->add(" ")->add(this->outsideFunIndex)
-		->add(" ")->add(this->paramCount)
-		->endl();
-}
-
-void fay::inst::CallInterface::toString(mirror::utils::StringBuilder * sb)
-{
-	sb->add("CallInterface")
 		->add(" ")->add(this->outsideFunIndex)
 		->add(" ")->add(this->paramCount)
 		->endl();

@@ -114,9 +114,7 @@ namespace fay
 		SubBool = 98,
 		SubString = 104,
 		CallStatic = 113,
-		CallFun = 114,
 		CallVirtual = 115,
-		CallInterface = 116,
 		//InstTypeEnd
 	};
 

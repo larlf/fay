@@ -30,6 +30,8 @@ namespace fay
 		MAP<std::string, pos_t> _map;
 
 	public:
+		IndexMap() : _null(nullptr) {}
+
 		pos_t size() { return this->_list.size(); }
 		const std::vector<T> &list() { return this->_list; }
 
@@ -48,7 +50,7 @@ namespace fay
 				return r->second;
 		}
 
-		pos_t findIndex(const std::string &key)
+		inline pos_t findIndex(const std::string &key)
 		{
 			auto r = this->_map.find(key);
 			if (r != this->_map.end())
@@ -57,21 +59,26 @@ namespace fay
 			return -1;
 		}
 
-		T find(pos_t index)
+		inline T &find(pos_t index)
 		{
 			if (index >= 0 && index < this->_list.size())
 				return this->_list[index];
 
-			return nullptr;
+			return this->_null;
 		}
 
-		T find(const std::string &key)
+		inline T &find(const std::string &key)
 		{
 			pos_t index = findIndex(key);
 			if (index >= 0)
 				return this->_list[index];
 
-			return nullptr;
+			return this->_null;
+		}
+
+		inline T &operator[](pos_t index)
+		{
+			return this->find(index);
 		}
 	};
 }

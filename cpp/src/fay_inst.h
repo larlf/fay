@@ -256,17 +256,6 @@ namespace fay
 			virtual void toString(mirror::utils::StringBuilder* sb) override;
 		};
 		
-		class CallFun : public fay::FayInst 
-		{ 
-		public:
-			int32_t outsideFunIndex;
-			int32_t paramCount;
-			int32_t typeIndex;
-			int32_t funIndex;
-			CallFun(int32_t outsideFunIndex,int32_t paramCount) : FayInst(InstType::CallFun),outsideFunIndex(outsideFunIndex),paramCount(paramCount) {}
-			virtual void toString(mirror::utils::StringBuilder* sb) override;
-		};
-		
 		class CallVirtual : public fay::FayInst 
 		{ 
 		public:
@@ -275,17 +264,6 @@ namespace fay
 			int32_t typeIndex;
 			int32_t funIndex;
 			CallVirtual(int32_t outsideFunIndex,int32_t paramCount) : FayInst(InstType::CallVirtual),outsideFunIndex(outsideFunIndex),paramCount(paramCount) {}
-			virtual void toString(mirror::utils::StringBuilder* sb) override;
-		};
-		
-		class CallInterface : public fay::FayInst 
-		{ 
-		public:
-			int32_t outsideFunIndex;
-			int32_t paramCount;
-			int32_t typeIndex;
-			int32_t funIndex;
-			CallInterface(int32_t outsideFunIndex,int32_t paramCount) : FayInst(InstType::CallInterface),outsideFunIndex(outsideFunIndex),paramCount(paramCount) {}
 			virtual void toString(mirror::utils::StringBuilder* sb) override;
 		};
 		

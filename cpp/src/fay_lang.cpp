@@ -53,7 +53,7 @@ PTR(FayFun) fay::FayType::findFun(pos_t index, bool isStatic)
 		return this->_vft.getFun(index);
 }
 
-PTR(FayFun) fay::FayType::findFun(const std::string & fullname, bool isStatic)
+PTR(FayFun) fay::FayType::findFun(const std::string &fullname, bool isStatic)
 {
 	if (isStatic)
 		return this->_sft.findFun(fullname);
@@ -259,7 +259,7 @@ void fay::FayFun::toString(mirror::utils::StringBuilder* sb)
 	sb->decreaseIndent();
 }
 
-pos_t fay::FayClass::addFun(PTR(FayFun) fun)
+pos_t fay::FayType::addFun(PTR(FayFun) fun)
 {
 	fun->clazz(this->shared_from_this());
 	if (fun->isStatic())
@@ -307,7 +307,8 @@ void fay::FayDomain::initSysLib()
 {
 	PTR(FayLib) lib(new FayLib(MYPTR, "System"));
 	PTR(FayClass) clazz(new FayClass(MYPTR, "fay", "System"));
-	clazz->addFun(MKPTR(FayInternalFun)(MYPTR, "Print", InternalFun::Print, std::vector<std::string>({ "string" })));
+	clazz->addFun(MKPTR(FayInternalFun)(MYPTR, "Print", InternalFun::Print_String, std::vector<std::string>({ "string" })));
+	clazz->addFun(MKPTR(FayInternalFun)(MYPTR, "Print", InternalFun::Print_String, std::vector<std::string>({ "int" })));
 
 	lib->addClass(clazz);
 	this->addLib(lib);
@@ -333,9 +334,9 @@ void fay::FayDomain::toString(mirror::utils::StringBuilder* sb)
 		sb->add(i)->add(" : ")->add(t->fullname())->endl();
 	}
 
-for each(auto it in this->_libs)
-it->toString(sb);
-sb->decreaseIndent();
+	for each(auto it in this->_libs)
+		it->toString(sb);
+	sb->decreaseIndent();
 }
 
 pos_t fay::FayDomain::addType(PTR(FayType) t)
@@ -388,14 +389,7 @@ std::vector<PTR(FayType)> fay::FayDomain::findType(std::vector<std::string> &imp
 	return types;
 }
 
-std::vector<PTR(FayFun)> fay::FayDomain::findFun(const std::string & className, const std::string & funName, const std::vector<PTR(FayType)>& paramsType)
-{
-	std::vector<PTR(FayFun)> funs;
-
-	return funs;
-}
-
-PTR(FayFun) fay::FayDomain::findFun(const std::string & typeFullname, const std::string & funFullname, bool isStatic)
+PTR(FayFun) fay::FayDomain::findFun(const std::string &typeFullname, const std::string &funFullname, bool isStatic)
 {
 	auto type = this->findType(typeFullname);
 	if (type)
@@ -406,14 +400,46 @@ PTR(FayFun) fay::FayDomain::findFun(const std::string & typeFullname, const std:
 
 PTR(FayFun) fay::FayDomain::findFun(pos_t typeIndex, pos_t funIndex, bool isStatic)
 {
-	auto type = this->findType(typeIndex);
-	if (type)
-		return type->findFun(funIndex, isStatic);
+	auto type = this->_types[typeIndex];
+	if (!type)
+	{
+		LOG_ERROR("Cannot find type : " << typeIndex);
+		return nullptr;
+	}
 
-	return nullptr;
+	auto fun = type->findFun(funIndex, isStatic);
+	if (!fun)
+	{
+		LOG_ERROR("Cannot find fun : " << funIndex << " in " << type->fullname());
+		return nullptr;
+	}
+
+	return fun;
 }
 
-bool fay::FayDomain::GetFunIndex(PTR(FayFun) fun, pos_t & typeIndex, pos_t & funIndex)
+bool fay::FayDomain::findFunIndex(const std::string &typeFullname, const std::string &funFullname, bool isStatic, pos_t &typeIndex, pos_t &funIndex)
+{
+	typeIndex = -1;
+	funIndex = -1;
+
+	typeIndex = this->_types.findIndex(typeFullname);
+	if (typeIndex<0)
+	{
+		LOG_ERROR("Cannot find type : " << typeIndex);
+		return false;
+	}
+
+	funIndex = this->_types[typeIndex]->getFunIndex(funFullname, funIndex);
+	if (funIndex < 0)
+	{
+		LOG_ERROR("Cannot find fun : " << funIndex << " in " << this->_types[typeIndex]->fullname());
+		return false;
+	}
+
+	return true;
+}
+
+bool fay::FayDomain::findFunIndex(PTR(FayFun) fun, pos_t &typeIndex, pos_t &funIndex)
 {
 	typeIndex = -1;
 	funIndex = -1;
@@ -431,7 +457,7 @@ bool fay::FayDomain::GetFunIndex(PTR(FayFun) fun, pos_t & typeIndex, pos_t & fun
 		return false;
 	}
 
-	funIndex = this->_types.find(typeIndex)->getFunIndex(fun->fullname(), fun->isStatic());
+	funIndex = this->_types[typeIndex]->getFunIndex(fun->fullname(), fun->isStatic());
 	if (funIndex < 0)
 	{
 		LOG_ERROR("Cannot find fun : " << fun->fullname());
@@ -521,18 +547,16 @@ PTR(FayFun) fay::FunTable::getFun(pos_t index)
 	return nullptr;
 }
 
-void fay::FunTable::rebuild(std::vector<PTR(FayFun)>& parentFuns)
+void fay::FunTable::rebuild(std::vector<PTR(FayFun)> &parentFuns)
 {
 	std::vector<PTR(FayFun)> funs = this->_funs;
 	this->_funs = parentFuns;
 
 	for (auto i = 0; i < funs.size(); ++i)
-	{
 		this->addFun(funs[i]);
-	}
 }
 
-std::vector<pos_t> fay::FunTable::matchFun(const std::string & funName, const std::vector<PTR(FayType)>& paramsType)
+std::vector<pos_t> fay::FunTable::matchFun(const std::string &funName, const std::vector<PTR(FayType)> &paramsType)
 {
 	std::vector<pos_t> funs;
 
@@ -546,7 +570,7 @@ std::vector<pos_t> fay::FunTable::matchFun(const std::string & funName, const st
 	return funs;
 }
 
-pos_t fay::FunTable::findFunIndex(const std::string & fullname)
+pos_t fay::FunTable::findFunIndex(const std::string &fullname)
 {
 	for (auto i = 0; i < this->_funs.size(); ++i)
 	{
@@ -557,7 +581,7 @@ pos_t fay::FunTable::findFunIndex(const std::string & fullname)
 	return -1;
 }
 
-PTR(FayFun) fay::FunTable::findFun(const std::string & fullname)
+PTR(FayFun) fay::FunTable::findFun(const std::string &fullname)
 {
 	for (auto i = 0; i < this->_funs.size(); ++i)
 	{
@@ -568,11 +592,20 @@ PTR(FayFun) fay::FunTable::findFun(const std::string & fullname)
 	return nullptr;
 }
 
-void fay::FunTable::toString(mirror::utils::StringBuilder * sb)
+void fay::FunTable::toString(mirror::utils::StringBuilder* sb)
 {
 	for each(auto it in this->_funs)
 	{
 		it->toString(sb);
 		sb->endl();
 	}
+}
+
+const std::string & fay::FayField::fullname()
+{
+	return "";
+}
+
+void fay::FayField::toString(mirror::utils::StringBuilder * sb)
+{
 }

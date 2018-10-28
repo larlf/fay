@@ -139,19 +139,11 @@ void fay::FayVM::_run(std::vector<FayInst*>* insts)
 			}
 			case InstType::CallStatic:
 			{
-				PTR(FayFun) fun=this->_domain->findFun(((inst::CallStatic*)inst)->typeIndex,((inst::CallStatic*)inst)->funIndex, true);
+				PTR(FayFun) fun=this->_domain->findFun(((inst::CallStatic*)inst)->typeIndex,((inst::CallStatic*)inst)->funIndex,true);
 				this->run(fun);
 				break;
 			}
-			case InstType::CallFun:
-			{
-				break;
-			}
 			case InstType::CallVirtual:
-			{
-				break;
-			}
-			case InstType::CallInterface:
 			{
 				break;
 			}

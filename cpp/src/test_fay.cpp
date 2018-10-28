@@ -97,5 +97,5 @@ void test::FayTests::TestInternalFun()
 	VMStack stack;
 	stack.push(new FayValue("aabbccdd"));
 	stack.push(new FayValue("larlf.wang"));
-	InternalFun::Print(&stack);
+	InternalFun::Print_String(&stack);
 }
