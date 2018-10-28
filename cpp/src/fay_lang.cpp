@@ -333,9 +333,9 @@ void fay::FayDomain::toString(mirror::utils::StringBuilder* sb)
 		sb->add(i)->add(" : ")->add(t->fullname())->endl();
 	}
 
-	for each(auto it in this->_libs)
-		it->toString(sb);
-	sb->decreaseIndent();
+for each(auto it in this->_libs)
+it->toString(sb);
+sb->decreaseIndent();
 }
 
 pos_t fay::FayDomain::addType(PTR(FayType) t)
@@ -343,7 +343,7 @@ pos_t fay::FayDomain::addType(PTR(FayType) t)
 	std::string fullname = t->fullname();
 
 	//如果已经有了，就返回现有的位置
-	pos_t index=this->_types.findIndex(fullname);
+	pos_t index = this->_types.findIndex(fullname);
 	if (index >= 0)
 		return index;
 
@@ -359,14 +359,14 @@ PTR(FayType) fay::FayDomain::findType(const std::string &typeFullname)
 {
 	auto type = this->_types.find(typeFullname);
 	if (!type)
-		LOG_ERROR("Cannot find type : "<<typeFullname);
+		LOG_ERROR("Cannot find type : " << typeFullname);
 
 	return type;
 }
 
 PTR(FayType) fay::FayDomain::findType(pos_t index)
 {
-	auto type= this->_types.find(index);
+	auto type = this->_types.find(index);
 	if (!type)
 		LOG_ERROR("Cannot find type by index : " << index);
 
@@ -397,7 +397,7 @@ std::vector<PTR(FayFun)> fay::FayDomain::findFun(const std::string & className, 
 
 PTR(FayFun) fay::FayDomain::findFun(const std::string & typeFullname, const std::string & funFullname, bool isStatic)
 {
-	auto type=this->findType(typeFullname);
+	auto type = this->findType(typeFullname);
 	if (type)
 		return type->findFun(funFullname, isStatic);
 
@@ -411,6 +411,34 @@ PTR(FayFun) fay::FayDomain::findFun(pos_t typeIndex, pos_t funIndex, bool isStat
 		return type->findFun(funIndex, isStatic);
 
 	return nullptr;
+}
+
+bool fay::FayDomain::GetFunIndex(PTR(FayFun) fun, pos_t & typeIndex, pos_t & funIndex)
+{
+	typeIndex = -1;
+	funIndex = -1;
+
+	if (!fun)
+	{
+		LOG_ERROR("Fun is null");
+		return false;
+	}
+
+	typeIndex = this->_types.findIndex(fun->clazz()->fullname());
+	if (typeIndex < 0)
+	{
+		LOG_ERROR("Cannot find type : " << fun->clazz()->fullname());
+		return false;
+	}
+
+	funIndex = this->_types.find(typeIndex)->getFunIndex(fun->fullname(), fun->isStatic());
+	if (funIndex < 0)
+	{
+		LOG_ERROR("Cannot find fun : " << fun->fullname());
+		return false;
+	}
+
+	return true;
 }
 
 const std::string &fay::FayParamDef::fullname()

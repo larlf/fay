@@ -48,7 +48,7 @@ namespace fay
 
 	////////////////////////////////////////////////////////////////
 
-	//数表
+	//函数表
 	class FunTable : public FayObject
 	{
 	private:
@@ -313,6 +313,8 @@ namespace fay
 		std::vector<PTR(FayFun)> findFun(const std::string &className, const std::string &funName, const std::vector<PTR(FayType)> &paramsType);
 		PTR(FayFun) findFun(const std::string &typeFullname, const std::string & funFullname, bool isStatic);
 		PTR(FayFun) findFun(pos_t typeIndex, pos_t funIndex, bool isStatic);
+		//查找函数在Domain中的位置
+		bool GetFunIndex(PTR(FayFun) fun, pos_t &typeIndex, pos_t &funIndex);
 
 		virtual void toString(mirror::utils::StringBuilder* sb) override;
 	};

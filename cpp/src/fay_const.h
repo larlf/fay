@@ -3,7 +3,7 @@
 #include <iostream>
 #include <mirror_sys_const.h>
 
-typedef int32_t pos_t;
+typedef int32_t pos_t;  //用于对长度进行定位
 
 namespace fay
 {
