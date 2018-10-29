@@ -267,6 +267,56 @@ namespace fay
 			virtual void toString(mirror::utils::StringBuilder* sb) override;
 		};
 		
+		class SetLocal : public fay::FayInst 
+		{ 
+		public:
+			int32_t varIndex;
+			SetLocal(int32_t varIndex) : FayInst(InstType::SetLocal),varIndex(varIndex) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class SetField : public fay::FayInst 
+		{ 
+		public:
+			int32_t fieldIndex;
+			SetField(int32_t fieldIndex) : FayInst(InstType::SetField),fieldIndex(fieldIndex) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class SetStatic : public fay::FayInst 
+		{ 
+		public:
+			int32_t typeIndex;
+			int32_t fieldIndex;
+			SetStatic(int32_t typeIndex,int32_t fieldIndex) : FayInst(InstType::SetStatic),typeIndex(typeIndex),fieldIndex(fieldIndex) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class LoadLocal : public fay::FayInst 
+		{ 
+		public:
+			int32_t varIndex;
+			LoadLocal(int32_t varIndex) : FayInst(InstType::LoadLocal),varIndex(varIndex) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class LoadField : public fay::FayInst 
+		{ 
+		public:
+			int32_t fieldIndex;
+			LoadField(int32_t fieldIndex) : FayInst(InstType::LoadField),fieldIndex(fieldIndex) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class LoadStatic : public fay::FayInst 
+		{ 
+		public:
+			int32_t typeIndex;
+			int32_t fieldIndex;
+			LoadStatic(int32_t typeIndex,int32_t fieldIndex) : FayInst(InstType::LoadStatic),typeIndex(typeIndex),fieldIndex(fieldIndex) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
 		//InstEnd
 	}
 }

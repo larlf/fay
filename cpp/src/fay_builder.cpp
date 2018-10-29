@@ -76,7 +76,18 @@ void fay::FayBuilder::optimizeInsts()
 	this->_insts.clear();
 }
 
-pos_t fay::FayBuilder::findFun(const std::string &name, const std::vector<std::string> paramsTypeName)
+PTR(FayVarDef) fay::FayBuilder::findVar(const std::string & name)
+{
+	auto var=this->_fun->findVar(name);
+	return var;
+}
+
+pos_t fay::FayBuilder::findVarIndex(const std::string & name)
+{
+	return this->_fun->getVarIndex(name);
+}
+
+pos_t fay::FayBuilder::findFun(const std::string &name, const std::vector<PTR(FayType)> types)
 {
 	std::string className;
 	std::string funName;
@@ -84,16 +95,7 @@ pos_t fay::FayBuilder::findFun(const std::string &name, const std::vector<std::s
 	if (p != std::string::npos)
 	{
 		className = name.substr(0, p);
-		funName = name.substr(p+1);
-	}
-
-	LOG_DEBUG("***> " << className << " " << funName);
-
-	std::vector<PTR(FayType)> types;
-	for each(auto it in paramsTypeName)
-	{
-		auto t = this->_domain->findType(it);
-		types.push_back(t);
+		funName = name.substr(p + 1);
 	}
 
 	return this->_lib->findOutsideFun(className, funName, types);

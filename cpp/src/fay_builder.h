@@ -25,7 +25,7 @@ namespace fay
 		PTR(FayDomain) domain() { return this->_domain; }
 		PTR(FayLib) lib() { return this->_lib; }
 		PTR(FayClass) clazz() { return this->_class; }
-		PTR(FayFun) fun() { return this->_fun; }
+		PTR(FayInstFun) fun() { return this->_fun; }
 
 		void package(const std::string &name);
 
@@ -44,7 +44,9 @@ namespace fay
 		void addInst(FayInst *inst);
 		void optimizeInsts();
 
-		pos_t findFun(const std::string &name, const std::vector<std::string> paramsTypeName);
+		PTR(FayVarDef) findVar(const std::string &name);
+		pos_t findVarIndex(const std::string &name);
+		pos_t findFun(const std::string &name, const std::vector<PTR(FayType)> types);
 	};
 }
 

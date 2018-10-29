@@ -18,8 +18,7 @@ namespace fay
 		int _col = -1;
 
 	public:
-		Token() {}  //用于初始化空的Token
-
+		Token(const std::string &text) : _text(text) {}
 		Token(TokenType type, mirror::data::ByteData &data, int pos, int size, int line, int col)
 		{
 			this->_type = type;

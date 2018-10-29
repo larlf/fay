@@ -33,7 +33,7 @@ PTR(AstNode) fay::Parser::_MakeBoolOPNode(std::function<PTR(AstNode)(TokenStack*
 		&& (std::find(ops.begin(), ops.end(), stack->now()->text()) != ops.end()))
 	{
 		//生成节点
-		auto node = MKPTR(AstBoolOP)(stack->now()->text());
+		auto node = MKPTR(AstBoolOP)(stack->now());
 		node->addChildNode(leftNode);
 
 		//取右值
@@ -332,7 +332,7 @@ PTR(AstNode) fay::Parser::_StmtVar(TokenStack* stack)
 	//变量名
 	if (!stack->now()->is(TokenType::ID))
 		throw ParseException(stack, "cannt find var name");
-	std::string varName = stack->now()->text();
+	auto varName = stack->now();
 	stack->next();
 
 	//数据类型
@@ -432,7 +432,7 @@ PTR(AstNode) fay::Parser::_Type(TokenStack* stack)
 	if (stack->now()->is(TokenType::BasicType)
 		|| stack->now()->is(TokenType::ID))
 	{
-		std::string name = stack->now()->text();
+		PTR(Token) name = stack->now();
 		stack->next();
 
 		if (stack->now()->is("[") && stack->after()->is("]"))
@@ -678,7 +678,7 @@ PTR(AstNode) fay::Parser::_AddrExpr(TokenStack* stack)
 PTR(AstNode) fay::Parser::Parse(PTR(std::vector<PTR(Token)>) tokens, const std::string &filename)
 {
 	TokenStack stack(tokens);
-	PTR(AstFile) ast = MKPTR(AstFile)(filename);
+	PTR(AstFile) ast = MKPTR(AstFile)(MKPTR(Token)(filename));
 
 	while (true)
 	{

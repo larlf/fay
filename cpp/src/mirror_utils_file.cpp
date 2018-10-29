@@ -7,7 +7,7 @@ std::string mirror::utils::FileUtils::ReadTextFile(const std::string &filename)
 
 	if (!fp)
 	{
-		LOG_ERROR("Cannot read file : " << filename)
+		LOG_ERROR("Cannot read file : " << filename);
 	}
 	else
 	{

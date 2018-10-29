@@ -4,17 +4,11 @@ package com.larlf;
 
 public class Test6
 {
-	static public fun main():void
-	{
-		fay.System.Print("Hello!");
-		var a:int=5;
-		var b:long=6;
-		fay.System.Print(a+b);
-	}
-
 	static public fun .main():void
 	{
 		fay.System.Print("Hello, World!");
+		var a:int=5;
+		fay.System.Print(a);
 	}
 }
 

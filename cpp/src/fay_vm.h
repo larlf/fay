@@ -10,7 +10,7 @@ namespace fay
 		PTR(FayDomain) _domain;
 		VMStack stack;
 
-		void _run(std::vector<FayInst*>* insts);
+		void _run(PTR(FayInstFun) fun);
 
 	public:
 		FayVM(PTR(FayDomain) domain)

@@ -1,4 +1,6 @@
-﻿#include <fay_lang.h>
+﻿#include "fay_lang.h"
+#include "fay_lang.h"
+#include <fay_lang.h>
 #include <mirror_utils_log.h>
 #include <fay_internal_fun.h>
 
@@ -106,12 +108,12 @@ pos_t fay::FayLib::findOutsideFun(const std::string &className, const std::strin
 	auto funs=clazz->matchFun(funName, paramsType, true);
 	if (funs.size() <= 0)
 	{
-		LOG_ERROR("Cannot find fun "<<funName<<" in class "<<className);
+		LOG_ERROR("Cannot find fun : "<<fullname);
 		return -1;
 	}
 	else if (funs.size() > 1)
 	{
-		LOG_ERROR("Too many fun " << funName << " in class " << className);
+		LOG_ERROR("Too many fun : " << fullname);
 		return -1;
 	}
 
@@ -181,6 +183,35 @@ std::vector<FayInst*>* fay::FayInstFun::getPreparedInsts()
 	}
 
 	return &this->_insts;
+}
+
+pos_t fay::FayInstFun::addVar(const std::string &name, PTR(FayType) type)
+{
+	auto it = this->_vars.find(name);
+	if (it)
+	{
+		if (it->type() != type)
+		{
+			LOG_ERROR("Same var name, diff type : "<<it->type()<<", "<<type);
+			return -1;
+		}
+
+		return this->_vars.findIndex(name);
+	}
+
+	//创建并加入变量定义
+	PTR(FayVarDef) def = MKPTR(FayVarDef)(this->domain(), name, type);
+	return this->_vars.add(name, def);
+}
+
+PTR(FayVarDef) fay::FayInstFun::findVar(const std::string & name)
+{
+	return this->_vars.find(name);
+}
+
+pos_t fay::FayInstFun::getVarIndex(const std::string & name)
+{
+	return this->_vars.findIndex(name);
 }
 
 void fay::FayInstFun::toString(mirror::utils::StringBuilder* sb)
@@ -308,7 +339,7 @@ void fay::FayDomain::initSysLib()
 	PTR(FayLib) lib(new FayLib(MYPTR, "System"));
 	PTR(FayClass) clazz(new FayClass(MYPTR, "fay", "System"));
 	clazz->addFun(MKPTR(FayInternalFun)(MYPTR, "Print", InternalFun::Print_String, std::vector<std::string>({ "string" })));
-	clazz->addFun(MKPTR(FayInternalFun)(MYPTR, "Print", InternalFun::Print_String, std::vector<std::string>({ "int" })));
+	clazz->addFun(MKPTR(FayInternalFun)(MYPTR, "Print", InternalFun::Print_Int, std::vector<std::string>({ "int" })));
 
 	lib->addClass(clazz);
 	this->addLib(lib);
@@ -372,6 +403,11 @@ PTR(FayType) fay::FayDomain::findType(pos_t index)
 		LOG_ERROR("Cannot find type by index : " << index);
 
 	return type;
+}
+
+PTR(FayType) fay::FayDomain::findType(ValueType type)
+{
+	return SimpleType::Get(type);
 }
 
 std::vector<PTR(FayType)> fay::FayDomain::findType(std::vector<std::string> &imports, const std::string &typeName)
@@ -491,10 +527,14 @@ std::string fay::FayLangUtils::Fullname(const std::string &funName, const std::v
 	{
 		if (str.size() > 0)
 			str.append(",");
-		str.append(it->fullname());
+
+		if (it)
+			str.append(it->fullname());
+		else
+			str.append("?");
 	}
 
-	str = funName + "(" + str + ")" + funName;
+	str = funName + "(" + str + ")";
 	return str;
 }
 
@@ -601,11 +641,15 @@ void fay::FunTable::toString(mirror::utils::StringBuilder* sb)
 	}
 }
 
-const std::string & fay::FayField::fullname()
+const std::string &fay::FayVarDef::fullname()
 {
-	return "";
+	if (!this->_fullname.size())
+		this->_fullname = this->_name + ":"+this->_type.lock()->fullname();
+
+	return this->_fullname;
 }
 
-void fay::FayField::toString(mirror::utils::StringBuilder * sb)
+void fay::FayVarDef::toString(mirror::utils::StringBuilder* sb)
 {
+	sb->add(this->fullname());
 }

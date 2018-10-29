@@ -62,7 +62,7 @@ void test::FayTests::TestLexer()
 	domain->toString(&sb);
 	PRINT(sb.toString());
 
-	ast->dig3(builder.get());
+	ast->dig4(builder.get());
 
 	PRINT("--------------------Dig3--------------------");
 	sb.clear();
@@ -87,7 +87,7 @@ void test::FayTests::Test1()
 
 void test::FayTests::TestRTTI()
 {
-	PTR(AstNode) node = MKPTR(AstFile)("aabbccdd");
+	PTR(AstNode) node = MKPTR(AstFile)(MKPTR(Token)("aabbccdd"));
 	LOG_DEBUG(node->className());
 	LOG_DEBUG(node->is(typeid(AstNode)));
 }

@@ -41,8 +41,8 @@ namespace fay
 	public:
 		AstNode() {}
 
-		AstNode(const std::string &text)
-			:_text(text) {}
+		//AstNode(const std::string &text)
+		//	:_text(text) {}
 
 		AstNode(const PTR(Token) &token)
 			:_token(token), _text(token->text()) {}
@@ -71,7 +71,7 @@ namespace fay
 		std::string traceInfo();
 
 		//节点的数值类型
-		virtual ValueType valueType() { return ValueType::Void; }
+		virtual PTR(FayType) valueType(FayBuilder *builder) { return nullptr; }
 		//转换成字符串
 		virtual void toString(mirror::utils::StringBuilder *sb) override;
 
@@ -81,9 +81,10 @@ namespace fay
 		virtual void dig1(FayBuilder *builder);
 		//第二次，生成函数和函数参数列表
 		virtual void dig2(FayBuilder *builder);
-		//第三次，生成中间代码
+		//第三次，做一些生成代码之前的准备和优化的工作
 		virtual void dig3(FayBuilder *builder);
-		//会不会有第四次，拭目以待……
+		//第四次，生成中间代码
+		virtual void dig4(FayBuilder *builder);
 	};
 
 	/******************************************************
@@ -133,7 +134,7 @@ namespace fay
 
 		virtual void dig1(FayBuilder *builder) override;
 		virtual void dig2(FayBuilder *builder) override;
-		virtual void dig3(FayBuilder *builder) override;
+		virtual void dig4(FayBuilder *builder) override;
 	};
 
 	class AstCondition : public AstNode
@@ -155,7 +156,7 @@ namespace fay
 		pos_t _index = -1;
 	public:
 		virtual void dig2(FayBuilder *builder) override;
-		virtual void dig3(FayBuilder *builder) override;
+		virtual void dig4(FayBuilder *builder) override;
 
 	};
 
@@ -179,13 +180,14 @@ namespace fay
 		using AstNode::AstNode;
 	public:
 		size_t size() { return this->childNodesNum(); }
+		std::vector<PTR(FayType)> paramsType(FayBuilder *builder);
 	};
 
 	class AstType : public AstNode
 	{
 		using AstNode::AstNode;
 	public:
-		virtual ValueType valueType() override;
+		virtual PTR(FayType) valueType(FayBuilder *builder) override;
 		PTR(FayType) toFayType(FayBuilder *builder);
 	};
 
@@ -197,6 +199,9 @@ namespace fay
 	class AstID : public AstNode
 	{
 		using AstNode::AstNode;
+	public:
+		virtual PTR(FayType) valueType(FayBuilder *builder) override;
+		virtual void dig4(FayBuilder *builder) override;
 	};
 
 	class AstBoolOP : public AstNode
@@ -233,7 +238,7 @@ namespace fay
 	{
 		using AstNode::AstNode;
 	public:
-		virtual void dig3(FayBuilder *builder) override;
+		virtual void dig4(FayBuilder *builder) override;
 
 	};
 
@@ -250,6 +255,9 @@ namespace fay
 	class AstVar : public AstNode
 	{
 		using AstNode::AstNode;
+	public:
+		virtual void dig4(FayBuilder *builder) override;
+
 	};
 
 	class AstByte : public AstNode
@@ -259,16 +267,25 @@ namespace fay
 
 	class AstNumber : public AstNode
 	{
-		using AstNode::AstNode;
+	private:
+		ValueType _type;
+		FayValue _val;
+
+	public:
+		AstNumber(const PTR(Token) &token);
+
+		virtual void dig4(FayBuilder *builder) override;
+		virtual PTR(FayType) valueType(FayBuilder *builder) override;
+
 	};
 
 	class AstString : public AstNode
 	{
 		using AstNode::AstNode;
 	public:
-		virtual ValueType valueType() override;
+		virtual PTR(FayType) valueType(FayBuilder *builder) override;
 
-		virtual void dig3(FayBuilder *builder) override;
+		virtual void dig4(FayBuilder *builder) override;
 
 	};
 

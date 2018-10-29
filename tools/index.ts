@@ -7,6 +7,9 @@ import * as larlf from 'larlf';
 import * as os from "os";
 import * as path from 'path';
 import * as xlsx from 'xlsx';
+import * as SourceMapSupport from 'source-map-support';
+
+SourceMapSupport.install();
 
 let log = larlf.log;
 
@@ -357,7 +360,7 @@ function getInstCode(codeStr: string, valueStr: string, Code1Value: Map<string, 
 		{
 			let value = parseInt(valueStr);
 			if (Code1Value.has(codeStr) && Code1Value.get(codeStr) != value)
-				log.error("Diff code value : " + codeStr + " = " + Code1Value.get(codeStr) + " or " + value);
+				log.debug("Change '" + codeStr + "' code value from " + Code1Value.get(codeStr) + " to " + value);
 			Code1Value.set(codeStr, value);
 			return value;
 		}

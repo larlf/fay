@@ -69,8 +69,8 @@ namespace fay
 		virtual void toString(mirror::utils::StringBuilder* sb) override;
 	};
 
-	//函数字段
-	class FayField : public FayLangObject
+	//变量定义
+	class FayVarDef : public FayLangObject
 	{
 	private:
 		std::string _name;  //名称
@@ -78,6 +78,11 @@ namespace fay
 		WPTR(FayType) _type;  //类型
 
 	public:
+		FayVarDef(PTR(FayDomain) domain,  const std::string &name, PTR(FayType) type)
+			: FayLangObject(domain), _name(name), _type(type) {}
+
+		inline const std::string &name() { return  this->_name; }
+		PTR(FayType) type() { return this->_type.lock(); }
 
 		virtual const std::string &fullname() override;
 		virtual void toString(mirror::utils::StringBuilder* sb) override;
@@ -222,6 +227,8 @@ namespace fay
 		//代码，注意这里考虑到性能，没用智能指针
 		//除此所有地方不存对指令的引用，以防止出非法引用
 		std::vector<FayInst*> _insts;
+		//内部变量表
+		IndexMap<PTR(FayVarDef)> _vars;
 		//是否已经进行过预处理
 		bool isPrepared = false;
 		//对代码运行前做一些预处理
@@ -232,10 +239,16 @@ namespace fay
 			: FayFun(domain, name, FunType::Code, isStatic) {}
 		virtual ~FayInstFun();
 
+		//添加指令集
 		inline void insts(std::vector<FayInst*> v) { this->_insts = v; }
-
 		//取得预处理后的指令集
 		std::vector<FayInst*>* getPreparedInsts();
+
+		//添加变量
+		pos_t addVar(const std::string &name, PTR(FayType) type);
+		PTR(FayVarDef) findVar(const std::string &name);
+		pos_t getVarIndex(const std::string &name);
+		size_t varsSize() { return this->_vars.size(); }
 
 		virtual void toString(mirror::utils::StringBuilder* sb) override;
 	};
@@ -323,6 +336,7 @@ namespace fay
 		//根据类型的全称查找类型定义
 		PTR(FayType) findType(const std::string &typeFullname);
 		PTR(FayType) findType(pos_t index);
+		PTR(FayType) findType(ValueType type);
 		//根据引用和类型名，查找类型的定义
 		std::vector<PTR(FayType)> findType(std::vector<std::string> &imports, const std::string &typeName);
 		//下面是用各种方式来查找函数

@@ -115,6 +115,12 @@ namespace fay
 		SubString = 104,
 		CallStatic = 113,
 		CallVirtual = 115,
+		SetLocal = 129,
+		SetField = 130,
+		SetStatic = 131,
+		LoadLocal = 145,
+		LoadField = 146,
+		LoadStatic = 147,
 		//InstTypeEnd
 	};
 

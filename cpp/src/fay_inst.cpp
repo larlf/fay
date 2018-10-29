@@ -206,4 +206,48 @@ void fay::inst::CallVirtual::toString(mirror::utils::StringBuilder * sb)
 		->endl();
 }
 
+void fay::inst::SetLocal::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("SetLocal")
+		->add(" ")->add(this->varIndex)
+		->endl();
+}
+
+void fay::inst::SetField::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("SetField")
+		->add(" ")->add(this->fieldIndex)
+		->endl();
+}
+
+void fay::inst::SetStatic::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("SetStatic")
+		->add(" ")->add(this->typeIndex)
+		->add(" ")->add(this->fieldIndex)
+		->endl();
+}
+
+void fay::inst::LoadLocal::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("LoadLocal")
+		->add(" ")->add(this->varIndex)
+		->endl();
+}
+
+void fay::inst::LoadField::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("LoadField")
+		->add(" ")->add(this->fieldIndex)
+		->endl();
+}
+
+void fay::inst::LoadStatic::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("LoadStatic")
+		->add(" ")->add(this->typeIndex)
+		->add(" ")->add(this->fieldIndex)
+		->endl();
+}
+
 //InstEnd

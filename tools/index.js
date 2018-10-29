@@ -8,6 +8,8 @@ const larlf = require("larlf");
 const os = require("os");
 const path = require("path");
 const xlsx = require("xlsx");
+const SourceMapSupport = require("source-map-support");
+SourceMapSupport.install();
 let log = larlf.log;
 let Cmds = {};
 let RootPath = path.resolve(__dirname, "..");
@@ -260,7 +262,7 @@ function getInstCode(codeStr, valueStr, Code1Value) {
         if (valueStr) {
             let value = parseInt(valueStr);
             if (Code1Value.has(codeStr) && Code1Value.get(codeStr) != value)
-                log.error("Diff code value : " + codeStr + " = " + Code1Value.get(codeStr) + " or " + value);
+                log.debug("Change '" + codeStr + "' code value from " + Code1Value.get(codeStr) + " to " + value);
             Code1Value.set(codeStr, value);
             return value;
         }
