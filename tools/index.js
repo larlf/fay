@@ -3,9 +3,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const ejs = require("ejs");
 const fs = require("fs");
-const fs_extra = require("fs-extra");
 const larlf = require("larlf");
-const os = require("os");
 const path = require("path");
 const xlsx = require("xlsx");
 const SourceMapSupport = require("source-map-support");
@@ -140,6 +138,32 @@ class FayInst {
         return str;
     }
 }
+function replaceFileBody(filename, keyword, str, indent) {
+    filename = path.resolve(RootPath, filename);
+    let text = fs.readFileSync(filename).toString();
+    text = larlf.text.replaceBlock(text, new RegExp(keyword + "Start", "g"), new RegExp(keyword + "End", "g"), str, indent);
+    log.debug("Write : " + filename);
+    fs.writeFileSync(filename, text);
+}
+//取指令的编码
+function getInstCode(codeStr, valueStr, Code1Value) {
+    if (codeStr) {
+        if (valueStr) {
+            let value = parseInt(valueStr);
+            if (Code1Value.has(codeStr) && Code1Value.get(codeStr) != value)
+                log.debug("Change '" + codeStr + "' code value from " + Code1Value.get(codeStr) + " to " + value);
+            Code1Value.set(codeStr, value);
+            return value;
+        }
+        else {
+            if (!Code1Value.has(codeStr))
+                log.error("Cannot find code value : " + codeStr);
+            else
+                return Code1Value.get(codeStr);
+        }
+    }
+    return 0;
+}
 ////////////////////////////////////////////////////////////////////////////
 let CFG = new FayCfg();
 function main() {
@@ -192,45 +216,6 @@ Cmds.token_type = function () {
     replaceFileBody("src/fay_const.h", "TokenType", str1, "\t\t");
     replaceFileBody("src/fay_const.cpp", "TokenTypeName", str2, "\t");
 };
-function replaceFileBody(filename, keyword, str, indent) {
-    filename = path.resolve(RootPath, filename);
-    let text = fs.readFileSync(filename).toString();
-    text = larlf.text.replaceBlock(text, new RegExp(keyword + "Start", "g"), new RegExp(keyword + "End", "g"), str, indent);
-    log.debug("Write : " + filename);
-    fs.writeFileSync(filename, text);
-}
-Cmds._ast_type = "生成AST的类型数据";
-Cmds.ast_type = function () {
-    let file = xlsx.readFile(path.resolve(__dirname, "../doc/FayLang.xlsx"));
-    let json = xlsx.utils.sheet_to_json(file.Sheets['ASTType']);
-    log.info("Parse AST Type");
-    let str1 = "", str2 = "";
-    let index = 1;
-    for (let i = 0; i < json.length; ++i) {
-        let it = json[i];
-        let code = it["Code"];
-        let comment = it["Comment"];
-        if (code) {
-            log.debug("AST Code : " + code);
-            str1 += str1.length > 0 ? ",\n" : "";
-            str1 += "AST_" + code + " = " + index++;
-            str2 += str2.length > 0 ? "\n" : "";
-            str2 += larlf.text.format("FayConst::ASTTypeName[AST_{0}] = \"{0}\";", code);
-        }
-    }
-    //生成头文件中的定义
-    let filename = path.resolve(RootPath, "cpp\\src\\faylib_const.h");
-    let text = fs.readFileSync(filename).toString();
-    text = larlf.text.replaceBlock(text, /ASTType_Start/g, /ASTType_End/g, str1, "\t\t\t");
-    log.debug("Write : " + filename);
-    fs.writeFileSync(filename, text);
-    //生成初始化的定义
-    filename = path.resolve(RootPath, "cpp\\src\\faylib_const.cpp");
-    text = fs.readFileSync(filename).toString();
-    text = larlf.text.replaceBlock(text, /ASTTypeName_Init_Start/, /ASTTypeName_Init_End/, str2, "\t");
-    log.debug("Write : " + filename);
-    fs.writeFileSync(filename, text);
-};
 Cmds.value_type = function () {
     let file = xlsx.readFile(path.resolve(__dirname, "../doc/FayLang.xlsx"));
     let json = xlsx.utils.sheet_to_json(file.Sheets['ValueType']);
@@ -256,25 +241,6 @@ Cmds.value_type = function () {
     replaceFileBody("src/fay_const.cpp", "ValueTypeName", str2, "\t");
     replaceFileBody("src/fay_const.cpp", "ValueTypeMap", str3, "\t");
 };
-//取指令的编码
-function getInstCode(codeStr, valueStr, Code1Value) {
-    if (codeStr) {
-        if (valueStr) {
-            let value = parseInt(valueStr);
-            if (Code1Value.has(codeStr) && Code1Value.get(codeStr) != value)
-                log.debug("Change '" + codeStr + "' code value from " + Code1Value.get(codeStr) + " to " + value);
-            Code1Value.set(codeStr, value);
-            return value;
-        }
-        else {
-            if (!Code1Value.has(codeStr))
-                log.error("Cannot find code value : " + codeStr);
-            else
-                return Code1Value.get(codeStr);
-        }
-    }
-    return 0;
-}
 Cmds.inst = function () {
     let file = xlsx.readFile(path.resolve(__dirname, "../doc/FayLang.xlsx"));
     let json = xlsx.utils.sheet_to_json(file.Sheets['Inst']);
@@ -301,39 +267,20 @@ Cmds.inst = function () {
             caseText += (caseText ? "\n" : "") + inst.makeCaseCode();
         }
     }
+    //生成指类分类的常量
+    let groupText = "";
+    Code1Value.forEach((value, key) => {
+        if (key) {
+            if (groupText)
+                groupText += "\n";
+            groupText += key + " = " + value + ",";
+        }
+    });
     replaceFileBody("src/fay_inst.h", "Inst", hText, "\t\t");
     replaceFileBody("src/fay_inst.cpp", "Inst", cppText, "");
     replaceFileBody("src/fay_const.h", "InstType", typeText, "\t\t");
+    replaceFileBody("src/fay_const.h", "InstGroupType", groupText, "\t\t");
     replaceFileBody("src/fay_vm.cpp", "InstCode", caseText, "\t\t\t");
-};
-Cmds.parse = function () {
-    if (os.platform() == "win32") {
-        let cmd = "..\\deps\\win32\\bin\\win_bison -v -d -l -o fay_compiler_parser.cpp fay.y";
-        larlf.project.execCmd(cmd, path.resolve(RootPath, "src"));
-        cmd = "..\\deps\\win32\\bin\\win_flex -o fay_compiler_tokens.cpp fay.l";
-        larlf.project.execCmd(cmd, path.resolve(RootPath, "src"));
-        let dir = path.resolve(RootPath, "build/bin/Debug");
-        if (!fs.existsSync(dir))
-            fs_extra.mkdirsSync(dir);
-        larlf.project.execCmd("cmake -G \"Visual Studio 15 Win64\" ..", path.resolve(RootPath, "build"));
-        larlf.file.copyFiles(path.resolve(RootPath, "deps/win32/lib"), "*.dll", dir);
-        //"C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\devenv.exe" ../build/fay.sln /build Debug /project fay
-        //rem ..\build\bin\Debug\fay.exe
-    }
-    else {
-        // bison -d -o fay_parser.cpp fay.y
-        let cmd = "bison -d -o fay_parser.cpp fay.y";
-        larlf.project.execCmd(cmd, path.resolve(RootPath, "src"));
-        // flex -o fay_tokens.cpp fay.l
-        cmd = "flex -o fay_tokens.cpp fay.l";
-        larlf.project.execCmd(cmd, path.resolve(RootPath, "src"));
-    }
-};
-Cmds.build_vs = function () {
-    let task = new larlf.project.VSTask(path.resolve(RootPath, "build/fay.sln"));
-    task.projectName = "fay";
-    task.configName = "Debug";
-    task.build();
 };
 Cmds._deps = "处理依赖关系";
 Cmds.deps = function () {

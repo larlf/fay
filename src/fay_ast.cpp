@@ -197,8 +197,8 @@ void fay::AstVar::dig4(FayBuilder* builder)
 	//新添加了变量
 	std::string varName = this->text();
 	PTR(FayType) varType = builder->domain()->findType(this->_nodes[0]->text());
-	if (!varType)
-		throw BuildException(this->_nodes[0], "cannot find type : "+ this->_nodes[0]->text());
+	if(!varType)
+		throw BuildException(this->_nodes[0], "cannot find type : " + this->_nodes[0]->text());
 
 	pos_t varIndex = builder->fun()->addVar(varName, varType);
 
@@ -211,7 +211,7 @@ void fay::AstVar::dig4(FayBuilder* builder)
 fay::AstNumber::AstNumber(const PTR(Token)& token)
 	: AstNode(token)
 {
-	if(this->_text.find('.') >= 0)
+	if(this->_text.find('.') != std::string::npos)
 	{
 		if(this->_text[this->_text.size() - 1] == 'D' || this->_text[this->_text.size() - 1] == 'd')
 		{
@@ -268,6 +268,13 @@ PTR(FayType) fay::AstNumber::valueType(FayBuilder* builder)
 	return builder->domain()->findType(this->_val.type());
 }
 
+void fay::AstNumber::toString(mirror::utils::StringBuilder * sb)
+{
+	AstNode::toString(sb);
+	sb->add(" : ");
+	sb->add(TypeDict::ToName(this->_val.type()));
+}
+
 std::vector<PTR(FayType)> fay::AstParams::paramsType(FayBuilder* builder)
 {
 	std::vector<PTR(FayType)> ts;
@@ -286,11 +293,26 @@ PTR(FayType) fay::AstID::valueType(FayBuilder* builder)
 	return var->type();
 }
 
-void fay::AstID::dig4(FayBuilder * builder)
+void fay::AstID::dig4(FayBuilder* builder)
 {
 	auto index = builder->findVarIndex(this->_text);
-	if (index<0)
+	if(index < 0)
 		throw BuildException(this->shared_from_this(), "connt find var : " + this->text());
 
 	builder->addInst(new inst::LoadLocal(index));
+}
+
+void fay::AstLeftRightOP::dig4(FayBuilder* builder)
+{
+	AstNode::dig4(builder);
+
+	PTR(FayType) leftType = this->_nodes[0]->valueType(builder);
+	PTR(FayType) rightType = this->_nodes[1]->valueType(builder);
+
+	if(leftType->fullname() == "Int")
+	{
+		builder->addInst(new inst::AddInt);
+	}
+	else
+		throw BuildException(this->shared_from_this(), "unknow add type : " + leftType->fullname());
 }

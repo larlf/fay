@@ -73,11 +73,33 @@ namespace fay
 		//ValueTypeEnd
 	};
 
+	//类的类型
+	enum class ClassType
+	{
+		Normal,  //默认类型
+		Simple,  //简单类型
+	};
+
 	//方法的类型
 	enum class FunType
 	{
 		Internal,  //内部方法
-		Code  //代码中的方法
+		Code,  //代码中的方法
+	};
+
+	enum class InstGroupType
+	{
+		//InstGroupTypeStart
+		Push = 1,
+		Pop = 2,
+		PopTo = 3,
+		IntTo = 4,
+		Add = 5,
+		Sub = 6,
+		Call = 7,
+		Set = 8,
+		Load = 9,
+		//InstGroupTypeEnd
 	};
 
 	enum class InstType

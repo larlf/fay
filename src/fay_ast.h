@@ -217,6 +217,9 @@ namespace fay
 	class AstLeftRightOP : public AstNode
 	{
 		using AstNode::AstNode;
+	public:
+		virtual void dig4(FayBuilder *builder) override;
+
 	};
 
 	class AstPostOP : public AstNode
@@ -276,7 +279,7 @@ namespace fay
 
 		virtual void dig4(FayBuilder *builder) override;
 		virtual PTR(FayType) valueType(FayBuilder *builder) override;
-
+		virtual void toString(mirror::utils::StringBuilder *sb) override;
 	};
 
 	class AstString : public AstNode

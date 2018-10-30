@@ -26,6 +26,11 @@ void main()
 		LOG_ERROR(e.what());
 		PRINT(e.trace());
 	}
+	catch (fay::BuildException &e)
+	{
+		LOG_ERROR(e.what());
+		PRINT(e.trace());
+	}
 
 }
 

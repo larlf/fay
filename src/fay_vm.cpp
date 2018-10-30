@@ -91,6 +91,11 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 			}
 			case InstType::AddInt:
 			{
+				int32_t v1=stack.top().intVal();
+				stack.pop();
+				int32_t v2=stack.top().intVal();
+				stack.pop();
+				stack.push(FayValue(v1+v2));
 				break;
 			}
 			case InstType::AddLong:
