@@ -5,7 +5,7 @@ using namespace fay;
 
 void fay::FayVM::_run(PTR(FayInstFun) fun)
 {
-	std::vector<FayValue*> localVars(fun->varsSize());
+	std::vector<FayValue> localVars(fun->varsSize());
 	std::vector<FayInst*>* insts = fun->getPreparedInsts();
 
 	for each(FayInst* inst in *insts)
@@ -15,42 +15,42 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 			//InstCodeStart
 			case InstType::PushBool:
 			{
-				stack.push(new FayValue(((inst::PushBool*)inst)->val));
+				stack.push(FayValue(((inst::PushBool*)inst)->val));
 				break;
 			}
 			case InstType::PushByte:
 			{
-				stack.push(new FayValue(((inst::PushByte*)inst)->val));
+				stack.push(FayValue(((inst::PushByte*)inst)->val));
 				break;
 			}
 			case InstType::PushInt:
 			{
-				stack.push(new FayValue(((inst::PushInt*)inst)->val));
+				stack.push(FayValue(((inst::PushInt*)inst)->val));
 				break;
 			}
 			case InstType::PushLong:
 			{
-				stack.push(new FayValue(((inst::PushLong*)inst)->val));
+				stack.push(FayValue(((inst::PushLong*)inst)->val));
 				break;
 			}
 			case InstType::PushFloat:
 			{
-				stack.push(new FayValue(((inst::PushFloat*)inst)->val));
+				stack.push(FayValue(((inst::PushFloat*)inst)->val));
 				break;
 			}
 			case InstType::PushDouble:
 			{
-				stack.push(new FayValue(((inst::PushDouble*)inst)->val));
+				stack.push(FayValue(((inst::PushDouble*)inst)->val));
 				break;
 			}
 			case InstType::PushString:
 			{
-				stack.push(new FayValue(((inst::PushString*)inst)->val));
+				stack.push(FayValue(((inst::PushString*)inst)->val));
 				break;
 			}
 			case InstType::Pop:
 			{
-				delete stack.pop();
+				stack.pop();
 				break;
 			}
 			case InstType::PopTo:
@@ -153,7 +153,8 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 			}
 			case InstType::SetLocal:
 			{
-				localVars[((inst::SetLocal*)inst)->varIndex]=stack.pop();
+				localVars[((inst::SetLocal*)inst)->varIndex]=stack.top();
+				stack.pop();
 				break;
 			}
 			case InstType::SetField:
@@ -195,7 +196,7 @@ void fay::FayVM::run(PTR(FayFun) fun)
 		case FunType::Internal:
 		{
 			PTR(FayInternalFun) f = TOPTR(FayInternalFun, fun);
-			f->Invoke(&this->stack);
+			f->Invoke(this->stack);
 			break;
 		}
 		default:

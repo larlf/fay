@@ -189,8 +189,8 @@ Cmds.token_type = function () {
             str2 += "TypeDict::TokenTypeName[TokenType::" + it.Code + "] = \"" + it.Code + "\";";
         }
     }
-    replaceFileBody("cpp/src/fay_const.h", "TokenType", str1, "\t\t");
-    replaceFileBody("cpp/src/fay_const.cpp", "TokenTypeName", str2, "\t");
+    replaceFileBody("src/fay_const.h", "TokenType", str1, "\t\t");
+    replaceFileBody("src/fay_const.cpp", "TokenTypeName", str2, "\t");
 };
 function replaceFileBody(filename, keyword, str, indent) {
     filename = path.resolve(RootPath, filename);
@@ -252,9 +252,9 @@ Cmds.value_type = function () {
             str3 += larlf.text.format("TypeDict::ValueTypeMap[\"{0}\"] = ValueType::{1};", (it.Name + "").toLowerCase(), it.Name);
         }
     }
-    replaceFileBody("cpp/src/fay_const.h", "ValueType", str1, "\t\t");
-    replaceFileBody("cpp/src/fay_const.cpp", "ValueTypeName", str2, "\t");
-    replaceFileBody("cpp/src/fay_const.cpp", "ValueTypeMap", str3, "\t");
+    replaceFileBody("src/fay_const.h", "ValueType", str1, "\t\t");
+    replaceFileBody("src/fay_const.cpp", "ValueTypeName", str2, "\t");
+    replaceFileBody("src/fay_const.cpp", "ValueTypeMap", str3, "\t");
 };
 //取指令的编码
 function getInstCode(codeStr, valueStr, Code1Value) {
@@ -301,10 +301,10 @@ Cmds.inst = function () {
             caseText += (caseText ? "\n" : "") + inst.makeCaseCode();
         }
     }
-    replaceFileBody("cpp/src/fay_inst.h", "Inst", hText, "\t\t");
-    replaceFileBody("cpp/src/fay_inst.cpp", "Inst", cppText, "");
-    replaceFileBody("cpp/src/fay_const.h", "InstType", typeText, "\t\t");
-    replaceFileBody("cpp/src/fay_vm.cpp", "InstCode", caseText, "\t\t\t");
+    replaceFileBody("src/fay_inst.h", "Inst", hText, "\t\t");
+    replaceFileBody("src/fay_inst.cpp", "Inst", cppText, "");
+    replaceFileBody("src/fay_const.h", "InstType", typeText, "\t\t");
+    replaceFileBody("src/fay_vm.cpp", "InstCode", caseText, "\t\t\t");
 };
 Cmds.parse = function () {
     if (os.platform() == "win32") {

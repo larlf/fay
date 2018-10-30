@@ -5,7 +5,7 @@
 #include <fay_inst.h>
 #include <fay_const.h>
 #include <fay_object.h>
-#include <fay_stack.h>
+#include <stack>
 
 namespace fay
 {
@@ -145,7 +145,7 @@ namespace fay
 	class FayClass : public FayType
 	{
 	private:
-		
+
 		std::string _fullname;  //全名
 
 	public:
@@ -257,13 +257,13 @@ namespace fay
 	class FayInternalFun : public FayFun
 	{
 	private:
-		std::function<void(VMStack*)> _fun;
+		std::function<void(std::stack<FayValue>&)> _fun;
 
 	public:
-		FayInternalFun(PTR(FayDomain) domain, const std::string &name, std::function<void(VMStack*)> fun, std::vector<std::string> params);
+		FayInternalFun(PTR(FayDomain) domain, const std::string &name, std::function<void(std::stack<FayValue>&)> fun, std::vector<std::string> params);
 
 		//执行内部函数
-		inline void Invoke(VMStack* stack) { this->_fun(stack); }
+		inline void Invoke(std::stack<FayValue> &stack) { this->_fun(stack); }
 	};
 
 	//////////////////////////////////////////////////////////////////////
@@ -341,9 +341,9 @@ namespace fay
 		std::vector<PTR(FayType)> findType(std::vector<std::string> &imports, const std::string &typeName);
 		//下面是用各种方式来查找函数
 		//std::vector<PTR(FayFun)> findFun(const std::string &className, const std::string &funName, const std::vector<PTR(FayType)> &paramsType);
-		PTR(FayFun) findFun(const std::string &typeFullname, const std::string & funFullname, bool isStatic);
+		PTR(FayFun) findFun(const std::string &typeFullname, const std::string &funFullname, bool isStatic);
 		PTR(FayFun) findFun(pos_t typeIndex, pos_t funIndex, bool isStatic);
-		bool findFunIndex(const std::string &typeFullname, const std::string & funFullname, bool isStatic, pos_t &typeIndex, pos_t &funIndex);
+		bool findFunIndex(const std::string &typeFullname, const std::string &funFullname, bool isStatic, pos_t &typeIndex, pos_t &funIndex);
 		bool findFunIndex(PTR(FayFun) fun, pos_t &typeIndex, pos_t &funIndex);
 
 		virtual void toString(mirror::utils::StringBuilder* sb) override;

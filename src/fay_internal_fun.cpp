@@ -1,13 +1,15 @@
 ﻿#include <fay_internal_fun.h>
 
-void fay::InternalFun::Print_String(VMStack * stack)
+void fay::InternalFun::Print_String(std::stack<FayValue>& stack)
 {
-	PTR(FayValue) val(stack->pop());
-	std::cout << *(val->strVal()) << std::endl;
+	std::string val = *stack.top().strVal();
+	stack.pop();
+	std::cout << val << std::endl;
 }
 
-void fay::InternalFun::Print_Int(VMStack * stack)
+void fay::InternalFun::Print_Int(std::stack<FayValue>& stack)
 {
-	PTR(FayValue) val(stack->pop());
-	std::cout << val->intVal() << std::endl;
+	int val = stack.top().intVal();
+	stack.pop();
+	std::cout << val << std::endl;
 }

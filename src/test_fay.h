@@ -6,10 +6,19 @@ namespace test
 {
 	class TestA
 	{
+	private:
+		std::string str;
+
 	public:
-		TestA()
+		TestA(const std::string &str) : str(str)
 		{
 			std::cout << "Create TestA" << std::endl;
+		}
+
+		TestA(const TestA& value)
+		{
+			std::cout << "Copy Me" << std::endl;
+			this->str = value.str;
 		}
 
 		~TestA()
@@ -19,7 +28,7 @@ namespace test
 
 		void fun1()
 		{
-			std::cout << "This is fun1()" << std::endl;
+			std::cout << this->str.c_str() << std::endl;
 		}
 	};
 

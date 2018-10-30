@@ -1,13 +1,14 @@
 ﻿#pragma once
-#include <fay_stack.h>
+#include <stack>
+#include <fay_type.h>
 
 namespace fay
 {
 	class InternalFun
 	{
 	public:
-		static void Print_String(VMStack *stack);
-		static void Print_Int(VMStack *stack);
+		static void Print_String(std::stack<FayValue> &stack);
+		static void Print_Int(std::stack<FayValue> &stack);
 	};
 }
 

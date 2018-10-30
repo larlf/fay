@@ -262,8 +262,8 @@ Cmds.token_type = function()
 		}
 	}
 
-	replaceFileBody("cpp/src/fay_const.h", "TokenType", str1, "\t\t");
-	replaceFileBody("cpp/src/fay_const.cpp", "TokenTypeName", str2, "\t");
+	replaceFileBody("src/fay_const.h", "TokenType", str1, "\t\t");
+	replaceFileBody("src/fay_const.cpp", "TokenTypeName", str2, "\t");
 }
 
 function replaceFileBody(filename: string, keyword: string, str: string, indent: string)
@@ -345,9 +345,9 @@ Cmds.value_type = function()
 		}
 	}
 
-	replaceFileBody("cpp/src/fay_const.h", "ValueType", str1, "\t\t");
-	replaceFileBody("cpp/src/fay_const.cpp", "ValueTypeName", str2, "\t");
-	replaceFileBody("cpp/src/fay_const.cpp", "ValueTypeMap", str3, "\t");
+	replaceFileBody("src/fay_const.h", "ValueType", str1, "\t\t");
+	replaceFileBody("src/fay_const.cpp", "ValueTypeName", str2, "\t");
+	replaceFileBody("src/fay_const.cpp", "ValueTypeMap", str3, "\t");
 }
 
 
@@ -411,10 +411,10 @@ Cmds.inst = function()
 		}
 	}
 
-	replaceFileBody("cpp/src/fay_inst.h", "Inst", hText, "\t\t");
-	replaceFileBody("cpp/src/fay_inst.cpp", "Inst", cppText, "");
-	replaceFileBody("cpp/src/fay_const.h", "InstType", typeText, "\t\t");
-	replaceFileBody("cpp/src/fay_vm.cpp", "InstCode", caseText, "\t\t\t");
+	replaceFileBody("src/fay_inst.h", "Inst", hText, "\t\t");
+	replaceFileBody("src/fay_inst.cpp", "Inst", cppText, "");
+	replaceFileBody("src/fay_const.h", "InstType", typeText, "\t\t");
+	replaceFileBody("src/fay_vm.cpp", "InstCode", caseText, "\t\t\t");
 }
 
 Cmds.parse = function()

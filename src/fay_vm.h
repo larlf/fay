@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include <fay_lang.h>
-#include <fay_stack.h>
+#include <stack>
 
 namespace fay
 {
@@ -8,7 +8,7 @@ namespace fay
 	{
 	private:
 		PTR(FayDomain) _domain;
-		VMStack stack;
+		std::stack<FayValue> stack;
 
 		void _run(PTR(FayInstFun) fun);
 

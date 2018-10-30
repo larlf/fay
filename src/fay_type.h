@@ -31,6 +31,20 @@ namespace fay
 		FayValueUnion _val;
 
 	public:
+		FayValue(const FayValue &value)
+		{
+			if(value._type == ValueType::String)
+			{
+				this->_type = value._type;
+				this->_val.strVal = new std::string(*value._val.strVal);
+			}
+			else
+			{
+				this->_type = value._type;
+				this->_val = value._val;
+			}
+		}
+
 		FayValue() : _type(ValueType::Void) {}
 		FayValue(bool val) : _type(ValueType::Bool) { _val.boolVal = val; }
 		FayValue(unsigned char val) : _type(ValueType::Byte) { _val.byteVal = val; }
@@ -38,15 +52,23 @@ namespace fay
 		FayValue(int64_t val) : _type(ValueType::Long) { _val.longVal = val; }
 		FayValue(float val) : _type(ValueType::Float) { _val.flaotVal = val; }
 		FayValue(double val) : _type(ValueType::Double) { _val.doubleVal = val; }
+		FayValue(const char* str) : _type(ValueType::String) { _val.strVal = new std::string(str); }
 		FayValue(const std::string &str) : _type(ValueType::String) { _val.strVal = new std::string(str); }
 		~FayValue()
 		{
-			switch(this->_type)
+			this->reset();
+		}
+
+		inline void reset()
+		{
+			switch (this->_type)
 			{
-				case ValueType::String:
-					delete this->_val.strVal;
-					break;
+			case ValueType::String:
+				delete this->_val.strVal;
+				break;
 			}
+
+			this->_type = ValueType::Void;
 		}
 
 		inline const ValueType type() { return this->_type; }
@@ -59,6 +81,22 @@ namespace fay
 		inline const void* funVal() { return (this->_type == ValueType::Function) ? this->_val.ptrValue : nullptr; }
 		template<class T>
 		inline const T* ptrValue() { return (T*)this->_val.ptrValue; }
+
+		//FayValue &operator =(const FayValue& value)
+		//{
+		//	if (value._type == ValueType::String)
+		//	{
+		//		this->_type = value._type;
+		//		this->_val.strVal = new std::string(*value._val.strVal);
+		//	}
+		//	else
+		//	{
+		//		this->_type = value._type;
+		//		this->_val = value._val;
+		//	}
+
+		//	return *this;
+		//}
 
 		//switch (this->_type)
 		//{
@@ -112,11 +150,23 @@ namespace fay
 					this->_val.boolVal = (this->_val.doubleVal == 0) ? false : true;
 					break;
 				case ValueType::String:
-					if(this->_val.strVal == nullptr || this->_val.strVal->size() <= 0)
+				{
+					std::string* str = this->_val.strVal;
+					if (str == nullptr)
+					{
 						this->_val.boolVal = false;
+					}
 					else
-						this->_val.boolVal = true;
+					{
+						if (str->size() <= 0)
+							this->_val.boolVal = false;
+						else
+							this->_val.boolVal = true;
+
+						delete str;
+					}
 					break;
+				}
 				case ValueType::Object:
 					this->_val.boolVal = (this->_val.ptrValue == nullptr) ? false : true;
 					break;
