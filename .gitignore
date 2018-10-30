@@ -16,3 +16,4 @@ cs/*/bin
 cs/*/obj
 /tools/package-lock.json
 /cpp/build
+/build

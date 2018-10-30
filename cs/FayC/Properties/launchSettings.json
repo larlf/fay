@@ -1,9 +1,0 @@
-{
-  "profiles": {
-    "FayC": {
-      "commandName": "Project",
-      "commandLineArgs": "../../../../../script/test6.fay",
-      "workingDirectory": "$(TargetDir)"
-    }
-  }
-}
