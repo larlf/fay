@@ -320,13 +320,13 @@ void fay::AstNumber::dig4(FayBuilder* builder)
 			builder->addInst(new inst::PushInt(this->_val.intVal()));
 			break;
 		case ValueType::Long:
-			builder->addInst(new inst::PushLong(this->_val.longValue()));
+			builder->addInst(new inst::PushLong(this->_val.longVal()));
 			break;
 		case ValueType::Float:
-			builder->addInst(new inst::PushFloat(this->_val.floatValue()));
+			builder->addInst(new inst::PushFloat(this->_val.floatVal()));
 			break;
 		case ValueType::Double:
-			builder->addInst(new inst::PushDouble(this->_val.doubleValue()));
+			builder->addInst(new inst::PushDouble(this->_val.doubleVal()));
 			break;
 		default:
 			LOG_ERROR("Unknow value type : " << (int)this->_class);

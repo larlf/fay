@@ -15,7 +15,7 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 			//InstCodeStart
 			case InstType::Nop:
 			{
-				//Do Nothing
+				//DoNothing
 				break;
 			}
 			case InstType::PushBool:
@@ -58,15 +58,6 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 				stack.pop();
 				break;
 			}
-			case InstType::AddInt:
-			{
-				int32_t v1=stack.top().intVal();
-				stack.pop();
-				int32_t v2=stack.top().intVal();
-				stack.pop();
-				stack.push(FayValue(v1+v2));
-				break;
-			}
 			case InstType::CallStatic:
 			{
 				PTR(FayFun) fun=this->_domain->findFun(((inst::CallStatic*)inst)->typeIndex,((inst::CallStatic*)inst)->funIndex,true);
@@ -86,7 +77,7 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 			}
 			case InstType::VoidToVoid:
 			{
-				//Do Nothing
+				//DoNothing
 				break;
 			}
 			case InstType::VoidToBool:
@@ -129,6 +120,162 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 			{
 				stack.pop();
 				stack.push(FayValue(""));
+				break;
+			}
+			case InstType::IntToBool:
+			{
+				FayValue v=stack.top();
+				stack.pop();
+				stack.push(FayValue((bool)v.intVal()));
+				break;
+			}
+			case InstType::IntToByte:
+			{
+				FayValue v=stack.top();
+				stack.pop();
+				stack.push(FayValue((byte)v.intVal()));
+				break;
+			}
+			case InstType::IntToInt:
+			{
+				//DoNothing
+				break;
+			}
+			case InstType::IntToLong:
+			{
+				FayValue v=stack.top();
+				stack.pop();
+				stack.push(FayValue((long)v.intVal()));
+				break;
+			}
+			case InstType::IntToFloat:
+			{
+				FayValue v=stack.top();
+				stack.pop();
+				stack.push(FayValue((float)v.intVal()));
+				break;
+			}
+			case InstType::IntToDouble:
+			{
+				FayValue v=stack.top();
+				stack.pop();
+				stack.push(FayValue((double)v.intVal()));
+				break;
+			}
+			case InstType::LongToBool:
+			{
+				FayValue v=stack.top();
+				stack.pop();
+				stack.push(FayValue((bool)v.longVal()));
+				break;
+			}
+			case InstType::LongToByte:
+			{
+				FayValue v=stack.top();
+				stack.pop();
+				stack.push(FayValue((byte)v.longVal()));
+				break;
+			}
+			case InstType::LongToInt:
+			{
+				FayValue v=stack.top();
+				stack.pop();
+				stack.push(FayValue((int32_t)v.longVal()));
+				break;
+			}
+			case InstType::LongToLong:
+			{
+				//DoNothing
+				break;
+			}
+			case InstType::LongToFloat:
+			{
+				FayValue v=stack.top();
+				stack.pop();
+				stack.push(FayValue((float)v.longVal()));
+				break;
+			}
+			case InstType::LongToDouble:
+			{
+				FayValue v=stack.top();
+				stack.pop();
+				stack.push(FayValue((double)v.longVal()));
+				break;
+			}
+			case InstType::FloatToBool:
+			{
+				FayValue v=stack.top();
+				stack.pop();
+				stack.push(FayValue((bool)v.floatVal()));
+				break;
+			}
+			case InstType::FloatToByte:
+			{
+				FayValue v=stack.top();
+				stack.pop();
+				stack.push(FayValue((byte)v.floatVal()));
+				break;
+			}
+			case InstType::FloatToInt:
+			{
+				FayValue v=stack.top();
+				stack.pop();
+				stack.push(FayValue((int32_t)v.floatVal()));
+				break;
+			}
+			case InstType::FloatToLong:
+			{
+				FayValue v=stack.top();
+				stack.pop();
+				stack.push(FayValue((int64_t)v.floatVal()));
+				break;
+			}
+			case InstType::FloatToFloat:
+			{
+				//DoNothing
+				break;
+			}
+			case InstType::FloatToDouble:
+			{
+				FayValue v=stack.top();
+				stack.pop();
+				stack.push(FayValue((double)v.floatVal()));
+				break;
+			}
+			case InstType::AddInt:
+			{
+				int32_t v=stack.top().intVal();
+				stack.pop();
+				v+=stack.top().intVal();
+				stack.pop();
+				stack.push(FayValue(v));
+				break;
+			}
+			case InstType::AddLong:
+			{
+				int64_t v=stack.top().longVal();
+				stack.pop();
+				v+=stack.top().longVal();
+				stack.pop();
+				stack.push(FayValue(v));
+				break;
+			}
+			case InstType::AddFloat:
+			{
+				float v=stack.top().floatVal();
+				stack.pop();
+				v+=stack.top().floatVal();
+				stack.pop();
+				stack.push(FayValue(v));
+				break;
+			}
+			case InstType::AddDouble:
+			{
+				double v=stack.top().doubleVal();
+				stack.pop();
+				v+=stack.top().doubleVal();
+				stack.pop();
+				stack.push(FayValue(v));
 				break;
 			}
 			//InstCodeEnd

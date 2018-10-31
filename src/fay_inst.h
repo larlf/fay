@@ -105,104 +105,6 @@ namespace fay
 			virtual void toString(mirror::utils::StringBuilder* sb) override;
 		};
 		
-		class AddByte : public fay::FayInst 
-		{ 
-		public:
-			AddByte() : FayInst(InstType::AddByte) {}
-			virtual void toString(mirror::utils::StringBuilder* sb) override;
-		};
-		
-		class AddInt : public fay::FayInst 
-		{ 
-		public:
-			AddInt() : FayInst(InstType::AddInt) {}
-			virtual void toString(mirror::utils::StringBuilder* sb) override;
-		};
-		
-		class AddLong : public fay::FayInst 
-		{ 
-		public:
-			AddLong() : FayInst(InstType::AddLong) {}
-			virtual void toString(mirror::utils::StringBuilder* sb) override;
-		};
-		
-		class AddFloat : public fay::FayInst 
-		{ 
-		public:
-			AddFloat() : FayInst(InstType::AddFloat) {}
-			virtual void toString(mirror::utils::StringBuilder* sb) override;
-		};
-		
-		class AddDouble : public fay::FayInst 
-		{ 
-		public:
-			AddDouble() : FayInst(InstType::AddDouble) {}
-			virtual void toString(mirror::utils::StringBuilder* sb) override;
-		};
-		
-		class AddBool : public fay::FayInst 
-		{ 
-		public:
-			AddBool() : FayInst(InstType::AddBool) {}
-			virtual void toString(mirror::utils::StringBuilder* sb) override;
-		};
-		
-		class AddString : public fay::FayInst 
-		{ 
-		public:
-			AddString() : FayInst(InstType::AddString) {}
-			virtual void toString(mirror::utils::StringBuilder* sb) override;
-		};
-		
-		class SubByte : public fay::FayInst 
-		{ 
-		public:
-			SubByte() : FayInst(InstType::SubByte) {}
-			virtual void toString(mirror::utils::StringBuilder* sb) override;
-		};
-		
-		class SubInt : public fay::FayInst 
-		{ 
-		public:
-			SubInt() : FayInst(InstType::SubInt) {}
-			virtual void toString(mirror::utils::StringBuilder* sb) override;
-		};
-		
-		class SubLong : public fay::FayInst 
-		{ 
-		public:
-			SubLong() : FayInst(InstType::SubLong) {}
-			virtual void toString(mirror::utils::StringBuilder* sb) override;
-		};
-		
-		class SubFloat : public fay::FayInst 
-		{ 
-		public:
-			SubFloat() : FayInst(InstType::SubFloat) {}
-			virtual void toString(mirror::utils::StringBuilder* sb) override;
-		};
-		
-		class SubDouble : public fay::FayInst 
-		{ 
-		public:
-			SubDouble() : FayInst(InstType::SubDouble) {}
-			virtual void toString(mirror::utils::StringBuilder* sb) override;
-		};
-		
-		class SubBool : public fay::FayInst 
-		{ 
-		public:
-			SubBool() : FayInst(InstType::SubBool) {}
-			virtual void toString(mirror::utils::StringBuilder* sb) override;
-		};
-		
-		class SubString : public fay::FayInst 
-		{ 
-		public:
-			SubString() : FayInst(InstType::SubString) {}
-			virtual void toString(mirror::utils::StringBuilder* sb) override;
-		};
-		
 		class CallStatic : public fay::FayInst 
 		{ 
 		public:
@@ -972,6 +874,286 @@ namespace fay
 		{ 
 		public:
 			FunctionToFunction() : FayInst(InstType::FunctionToFunction) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class AddVoid : public fay::FayInst 
+		{ 
+		public:
+			AddVoid() : FayInst(InstType::AddVoid) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class AddBool : public fay::FayInst 
+		{ 
+		public:
+			AddBool() : FayInst(InstType::AddBool) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class AddByte : public fay::FayInst 
+		{ 
+		public:
+			AddByte() : FayInst(InstType::AddByte) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class AddInt : public fay::FayInst 
+		{ 
+		public:
+			AddInt() : FayInst(InstType::AddInt) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class AddLong : public fay::FayInst 
+		{ 
+		public:
+			AddLong() : FayInst(InstType::AddLong) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class AddFloat : public fay::FayInst 
+		{ 
+		public:
+			AddFloat() : FayInst(InstType::AddFloat) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class AddDouble : public fay::FayInst 
+		{ 
+		public:
+			AddDouble() : FayInst(InstType::AddDouble) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class AddString : public fay::FayInst 
+		{ 
+		public:
+			AddString() : FayInst(InstType::AddString) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class AddObject : public fay::FayInst 
+		{ 
+		public:
+			AddObject() : FayInst(InstType::AddObject) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class AddFunction : public fay::FayInst 
+		{ 
+		public:
+			AddFunction() : FayInst(InstType::AddFunction) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class SubVoid : public fay::FayInst 
+		{ 
+		public:
+			SubVoid() : FayInst(InstType::SubVoid) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class SubBool : public fay::FayInst 
+		{ 
+		public:
+			SubBool() : FayInst(InstType::SubBool) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class SubByte : public fay::FayInst 
+		{ 
+		public:
+			SubByte() : FayInst(InstType::SubByte) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class SubInt : public fay::FayInst 
+		{ 
+		public:
+			SubInt() : FayInst(InstType::SubInt) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class SubLong : public fay::FayInst 
+		{ 
+		public:
+			SubLong() : FayInst(InstType::SubLong) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class SubFloat : public fay::FayInst 
+		{ 
+		public:
+			SubFloat() : FayInst(InstType::SubFloat) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class SubDouble : public fay::FayInst 
+		{ 
+		public:
+			SubDouble() : FayInst(InstType::SubDouble) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class SubString : public fay::FayInst 
+		{ 
+		public:
+			SubString() : FayInst(InstType::SubString) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class SubObject : public fay::FayInst 
+		{ 
+		public:
+			SubObject() : FayInst(InstType::SubObject) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class SubFunction : public fay::FayInst 
+		{ 
+		public:
+			SubFunction() : FayInst(InstType::SubFunction) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class MulVoid : public fay::FayInst 
+		{ 
+		public:
+			MulVoid() : FayInst(InstType::MulVoid) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class MulBool : public fay::FayInst 
+		{ 
+		public:
+			MulBool() : FayInst(InstType::MulBool) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class MulByte : public fay::FayInst 
+		{ 
+		public:
+			MulByte() : FayInst(InstType::MulByte) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class MulInt : public fay::FayInst 
+		{ 
+		public:
+			MulInt() : FayInst(InstType::MulInt) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class MulLong : public fay::FayInst 
+		{ 
+		public:
+			MulLong() : FayInst(InstType::MulLong) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class MulFloat : public fay::FayInst 
+		{ 
+		public:
+			MulFloat() : FayInst(InstType::MulFloat) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class MulDouble : public fay::FayInst 
+		{ 
+		public:
+			MulDouble() : FayInst(InstType::MulDouble) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class MulString : public fay::FayInst 
+		{ 
+		public:
+			MulString() : FayInst(InstType::MulString) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class MulObject : public fay::FayInst 
+		{ 
+		public:
+			MulObject() : FayInst(InstType::MulObject) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class MulFunction : public fay::FayInst 
+		{ 
+		public:
+			MulFunction() : FayInst(InstType::MulFunction) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class DivVoid : public fay::FayInst 
+		{ 
+		public:
+			DivVoid() : FayInst(InstType::DivVoid) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class DivBool : public fay::FayInst 
+		{ 
+		public:
+			DivBool() : FayInst(InstType::DivBool) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class DivByte : public fay::FayInst 
+		{ 
+		public:
+			DivByte() : FayInst(InstType::DivByte) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class DivInt : public fay::FayInst 
+		{ 
+		public:
+			DivInt() : FayInst(InstType::DivInt) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class DivLong : public fay::FayInst 
+		{ 
+		public:
+			DivLong() : FayInst(InstType::DivLong) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class DivFloat : public fay::FayInst 
+		{ 
+		public:
+			DivFloat() : FayInst(InstType::DivFloat) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class DivDouble : public fay::FayInst 
+		{ 
+		public:
+			DivDouble() : FayInst(InstType::DivDouble) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class DivString : public fay::FayInst 
+		{ 
+		public:
+			DivString() : FayInst(InstType::DivString) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class DivObject : public fay::FayInst 
+		{ 
+		public:
+			DivObject() : FayInst(InstType::DivObject) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class DivFunction : public fay::FayInst 
+		{ 
+		public:
+			DivFunction() : FayInst(InstType::DivFunction) {}
 			virtual void toString(mirror::utils::StringBuilder* sb) override;
 		};
 		

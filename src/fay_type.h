@@ -73,9 +73,9 @@ namespace fay
 
 		inline const ValueType type() { return this->_class; }
 		inline const int32_t intVal() { return (this->_class == ValueType::Int) ? this->_val.intVal : 0; }
-		inline const int64_t longValue() { return (this->_class == ValueType::Long) ? this->_val.longVal : 0; }
-		inline const float floatValue() { return (this->_class == ValueType::Float) ? this->_val.flaotVal : 0; }
-		inline const double doubleValue() { return (this->_class == ValueType::Double) ? this->_val.doubleVal : 0; }
+		inline const int64_t longVal() { return (this->_class == ValueType::Long) ? this->_val.longVal : 0; }
+		inline const float floatVal() { return (this->_class == ValueType::Float) ? this->_val.flaotVal : 0; }
+		inline const double doubleVal() { return (this->_class == ValueType::Double) ? this->_val.doubleVal : 0; }
 		inline const std::string* strVal() { return (this->_class == ValueType::String) ? this->_val.strVal : nullptr; }
 		inline const void* objectVal() { return (this->_class == ValueType::Object) ? this->_val.ptrValue : nullptr; }
 		inline const void* funVal() { return (this->_class == ValueType::Function) ? this->_val.ptrValue : nullptr; }

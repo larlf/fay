@@ -63,7 +63,7 @@ void test::FayTests::TestLexer()
 	PRINT(sb.toString());
 
 	ast->dig3(builder.get());
-	PRINT("--------------------Dig4--------------------");
+	PRINT("--------------------Dig3--------------------");
 	if (ast)
 	{
 		utils::StringBuilder sb;

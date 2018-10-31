@@ -70,90 +70,6 @@ void fay::inst::PopTo::toString(mirror::utils::StringBuilder * sb)
 		->endl();
 }
 
-void fay::inst::AddByte::toString(mirror::utils::StringBuilder * sb)
-{
-	sb->add("AddByte")
-		->endl();
-}
-
-void fay::inst::AddInt::toString(mirror::utils::StringBuilder * sb)
-{
-	sb->add("AddInt")
-		->endl();
-}
-
-void fay::inst::AddLong::toString(mirror::utils::StringBuilder * sb)
-{
-	sb->add("AddLong")
-		->endl();
-}
-
-void fay::inst::AddFloat::toString(mirror::utils::StringBuilder * sb)
-{
-	sb->add("AddFloat")
-		->endl();
-}
-
-void fay::inst::AddDouble::toString(mirror::utils::StringBuilder * sb)
-{
-	sb->add("AddDouble")
-		->endl();
-}
-
-void fay::inst::AddBool::toString(mirror::utils::StringBuilder * sb)
-{
-	sb->add("AddBool")
-		->endl();
-}
-
-void fay::inst::AddString::toString(mirror::utils::StringBuilder * sb)
-{
-	sb->add("AddString")
-		->endl();
-}
-
-void fay::inst::SubByte::toString(mirror::utils::StringBuilder * sb)
-{
-	sb->add("SubByte")
-		->endl();
-}
-
-void fay::inst::SubInt::toString(mirror::utils::StringBuilder * sb)
-{
-	sb->add("SubInt")
-		->endl();
-}
-
-void fay::inst::SubLong::toString(mirror::utils::StringBuilder * sb)
-{
-	sb->add("SubLong")
-		->endl();
-}
-
-void fay::inst::SubFloat::toString(mirror::utils::StringBuilder * sb)
-{
-	sb->add("SubFloat")
-		->endl();
-}
-
-void fay::inst::SubDouble::toString(mirror::utils::StringBuilder * sb)
-{
-	sb->add("SubDouble")
-		->endl();
-}
-
-void fay::inst::SubBool::toString(mirror::utils::StringBuilder * sb)
-{
-	sb->add("SubBool")
-		->endl();
-}
-
-void fay::inst::SubString::toString(mirror::utils::StringBuilder * sb)
-{
-	sb->add("SubString")
-		->endl();
-}
-
 void fay::inst::CallStatic::toString(mirror::utils::StringBuilder * sb)
 {
 	sb->add("CallStatic")
@@ -811,6 +727,246 @@ void fay::inst::FunctionToObject::toString(mirror::utils::StringBuilder * sb)
 void fay::inst::FunctionToFunction::toString(mirror::utils::StringBuilder * sb)
 {
 	sb->add("FunctionToFunction")
+		->endl();
+}
+
+void fay::inst::AddVoid::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("AddVoid")
+		->endl();
+}
+
+void fay::inst::AddBool::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("AddBool")
+		->endl();
+}
+
+void fay::inst::AddByte::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("AddByte")
+		->endl();
+}
+
+void fay::inst::AddInt::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("AddInt")
+		->endl();
+}
+
+void fay::inst::AddLong::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("AddLong")
+		->endl();
+}
+
+void fay::inst::AddFloat::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("AddFloat")
+		->endl();
+}
+
+void fay::inst::AddDouble::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("AddDouble")
+		->endl();
+}
+
+void fay::inst::AddString::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("AddString")
+		->endl();
+}
+
+void fay::inst::AddObject::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("AddObject")
+		->endl();
+}
+
+void fay::inst::AddFunction::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("AddFunction")
+		->endl();
+}
+
+void fay::inst::SubVoid::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("SubVoid")
+		->endl();
+}
+
+void fay::inst::SubBool::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("SubBool")
+		->endl();
+}
+
+void fay::inst::SubByte::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("SubByte")
+		->endl();
+}
+
+void fay::inst::SubInt::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("SubInt")
+		->endl();
+}
+
+void fay::inst::SubLong::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("SubLong")
+		->endl();
+}
+
+void fay::inst::SubFloat::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("SubFloat")
+		->endl();
+}
+
+void fay::inst::SubDouble::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("SubDouble")
+		->endl();
+}
+
+void fay::inst::SubString::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("SubString")
+		->endl();
+}
+
+void fay::inst::SubObject::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("SubObject")
+		->endl();
+}
+
+void fay::inst::SubFunction::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("SubFunction")
+		->endl();
+}
+
+void fay::inst::MulVoid::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("MulVoid")
+		->endl();
+}
+
+void fay::inst::MulBool::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("MulBool")
+		->endl();
+}
+
+void fay::inst::MulByte::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("MulByte")
+		->endl();
+}
+
+void fay::inst::MulInt::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("MulInt")
+		->endl();
+}
+
+void fay::inst::MulLong::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("MulLong")
+		->endl();
+}
+
+void fay::inst::MulFloat::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("MulFloat")
+		->endl();
+}
+
+void fay::inst::MulDouble::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("MulDouble")
+		->endl();
+}
+
+void fay::inst::MulString::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("MulString")
+		->endl();
+}
+
+void fay::inst::MulObject::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("MulObject")
+		->endl();
+}
+
+void fay::inst::MulFunction::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("MulFunction")
+		->endl();
+}
+
+void fay::inst::DivVoid::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("DivVoid")
+		->endl();
+}
+
+void fay::inst::DivBool::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("DivBool")
+		->endl();
+}
+
+void fay::inst::DivByte::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("DivByte")
+		->endl();
+}
+
+void fay::inst::DivInt::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("DivInt")
+		->endl();
+}
+
+void fay::inst::DivLong::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("DivLong")
+		->endl();
+}
+
+void fay::inst::DivFloat::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("DivFloat")
+		->endl();
+}
+
+void fay::inst::DivDouble::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("DivDouble")
+		->endl();
+}
+
+void fay::inst::DivString::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("DivString")
+		->endl();
+}
+
+void fay::inst::DivObject::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("DivObject")
+		->endl();
+}
+
+void fay::inst::DivFunction::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("DivFunction")
 		->endl();
 }
 
