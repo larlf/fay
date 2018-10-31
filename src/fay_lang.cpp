@@ -8,15 +8,15 @@ using namespace fay;
 
 MAP<fay::ValueType, PTR(FayClass)> fay::FaySimpleClass::_Types;
 
-PTR(FayClass) fay::FaySimpleClass::Get(ValueType valueType)
+PTR(FayClass) fay::FaySimpleClass::Get(ValueType classType)
 {
-	auto it = _Types.find(valueType);
-	if (it != _Types.end())
+	auto it = _Types.find(classType);
+	if(it != _Types.end())
 		return it->second;
 
 	//没有这个类型，新建一个
-	PTR(FaySimpleClass) type(new FaySimpleClass(valueType));
-	_Types[valueType] = type;
+	PTR(FaySimpleClass) type(new FaySimpleClass(classType));
+	_Types[classType] = type;
 	return type;
 }
 
@@ -29,11 +29,11 @@ bool fay::FayClass::match(PTR(FayClass) type)
 {
 	//TODO ：对接口的处理
 
-	if (type && type.get() == this)
+	if(type && type.get() == this)
 		return true;
 
 	PTR(FayClass) parent = this->_parent.lock();
-	if (parent && parent->match(type))
+	if(parent && parent->match(type))
 		return true;
 
 	return false;
@@ -41,7 +41,7 @@ bool fay::FayClass::match(PTR(FayClass) type)
 
 std::vector<pos_t> fay::FayClass::matchFun(const std::string &funName, const std::vector<PTR(FayClass)> &paramsType, bool isStatic)
 {
-	if (isStatic)
+	if(isStatic)
 		return this->_sft.matchFun(funName, paramsType);
 	else
 		return this->_vft.matchFun(funName, paramsType);
@@ -49,7 +49,7 @@ std::vector<pos_t> fay::FayClass::matchFun(const std::string &funName, const std
 
 PTR(FayFun) fay::FayClass::findFun(pos_t index, bool isStatic)
 {
-	if (isStatic)
+	if(isStatic)
 		return this->_sft.getFun(index);
 	else
 		return this->_vft.getFun(index);
@@ -57,7 +57,7 @@ PTR(FayFun) fay::FayClass::findFun(pos_t index, bool isStatic)
 
 PTR(FayFun) fay::FayClass::findFun(const std::string &fullname, bool isStatic)
 {
-	if (isStatic)
+	if(isStatic)
 		return this->_sft.findFun(fullname);
 	else
 		return this->_vft.findFun(fullname);
@@ -65,7 +65,7 @@ PTR(FayFun) fay::FayClass::findFun(const std::string &fullname, bool isStatic)
 
 pos_t fay::FayClass::getFunIndex(const std::string &fullname, bool isStatic)
 {
-	if (isStatic)
+	if(isStatic)
 		return this->_sft.findFunIndex(fullname);
 	else
 		return this->_vft.findFunIndex(fullname);
@@ -77,7 +77,7 @@ pos_t fay::FayLib::addClass(PTR(FayInstClass) clazz)
 	this->classes.push_back(clazz);
 
 	auto domain = this->domain();
-	if (domain)
+	if(domain)
 		return domain->addType(clazz);
 
 	return -1;
@@ -87,31 +87,31 @@ pos_t fay::FayLib::findOutsideFun(const std::string &className, const std::strin
 {
 	//查找当前是否已经有了
 	std::string fullname = FayLangUtils::Fullname(className, funName, paramsType);
-	pos_t index=this->_outsideFuns.findIndex(fullname);
-	if (index>=0) return index;
+	pos_t index = this->_outsideFuns.findIndex(fullname);
+	if(index >= 0) return index;
 
 	//检查domain是否正常
 	auto domain = this->domain();
-	if (!domain)
+	if(!domain)
 	{
 		LOG_ERROR("Cannot find domain");
 		return -1;
 	}
 
-	auto clazz=domain->findType(className);
-	if (!clazz)
+	auto clazz = domain->findType(className);
+	if(!clazz)
 	{
 		LOG_ERROR("Cannot find type : " << className);
 		return -1;
 	}
 
-	auto funs=clazz->matchFun(funName, paramsType, true);
-	if (funs.size() <= 0)
+	auto funs = clazz->matchFun(funName, paramsType, true);
+	if(funs.size() <= 0)
 	{
-		LOG_ERROR("Cannot find fun : "<<fullname);
+		LOG_ERROR("Cannot find fun : " << fullname);
 		return -1;
 	}
-	else if (funs.size() > 1)
+	else if(funs.size() > 1)
 	{
 		LOG_ERROR("Too many fun : " << fullname);
 		return -1;
@@ -131,7 +131,7 @@ void fay::FayLib::toString(mirror::utils::StringBuilder* sb)
 	//显示外部函数
 	sb->add("[OutSideFun]")->endl();
 	sb->increaseIndent();
-	for (auto i = 0; i < this->_outsideFuns.list().size(); ++i)
+	for(auto i = 0; i < this->_outsideFuns.list().size(); ++i)
 	{
 		sb->add(i)->add(" : ");
 		this->_outsideFuns.list()[i]->toString(sb);
@@ -148,10 +148,10 @@ void fay::FayLib::toString(mirror::utils::StringBuilder* sb)
 
 void fay::FayInstFun::prepareInsts()
 {
-	for (auto i = 0; i < this->_insts.size(); ++i)
+	for(auto i = 0; i < this->_insts.size(); ++i)
 	{
 		FayInst* inst = this->_insts[i];
-		switch (inst->type())
+		switch(inst->type())
 		{
 			case InstType::CallStatic:
 			{
@@ -176,7 +176,7 @@ fay::FayInstFun::~FayInstFun()
 
 std::vector<FayInst*>* fay::FayInstFun::getPreparedInsts()
 {
-	if (!this->isPrepared)
+	if(!this->isPrepared)
 	{
 		this->prepareInsts();
 		this->isPrepared = true;
@@ -188,11 +188,11 @@ std::vector<FayInst*>* fay::FayInstFun::getPreparedInsts()
 pos_t fay::FayInstFun::addVar(const std::string &name, PTR(FayClass) type)
 {
 	auto it = this->_vars.find(name);
-	if (it)
+	if(it)
 	{
-		if (it->type() != type)
+		if(it->type() != type)
 		{
-			LOG_ERROR("Same var name, diff type : "<<it->type()<<", "<<type);
+			LOG_ERROR("Same var name, diff type : " << it->type() << ", " << type);
 			return -1;
 		}
 
@@ -204,12 +204,12 @@ pos_t fay::FayInstFun::addVar(const std::string &name, PTR(FayClass) type)
 	return this->_vars.add(name, def);
 }
 
-PTR(FayVarDef) fay::FayInstFun::findVar(const std::string & name)
+PTR(FayVarDef) fay::FayInstFun::findVar(const std::string &name)
 {
 	return this->_vars.find(name);
 }
 
-pos_t fay::FayInstFun::getVarIndex(const std::string & name)
+pos_t fay::FayInstFun::getVarIndex(const std::string &name)
 {
 	return this->_vars.findIndex(name);
 }
@@ -223,7 +223,7 @@ void fay::FayInstFun::toString(mirror::utils::StringBuilder* sb)
 	for each(auto it in this->_params)
 		it->toString(sb);
 
-	for (auto i = 0; i < this->_insts.size(); ++i)
+	for(auto i = 0; i < this->_insts.size(); ++i)
 	{
 		auto it = this->_insts[i];
 		sb->add(i)->add(" : ");
@@ -235,12 +235,12 @@ void fay::FayInstFun::toString(mirror::utils::StringBuilder* sb)
 
 const std::string &fay::FayFun::fullname()
 {
-	if (this->_fullname.size() <= 0)
+	if(this->_fullname.size() <= 0)
 	{
 		std::string str;
 		for each(auto it in this->_params)
 		{
-			if (str.size() > 0)
+			if(str.size() > 0)
 				str += ",";
 			str += it->fullname();
 		}
@@ -265,13 +265,13 @@ void fay::FayFun::addReturn(PTR(FayClass) type)
 bool fay::FayFun::match(const std::vector<PTR(FayClass)> &paramsType)
 {
 	//参数不一致
-	if (paramsType.size() != this->_params.size())
+	if(paramsType.size() != this->_params.size())
 		return false;
 
-	for (auto i = 0; i < this->_params.size(); ++i)
+	for(auto i = 0; i < this->_params.size(); ++i)
 	{
 		PTR(FayParamDef) p = this->_params[i];
-		if (!p->type()->match(paramsType[i]))
+		if(!p->type()->match(paramsType[i]))
 			return false;
 	}
 
@@ -293,7 +293,7 @@ void fay::FayFun::toString(mirror::utils::StringBuilder* sb)
 pos_t fay::FayClass::addFun(PTR(FayFun) fun)
 {
 	fun->clazz(this->shared_from_this());
-	if (fun->isStatic())
+	if(fun->isStatic())
 		return this->_sft.addFun(fun);
 	else
 		return this->_vft.addFun(fun);
@@ -324,6 +324,10 @@ const std::string &fay::FayInstClass::fullname()
 
 fay::FayDomain::FayDomain()
 {
+}
+
+void fay::FayDomain::initSysLib()
+{
 	//内置类型在这里创建
 	this->_types.add("byte", FaySimpleClass::Get(ValueType::Byte));
 	this->_types.add("int", FaySimpleClass::Get(ValueType::Int));
@@ -332,10 +336,7 @@ fay::FayDomain::FayDomain()
 	this->_types.add("double", FaySimpleClass::Get(ValueType::Double));
 	this->_types.add("bool", FaySimpleClass::Get(ValueType::Bool));
 	this->_types.add("string", FaySimpleClass::Get(ValueType::String));
-}
 
-void fay::FayDomain::initSysLib()
-{
 	PTR(FayLib) lib(new FayLib(MYPTR, "System"));
 	PTR(FayInstClass) clazz(new FayInstClass(MYPTR, "fay", "System"));
 	clazz->addFun(MKPTR(FayInternalFun)(MYPTR, "Print", InternalFun::Print_String, std::vector<std::string>({ "string" })));
@@ -359,7 +360,7 @@ void fay::FayDomain::toString(mirror::utils::StringBuilder* sb)
 {
 	sb->add("[FayDomain]")->endl();
 	sb->increaseIndent();
-	for (auto i = 0; i < this->_types.list().size(); ++i)
+	for(auto i = 0; i < this->_types.list().size(); ++i)
 	{
 		auto t = this->_types.list()[i];
 		sb->add(i)->add(" : ")->add(t->fullname())->endl();
@@ -376,7 +377,7 @@ pos_t fay::FayDomain::addType(PTR(FayClass) t)
 
 	//如果已经有了，就返回现有的位置
 	pos_t index = this->_types.findIndex(fullname);
-	if (index >= 0)
+	if(index >= 0)
 		return index;
 
 	return this->_types.add(fullname, t);
@@ -390,7 +391,7 @@ pos_t fay::FayDomain::getTypeIndex(PTR(FayClass) t)
 PTR(FayClass) fay::FayDomain::findType(const std::string &typeFullname)
 {
 	auto type = this->_types.find(typeFullname);
-	if (!type)
+	if(!type)
 		LOG_ERROR("Cannot find type : " << typeFullname);
 
 	return type;
@@ -399,7 +400,7 @@ PTR(FayClass) fay::FayDomain::findType(const std::string &typeFullname)
 PTR(FayClass) fay::FayDomain::findType(pos_t index)
 {
 	auto type = this->_types.find(index);
-	if (!type)
+	if(!type)
 		LOG_ERROR("Cannot find type by index : " << index);
 
 	return type;
@@ -418,7 +419,7 @@ std::vector<PTR(FayClass)> fay::FayDomain::findType(std::vector<std::string> &im
 	{
 		std::string typeFullname = it + "." + typeName;
 		auto type = this->findType(typeFullname);
-		if (type)
+		if(type)
 			types.push_back(type);
 	}
 
@@ -428,7 +429,7 @@ std::vector<PTR(FayClass)> fay::FayDomain::findType(std::vector<std::string> &im
 PTR(FayFun) fay::FayDomain::findFun(const std::string &typeFullname, const std::string &funFullname, bool isStatic)
 {
 	auto type = this->findType(typeFullname);
-	if (type)
+	if(type)
 		return type->findFun(funFullname, isStatic);
 
 	return nullptr;
@@ -437,14 +438,14 @@ PTR(FayFun) fay::FayDomain::findFun(const std::string &typeFullname, const std::
 PTR(FayFun) fay::FayDomain::findFun(pos_t typeIndex, pos_t funIndex, bool isStatic)
 {
 	auto type = this->_types[typeIndex];
-	if (!type)
+	if(!type)
 	{
 		LOG_ERROR("Cannot find type : " << typeIndex);
 		return nullptr;
 	}
 
 	auto fun = type->findFun(funIndex, isStatic);
-	if (!fun)
+	if(!fun)
 	{
 		LOG_ERROR("Cannot find fun : " << funIndex << " in " << type->fullname());
 		return nullptr;
@@ -459,14 +460,14 @@ bool fay::FayDomain::findFunIndex(const std::string &typeFullname, const std::st
 	funIndex = -1;
 
 	typeIndex = this->_types.findIndex(typeFullname);
-	if (typeIndex<0)
+	if(typeIndex < 0)
 	{
 		LOG_ERROR("Cannot find type : " << typeIndex);
 		return false;
 	}
 
 	funIndex = this->_types[typeIndex]->getFunIndex(funFullname, funIndex);
-	if (funIndex < 0)
+	if(funIndex < 0)
 	{
 		LOG_ERROR("Cannot find fun : " << funIndex << " in " << this->_types[typeIndex]->fullname());
 		return false;
@@ -480,21 +481,21 @@ bool fay::FayDomain::findFunIndex(PTR(FayFun) fun, pos_t &typeIndex, pos_t &funI
 	typeIndex = -1;
 	funIndex = -1;
 
-	if (!fun)
+	if(!fun)
 	{
 		LOG_ERROR("Fun is null");
 		return false;
 	}
 
 	typeIndex = this->_types.findIndex(fun->clazz()->fullname());
-	if (typeIndex < 0)
+	if(typeIndex < 0)
 	{
 		LOG_ERROR("Cannot find type : " << fun->clazz()->fullname());
 		return false;
 	}
 
 	funIndex = this->_types[typeIndex]->getFunIndex(fun->fullname(), fun->isStatic());
-	if (funIndex < 0)
+	if(funIndex < 0)
 	{
 		LOG_ERROR("Cannot find fun : " << fun->fullname());
 		return false;
@@ -505,11 +506,11 @@ bool fay::FayDomain::findFunIndex(PTR(FayFun) fun, pos_t &typeIndex, pos_t &funI
 
 const std::string &fay::FayParamDef::fullname()
 {
-	if (this->_fullname.size() <= 0)
+	if(this->_fullname.size() <= 0)
 	{
 		this->_fullname += this->_name;
 		this->_fullname += ":";
-		this->_fullname += this->_class.expired()?"?":this->_class.lock()->fullname();
+		this->_fullname += this->_class.expired() ? "?" : this->_class.lock()->fullname();
 	}
 
 	return this->_fullname;
@@ -525,10 +526,10 @@ std::string fay::FayLangUtils::Fullname(const std::string &funName, const std::v
 	std::string str;
 	for each(auto it in params)
 	{
-		if (str.size() > 0)
+		if(str.size() > 0)
 			str.append(",");
 
-		if (it)
+		if(it)
 			str.append(it->fullname());
 		else
 			str.append("?");
@@ -536,6 +537,223 @@ std::string fay::FayLangUtils::Fullname(const std::string &funName, const std::v
 
 	str = funName + "(" + str + ")";
 	return str;
+}
+
+fay::ValueType fay::FayLangUtils::WeightValueType(ValueType t1, ValueType t2)
+{
+	//有字符串的话，都转换成字符串
+	if(t1 >= ValueType::String || t2 >= ValueType::String)
+		return ValueType::String;
+
+	return (t1 >= t2) ? t1 : t2;
+}
+
+fay::FayInst* fay::FayLangUtils::ConvertInst(ValueType src, ValueType dest)
+{
+	//ConvertInstStart
+	if (src == ValueType::Void && dest == ValueType::Void)
+		return new inst::VoidToVoid();
+	else if (src == ValueType::Void && dest == ValueType::Bool)
+		return new inst::VoidToBool();
+	else if (src == ValueType::Void && dest == ValueType::Byte)
+		return new inst::VoidToByte();
+	else if (src == ValueType::Void && dest == ValueType::Int)
+		return new inst::VoidToInt();
+	else if (src == ValueType::Void && dest == ValueType::Long)
+		return new inst::VoidToLong();
+	else if (src == ValueType::Void && dest == ValueType::Float)
+		return new inst::VoidToFloat();
+	else if (src == ValueType::Void && dest == ValueType::Double)
+		return new inst::VoidToDouble();
+	else if (src == ValueType::Void && dest == ValueType::String)
+		return new inst::VoidToString();
+	else if (src == ValueType::Void && dest == ValueType::Object)
+		return new inst::VoidToObject();
+	else if (src == ValueType::Void && dest == ValueType::Function)
+		return new inst::VoidToFunction();
+	else if (src == ValueType::Bool && dest == ValueType::Void)
+		return new inst::BoolToVoid();
+	else if (src == ValueType::Bool && dest == ValueType::Bool)
+		return new inst::BoolToBool();
+	else if (src == ValueType::Bool && dest == ValueType::Byte)
+		return new inst::BoolToByte();
+	else if (src == ValueType::Bool && dest == ValueType::Int)
+		return new inst::BoolToInt();
+	else if (src == ValueType::Bool && dest == ValueType::Long)
+		return new inst::BoolToLong();
+	else if (src == ValueType::Bool && dest == ValueType::Float)
+		return new inst::BoolToFloat();
+	else if (src == ValueType::Bool && dest == ValueType::Double)
+		return new inst::BoolToDouble();
+	else if (src == ValueType::Bool && dest == ValueType::String)
+		return new inst::BoolToString();
+	else if (src == ValueType::Bool && dest == ValueType::Object)
+		return new inst::BoolToObject();
+	else if (src == ValueType::Bool && dest == ValueType::Function)
+		return new inst::BoolToFunction();
+	else if (src == ValueType::Byte && dest == ValueType::Void)
+		return new inst::ByteToVoid();
+	else if (src == ValueType::Byte && dest == ValueType::Bool)
+		return new inst::ByteToBool();
+	else if (src == ValueType::Byte && dest == ValueType::Byte)
+		return new inst::ByteToByte();
+	else if (src == ValueType::Byte && dest == ValueType::Int)
+		return new inst::ByteToInt();
+	else if (src == ValueType::Byte && dest == ValueType::Long)
+		return new inst::ByteToLong();
+	else if (src == ValueType::Byte && dest == ValueType::Float)
+		return new inst::ByteToFloat();
+	else if (src == ValueType::Byte && dest == ValueType::Double)
+		return new inst::ByteToDouble();
+	else if (src == ValueType::Byte && dest == ValueType::String)
+		return new inst::ByteToString();
+	else if (src == ValueType::Byte && dest == ValueType::Object)
+		return new inst::ByteToObject();
+	else if (src == ValueType::Byte && dest == ValueType::Function)
+		return new inst::ByteToFunction();
+	else if (src == ValueType::Int && dest == ValueType::Void)
+		return new inst::IntToVoid();
+	else if (src == ValueType::Int && dest == ValueType::Bool)
+		return new inst::IntToBool();
+	else if (src == ValueType::Int && dest == ValueType::Byte)
+		return new inst::IntToByte();
+	else if (src == ValueType::Int && dest == ValueType::Int)
+		return new inst::IntToInt();
+	else if (src == ValueType::Int && dest == ValueType::Long)
+		return new inst::IntToLong();
+	else if (src == ValueType::Int && dest == ValueType::Float)
+		return new inst::IntToFloat();
+	else if (src == ValueType::Int && dest == ValueType::Double)
+		return new inst::IntToDouble();
+	else if (src == ValueType::Int && dest == ValueType::String)
+		return new inst::IntToString();
+	else if (src == ValueType::Int && dest == ValueType::Object)
+		return new inst::IntToObject();
+	else if (src == ValueType::Int && dest == ValueType::Function)
+		return new inst::IntToFunction();
+	else if (src == ValueType::Long && dest == ValueType::Void)
+		return new inst::LongToVoid();
+	else if (src == ValueType::Long && dest == ValueType::Bool)
+		return new inst::LongToBool();
+	else if (src == ValueType::Long && dest == ValueType::Byte)
+		return new inst::LongToByte();
+	else if (src == ValueType::Long && dest == ValueType::Int)
+		return new inst::LongToInt();
+	else if (src == ValueType::Long && dest == ValueType::Long)
+		return new inst::LongToLong();
+	else if (src == ValueType::Long && dest == ValueType::Float)
+		return new inst::LongToFloat();
+	else if (src == ValueType::Long && dest == ValueType::Double)
+		return new inst::LongToDouble();
+	else if (src == ValueType::Long && dest == ValueType::String)
+		return new inst::LongToString();
+	else if (src == ValueType::Long && dest == ValueType::Object)
+		return new inst::LongToObject();
+	else if (src == ValueType::Long && dest == ValueType::Function)
+		return new inst::LongToFunction();
+	else if (src == ValueType::Float && dest == ValueType::Void)
+		return new inst::FloatToVoid();
+	else if (src == ValueType::Float && dest == ValueType::Bool)
+		return new inst::FloatToBool();
+	else if (src == ValueType::Float && dest == ValueType::Byte)
+		return new inst::FloatToByte();
+	else if (src == ValueType::Float && dest == ValueType::Int)
+		return new inst::FloatToInt();
+	else if (src == ValueType::Float && dest == ValueType::Long)
+		return new inst::FloatToLong();
+	else if (src == ValueType::Float && dest == ValueType::Float)
+		return new inst::FloatToFloat();
+	else if (src == ValueType::Float && dest == ValueType::Double)
+		return new inst::FloatToDouble();
+	else if (src == ValueType::Float && dest == ValueType::String)
+		return new inst::FloatToString();
+	else if (src == ValueType::Float && dest == ValueType::Object)
+		return new inst::FloatToObject();
+	else if (src == ValueType::Float && dest == ValueType::Function)
+		return new inst::FloatToFunction();
+	else if (src == ValueType::Double && dest == ValueType::Void)
+		return new inst::DoubleToVoid();
+	else if (src == ValueType::Double && dest == ValueType::Bool)
+		return new inst::DoubleToBool();
+	else if (src == ValueType::Double && dest == ValueType::Byte)
+		return new inst::DoubleToByte();
+	else if (src == ValueType::Double && dest == ValueType::Int)
+		return new inst::DoubleToInt();
+	else if (src == ValueType::Double && dest == ValueType::Long)
+		return new inst::DoubleToLong();
+	else if (src == ValueType::Double && dest == ValueType::Float)
+		return new inst::DoubleToFloat();
+	else if (src == ValueType::Double && dest == ValueType::Double)
+		return new inst::DoubleToDouble();
+	else if (src == ValueType::Double && dest == ValueType::String)
+		return new inst::DoubleToString();
+	else if (src == ValueType::Double && dest == ValueType::Object)
+		return new inst::DoubleToObject();
+	else if (src == ValueType::Double && dest == ValueType::Function)
+		return new inst::DoubleToFunction();
+	else if (src == ValueType::String && dest == ValueType::Void)
+		return new inst::StringToVoid();
+	else if (src == ValueType::String && dest == ValueType::Bool)
+		return new inst::StringToBool();
+	else if (src == ValueType::String && dest == ValueType::Byte)
+		return new inst::StringToByte();
+	else if (src == ValueType::String && dest == ValueType::Int)
+		return new inst::StringToInt();
+	else if (src == ValueType::String && dest == ValueType::Long)
+		return new inst::StringToLong();
+	else if (src == ValueType::String && dest == ValueType::Float)
+		return new inst::StringToFloat();
+	else if (src == ValueType::String && dest == ValueType::Double)
+		return new inst::StringToDouble();
+	else if (src == ValueType::String && dest == ValueType::String)
+		return new inst::StringToString();
+	else if (src == ValueType::String && dest == ValueType::Object)
+		return new inst::StringToObject();
+	else if (src == ValueType::String && dest == ValueType::Function)
+		return new inst::StringToFunction();
+	else if (src == ValueType::Object && dest == ValueType::Void)
+		return new inst::ObjectToVoid();
+	else if (src == ValueType::Object && dest == ValueType::Bool)
+		return new inst::ObjectToBool();
+	else if (src == ValueType::Object && dest == ValueType::Byte)
+		return new inst::ObjectToByte();
+	else if (src == ValueType::Object && dest == ValueType::Int)
+		return new inst::ObjectToInt();
+	else if (src == ValueType::Object && dest == ValueType::Long)
+		return new inst::ObjectToLong();
+	else if (src == ValueType::Object && dest == ValueType::Float)
+		return new inst::ObjectToFloat();
+	else if (src == ValueType::Object && dest == ValueType::Double)
+		return new inst::ObjectToDouble();
+	else if (src == ValueType::Object && dest == ValueType::String)
+		return new inst::ObjectToString();
+	else if (src == ValueType::Object && dest == ValueType::Object)
+		return new inst::ObjectToObject();
+	else if (src == ValueType::Object && dest == ValueType::Function)
+		return new inst::ObjectToFunction();
+	else if (src == ValueType::Function && dest == ValueType::Void)
+		return new inst::FunctionToVoid();
+	else if (src == ValueType::Function && dest == ValueType::Bool)
+		return new inst::FunctionToBool();
+	else if (src == ValueType::Function && dest == ValueType::Byte)
+		return new inst::FunctionToByte();
+	else if (src == ValueType::Function && dest == ValueType::Int)
+		return new inst::FunctionToInt();
+	else if (src == ValueType::Function && dest == ValueType::Long)
+		return new inst::FunctionToLong();
+	else if (src == ValueType::Function && dest == ValueType::Float)
+		return new inst::FunctionToFloat();
+	else if (src == ValueType::Function && dest == ValueType::Double)
+		return new inst::FunctionToDouble();
+	else if (src == ValueType::Function && dest == ValueType::String)
+		return new inst::FunctionToString();
+	else if (src == ValueType::Function && dest == ValueType::Object)
+		return new inst::FunctionToObject();
+	else if (src == ValueType::Function && dest == ValueType::Function)
+		return new inst::FunctionToFunction();
+	//ConvertInstEnd
+
+	return nullptr;
 }
 
 std::string fay::FayLangUtils::Fullname(const std::string &className, const std::string &funName, const std::vector<PTR(FayClass)> &params)
@@ -552,11 +770,11 @@ void fay::OutsideFun::toString(mirror::utils::StringBuilder* sb)
 fay::FayInternalFun::FayInternalFun(PTR(FayDomain) domain, const std::string &name, std::function<void(std::stack<FayValue>&)> fun, std::vector<std::string> params)
 	: FayFun(domain, name, FunType::Internal, true), _fun(fun)
 {
-	for(auto i=0; i<params.size(); ++i)
+	for(auto i = 0; i < params.size(); ++i)
 	{
 		auto it = params[i];
 		std::string paramName = "p" + std::to_string(i);
-		auto t=domain->findType(it);
+		auto t = domain->findType(it);
 		PTR(FayParamDef) p = MKPTR(FayParamDef)(domain, paramName, t);
 		this->addParam(p);
 	}
@@ -564,10 +782,10 @@ fay::FayInternalFun::FayInternalFun(PTR(FayDomain) domain, const std::string &na
 
 pos_t fay::FunTable::addFun(PTR(FayFun) fun)
 {
-	for (auto i = 0; i < this->_funs.size(); ++i)
+	for(auto i = 0; i < this->_funs.size(); ++i)
 	{
 		//如果是同一个函数，用新的替换旧的
-		if (this->_funs[i]->fullname() == fun->fullname())
+		if(this->_funs[i]->fullname() == fun->fullname())
 		{
 			this->_funs[i] = fun;
 			return i;
@@ -581,7 +799,7 @@ pos_t fay::FunTable::addFun(PTR(FayFun) fun)
 
 PTR(FayFun) fay::FunTable::getFun(pos_t index)
 {
-	if (index >= 0 && index < this->_funs.size())
+	if(index >= 0 && index < this->_funs.size())
 		return this->_funs[index];
 
 	return nullptr;
@@ -592,7 +810,7 @@ void fay::FunTable::rebuild(std::vector<PTR(FayFun)> &parentFuns)
 	std::vector<PTR(FayFun)> funs = this->_funs;
 	this->_funs = parentFuns;
 
-	for (auto i = 0; i < funs.size(); ++i)
+	for(auto i = 0; i < funs.size(); ++i)
 		this->addFun(funs[i]);
 }
 
@@ -603,7 +821,7 @@ std::vector<pos_t> fay::FunTable::matchFun(const std::string &funName, const std
 	for(auto i = 0; i < this->_funs.size(); ++i)
 	{
 		auto it = this->_funs[i];
-		if (it->name() == funName && it->match(paramsType))
+		if(it->name() == funName && it->match(paramsType))
 			funs.push_back(i);
 	}
 
@@ -612,9 +830,9 @@ std::vector<pos_t> fay::FunTable::matchFun(const std::string &funName, const std
 
 pos_t fay::FunTable::findFunIndex(const std::string &fullname)
 {
-	for (auto i = 0; i < this->_funs.size(); ++i)
+	for(auto i = 0; i < this->_funs.size(); ++i)
 	{
-		if (this->_funs[i]->fullname() == fullname)
+		if(this->_funs[i]->fullname() == fullname)
 			return i;
 	}
 
@@ -623,9 +841,9 @@ pos_t fay::FunTable::findFunIndex(const std::string &fullname)
 
 PTR(FayFun) fay::FunTable::findFun(const std::string &fullname)
 {
-	for (auto i = 0; i < this->_funs.size(); ++i)
+	for(auto i = 0; i < this->_funs.size(); ++i)
 	{
-		if (this->_funs[i]->fullname() == fullname)
+		if(this->_funs[i]->fullname() == fullname)
 			return this->_funs[i];
 	}
 
@@ -643,8 +861,8 @@ void fay::FunTable::toString(mirror::utils::StringBuilder* sb)
 
 const std::string &fay::FayVarDef::fullname()
 {
-	if (!this->_fullname.size())
-		this->_fullname = this->_name + ":"+this->_class.lock()->fullname();
+	if(!this->_fullname.size())
+		this->_fullname = this->_name + ":" + this->_class.lock()->fullname();
 
 	return this->_fullname;
 }

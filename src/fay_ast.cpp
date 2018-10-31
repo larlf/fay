@@ -42,7 +42,8 @@ std::string fay::AstNode::traceInfo()
 void fay::AstNode::toString(mirror::utils::StringBuilder* sb)
 {
 	sb->add(this->className())
-	->add("(")->add(this->_text)->add(")");
+	->add(" T=")->add(this->_text)
+	->add(" V=")->add(TypeDict::ToName(this->valueType()));
 	sb->increaseIndent();
 	for each(auto it in this->_nodes)
 	{
@@ -114,7 +115,7 @@ void fay::AstFile::dig1(FayBuilder* builder)
 	builder->endFile();
 }
 
-PTR(FayClass) fay::AstString::valueType(FayBuilder* builder)
+PTR(FayClass) fay::AstString::classType(FayBuilder* builder)
 {
 	return builder->domain()->findType(ValueType::String);
 }
@@ -145,7 +146,7 @@ void fay::AstPackage::dig1(FayBuilder* builder)
 	builder->package(this->_text);
 }
 
-PTR(FayClass) fay::AstType::valueType(FayBuilder* builder)
+PTR(FayClass) fay::AstType::classType(FayBuilder* builder)
 {
 	return builder->domain()->findType(this->_text);
 }
@@ -263,28 +264,26 @@ void fay::AstNumber::dig4(FayBuilder* builder)
 	}
 }
 
-PTR(FayClass) fay::AstNumber::valueType(FayBuilder* builder)
+PTR(FayClass) fay::AstNumber::classType(FayBuilder* builder)
 {
 	return builder->domain()->findType(this->_val.type());
 }
 
-void fay::AstNumber::toString(mirror::utils::StringBuilder * sb)
+fay::ValueType fay::AstNumber::valueType()
 {
-	AstNode::toString(sb);
-	sb->add(" : ");
-	sb->add(TypeDict::ToName(this->_val.type()));
+	return this->_val.type();
 }
 
 std::vector<PTR(FayClass)> fay::AstParams::paramsType(FayBuilder* builder)
 {
 	std::vector<PTR(FayClass)> ts;
 	for each(auto it in this->_nodes)
-		ts.push_back(it->valueType(builder));
+		ts.push_back(it->classType(builder));
 
 	return ts;
 }
 
-PTR(FayClass) fay::AstID::valueType(FayBuilder* builder)
+PTR(FayClass) fay::AstID::classType(FayBuilder* builder)
 {
 	auto var = builder->findVar(this->_text);
 	if(!var)
@@ -306,8 +305,8 @@ void fay::AstLeftRightOP::dig4(FayBuilder* builder)
 {
 	AstNode::dig4(builder);
 
-	PTR(FayClass) leftType = this->_nodes[0]->valueType(builder);
-	PTR(FayClass) rightType = this->_nodes[1]->valueType(builder);
+	PTR(FayClass) leftType = this->_nodes[0]->classType(builder);
+	PTR(FayClass) rightType = this->_nodes[1]->classType(builder);
 
 	if(leftType->fullname() == "Int")
 	{

@@ -24,6 +24,11 @@ namespace fay
 		//用于生成名称的方法
 		static std::string Fullname(const std::string &funName, const std::vector<PTR(FayClass)> &params);
 		static std::string Fullname(const std::string &className, const std::string &funName, const std::vector<PTR(FayClass)> &params);
+
+		//在两个类型中选出要转换的目标类型
+		static ValueType WeightValueType(ValueType t1, ValueType t2);
+		//生成用于数据转换的代码
+		static FayInst* ConvertInst(ValueType src, ValueType t2);
 	};
 
 	//////////////////////////////////////////////////////////////
@@ -91,22 +96,25 @@ namespace fay
 	//数据类型
 	class FayClass : public FayLangObject, public std::enable_shared_from_this<FayClass>
 	{
-		using FayLangObject::FayLangObject;
-
 	protected:
+		ClassType _type;
 		WPTR(FayLib) _lib;
 		WPTR(FayClass) _parent;  //父类
 		FunTable _sft;  //静态函数表
 		FunTable _vft;  //虚函数表
 
 	public:
+		FayClass(PTR(FayDomain) domain, ClassType type) 
+			: FayLangObject(domain), _type(type) {}
+
+		//Get or set
+		ClassType type() { return this->_type; }
+		void lib(PTR(FayLib) v) { this->_lib = v; }
+		PTR(FayLib) lib() { return this->_lib.lock(); }
+
 		//处理父类
 		inline void parent(PTR(FayClass) v) { this->_parent = v; }
 		PTR(FayClass) parent() { return this->_parent.lock(); }
-
-		//Get or set lib
-		void lib(PTR(FayLib) v) { this->_lib = v; }
-		PTR(FayLib) lib() { return this->_lib.lock(); }
 
 		//是否匹配
 		//当传入的类型和自己一样或是此类型的子类的时候为True
@@ -131,11 +139,11 @@ namespace fay
 		ValueType _class;
 
 		//这种类型，不能从外部创建
-		FaySimpleClass(ValueType valueType)
-			: FayClass(nullptr), _class(valueType) {}
+		FaySimpleClass(ValueType classType)
+			: FayClass(nullptr, ClassType::Simple), _class(classType) {}
 
 	public:
-		static PTR(FayClass) Get(ValueType valueType);
+		static PTR(FayClass) Get(ValueType classType);
 
 		// 通过 FayType 继承
 		virtual const std::string &fullname() override;
@@ -153,7 +161,7 @@ namespace fay
 		std::string name;  //类的名称
 
 		FayInstClass(PTR(FayDomain) domain, const std::string &package, const std::string &name)
-			: FayClass(domain), package(package), name(name)
+			: FayClass(domain, ClassType::Inst), package(package), name(name)
 		{
 			this->_fullname = (package.size() > 0 ? package + "." : "") + name;
 		}

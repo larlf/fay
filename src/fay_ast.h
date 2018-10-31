@@ -70,8 +70,10 @@ namespace fay
 		//生成当前节点的信息
 		std::string traceInfo();
 
-		//节点的数值类型
-		virtual PTR(FayClass) valueType(FayBuilder *builder) { return nullptr; }
+		//值类型
+		virtual ValueType valueType() { return ValueType::Void; }
+		//对象类型
+		virtual PTR(FayClass) classType(FayBuilder *builder) { return nullptr; }
 		//转换成字符串
 		virtual void toString(mirror::utils::StringBuilder *sb) override;
 
@@ -187,7 +189,7 @@ namespace fay
 	{
 		using AstNode::AstNode;
 	public:
-		virtual PTR(FayClass) valueType(FayBuilder *builder) override;
+		virtual PTR(FayClass) classType(FayBuilder *builder) override;
 		PTR(FayClass) toFayType(FayBuilder *builder);
 	};
 
@@ -200,7 +202,7 @@ namespace fay
 	{
 		using AstNode::AstNode;
 	public:
-		virtual PTR(FayClass) valueType(FayBuilder *builder) override;
+		virtual PTR(FayClass) classType(FayBuilder *builder) override;
 		virtual void dig4(FayBuilder *builder) override;
 	};
 
@@ -278,15 +280,17 @@ namespace fay
 		AstNumber(const PTR(Token) &token);
 
 		virtual void dig4(FayBuilder *builder) override;
-		virtual PTR(FayClass) valueType(FayBuilder *builder) override;
-		virtual void toString(mirror::utils::StringBuilder *sb) override;
+		virtual PTR(FayClass) classType(FayBuilder *builder) override;
+
+		virtual ValueType valueType() override;
+
 	};
 
 	class AstString : public AstNode
 	{
 		using AstNode::AstNode;
 	public:
-		virtual PTR(FayClass) valueType(FayBuilder *builder) override;
+		virtual PTR(FayClass) classType(FayBuilder *builder) override;
 
 		virtual void dig4(FayBuilder *builder) override;
 

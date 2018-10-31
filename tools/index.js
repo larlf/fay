@@ -282,6 +282,21 @@ Cmds.inst = function () {
     replaceFileBody("src/fay_const.h", "InstGroupType", groupText, "\t\t");
     replaceFileBody("src/fay_vm.cpp", "InstCode", caseText, "\t\t\t");
 };
+Cmds._convert_inst = "生成类型转换的代码";
+Cmds.convert_inst = function () {
+    let file = xlsx.readFile(path.resolve(__dirname, "../doc/FayLang.xlsx"));
+    let json = xlsx.utils.sheet_to_json(file.Sheets['ValueType']);
+    let text = "";
+    json.forEach((it1) => {
+        json.forEach((it2) => {
+            if (text)
+                text += "\nelse ";
+            text += "if (src == ValueType::" + it1.Name + " && dest == ValueType::" + it2.Name + ")\n";
+            text += "\treturn new inst::" + it1.Name + "To" + it2.Name + "();";
+        });
+    });
+    replaceFileBody("src/fay_lang.cpp", "ConvertInst", text, "\t");
+};
 Cmds._deps = "处理依赖关系";
 Cmds.deps = function () {
     //检查是不是有mirage项目
