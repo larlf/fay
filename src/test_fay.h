@@ -1,6 +1,9 @@
 ﻿#pragma once
 
 #include <iostream>
+#include <fay_type.h>
+
+using namespace  fay;
 
 namespace test
 {
@@ -54,5 +57,25 @@ namespace test
 		static void Test1();
 		static void TestRTTI();
 		static void TestInternalFun();
+	};
+
+
+	class TestValue
+	{
+	private:
+		std::string str;
+
+	public:
+		TestValue() {}
+		TestValue(const std::string &str) : str(str)
+		{
+			std::cout << "Create TestA" << std::endl;
+		}
+		 
+		TestValue(const TestValue& value)
+		{
+			std::cout << "Copy Me" << std::endl;
+			this->str = value.str;
+		}
 	};
 }

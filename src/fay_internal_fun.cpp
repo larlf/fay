@@ -2,7 +2,7 @@
 
 void fay::InternalFun::Print_String(std::stack<FayValue>& stack)
 {
-	std::string val = *stack.top().strVal();
+	std::string val = stack.top().strVal();
 	stack.pop();
 	std::cout << val << std::endl;
 }

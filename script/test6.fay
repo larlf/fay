@@ -11,6 +11,8 @@ public class Test6
 		fay.System.Print(a);
 		var b:int=5+6.0;
 		fay.System.Print(b);
+		var c:string="aabbccdd";
+		fay.System.Print(c);
 	}
 }
 

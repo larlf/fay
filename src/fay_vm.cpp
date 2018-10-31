@@ -67,12 +67,22 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 			case InstType::SetLocal:
 			{
 				localVars[((inst::SetLocal*)inst)->varIndex]=stack.top();
+				if (stack.top().type() == ValueType::String)
+				{
+					LOG_DEBUG("String : " << stack.top().strVal());
+					LOG_DEBUG("String : " << localVars[((inst::SetLocal*)inst)->varIndex].strVal());
+				}
 				stack.pop();
 				break;
 			}
 			case InstType::LoadLocal:
 			{
 				stack.push(localVars[((inst::LoadLocal*)inst)->varIndex]);
+				if (localVars[((inst::SetLocal*)inst)->varIndex].type() == ValueType::String)
+				{
+					LOG_DEBUG("String : " << stack.top().strVal());
+					LOG_DEBUG("String : " << localVars[((inst::SetLocal*)inst)->varIndex].strVal());
+				}
 				break;
 			}
 			case InstType::VoidToVoid:

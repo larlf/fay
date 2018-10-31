@@ -87,12 +87,12 @@ void test::FayTests::TestLexer()
 
 void test::FayTests::Test1()
 {
-	std::stack<TestA> stack;
-	TestA a("Hello!");
-	stack.push(a);
-	stack.top().fun1();
-	stack.pop();
-	std::cout << "____________________________" << std::endl;
+
+	TestValue v1;
+		TestValue v2;
+		v2 = v1;
+		std::vector<TestValue> list;
+		list.push_back(v1);
 }
 
 void test::FayTests::TestRTTI()
