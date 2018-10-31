@@ -2,6 +2,12 @@
 
 //InstStart
 
+void fay::inst::Nop::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("Nop")
+		->endl();
+}
+
 void fay::inst::PushBool::toString(mirror::utils::StringBuilder * sb)
 {
 	sb->add("PushBool")

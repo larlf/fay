@@ -678,7 +678,7 @@ PTR(AstNode) fay::Parser::_AddrExpr(TokenStack* stack)
 PTR(AstNode) fay::Parser::Parse(PTR(std::vector<PTR(Token)>) tokens, const std::string &filename)
 {
 	TokenStack stack(tokens);
-	PTR(AstFile) ast = MKPTR(AstFile)(MKPTR(Token)(filename));
+	PTR(AstFile) ast = MKPTR(AstFile)(filename);
 
 	while (true)
 	{

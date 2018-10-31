@@ -27,6 +27,13 @@ namespace fay
 	{
 		//InstStart
 		
+		class Nop : public fay::FayInst 
+		{ 
+		public:
+			Nop() : FayInst(InstType::Nop) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
 		class PushBool : public fay::FayInst 
 		{ 
 		public:

@@ -182,6 +182,10 @@ class FayInst
 
 	public makeCaseCode(): string
 	{
+		//只生成有代码的
+		if (!this.action)
+			return "";
+
 		let str = this.action;
 		if (this.props[0]) str = str.replace(/\#p1/g, "((inst::" + this.name + "*)inst)->" + this.props[0].name);
 		if (this.props[1]) str = str.replace(/\#p2/g, "((inst::" + this.name + "*)inst)->" + this.props[1].name);
@@ -192,6 +196,11 @@ class FayInst
 		str = str.replace(/\n/g, "\n\t");  //缩进
 		str = "case InstType::" + this.name + ":\n{" + (str ? "\n\t" + str : str) + "\n\tbreak;\n}";
 		return str;
+	}
+
+	public makeNameCode(): string
+	{
+		return larlf.text.format("TypeDict::InstTypeName[InstType::{0}] = \"{0}\";", this.name);
 	}
 }
 
@@ -268,6 +277,7 @@ Cmds.run = function()
 	Cmds.token_type();
 	Cmds.value_type();
 	Cmds.inst();
+	Cmds.convert_inst();
 }
 
 Cmds._token_type = "生成Token类型的数据";
@@ -347,9 +357,12 @@ Cmds.inst = function()
 	let cppText = "";
 	let typeText = "";
 	let caseText = "";
+	let nameText = "";
 	for (let i = 0; i < json.length; ++i)
 	{
 		let it: any = json[i];
+		if (!it.Code1) it.Code1 = "";
+		if (!it.Code2) it.Code2 = "";
 		//log.dump(it);
 
 		let value1 = getInstCode(it.Code1, it.Value1, Code1Value);
@@ -359,13 +372,18 @@ Cmds.inst = function()
 		if (value2 < 0 || value2 >= 16)
 			log.error("Bad value2 code : " + value2);
 
-		if (it.Code1 && !it.Disabled)
+		//只处理需要处理的语句
+		if ((it.Code1 || it.Code2) && !it.Disabled)
 		{
 			let inst = new FayInst((value1 << 4) + value2, it);
 			hText += inst.makeHeadCode();
 			cppText += inst.makeCppCode();
 			typeText += (typeText ? "\n" : "") + inst.name + " = " + inst.code + ",";
-			caseText += (caseText ? "\n" : "") + inst.makeCaseCode();
+			nameText += (nameText ? "\n" : "") + inst.makeNameCode();
+
+			//生成运行代码
+			let code = inst.makeCaseCode();
+			caseText += (caseText && code ? "\n" : "") + code;
 		}
 	}
 
@@ -386,6 +404,7 @@ Cmds.inst = function()
 	replaceFileBody("src/fay_inst.cpp", "Inst", cppText, "");
 	replaceFileBody("src/fay_const.h", "InstType", typeText, "\t\t");
 	replaceFileBody("src/fay_const.h", "InstGroupType", groupText, "\t\t");
+	replaceFileBody("src/fay_const.cpp", "InstTypeName", nameText, "\t");
 	replaceFileBody("src/fay_vm.cpp", "InstCode", caseText, "\t\t\t");
 }
 

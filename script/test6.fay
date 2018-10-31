@@ -9,7 +9,7 @@ public class Test6
 		fay.System.Print("Hello, World!");
 		var a:int=5;
 		fay.System.Print(a);
-		var b:int=5+6;
+		var b:int=5+6.0;
 		fay.System.Print(b);
 	}
 }

@@ -2,7 +2,7 @@
 
 using namespace fay;
 
-PTR(Token) fay::TokenStack::EndToken(new Token("<end>"));
+PTR(Token) fay::TokenStack::EndToken(new Token());
 
 
 PTR(Token) fay::TokenStack::now()

@@ -62,9 +62,17 @@ void test::FayTests::TestLexer()
 	domain->toString(&sb);
 	PRINT(sb.toString());
 
-	ast->dig4(builder.get());
+	ast->dig3(builder.get());
+	PRINT("--------------------Dig4--------------------");
+	if (ast)
+	{
+		utils::StringBuilder sb;
+		ast->toString(&sb);
+		PRINT(sb.toString());
+	}
 
-	PRINT("--------------------Dig3--------------------");
+	ast->dig4(builder.get());
+	PRINT("--------------------Dig4--------------------");
 	sb.clear();
 	domain->toString(&sb);
 	PRINT(sb.toString());
@@ -89,7 +97,7 @@ void test::FayTests::Test1()
 
 void test::FayTests::TestRTTI()
 {
-	PTR(AstNode) node = MKPTR(AstFile)(MKPTR(Token)("aabbccdd"));
+	PTR(AstNode) node = MKPTR(AstFile)("aabbcc");
 	LOG_DEBUG(node->className());
 	LOG_DEBUG(node->is(typeid(AstNode)));
 }

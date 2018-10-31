@@ -114,6 +114,7 @@ namespace fay
 	enum class InstType
 	{
 		//InstTypeStart
+		Nop = 0,
 		PushBool = 18,
 		PushByte = 19,
 		PushInt = 20,
@@ -253,13 +254,16 @@ namespace fay
 	private:
 		static MAP<TokenType, std::string> TokenTypeName;
 		static MAP<ValueType, std::string> ValueTypeName;
-
-	public:
+		static MAP<InstType, std::string> InstTypeName;
 		static MAP<std::string, ValueType> ValueTypeMap;
 
+	public:
 		static void Init();
 		static const std::string &ToName(TokenType value);
 		static const std::string &ToName(ValueType value);
+		static const std::string &ToName(InstType value);
+		//根据名称查找ValueType
+		static const ValueType ToValueType(const std::string& name);
 	};
 }
 

@@ -18,7 +18,8 @@ namespace fay
 		int _col = -1;
 
 	public:
-		Token(const std::string &text) : _text(text) {}
+		//Token(const std::string &text) : _text(text) {}
+		Token() {}
 		Token(TokenType type, mirror::data::ByteData &data, int pos, int size, int line, int col)
 		{
 			this->_class = type;
