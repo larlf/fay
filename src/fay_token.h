@@ -13,7 +13,7 @@ namespace fay
 	{
 	private:
 		std::string _text;
-		TokenType _type = TokenType::None;
+		TokenType _class = TokenType::None;
 		int _line = -1;
 		int _col = -1;
 
@@ -21,19 +21,19 @@ namespace fay
 		Token(const std::string &text) : _text(text) {}
 		Token(TokenType type, mirror::data::ByteData &data, int pos, int size, int line, int col)
 		{
-			this->_type = type;
+			this->_class = type;
 			this->_text = std::string((char*)data.data(), pos, size);
 			this->_line = line;
 			this->_col = col;
 		}
 
-		TokenType type() { return this->_type; }
+		TokenType type() { return this->_class; }
 		const std::string &text() { return this->_text; }
 		int line() { return this->_line; }
 		int col() { return this->_col; }
 		size_t size() { return this->_text.size(); }
 
-		bool is(TokenType type) { return this->_type == type; }
+		bool is(TokenType type) { return this->_class == type; }
 		bool is(const std::string &text) { return this->_text == text; }
 
 		std::string toString();
@@ -45,15 +45,15 @@ namespace fay
 	class ITokenRule
 	{
 	protected:
-		TokenType _type = TokenType::None;
+		TokenType _class = TokenType::None;
 		LexMode _mode = LexMode::Program;
 
 	public:
-		TokenType type() { return this->_type; }
+		TokenType type() { return this->_class; }
 		LexMode mode() { return this->_mode; }
 
 		ITokenRule(LexMode mode, TokenType type)
-			: _mode(mode), _type(type) {}
+			: _mode(mode), _class(type) {}
 		virtual ~ITokenRule() {}
 
 		//是否生成Token

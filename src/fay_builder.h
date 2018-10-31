@@ -13,7 +13,7 @@ namespace fay
 		std::string _filename;
 		PTR(FayDomain) _domain;
 		PTR(FayLib) _lib;
-		PTR(FayClass) _class;
+		PTR(FayInstClass) _class;
 		PTR(FayInstFun) _fun;
 		std::vector<FayInst*> _insts;
 
@@ -24,7 +24,7 @@ namespace fay
 
 		PTR(FayDomain) domain() { return this->_domain; }
 		PTR(FayLib) lib() { return this->_lib; }
-		PTR(FayClass) clazz() { return this->_class; }
+		PTR(FayInstClass) clazz() { return this->_class; }
 		PTR(FayInstFun) fun() { return this->_fun; }
 
 		void package(const std::string &name);
@@ -46,7 +46,7 @@ namespace fay
 
 		PTR(FayVarDef) findVar(const std::string &name);
 		pos_t findVarIndex(const std::string &name);
-		pos_t findFun(const std::string &name, const std::vector<PTR(FayType)> types);
+		pos_t findFun(const std::string &name, const std::vector<PTR(FayClass)> types);
 	};
 }
 

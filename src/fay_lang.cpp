@@ -6,40 +6,40 @@
 
 using namespace fay;
 
-MAP<fay::ValueType, PTR(FayType)> fay::SimpleType::_Types;
+MAP<fay::ValueType, PTR(FayClass)> fay::FaySimpleClass::_Types;
 
-PTR(FayType) fay::SimpleType::Get(ValueType valueType)
+PTR(FayClass) fay::FaySimpleClass::Get(ValueType valueType)
 {
 	auto it = _Types.find(valueType);
 	if (it != _Types.end())
 		return it->second;
 
 	//没有这个类型，新建一个
-	PTR(SimpleType) type(new SimpleType(valueType));
+	PTR(FaySimpleClass) type(new FaySimpleClass(valueType));
 	_Types[valueType] = type;
 	return type;
 }
 
-const std::string &fay::SimpleType::fullname()
+const std::string &fay::FaySimpleClass::fullname()
 {
-	return TypeDict::ToName(this->_type);
+	return TypeDict::ToName(this->_class);
 }
 
-bool fay::FayType::match(PTR(FayType) type)
+bool fay::FayClass::match(PTR(FayClass) type)
 {
 	//TODO ：对接口的处理
 
 	if (type && type.get() == this)
 		return true;
 
-	PTR(FayType) parent = this->_parent.lock();
+	PTR(FayClass) parent = this->_parent.lock();
 	if (parent && parent->match(type))
 		return true;
 
 	return false;
 }
 
-std::vector<pos_t> fay::FayType::matchFun(const std::string &funName, const std::vector<PTR(FayType)> &paramsType, bool isStatic)
+std::vector<pos_t> fay::FayClass::matchFun(const std::string &funName, const std::vector<PTR(FayClass)> &paramsType, bool isStatic)
 {
 	if (isStatic)
 		return this->_sft.matchFun(funName, paramsType);
@@ -47,7 +47,7 @@ std::vector<pos_t> fay::FayType::matchFun(const std::string &funName, const std:
 		return this->_vft.matchFun(funName, paramsType);
 }
 
-PTR(FayFun) fay::FayType::findFun(pos_t index, bool isStatic)
+PTR(FayFun) fay::FayClass::findFun(pos_t index, bool isStatic)
 {
 	if (isStatic)
 		return this->_sft.getFun(index);
@@ -55,7 +55,7 @@ PTR(FayFun) fay::FayType::findFun(pos_t index, bool isStatic)
 		return this->_vft.getFun(index);
 }
 
-PTR(FayFun) fay::FayType::findFun(const std::string &fullname, bool isStatic)
+PTR(FayFun) fay::FayClass::findFun(const std::string &fullname, bool isStatic)
 {
 	if (isStatic)
 		return this->_sft.findFun(fullname);
@@ -63,7 +63,7 @@ PTR(FayFun) fay::FayType::findFun(const std::string &fullname, bool isStatic)
 		return this->_vft.findFun(fullname);
 }
 
-pos_t fay::FayType::getFunIndex(const std::string &fullname, bool isStatic)
+pos_t fay::FayClass::getFunIndex(const std::string &fullname, bool isStatic)
 {
 	if (isStatic)
 		return this->_sft.findFunIndex(fullname);
@@ -71,7 +71,7 @@ pos_t fay::FayType::getFunIndex(const std::string &fullname, bool isStatic)
 		return this->_vft.findFunIndex(fullname);
 }
 
-pos_t fay::FayLib::addClass(PTR(FayClass) clazz)
+pos_t fay::FayLib::addClass(PTR(FayInstClass) clazz)
 {
 	clazz->lib(this->shared_from_this());
 	this->classes.push_back(clazz);
@@ -83,7 +83,7 @@ pos_t fay::FayLib::addClass(PTR(FayClass) clazz)
 	return -1;
 }
 
-pos_t fay::FayLib::findOutsideFun(const std::string &className, const std::string &funName, const std::vector<PTR(FayType)> &paramsType)
+pos_t fay::FayLib::findOutsideFun(const std::string &className, const std::string &funName, const std::vector<PTR(FayClass)> &paramsType)
 {
 	//查找当前是否已经有了
 	std::string fullname = FayLangUtils::Fullname(className, funName, paramsType);
@@ -185,7 +185,7 @@ std::vector<FayInst*>* fay::FayInstFun::getPreparedInsts()
 	return &this->_insts;
 }
 
-pos_t fay::FayInstFun::addVar(const std::string &name, PTR(FayType) type)
+pos_t fay::FayInstFun::addVar(const std::string &name, PTR(FayClass) type)
 {
 	auto it = this->_vars.find(name);
 	if (it)
@@ -257,12 +257,12 @@ void fay::FayFun::addParam(PTR(FayParamDef) def)
 	this->_params.push_back(def);
 }
 
-void fay::FayFun::addReturn(PTR(FayType) type)
+void fay::FayFun::addReturn(PTR(FayClass) type)
 {
 	this->_returns.push_back(type);
 }
 
-bool fay::FayFun::match(const std::vector<PTR(FayType)> &paramsType)
+bool fay::FayFun::match(const std::vector<PTR(FayClass)> &paramsType)
 {
 	//参数不一致
 	if (paramsType.size() != this->_params.size())
@@ -290,7 +290,7 @@ void fay::FayFun::toString(mirror::utils::StringBuilder* sb)
 	sb->decreaseIndent();
 }
 
-pos_t fay::FayType::addFun(PTR(FayFun) fun)
+pos_t fay::FayClass::addFun(PTR(FayFun) fun)
 {
 	fun->clazz(this->shared_from_this());
 	if (fun->isStatic())
@@ -299,7 +299,7 @@ pos_t fay::FayType::addFun(PTR(FayFun) fun)
 		return this->_vft.addFun(fun);
 }
 
-void fay::FayClass::toString(mirror::utils::StringBuilder* sb)
+void fay::FayInstClass::toString(mirror::utils::StringBuilder* sb)
 {
 	sb->add("[FayClass]")->add(this->_fullname)->endl();
 	sb->increaseIndent();
@@ -317,7 +317,7 @@ void fay::FayClass::toString(mirror::utils::StringBuilder* sb)
 	sb->decreaseIndent();
 }
 
-const std::string &fay::FayClass::fullname()
+const std::string &fay::FayInstClass::fullname()
 {
 	return this->_fullname;
 }
@@ -325,19 +325,19 @@ const std::string &fay::FayClass::fullname()
 fay::FayDomain::FayDomain()
 {
 	//内置类型在这里创建
-	this->_types.add("byte", SimpleType::Get(ValueType::Byte));
-	this->_types.add("int", SimpleType::Get(ValueType::Int));
-	this->_types.add("long", SimpleType::Get(ValueType::Long));
-	this->_types.add("float", SimpleType::Get(ValueType::Float));
-	this->_types.add("double", SimpleType::Get(ValueType::Double));
-	this->_types.add("bool", SimpleType::Get(ValueType::Bool));
-	this->_types.add("string", SimpleType::Get(ValueType::String));
+	this->_types.add("byte", FaySimpleClass::Get(ValueType::Byte));
+	this->_types.add("int", FaySimpleClass::Get(ValueType::Int));
+	this->_types.add("long", FaySimpleClass::Get(ValueType::Long));
+	this->_types.add("float", FaySimpleClass::Get(ValueType::Float));
+	this->_types.add("double", FaySimpleClass::Get(ValueType::Double));
+	this->_types.add("bool", FaySimpleClass::Get(ValueType::Bool));
+	this->_types.add("string", FaySimpleClass::Get(ValueType::String));
 }
 
 void fay::FayDomain::initSysLib()
 {
 	PTR(FayLib) lib(new FayLib(MYPTR, "System"));
-	PTR(FayClass) clazz(new FayClass(MYPTR, "fay", "System"));
+	PTR(FayInstClass) clazz(new FayInstClass(MYPTR, "fay", "System"));
 	clazz->addFun(MKPTR(FayInternalFun)(MYPTR, "Print", InternalFun::Print_String, std::vector<std::string>({ "string" })));
 	clazz->addFun(MKPTR(FayInternalFun)(MYPTR, "Print", InternalFun::Print_Int, std::vector<std::string>({ "int" })));
 
@@ -370,7 +370,7 @@ void fay::FayDomain::toString(mirror::utils::StringBuilder* sb)
 	sb->decreaseIndent();
 }
 
-pos_t fay::FayDomain::addType(PTR(FayType) t)
+pos_t fay::FayDomain::addType(PTR(FayClass) t)
 {
 	std::string fullname = t->fullname();
 
@@ -382,12 +382,12 @@ pos_t fay::FayDomain::addType(PTR(FayType) t)
 	return this->_types.add(fullname, t);
 }
 
-pos_t fay::FayDomain::getTypeIndex(PTR(FayType) t)
+pos_t fay::FayDomain::getTypeIndex(PTR(FayClass) t)
 {
 	return this->_types.findIndex(t->fullname());
 }
 
-PTR(FayType) fay::FayDomain::findType(const std::string &typeFullname)
+PTR(FayClass) fay::FayDomain::findType(const std::string &typeFullname)
 {
 	auto type = this->_types.find(typeFullname);
 	if (!type)
@@ -396,7 +396,7 @@ PTR(FayType) fay::FayDomain::findType(const std::string &typeFullname)
 	return type;
 }
 
-PTR(FayType) fay::FayDomain::findType(pos_t index)
+PTR(FayClass) fay::FayDomain::findType(pos_t index)
 {
 	auto type = this->_types.find(index);
 	if (!type)
@@ -405,14 +405,14 @@ PTR(FayType) fay::FayDomain::findType(pos_t index)
 	return type;
 }
 
-PTR(FayType) fay::FayDomain::findType(ValueType type)
+PTR(FayClass) fay::FayDomain::findType(ValueType type)
 {
-	return SimpleType::Get(type);
+	return FaySimpleClass::Get(type);
 }
 
-std::vector<PTR(FayType)> fay::FayDomain::findType(std::vector<std::string> &imports, const std::string &typeName)
+std::vector<PTR(FayClass)> fay::FayDomain::findType(std::vector<std::string> &imports, const std::string &typeName)
 {
-	std::vector<PTR(FayType)> types;
+	std::vector<PTR(FayClass)> types;
 
 	for each(auto it in imports)
 	{
@@ -509,7 +509,7 @@ const std::string &fay::FayParamDef::fullname()
 	{
 		this->_fullname += this->_name;
 		this->_fullname += ":";
-		this->_fullname += this->_type.expired()?"?":this->_type.lock()->fullname();
+		this->_fullname += this->_class.expired()?"?":this->_class.lock()->fullname();
 	}
 
 	return this->_fullname;
@@ -520,7 +520,7 @@ void fay::FayParamDef::toString(mirror::utils::StringBuilder* sb)
 	sb->add("[FayParamDef] ")->add(this->fullname())->endl();
 }
 
-std::string fay::FayLangUtils::Fullname(const std::string &funName, const std::vector<PTR(FayType)> &params)
+std::string fay::FayLangUtils::Fullname(const std::string &funName, const std::vector<PTR(FayClass)> &params)
 {
 	std::string str;
 	for each(auto it in params)
@@ -538,7 +538,7 @@ std::string fay::FayLangUtils::Fullname(const std::string &funName, const std::v
 	return str;
 }
 
-std::string fay::FayLangUtils::Fullname(const std::string &className, const std::string &funName, const std::vector<PTR(FayType)> &params)
+std::string fay::FayLangUtils::Fullname(const std::string &className, const std::string &funName, const std::vector<PTR(FayClass)> &params)
 {
 	return className + "." + FayLangUtils::Fullname(funName, params);
 }
@@ -596,7 +596,7 @@ void fay::FunTable::rebuild(std::vector<PTR(FayFun)> &parentFuns)
 		this->addFun(funs[i]);
 }
 
-std::vector<pos_t> fay::FunTable::matchFun(const std::string &funName, const std::vector<PTR(FayType)> &paramsType)
+std::vector<pos_t> fay::FunTable::matchFun(const std::string &funName, const std::vector<PTR(FayClass)> &paramsType)
 {
 	std::vector<pos_t> funs;
 
@@ -644,7 +644,7 @@ void fay::FunTable::toString(mirror::utils::StringBuilder* sb)
 const std::string &fay::FayVarDef::fullname()
 {
 	if (!this->_fullname.size())
-		this->_fullname = this->_name + ":"+this->_type.lock()->fullname();
+		this->_fullname = this->_name + ":"+this->_class.lock()->fullname();
 
 	return this->_fullname;
 }

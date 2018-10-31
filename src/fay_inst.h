@@ -9,13 +9,13 @@ namespace fay
 	class FayInst : public fay::FayObject
 	{
 	private:
-		InstType _type;
+		InstType _class;
 
 	public:
-		FayInst(InstType type) : _type(type) {}
+		FayInst(InstType type) : _class(type) {}
 		virtual ~FayInst() {}
 
-		inline InstType type() { return this->_type; }
+		inline InstType type() { return this->_class; }
 
 		virtual void toString(mirror::utils::StringBuilder* sb) { sb->endl(); }
 	};

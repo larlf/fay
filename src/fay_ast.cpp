@@ -114,7 +114,7 @@ void fay::AstFile::dig1(FayBuilder* builder)
 	builder->endFile();
 }
 
-PTR(FayType) fay::AstString::valueType(FayBuilder* builder)
+PTR(FayClass) fay::AstString::valueType(FayBuilder* builder)
 {
 	return builder->domain()->findType(ValueType::String);
 }
@@ -125,7 +125,7 @@ void fay::AstString::dig4(FayBuilder* builder)
 	builder->addInst(inst);
 }
 
-PTR(FayType) fay::AstParamDefine::getType(FayBuilder* builder)
+PTR(FayClass) fay::AstParamDefine::getType(FayBuilder* builder)
 {
 	auto n1 = this->childNode<AstType>(0);
 	if(n1)
@@ -145,12 +145,12 @@ void fay::AstPackage::dig1(FayBuilder* builder)
 	builder->package(this->_text);
 }
 
-PTR(FayType) fay::AstType::valueType(FayBuilder* builder)
+PTR(FayClass) fay::AstType::valueType(FayBuilder* builder)
 {
 	return builder->domain()->findType(this->_text);
 }
 
-PTR(FayType) fay::AstType::toFayType(FayBuilder* builder)
+PTR(FayClass) fay::AstType::toFayType(FayBuilder* builder)
 {
 	auto t = builder->domain()->findType(this->text());
 	if(!t)
@@ -164,7 +164,7 @@ void fay::AstCall::dig4(FayBuilder* builder)
 
 	PTR(AstParams) n1 = this->childNode<AstParams>(0);
 	size_t paramSize = n1->size();
-	std::vector<PTR(FayType)> paramsType = n1->paramsType(builder);
+	std::vector<PTR(FayClass)> paramsType = n1->paramsType(builder);
 
 	pos_t index = builder->findFun(this->text(), paramsType);
 	builder->addInst(new inst::CallStatic(index, paramSize));
@@ -176,9 +176,9 @@ fay::BuildException::BuildException(PTR(fay::AstNode) ast, const std::string &ms
 	this->_trace = mirror::log::SysTrace::TraceInfo();
 }
 
-std::vector<PTR(FayType)> fay::AstParamDefineList::getTypeList(FayBuilder* builder)
+std::vector<PTR(FayClass)> fay::AstParamDefineList::getTypeList(FayBuilder* builder)
 {
-	std::vector<PTR(FayType)> list;
+	std::vector<PTR(FayClass)> list;
 
 	for(auto i = 0; i < this->childNodesNum(); ++i)
 	{
@@ -196,7 +196,7 @@ void fay::AstVar::dig4(FayBuilder* builder)
 {
 	//新添加了变量
 	std::string varName = this->text();
-	PTR(FayType) varType = builder->domain()->findType(this->_nodes[0]->text());
+	PTR(FayClass) varType = builder->domain()->findType(this->_nodes[0]->text());
 	if(!varType)
 		throw BuildException(this->_nodes[0], "cannot find type : " + this->_nodes[0]->text());
 
@@ -258,12 +258,12 @@ void fay::AstNumber::dig4(FayBuilder* builder)
 			builder->addInst(new inst::PushInt(this->_val.doubleValue()));
 			break;
 		default:
-			LOG_ERROR("Unknow value type : " << (int)this->_type);
+			LOG_ERROR("Unknow value type : " << (int)this->_class);
 			break;
 	}
 }
 
-PTR(FayType) fay::AstNumber::valueType(FayBuilder* builder)
+PTR(FayClass) fay::AstNumber::valueType(FayBuilder* builder)
 {
 	return builder->domain()->findType(this->_val.type());
 }
@@ -275,16 +275,16 @@ void fay::AstNumber::toString(mirror::utils::StringBuilder * sb)
 	sb->add(TypeDict::ToName(this->_val.type()));
 }
 
-std::vector<PTR(FayType)> fay::AstParams::paramsType(FayBuilder* builder)
+std::vector<PTR(FayClass)> fay::AstParams::paramsType(FayBuilder* builder)
 {
-	std::vector<PTR(FayType)> ts;
+	std::vector<PTR(FayClass)> ts;
 	for each(auto it in this->_nodes)
 		ts.push_back(it->valueType(builder));
 
 	return ts;
 }
 
-PTR(FayType) fay::AstID::valueType(FayBuilder* builder)
+PTR(FayClass) fay::AstID::valueType(FayBuilder* builder)
 {
 	auto var = builder->findVar(this->_text);
 	if(!var)
@@ -306,8 +306,8 @@ void fay::AstLeftRightOP::dig4(FayBuilder* builder)
 {
 	AstNode::dig4(builder);
 
-	PTR(FayType) leftType = this->_nodes[0]->valueType(builder);
-	PTR(FayType) rightType = this->_nodes[1]->valueType(builder);
+	PTR(FayClass) leftType = this->_nodes[0]->valueType(builder);
+	PTR(FayClass) rightType = this->_nodes[1]->valueType(builder);
 
 	if(leftType->fullname() == "Int")
 	{

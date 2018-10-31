@@ -17,7 +17,7 @@ std::string fay::Token::toString()
 	sprintf_s(&*buffer, size, "%-5i %-5i %-16s  %s",
 		this->_line,
 		this->_col,
-		TypeDict::ToName(this->_type).c_str(),
+		TypeDict::ToName(this->_class).c_str(),
 		text.c_str());
 	return std::string(&*buffer);
 }
@@ -29,10 +29,10 @@ fay::Token* fay::CharTokenRule::match(ByteData &data, int pos, int line, int col
 		if (data[pos + 1] == '\\')  //是否有转义字符
 		{
 			if (data.size() > pos + 3 && data[pos + 3] == '\'')
-				return new Token(this->_type, data, pos, 4, line, col);
+				return new Token(this->_class, data, pos, 4, line, col);
 		}
 		else if (data[pos + 2] == '\'')
-			return new Token(this->_type, data, pos, 3, line, col);
+			return new Token(this->_class, data, pos, 3, line, col);
 	}
 
 	return nullptr;
@@ -66,7 +66,7 @@ Token* fay::NumberTokenRule::match(ByteData &data, int pos, int line, int col)
 	if (data[pos] == 'l' || data[pos] == 'L' || data[pos] == 'd' || data[pos] == 'D')
 		pos++;
 
-	return new Token(this->_type, data, startPos, pos - startPos, line, col);
+	return new Token(this->_class, data, startPos, pos - startPos, line, col);
 }
 
 Token* fay::StringTokenRule::match(ByteData &data, int pos, int line, int col)
@@ -83,7 +83,7 @@ Token* fay::StringTokenRule::match(ByteData &data, int pos, int line, int col)
 			if (data[i] == '"' && data[i - 1] != '\\')
 			{
 				//返回字符串的token
-				return new Token(this->_type, data, pos, i - pos + 1, line, col);
+				return new Token(this->_class, data, pos, i - pos + 1, line, col);
 			}
 		}
 	}
@@ -95,7 +95,7 @@ fay::Token* fay::SymbolTokenRule::match(ByteData &data, int pos, int line, int c
 {
 
 	if (data[pos] == this->_value)
-		return new Token(this->_type, data, pos, 1, line, col);
+		return new Token(this->_class, data, pos, 1, line, col);
 
 	return nullptr;
 }
@@ -151,7 +151,7 @@ Token* fay::IDTokenRule::match(ByteData &data, int pos, int line, int col)
 				break;
 		}
 
-		return new Token(this->_type, data, pos, p - pos, line, col);
+		return new Token(this->_class, data, pos, p - pos, line, col);
 	}
 
 	return nullptr;
@@ -169,7 +169,7 @@ Token* fay::SingleCommentTokenRule::match(ByteData &data, int pos, int line, int
 	}
 
 	if(p>pos)
-		return new Token(this->_type, data, pos, p-pos, line, col);
+		return new Token(this->_class, data, pos, p-pos, line, col);
 
 	return nullptr;
 }
