@@ -265,13 +265,13 @@ namespace fay
 	class FayInternalFun : public FayFun
 	{
 	private:
-		std::function<void(std::stack<FayValue>&)> _fun;
+		std::function<void(std::stack<PTR(FayValue)>&)> _fun;
 
 	public:
-		FayInternalFun(PTR(FayDomain) domain, const std::string &name, std::function<void(std::stack<FayValue>&)> fun, std::vector<std::string> params);
+		FayInternalFun(PTR(FayDomain) domain, const std::string &name, std::function<void(std::stack<PTR(FayValue)>&)> fun, std::vector<std::string> params);
 
 		//执行内部函数
-		inline void Invoke(std::stack<FayValue> &stack) { this->_fun(stack); }
+		inline void Invoke(std::stack<PTR(FayValue)> &stack) { this->_fun(stack); }
 	};
 
 	//////////////////////////////////////////////////////////////////////

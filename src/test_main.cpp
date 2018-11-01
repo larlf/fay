@@ -16,8 +16,8 @@ void main()
 		//test::UtilsTest::testTrace();
 
 		test::FayTests::Init();
-		//test::FayTests::TestLexer();
-		test::FayTests::Test1();
+		test::FayTests::TestLexer();
+		//test::FayTests::Test1();
 		//test::FayTests::TestRTTI();
 		//test::FayTests::TestInternalFun();
 	}

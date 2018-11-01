@@ -5,7 +5,7 @@ using namespace fay;
 
 void fay::FayVM::_run(PTR(FayInstFun) fun)
 {
-	std::vector<FayValue> localVars(fun->varsSize());
+	std::vector<PTR(FayValue)> localVars(fun->varsSize());
 	std::vector<FayInst*>* insts = fun->getPreparedInsts();
 
 	for each(FayInst* inst in *insts)
@@ -20,42 +20,42 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 			}
 			case InstType::PushBool:
 			{
-				stack.push(FayValue(((inst::PushBool*)inst)->val));
+				this->stack.push(MKPTR(FayValue)(((inst::PushBool*)inst)->val));
 				break;
 			}
 			case InstType::PushByte:
 			{
-				stack.push(FayValue(((inst::PushByte*)inst)->val));
+				this->stack.push(MKPTR(FayValue)(((inst::PushByte*)inst)->val));
 				break;
 			}
 			case InstType::PushInt:
 			{
-				stack.push(FayValue(((inst::PushInt*)inst)->val));
+				this->stack.push(MKPTR(FayValue)(((inst::PushInt*)inst)->val));
 				break;
 			}
 			case InstType::PushLong:
 			{
-				stack.push(FayValue(((inst::PushLong*)inst)->val));
+				this->stack.push(MKPTR(FayValue)(((inst::PushLong*)inst)->val));
 				break;
 			}
 			case InstType::PushFloat:
 			{
-				stack.push(FayValue(((inst::PushFloat*)inst)->val));
+				this->stack.push(MKPTR(FayValue)(((inst::PushFloat*)inst)->val));
 				break;
 			}
 			case InstType::PushDouble:
 			{
-				stack.push(FayValue(((inst::PushDouble*)inst)->val));
+				this->stack.push(MKPTR(FayValue)(((inst::PushDouble*)inst)->val));
 				break;
 			}
 			case InstType::PushString:
 			{
-				stack.push(FayValue(((inst::PushString*)inst)->val));
+				this->stack.push(MKPTR(FayValue)(((inst::PushString*)inst)->val));
 				break;
 			}
 			case InstType::Pop:
 			{
-				stack.pop();
+				this->stack.pop();
 				break;
 			}
 			case InstType::CallStatic:
@@ -66,23 +66,13 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 			}
 			case InstType::SetLocal:
 			{
-				localVars[((inst::SetLocal*)inst)->varIndex]=stack.top();
-				if (stack.top().type() == ValueType::String)
-				{
-					LOG_DEBUG("String : " << stack.top().strVal());
-					LOG_DEBUG("String : " << localVars[((inst::SetLocal*)inst)->varIndex].strVal());
-				}
-				stack.pop();
+				localVars[((inst::SetLocal*)inst)->varIndex]=this->stack.top();
+				this->stack.pop();
 				break;
 			}
 			case InstType::LoadLocal:
 			{
-				stack.push(localVars[((inst::LoadLocal*)inst)->varIndex]);
-				if (localVars[((inst::SetLocal*)inst)->varIndex].type() == ValueType::String)
-				{
-					LOG_DEBUG("String : " << stack.top().strVal());
-					LOG_DEBUG("String : " << localVars[((inst::SetLocal*)inst)->varIndex].strVal());
-				}
+				this->stack.push(localVars[((inst::LoadLocal*)inst)->varIndex]);
 				break;
 			}
 			case InstType::VoidToVoid:
@@ -92,58 +82,58 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 			}
 			case InstType::VoidToBool:
 			{
-				stack.pop();
-				stack.push(FayValue(false));
+				this->stack.pop();
+				this->stack.push(MKPTR(FayValue)(false));
 				break;
 			}
 			case InstType::VoidToByte:
 			{
-				stack.pop();
-				stack.push(FayValue((byte)0));
+				this->stack.pop();
+				this->stack.push(MKPTR(FayValue)((byte)0));
 				break;
 			}
 			case InstType::VoidToInt:
 			{
-				stack.pop();
-				stack.push(FayValue((int32_t)0));
+				this->stack.pop();
+				this->stack.push(MKPTR(FayValue)((int32_t)0));
 				break;
 			}
 			case InstType::VoidToLong:
 			{
-				stack.pop();
-				stack.push(FayValue((int64_t)0));
+				this->stack.pop();
+				this->stack.push(MKPTR(FayValue)((int64_t)0));
 				break;
 			}
 			case InstType::VoidToFloat:
 			{
-				stack.pop();
-				stack.push(FayValue((float)0));
+				this->stack.pop();
+				this->stack.push(MKPTR(FayValue)((float)0));
 				break;
 			}
 			case InstType::VoidToDouble:
 			{
-				stack.pop();
-				stack.push(FayValue((double)0));
+				this->stack.pop();
+				this->stack.push(MKPTR(FayValue)((double)0));
 				break;
 			}
 			case InstType::VoidToString:
 			{
-				stack.pop();
-				stack.push(FayValue(""));
+				this->stack.pop();
+				this->stack.push(MKPTR(FayValue)(""));
 				break;
 			}
 			case InstType::IntToBool:
 			{
-				FayValue v=stack.top();
-				stack.pop();
-				stack.push(FayValue((bool)v.intVal()));
+				PTR(FayValue) v=this->stack.top();
+				this->stack.pop();
+				this->stack.push(MKPTR(FayValue)((bool)v->intVal()));
 				break;
 			}
 			case InstType::IntToByte:
 			{
-				FayValue v=stack.top();
-				stack.pop();
-				stack.push(FayValue((byte)v.intVal()));
+				PTR(FayValue) v=this->stack.top();
+				this->stack.pop();
+				this->stack.push(MKPTR(FayValue)((byte)v->intVal()));
 				break;
 			}
 			case InstType::IntToInt:
@@ -153,44 +143,51 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 			}
 			case InstType::IntToLong:
 			{
-				FayValue v=stack.top();
-				stack.pop();
-				stack.push(FayValue((long)v.intVal()));
+				PTR(FayValue) v=this->stack.top();
+				this->stack.pop();
+				this->stack.push(MKPTR(FayValue)((int64_t)v->intVal()));
 				break;
 			}
 			case InstType::IntToFloat:
 			{
-				FayValue v=stack.top();
-				stack.pop();
-				stack.push(FayValue((float)v.intVal()));
+				PTR(FayValue) v=this->stack.top();
+				this->stack.pop();
+				this->stack.push(MKPTR(FayValue)((float)v->intVal()));
 				break;
 			}
 			case InstType::IntToDouble:
 			{
-				FayValue v=stack.top();
-				stack.pop();
-				stack.push(FayValue((double)v.intVal()));
+				PTR(FayValue) v=this->stack.top();
+				this->stack.pop();
+				this->stack.push(MKPTR(FayValue)((double)v->intVal()));
+				break;
+			}
+			case InstType::IntToString:
+			{
+				PTR(FayValue) v=this->stack.top();
+				this->stack.pop();
+				this->stack.push(MKPTR(FayValue)(std::to_string(v->intVal())));
 				break;
 			}
 			case InstType::LongToBool:
 			{
-				FayValue v=stack.top();
-				stack.pop();
-				stack.push(FayValue((bool)v.longVal()));
+				PTR(FayValue) v=this->stack.top();
+				this->stack.pop();
+				this->stack.push(MKPTR(FayValue)((bool)v->longVal()));
 				break;
 			}
 			case InstType::LongToByte:
 			{
-				FayValue v=stack.top();
-				stack.pop();
-				stack.push(FayValue((byte)v.longVal()));
+				PTR(FayValue) v=this->stack.top();
+				this->stack.pop();
+				this->stack.push(MKPTR(FayValue)((byte)v->longVal()));
 				break;
 			}
 			case InstType::LongToInt:
 			{
-				FayValue v=stack.top();
-				stack.pop();
-				stack.push(FayValue((int32_t)v.longVal()));
+				PTR(FayValue) v=this->stack.top();
+				this->stack.pop();
+				this->stack.push(MKPTR(FayValue)((int32_t)v->longVal()));
 				break;
 			}
 			case InstType::LongToLong:
@@ -200,44 +197,44 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 			}
 			case InstType::LongToFloat:
 			{
-				FayValue v=stack.top();
-				stack.pop();
-				stack.push(FayValue((float)v.longVal()));
+				PTR(FayValue) v=this->stack.top();
+				this->stack.pop();
+				this->stack.push(MKPTR(FayValue)((float)v->longVal()));
 				break;
 			}
 			case InstType::LongToDouble:
 			{
-				FayValue v=stack.top();
-				stack.pop();
-				stack.push(FayValue((double)v.longVal()));
+				PTR(FayValue) v=this->stack.top();
+				this->stack.pop();
+				this->stack.push(MKPTR(FayValue)((double)v->longVal()));
 				break;
 			}
 			case InstType::FloatToBool:
 			{
-				FayValue v=stack.top();
-				stack.pop();
-				stack.push(FayValue((bool)v.floatVal()));
+				PTR(FayValue) v=this->stack.top();
+				this->stack.pop();
+				this->stack.push(MKPTR(FayValue)((bool)v->floatVal()));
 				break;
 			}
 			case InstType::FloatToByte:
 			{
-				FayValue v=stack.top();
-				stack.pop();
-				stack.push(FayValue((byte)v.floatVal()));
+				PTR(FayValue) v=this->stack.top();
+				this->stack.pop();
+				this->stack.push(MKPTR(FayValue)((byte)v->floatVal()));
 				break;
 			}
 			case InstType::FloatToInt:
 			{
-				FayValue v=stack.top();
-				stack.pop();
-				stack.push(FayValue((int32_t)v.floatVal()));
+				PTR(FayValue) v=this->stack.top();
+				this->stack.pop();
+				this->stack.push(MKPTR(FayValue)((int32_t)v->floatVal()));
 				break;
 			}
 			case InstType::FloatToLong:
 			{
-				FayValue v=stack.top();
-				stack.pop();
-				stack.push(FayValue((int64_t)v.floatVal()));
+				PTR(FayValue) v=this->stack.top();
+				this->stack.pop();
+				this->stack.push(MKPTR(FayValue)((int64_t)v->floatVal()));
 				break;
 			}
 			case InstType::FloatToFloat:
@@ -247,45 +244,85 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 			}
 			case InstType::FloatToDouble:
 			{
-				FayValue v=stack.top();
-				stack.pop();
-				stack.push(FayValue((double)v.floatVal()));
+				PTR(FayValue) v=this->stack.top();
+				this->stack.pop();
+				this->stack.push(MKPTR(FayValue)((double)v->floatVal()));
+				break;
+			}
+			case InstType::DoubleToBool:
+			{
+				PTR(FayValue) v=this->stack.top();
+				this->stack.pop();
+				this->stack.push(MKPTR(FayValue)((bool)v->doubleVal()));
+				break;
+			}
+			case InstType::DoubleToByte:
+			{
+				PTR(FayValue) v=this->stack.top();
+				this->stack.pop();
+				this->stack.push(MKPTR(FayValue)((byte)v->doubleVal()));
+				break;
+			}
+			case InstType::DoubleToInt:
+			{
+				PTR(FayValue) v=this->stack.top();
+				this->stack.pop();
+				this->stack.push(MKPTR(FayValue)((int32_t)v->doubleVal()));
+				break;
+			}
+			case InstType::DoubleToLong:
+			{
+				PTR(FayValue) v=this->stack.top();
+				this->stack.pop();
+				this->stack.push(MKPTR(FayValue)((int64_t)v->doubleVal()));
+				break;
+			}
+			case InstType::DoubleToFloat:
+			{
+				PTR(FayValue) v=this->stack.top();
+				this->stack.pop();
+				this->stack.push(MKPTR(FayValue)((float)v->doubleVal()));
+				break;
+			}
+			case InstType::DoubleToDouble:
+			{
+				//DoNothing
 				break;
 			}
 			case InstType::AddInt:
 			{
-				int32_t v=stack.top().intVal();
-				stack.pop();
-				v+=stack.top().intVal();
-				stack.pop();
-				stack.push(FayValue(v));
+				int32_t v=this->stack.top()->intVal();
+				this->stack.pop();
+				v+=this->stack.top()->intVal();
+				this->stack.pop();
+				this->stack.push(MKPTR(FayValue)(v));
 				break;
 			}
 			case InstType::AddLong:
 			{
-				int64_t v=stack.top().longVal();
-				stack.pop();
-				v+=stack.top().longVal();
-				stack.pop();
-				stack.push(FayValue(v));
+				int64_t v=this->stack.top()->longVal();
+				this->stack.pop();
+				v+=this->stack.top()->longVal();
+				this->stack.pop();
+				this->stack.push(MKPTR(FayValue)(v));
 				break;
 			}
 			case InstType::AddFloat:
 			{
-				float v=stack.top().floatVal();
-				stack.pop();
-				v+=stack.top().floatVal();
-				stack.pop();
-				stack.push(FayValue(v));
+				float v=this->stack.top()->floatVal();
+				this->stack.pop();
+				v+=this->stack.top()->floatVal();
+				this->stack.pop();
+				this->stack.push(MKPTR(FayValue)(v));
 				break;
 			}
 			case InstType::AddDouble:
 			{
-				double v=stack.top().doubleVal();
-				stack.pop();
-				v+=stack.top().doubleVal();
-				stack.pop();
-				stack.push(FayValue(v));
+				double v=this->stack.top()->doubleVal();
+				this->stack.pop();
+				v+=this->stack.top()->doubleVal();
+				this->stack.pop();
+				this->stack.push(MKPTR(FayValue)(v));
 				break;
 			}
 			//InstCodeEnd

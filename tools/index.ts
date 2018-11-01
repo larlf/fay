@@ -95,6 +95,7 @@ class FayInst
 	name: string;
 	props: FayInstField[] = [];
 	values: FayInstField[] = [];
+	actionVars: string[] = [];
 	action: string;
 
 	constructor(code: number, data: any)
@@ -103,21 +104,46 @@ class FayInst
 		this.name = data.Code1 + (data.Code2 ? data.Code2 : "");
 		this.action = data.Action ? data.Action.toString() : "";
 
-		for (let i = 1; i <= 3; ++i)
+		if (data.Params)
 		{
-			let propName = "P" + i;
-			if (data[propName])
+			let list = data.Params.trim().split("\n");
+			for (let i = 0; i <= list.length; ++i)
 			{
-				this.props.push(new FayInstField(i, data[propName]));
+				if (list[i])
+				{
+					let str = list[i].trim();
+					this.props.push(new FayInstField(i + 1, str));
+				}
 			}
 		}
 
-		for (let i = 1; i <= 3; ++i)
+		if (data.Values)
 		{
-			let propName = "V" + i;
-			if (data[propName])
+			let list = data.Values.trim().split("\n");
+			for (let i = 0; i <= list.length; ++i)
 			{
-				this.values.push(new FayInstField(i, data[propName]));
+				if (list[i])
+				{
+					let str = list[i].trim();
+					this.values.push(new FayInstField(i + 1, str));
+				}
+			}
+		}
+
+		if (data.ActionVars)
+		{
+			let list = data.ActionVars.trim().split("\n");
+			for (let i = 0; i <= list.length; ++i)
+			{
+				if (list[i])
+				{
+					let str = list[i].trim();
+					this.actionVars.push(str);
+				}
+				else
+				{
+					this.actionVars.push("");
+				}
 			}
 		}
 	}
@@ -187,12 +213,43 @@ class FayInst
 			return "";
 
 		let str = this.action;
-		if (this.props[0]) str = str.replace(/\#p1/g, "((inst::" + this.name + "*)inst)->" + this.props[0].name);
-		if (this.props[1]) str = str.replace(/\#p2/g, "((inst::" + this.name + "*)inst)->" + this.props[1].name);
-		if (this.props[2]) str = str.replace(/\#p3/g, "((inst::" + this.name + "*)inst)->" + this.props[2].name);
-		if (this.values[0]) str = str.replace(/\#v1/g, "((inst::" + this.name + "*)inst)->" + this.values[0].name);
-		if (this.values[1]) str = str.replace(/\#v2/g, "((inst::" + this.name + "*)inst)->" + this.values[1].name);
-		if (this.values[2]) str = str.replace(/\#v2/g, "((inst::" + this.name + "*)inst)->" + this.values[2].name);
+
+		//替换属性
+		for (let i = 0; i < this.props.length; ++i)
+		{
+			let it = this.props[i];
+			if (it)
+			{
+				let reg1 = new RegExp("\\#p" + it.index, "g");
+				str = str.replace(reg1, "((inst::" + this.name + "*)inst)->" + it.name);
+			}
+		}
+
+		//替换值
+		for (let i = 0; i < this.values.length; ++i)
+		{
+			let it = this.values[i];
+			if (it)
+			{
+				let reg1 = new RegExp("\\#v" + it.index, "g");
+				str = str.replace(reg1, "((inst::" + this.name + "*)inst)->" + it.name);
+			}
+		}
+
+		//替换变量
+		for (let i = 0; i < this.actionVars.length; ++i)
+		{
+			let it = this.actionVars[i].trim();
+			if (it)
+			{
+				let reg1 = new RegExp("\\#a" + (i + 1), "g");
+				str = str.replace(reg1, it);
+			}
+		}
+
+		str = str.replace(/\#s/g, "this->stack");
+		str = str.replace(/\#val/g, "PTR(FayValue)");
+		str = str.replace(/\#new/g, "MKPTR(FayValue)");
 		str = str.replace(/\n/g, "\n\t");  //缩进
 		str = "case InstType::" + this.name + ":\n{" + (str ? "\n\t" + str : str) + "\n\tbreak;\n}";
 		return str;

@@ -7,8 +7,8 @@ namespace fay
 	class InternalFun
 	{
 	public:
-		static void Print_String(std::stack<FayValue> &stack);
-		static void Print_Int(std::stack<FayValue> &stack);
+		static void Print_String(std::stack<PTR(FayValue)> &stack);
+		static void Print_Int(std::stack<PTR(FayValue)> &stack);
 	};
 }
 

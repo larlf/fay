@@ -25,15 +25,15 @@ void test::FayTests::TestLexer()
 	PRINT("----------------------------------------");
 
 	fay::Lexer lexer;
-	auto tokens=lexer.Execute(text);
+	auto tokens = lexer.Execute(text);
 
-	for (auto i = 0; i < tokens->size(); ++i)
-		PRINT(i<<"\t"<<(*tokens)[i]->toString());
+	for(auto i = 0; i < tokens->size(); ++i)
+		PRINT(i << "\t" << (*tokens)[i]->toString());
 
 	PRINT("----------------------------------------");
 
 	PTR(fay::AstNode) ast = fay::Parser::Parse(tokens, filename);
-	if (ast)
+	if(ast)
 	{
 		utils::StringBuilder sb;
 		ast->toString(&sb);
@@ -64,7 +64,7 @@ void test::FayTests::TestLexer()
 
 	ast->dig3(builder.get());
 	PRINT("--------------------Dig3--------------------");
-	if (ast)
+	if(ast)
 	{
 		utils::StringBuilder sb;
 		ast->toString(&sb);
@@ -87,12 +87,10 @@ void test::FayTests::TestLexer()
 
 void test::FayTests::Test1()
 {
-
-	TestValue v1;
-		TestValue v2;
-		v2 = v1;
-		std::vector<TestValue> list;
-		list.push_back(v1);
+	std::stack<PTR(TestValue)> stack;
+	stack.push(MKPTR(TestValue)("aaa"));
+	//stack.pop();
+	PRINT("--------------------End--------------------");
 }
 
 void test::FayTests::TestRTTI()
@@ -104,8 +102,5 @@ void test::FayTests::TestRTTI()
 
 void test::FayTests::TestInternalFun()
 {
-	std::stack<FayValue> stack;
-	stack.push(new FayValue("aabbccdd"));
-	stack.push(new FayValue("larlf.wang"));
-	InternalFun::Print_String(stack);
+
 }

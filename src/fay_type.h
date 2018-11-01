@@ -24,33 +24,14 @@ namespace fay
 	};
 
 	//语言中的值类型
-	class FayValue
+	class FayValue // : public std::enable_shared_from_this<FayValue>
 	{
 	protected:
 		ValueType _type;
 		FayValueUnion _val;
 
 	public:
-		inline FayValue(const FayValue &value)
-		{
-			LOG_DEBUG("Copy Me!!!");
-			if(value._type == ValueType::String)
-			{
-				this->_type = value._type;
-
-				if (value._val.strVal)
-					this->_val.strVal = new std::string(*value._val.strVal);
-				else
-					this->_val.strVal = nullptr;
-			}
-			else
-			{
-				this->_type = value._type;
-				this->_val = value._val;
-			}
-		}
-
-		FayValue() : _type(ValueType::Void) {}
+		FayValue() : _type(ValueType::Void) { }
 		FayValue(bool val) : _type(ValueType::Bool) { _val.boolVal = val; }
 		FayValue(unsigned char val) : _type(ValueType::Byte) { _val.byteVal = val; }
 		FayValue(int32_t val) : _type(ValueType::Int) { _val.intVal = val; }
@@ -76,6 +57,19 @@ namespace fay
 			}
 
 			this->_type = ValueType::Void;
+		}
+
+		inline PTR(FayValue) clone()
+		{
+			switch (this->_type)
+			{
+			case ValueType::String:
+				return MKPTR(FayValue)(this->strVal());
+				break;
+			default:
+				return MKPTR(FayValue)(new FayValue(this));
+				break;
+			}
 		}
 
 		inline const ValueType type() { return this->_type; }
@@ -131,63 +125,6 @@ namespace fay
 		//	LOG_ERROR("Cannot convert " << (int)this->_type << " to bool");
 		//	break;
 		//}
-
-		inline const void convertToBool()
-		{
-			switch(this->_type)
-			{
-				case ValueType::Void:
-					this->_val.boolVal = false;
-					break;
-				case ValueType::Bool:
-					break;
-				case ValueType::Byte:
-					this->_val.boolVal = (this->_val.byteVal == 0) ? false : true;
-					break;
-				case ValueType::Int:
-					this->_val.boolVal = (this->_val.intVal == 0) ? false : true;
-					break;
-				case ValueType::Long:
-					this->_val.boolVal = (this->_val.longVal == 0) ? false : true;
-					break;
-				case ValueType::Float:
-					this->_val.boolVal = (this->_val.flaotVal == 0) ? false : true;
-					break;
-				case ValueType::Double:
-					this->_val.boolVal = (this->_val.doubleVal == 0) ? false : true;
-					break;
-				case ValueType::String:
-				{
-					std::string* str = this->_val.strVal;
-					if(str == nullptr)
-						this->_val.boolVal = false;
-					else
-					{
-						if(str->size() <= 0)
-							this->_val.boolVal = false;
-						else
-							this->_val.boolVal = true;
-
-						delete str;
-					}
-					break;
-				}
-				case ValueType::Object:
-					this->_val.boolVal = (this->_val.ptrValue == nullptr) ? false : true;
-					break;
-				case ValueType::Function:
-					this->_val.boolVal = (this->_val.ptrValue == nullptr) ? false : true;
-					break;
-				default:
-					LOG_ERROR("Cannot convert " << (int)this->_type << "to bool");
-					this->_val.boolVal = false;
-					break;
-			}
-
-			this->_type = ValueType::Bool;
-		}
-
-
 	};
 
 }

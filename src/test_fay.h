@@ -18,7 +18,7 @@ namespace test
 			std::cout << "Create TestA" << std::endl;
 		}
 
-		TestA(const TestA& value)
+		TestA(const TestA &value)
 		{
 			std::cout << "Copy Me" << std::endl;
 			this->str = value.str;
@@ -66,15 +66,20 @@ namespace test
 		std::string str;
 
 	public:
-		TestValue() {}
+		//TestValue() {}
 		TestValue(const std::string &str) : str(str)
 		{
 			std::cout << "Create TestA" << std::endl;
 		}
-		 
-		TestValue(const TestValue& value)
+
+		~TestValue()
 		{
-			std::cout << "Copy Me" << std::endl;
+			std::cout << "Destory TestA" << std::endl;
+		}
+
+		TestValue(const TestValue &value)
+		{
+			std::cout << "Copy TestA" << std::endl;
 			this->str = value.str;
 		}
 	};
