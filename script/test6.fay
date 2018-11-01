@@ -6,24 +6,7 @@ public class Test6
 {
 	static public fun .main():void
 	{
-		fay.System.Print("Hello, World!");
-		var a:int=5;
-		fay.System.Print(a);
-		var b:int=5+6.0;
-		fay.System.Print(b);
-		var c:string="aabbccdd";
-		fay.System.Print(c);
-
-		var s1:string="s1";
-		var s2:string="s2";
-		fay.System.Print(s1+s2);
-	}
-}
-
-public class Test7
-{
-	static public fun fun1(a:int, b:string, c:com.larlf.Test6):void
-	{
-
+		var v1:bool=true;
+		fay.System.Print(v1);
 	}
 }

@@ -41,6 +41,7 @@ void fay::TypeDict::Init()
 	TypeDict::TokenTypeName[TokenType::Number] = "Number";
 	TypeDict::TokenTypeName[TokenType::String] = "String";
 	TypeDict::TokenTypeName[TokenType::Char] = "Char";
+	TypeDict::TokenTypeName[TokenType::Bool] = "Bool";
 	//TokenTypeNameEnd
 
 	//ValueTypeNameStart

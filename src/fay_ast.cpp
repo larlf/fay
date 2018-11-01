@@ -454,3 +454,22 @@ fay::ValueType fay::AstTypeConvert::valueType()
 {
 	return this->_destType;
 }
+
+fay::AstBool::AstBool(const PTR(Token)& token)
+	: AstNode(token)
+{
+	if (this->_text == "true")
+		this->_value = true;
+	else
+		this->_value = false;
+}
+
+ValueType fay::AstBool::valueType()
+{
+	return ValueType::Bool;
+}
+
+void fay::AstBool::dig4(FayBuilder * builder)
+{
+	builder->addInst(new inst::PushBool(this->_value));
+}

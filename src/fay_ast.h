@@ -324,6 +324,16 @@ namespace fay
 		virtual void dig4(FayBuilder *builder) override;
 	};
 
+	class AstBool : public AstNode
+	{
+	private:
+		bool _value;
+	public:
+		AstBool(const PTR(Token) &token);
+		virtual ValueType valueType() override;
+		virtual void dig4(FayBuilder *builder) override;
+	};
+
 	//类型转换
 	class AstTypeConvert : public AstNode
 	{

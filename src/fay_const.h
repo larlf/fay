@@ -53,6 +53,7 @@ namespace fay
 		Number,
 		String,
 		Char,
+		Bool,
 		//TokenTypeEnd
 	};
 

@@ -76,6 +76,8 @@ namespace fay
 
 		inline ValueType type() { return this->_type; }
 		inline FayValueUnion* val() { return &this->_val; }
+		inline bool boolVal() { return (this->_type == ValueType::Bool) ? this->_val.boolVal : false; }
+		inline byte byteVal() { return (this->_type == ValueType::Byte) ? this->_val.byteVal : 0; }
 		inline int32_t intVal() { return (this->_type == ValueType::Int) ? this->_val.intVal : 0; }
 		inline int64_t longVal() { return (this->_type == ValueType::Long) ? this->_val.longVal : 0; }
 		inline float floatVal() { return (this->_type == ValueType::Float) ? this->_val.floatVal : 0; }

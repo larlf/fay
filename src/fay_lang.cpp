@@ -158,8 +158,16 @@ void fay::FayInstFun::prepareInsts()
 				//取出调用方法的索引值
 				inst::CallStatic* i = static_cast<inst::CallStatic*>(inst);
 				PTR(OutsideFun) fun = this->clazz()->lib()->findOutsideFun(i->outsideFunIndex);
-				i->typeIndex = fun->typeIndex();
-				i->funIndex = fun->funIndex();
+				if (fun)
+				{
+					i->typeIndex = fun->typeIndex();
+					i->funIndex = fun->funIndex();
+				}
+				else
+				{
+					i->typeIndex = -1;
+					i->funIndex = -1;
+				}
 				break;
 			}
 		}
@@ -329,18 +337,23 @@ fay::FayDomain::FayDomain()
 void fay::FayDomain::initSysLib()
 {
 	//内置类型在这里创建
+	this->_types.add("bool", FaySimpleClass::Get(ValueType::Bool));
 	this->_types.add("byte", FaySimpleClass::Get(ValueType::Byte));
 	this->_types.add("int", FaySimpleClass::Get(ValueType::Int));
 	this->_types.add("long", FaySimpleClass::Get(ValueType::Long));
 	this->_types.add("float", FaySimpleClass::Get(ValueType::Float));
 	this->_types.add("double", FaySimpleClass::Get(ValueType::Double));
-	this->_types.add("bool", FaySimpleClass::Get(ValueType::Bool));
 	this->_types.add("string", FaySimpleClass::Get(ValueType::String));
 
 	PTR(FayLib) lib(new FayLib(MYPTR, "System"));
 	PTR(FayInstClass) clazz(new FayInstClass(MYPTR, "fay", "System"));
-	clazz->addFun(MKPTR(FayInternalFun)(MYPTR, "Print", InternalFun::Print_String, std::vector<std::string>({ "string" })));
+	clazz->addFun(MKPTR(FayInternalFun)(MYPTR, "Print", InternalFun::Print_Bool, std::vector<std::string>({ "bool" })));
+	clazz->addFun(MKPTR(FayInternalFun)(MYPTR, "Print", InternalFun::Print_Byte, std::vector<std::string>({ "byte" })));
 	clazz->addFun(MKPTR(FayInternalFun)(MYPTR, "Print", InternalFun::Print_Int, std::vector<std::string>({ "int" })));
+	clazz->addFun(MKPTR(FayInternalFun)(MYPTR, "Print", InternalFun::Print_Long, std::vector<std::string>({ "long" })));
+	clazz->addFun(MKPTR(FayInternalFun)(MYPTR, "Print", InternalFun::Print_Float, std::vector<std::string>({ "float" })));
+	clazz->addFun(MKPTR(FayInternalFun)(MYPTR, "Print", InternalFun::Print_Double, std::vector<std::string>({ "double" })));
+	clazz->addFun(MKPTR(FayInternalFun)(MYPTR, "Print", InternalFun::Print_String, std::vector<std::string>({ "string" })));
 
 	lib->addClass(clazz);
 	this->addLib(lib);
@@ -437,6 +450,12 @@ PTR(FayFun) fay::FayDomain::findFun(const std::string &typeFullname, const std::
 
 PTR(FayFun) fay::FayDomain::findFun(pos_t typeIndex, pos_t funIndex, bool isStatic)
 {
+	if (typeIndex < 0 || funIndex < 0)
+	{
+		LOG_ERROR("Bad fun index : " << typeIndex << " " << funIndex);
+		return nullptr;
+	}
+
 	auto type = this->_types[typeIndex];
 	if(!type)
 	{

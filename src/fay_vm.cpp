@@ -334,6 +334,9 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 
 void fay::FayVM::run(PTR(FayFun) fun)
 {
+	if (!fun)
+		return;
+
 	switch (fun->type())
 	{
 		case FunType::Code:
