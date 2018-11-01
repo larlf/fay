@@ -7,6 +7,11 @@ public class Test6
 	static public fun .main():void
 	{
 		var v1:bool=true;
-		fay.System.Print(v1);
+
+		if(v1)
+		{
+			fay.System.Print("True");
+
+		}
 	}
 }
