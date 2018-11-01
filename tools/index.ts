@@ -471,20 +471,36 @@ Cmds.convert_inst = function()
 	let file = xlsx.readFile(path.resolve(__dirname, "../doc/FayLang.xlsx"));
 	let json = xlsx.utils.sheet_to_json(file.Sheets['ValueType']);
 
-	let text = "";
+	let convertText = "";
 	json.forEach((it1: any) =>
 	{
 		json.forEach((it2: any) =>
 		{
-			if (text)
-				text += "\nelse ";
+			if (convertText)
+				convertText += "\nelse ";
 
-			text += "if (src == ValueType::" + it1.Name + " && dest == ValueType::" + it2.Name + ")\n";
-			text += "\treturn new inst::" + it1.Name + "To" + it2.Name + "();"
+			convertText += "if (src == ValueType::" + it1.Name + " && dest == ValueType::" + it2.Name + ")\n";
+			convertText += "\treturn new inst::" + it1.Name + "To" + it2.Name + "();"
 		});
 	});
 
-	replaceFileBody("src/fay_lang.cpp", "ConvertInst", text, "\t");
+	replaceFileBody("src/fay_lang.cpp", "ConvertInst", convertText, "\t");
+
+	let ops = ["Add", "Sub", "Mul", "Div"];
+	let opText = "";
+	ops.forEach(op =>
+	{
+		json.forEach((it: any) =>
+		{
+			if (opText)
+				opText += "\nelse ";
+
+			opText += larlf.text.format("if (op == InstGroupType::{0} && type == ValueType::{1})", op, it.Name);
+			opText += larlf.text.format("\n\treturn new inst::{0}{1}();", op, it.Name);
+		});
+	});
+
+	replaceFileBody("src/fay_lang.cpp", "OPInst", opText, "\t");
 }
 
 Cmds._deps = "处理依赖关系";

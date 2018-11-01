@@ -27,8 +27,13 @@ namespace fay
 
 		//在两个类型中选出要转换的目标类型
 		static ValueType WeightValueType(ValueType t1, ValueType t2);
+		//Class类型转换到ValueType类型
+		static ValueType ClassToValueType(PTR(FayClass) clazz);
+
 		//生成用于数据转换的代码
-		static FayInst* ConvertInst(ValueType src, ValueType t2);
+		static FayInst* ConvertInst(ValueType src, ValueType dest);
+		//根据类型生成操作代码
+		static FayInst* OPInst(InstGroupType op, ValueType type);
 	};
 
 	//////////////////////////////////////////////////////////////
@@ -136,14 +141,16 @@ namespace fay
 	private:
 		static MAP<ValueType, PTR(FayClass)> _Types;
 
-		ValueType _class;
+		ValueType _valueType;
 
 		//这种类型，不能从外部创建
 		FaySimpleClass(ValueType classType)
-			: FayClass(nullptr, ClassType::Simple), _class(classType) {}
+			: FayClass(nullptr, ClassType::Simple), _valueType(classType) {}
 
 	public:
 		static PTR(FayClass) Get(ValueType classType);
+
+		inline ValueType valueType() { return this->_valueType; }
 
 		// 通过 FayType 继承
 		virtual const std::string &fullname() override;

@@ -17,7 +17,7 @@ namespace fay
 		unsigned char byteVal;
 		int32_t intVal;
 		int64_t longVal;
-		float flaotVal;
+		float floatVal;
 		double doubleVal;
 		std::string* strVal;
 		void* ptrValue;
@@ -36,24 +36,34 @@ namespace fay
 		FayValue(unsigned char val) : _type(ValueType::Byte) { _val.byteVal = val; }
 		FayValue(int32_t val) : _type(ValueType::Int) { _val.intVal = val; }
 		FayValue(int64_t val) : _type(ValueType::Long) { _val.longVal = val; }
-		FayValue(float val) : _type(ValueType::Float) { _val.flaotVal = val; }
+		FayValue(float val) : _type(ValueType::Float) { _val.floatVal = val; }
 		FayValue(double val) : _type(ValueType::Double) { _val.doubleVal = val; }
 		//FayValue(const char* str) : _class(ValueType::String) { _val.strVal = new std::string(str); }
 		FayValue(const std::string &str) : _type(ValueType::String) { _val.strVal = new std::string(str); }
 		//FayValue(const std::string* str) : _class(ValueType::String) { _val.strVal = new std::string(*str); }
 
-		~FayValue()
+		inline FayValue(const FayValue &v)
 		{
-			this->reset();
+			switch (v._type)
+			{
+			case ValueType::String:
+				this->_val.strVal = new std::string(*v._val.strVal);
+				break;
+			default:
+				this->_val = v._val;
+				break;
+			}
+
+			this->_type = v._type;
 		}
 
-		inline void reset()
+		~FayValue()
 		{
-			switch(this->_type)
+			switch (this->_type)
 			{
-				case ValueType::String:
-					delete this->_val.strVal;
-					break;
+			case ValueType::String:
+				delete this->_val.strVal;
+				break;
 			}
 
 			this->_type = ValueType::Void;
@@ -61,27 +71,20 @@ namespace fay
 
 		inline PTR(FayValue) clone()
 		{
-			switch (this->_type)
-			{
-			case ValueType::String:
-				return MKPTR(FayValue)(this->strVal());
-				break;
-			default:
-				return MKPTR(FayValue)(new FayValue(this));
-				break;
-			}
+			return MKPTR(FayValue)(*this);
 		}
 
-		inline const ValueType type() { return this->_type; }
-		inline const int32_t intVal() { return (this->_type == ValueType::Int) ? this->_val.intVal : 0; }
-		inline const int64_t longVal() { return (this->_type == ValueType::Long) ? this->_val.longVal : 0; }
-		inline const float floatVal() { return (this->_type == ValueType::Float) ? this->_val.flaotVal : 0; }
-		inline const double doubleVal() { return (this->_type == ValueType::Double) ? this->_val.doubleVal : 0; }
-		inline const std::string &strVal() { return (this->_type == ValueType::String) ? *this->_val.strVal : mirror::utils::StringUtils::Blank; }
-		inline const void* objectVal() { return (this->_type == ValueType::Object) ? this->_val.ptrValue : nullptr; }
-		inline const void* funVal() { return (this->_type == ValueType::Function) ? this->_val.ptrValue : nullptr; }
+		inline ValueType type() { return this->_type; }
+		inline FayValueUnion* val() { return &this->_val; }
+		inline int32_t intVal() { return (this->_type == ValueType::Int) ? this->_val.intVal : 0; }
+		inline int64_t longVal() { return (this->_type == ValueType::Long) ? this->_val.longVal : 0; }
+		inline float floatVal() { return (this->_type == ValueType::Float) ? this->_val.floatVal : 0; }
+		inline double doubleVal() { return (this->_type == ValueType::Double) ? this->_val.doubleVal : 0; }
+		inline std::string* strVal() { return (this->_type == ValueType::String) ? this->_val.strVal : nullptr; }
+		inline void* objectVal() { return (this->_type == ValueType::Object) ? this->_val.ptrValue : nullptr; }
+		inline void* funVal() { return (this->_type == ValueType::Function) ? this->_val.ptrValue : nullptr; }
 		template<class T>
-		inline const T* ptrValue() { return (T*)this->_val.ptrValue; }
+		inline T* ptrValue() { return (T*)this->_val.ptrValue; }
 
 		//FayValue &operator =(const FayValue& value)
 		//{

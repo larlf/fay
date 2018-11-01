@@ -22,7 +22,7 @@ PTR(FayClass) fay::FaySimpleClass::Get(ValueType classType)
 
 const std::string &fay::FaySimpleClass::fullname()
 {
-	return TypeDict::ToName(this->_class);
+	return TypeDict::ToName(this->_valueType);
 }
 
 bool fay::FayClass::match(PTR(FayClass) type)
@@ -548,6 +548,16 @@ fay::ValueType fay::FayLangUtils::WeightValueType(ValueType t1, ValueType t2)
 	return (t1 >= t2) ? t1 : t2;
 }
 
+ValueType fay::FayLangUtils::ClassToValueType(PTR(FayClass) clazz)
+{
+	if (clazz->type() == ClassType::Simple)
+	{
+		return TOPTR(FaySimpleClass, clazz)->valueType();
+	}
+
+	return ValueType::Object;
+}
+
 fay::FayInst* fay::FayLangUtils::ConvertInst(ValueType src, ValueType dest)
 {
 	//ConvertInstStart
@@ -752,6 +762,94 @@ fay::FayInst* fay::FayLangUtils::ConvertInst(ValueType src, ValueType dest)
 	else if (src == ValueType::Function && dest == ValueType::Function)
 		return new inst::FunctionToFunction();
 	//ConvertInstEnd
+
+	return nullptr;
+}
+
+FayInst * fay::FayLangUtils::OPInst(InstGroupType op, ValueType type)
+{
+	//OPInstStart
+	if (op == InstGroupType::Add && type == ValueType::Void)
+		return new inst::AddVoid();
+	else if (op == InstGroupType::Add && type == ValueType::Bool)
+		return new inst::AddBool();
+	else if (op == InstGroupType::Add && type == ValueType::Byte)
+		return new inst::AddByte();
+	else if (op == InstGroupType::Add && type == ValueType::Int)
+		return new inst::AddInt();
+	else if (op == InstGroupType::Add && type == ValueType::Long)
+		return new inst::AddLong();
+	else if (op == InstGroupType::Add && type == ValueType::Float)
+		return new inst::AddFloat();
+	else if (op == InstGroupType::Add && type == ValueType::Double)
+		return new inst::AddDouble();
+	else if (op == InstGroupType::Add && type == ValueType::String)
+		return new inst::AddString();
+	else if (op == InstGroupType::Add && type == ValueType::Object)
+		return new inst::AddObject();
+	else if (op == InstGroupType::Add && type == ValueType::Function)
+		return new inst::AddFunction();
+	else if (op == InstGroupType::Sub && type == ValueType::Void)
+		return new inst::SubVoid();
+	else if (op == InstGroupType::Sub && type == ValueType::Bool)
+		return new inst::SubBool();
+	else if (op == InstGroupType::Sub && type == ValueType::Byte)
+		return new inst::SubByte();
+	else if (op == InstGroupType::Sub && type == ValueType::Int)
+		return new inst::SubInt();
+	else if (op == InstGroupType::Sub && type == ValueType::Long)
+		return new inst::SubLong();
+	else if (op == InstGroupType::Sub && type == ValueType::Float)
+		return new inst::SubFloat();
+	else if (op == InstGroupType::Sub && type == ValueType::Double)
+		return new inst::SubDouble();
+	else if (op == InstGroupType::Sub && type == ValueType::String)
+		return new inst::SubString();
+	else if (op == InstGroupType::Sub && type == ValueType::Object)
+		return new inst::SubObject();
+	else if (op == InstGroupType::Sub && type == ValueType::Function)
+		return new inst::SubFunction();
+	else if (op == InstGroupType::Mul && type == ValueType::Void)
+		return new inst::MulVoid();
+	else if (op == InstGroupType::Mul && type == ValueType::Bool)
+		return new inst::MulBool();
+	else if (op == InstGroupType::Mul && type == ValueType::Byte)
+		return new inst::MulByte();
+	else if (op == InstGroupType::Mul && type == ValueType::Int)
+		return new inst::MulInt();
+	else if (op == InstGroupType::Mul && type == ValueType::Long)
+		return new inst::MulLong();
+	else if (op == InstGroupType::Mul && type == ValueType::Float)
+		return new inst::MulFloat();
+	else if (op == InstGroupType::Mul && type == ValueType::Double)
+		return new inst::MulDouble();
+	else if (op == InstGroupType::Mul && type == ValueType::String)
+		return new inst::MulString();
+	else if (op == InstGroupType::Mul && type == ValueType::Object)
+		return new inst::MulObject();
+	else if (op == InstGroupType::Mul && type == ValueType::Function)
+		return new inst::MulFunction();
+	else if (op == InstGroupType::Div && type == ValueType::Void)
+		return new inst::DivVoid();
+	else if (op == InstGroupType::Div && type == ValueType::Bool)
+		return new inst::DivBool();
+	else if (op == InstGroupType::Div && type == ValueType::Byte)
+		return new inst::DivByte();
+	else if (op == InstGroupType::Div && type == ValueType::Int)
+		return new inst::DivInt();
+	else if (op == InstGroupType::Div && type == ValueType::Long)
+		return new inst::DivLong();
+	else if (op == InstGroupType::Div && type == ValueType::Float)
+		return new inst::DivFloat();
+	else if (op == InstGroupType::Div && type == ValueType::Double)
+		return new inst::DivDouble();
+	else if (op == InstGroupType::Div && type == ValueType::String)
+		return new inst::DivString();
+	else if (op == InstGroupType::Div && type == ValueType::Object)
+		return new inst::DivObject();
+	else if (op == InstGroupType::Div && type == ValueType::Function)
+		return new inst::DivFunction();
+	//OPInstEnd
 
 	return nullptr;
 }

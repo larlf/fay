@@ -218,10 +218,14 @@ namespace fay
 	class AstID : public AstNode
 	{
 		using AstNode::AstNode;
+	private:
+		ValueType _valueType = ValueType::Void;
+
 	public:
+		virtual void dig3(FayBuilder *builder) override;
 		virtual void dig4(FayBuilder *builder) override;
 		virtual PTR(FayClass) classType(FayBuilder *builder) override;
-
+		virtual ValueType valueType() override;
 	};
 
 	class AstBoolOP : public AstNode
@@ -312,8 +316,10 @@ namespace fay
 
 	class AstString : public AstNode
 	{
-		using AstNode::AstNode;
+	private:
+		std::string _value;
 	public:
+		AstString(const PTR(Token) &token);
 		virtual ValueType valueType() override;
 		virtual void dig4(FayBuilder *builder) override;
 	};

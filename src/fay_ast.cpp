@@ -153,6 +153,27 @@ void fay::AstFile::dig1(FayBuilder* builder)
 	builder->endFile();
 }
 
+fay::AstString::AstString(const PTR(Token)& token)
+	: AstNode(token)
+{
+	for (auto i = 0; i < this->_text.size(); ++i)
+	{
+		char c = this->_text[i];
+
+		//字符串开始标志
+		if(i==0 && c=='\"')
+			continue;
+
+		//字符串结束标志
+		if(i==this->_text.size()-1 && c=='\"')
+			continue;
+
+		//TODO： 处理转义字符
+
+		this->_value.push_back(c);
+	}
+}
+
 ValueType fay::AstString::valueType()
 {
 	return ValueType::String;
@@ -160,7 +181,7 @@ ValueType fay::AstString::valueType()
 
 void fay::AstString::dig4(FayBuilder* builder)
 {
-	inst::PushString* inst = new inst::PushString(this->text());
+	inst::PushString* inst = new inst::PushString(this->_value);
 	builder->addInst(inst);
 }
 
@@ -357,6 +378,20 @@ PTR(FayClass) fay::AstID::classType(FayBuilder* builder)
 	return var->type();
 }
 
+fay::ValueType fay::AstID::valueType()
+{
+	return this->_valueType;
+}
+
+void fay::AstID::dig3(FayBuilder * builder)
+{
+	auto var = builder->findVar(this->_text);
+	if (!var)
+		throw BuildException(this->shared_from_this(), "connt find var : " + this->text());
+
+	this->_valueType = FayLangUtils::ClassToValueType(var->type());
+}
+
 void fay::AstID::dig4(FayBuilder* builder)
 {
 	auto index = builder->findVarIndex(this->_text);
@@ -386,37 +421,22 @@ void fay::AstLeftRightOP::dig4(FayBuilder* builder)
 {
 	AstNode::dig4(builder);
 
-	ValueType leftType = this->_nodes[0]->valueType();
-	//ValueType rightType = this->_nodes[1]->valueType();
+	FayInst *inst = nullptr;
 
-	switch (this->_valueType)
-	{
-	case fay::ValueType::Void:
-		break;
-	case fay::ValueType::Bool:
-		break;
-	case fay::ValueType::Byte:
-		break;
-	case fay::ValueType::Int:
-		builder->addInst(new inst::AddInt());
-		break;
-	case fay::ValueType::Long:
-		break;
-	case fay::ValueType::Float:
-		builder->addInst(new inst::AddFloat());
-		break;
-	case fay::ValueType::Double:
-		break;
-	case fay::ValueType::String:
-		break;
-	case fay::ValueType::Object:
-		break;
-	case fay::ValueType::Function:
-		break;
-	default:
-		throw BuildException(this->shared_from_this(), "unknow add type : " + TypeDict::ToName(this->_valueType));
-		break;
-	}
+	//生成操作代码
+	if (this->_text == "+")
+		inst=FayLangUtils::OPInst(InstGroupType::Add, this->_valueType);
+	else if(this->_text=="-")
+		inst = FayLangUtils::OPInst(InstGroupType::Sub, this->_valueType);
+	else if (this->_text == "*")
+		inst = FayLangUtils::OPInst(InstGroupType::Mul, this->_valueType);
+	else if (this->_text == "/")
+		inst = FayLangUtils::OPInst(InstGroupType::Div, this->_valueType);
+
+	if (inst)
+		builder->addInst(inst);
+	else
+		throw BuildException(this->shared_from_this(), "unknow op inst : "+this->_text+" "+ TypeDict::ToName(this->_valueType));
 }
 
 fay::ValueType fay::AstLeftRightOP::valueType()

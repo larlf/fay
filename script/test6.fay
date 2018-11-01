@@ -13,6 +13,10 @@ public class Test6
 		fay.System.Print(b);
 		var c:string="aabbccdd";
 		fay.System.Print(c);
+
+		var s1:string="s1";
+		var s2:string="s2";
+		fay.System.Print(s1+s2);
 	}
 }
 

@@ -66,13 +66,13 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 			}
 			case InstType::SetLocal:
 			{
-				localVars[((inst::SetLocal*)inst)->varIndex]=this->stack.top();
+				localVars[((inst::SetLocal*)inst)->varIndex]=this->stack.top()->clone();
 				this->stack.pop();
 				break;
 			}
 			case InstType::LoadLocal:
 			{
-				this->stack.push(localVars[((inst::LoadLocal*)inst)->varIndex]);
+				this->stack.push(localVars[((inst::LoadLocal*)inst)->varIndex]->clone());
 				break;
 			}
 			case InstType::VoidToVoid:
@@ -293,36 +293,35 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 			{
 				int32_t v=this->stack.top()->intVal();
 				this->stack.pop();
-				v+=this->stack.top()->intVal();
-				this->stack.pop();
-				this->stack.push(MKPTR(FayValue)(v));
+				this->stack.top()->val()->intVal+=v;
 				break;
 			}
 			case InstType::AddLong:
 			{
 				int64_t v=this->stack.top()->longVal();
 				this->stack.pop();
-				v+=this->stack.top()->longVal();
-				this->stack.pop();
-				this->stack.push(MKPTR(FayValue)(v));
+				this->stack.top()->val()->longVal+=v;
 				break;
 			}
 			case InstType::AddFloat:
 			{
 				float v=this->stack.top()->floatVal();
 				this->stack.pop();
-				v+=this->stack.top()->floatVal();
-				this->stack.pop();
-				this->stack.push(MKPTR(FayValue)(v));
+				this->stack.top()->val()->floatVal+=v;
 				break;
 			}
 			case InstType::AddDouble:
 			{
 				double v=this->stack.top()->doubleVal();
 				this->stack.pop();
-				v+=this->stack.top()->doubleVal();
+				this->stack.top()->val()->doubleVal+=v;
+				break;
+			}
+			case InstType::AddString:
+			{
+				PTR(FayValue) v=this->stack.top();
 				this->stack.pop();
-				this->stack.push(MKPTR(FayValue)(v));
+				(*this->stack.top()->strVal())+=*v->strVal();
 				break;
 			}
 			//InstCodeEnd
