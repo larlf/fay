@@ -1,9 +1,45 @@
-//单个变量定义
-var aaa:int;
-//多个变量定义
-var bbb,ccc:int;
-//单个值的赋值
-aaa=5;
-//用表达式赋值
-bbb=3+5;
-ccc=3+5*4-6/2;
+using fay.system;
+
+package com.larlf;
+
+public class MyTest
+{
+	static public fun fun1():void
+	{
+		fay.System.Print("Hello, World!");
+		var a:int=5;
+		fay.System.Print(a);
+		var b:int=5+6.0;
+		fay.System.Print(b);
+		var c:string="aabbccdd";
+		fay.System.Print(c);
+
+		var s1:string="s1";
+		var s2:string="s2";
+		fay.System.Print(s1+s2);
+	}
+
+	static public fun fun2():void
+	{
+		fay.System.Print("PointA");
+		goto label1;
+		fay.System.Print("PointB");
+		label label1;
+		fay.System.Print("PointC");
+	}
+
+	static public fun fun3():void
+	{
+		
+	}
+
+	static public fun fun4():void
+	{
+		
+	}
+
+	static public fun fun5():void
+	{
+		
+	}
+}

@@ -18,7 +18,7 @@ void test::FayTests::Init()
 
 void test::FayTests::TestLexer()
 {
-	std::string filename = "../script/test6.fay";
+	std::string filename = "../script/test1.fay";
 	std::string text = utils::FileUtils::ReadTextFile(filename);
 	LOG_DEBUG(text);
 
@@ -78,7 +78,7 @@ void test::FayTests::TestLexer()
 	PRINT(sb.toString());
 
 	fay::FayVM vm(domain);
-	auto fun = domain->findFun("com.larlf.Test6", ".main()", false);
+	auto fun = domain->findFun("com.larlf.MyTest", "fun2()", false);
 
 	PRINT("-------------------Start--------------------");
 	vm.run(fun);

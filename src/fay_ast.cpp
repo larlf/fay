@@ -473,3 +473,22 @@ void fay::AstBool::dig4(FayBuilder * builder)
 {
 	builder->addInst(new inst::PushBool(this->_value));
 }
+
+void fay::AstLabel::dig3(FayBuilder * builder)
+{
+	builder->fun()->labels()->addLabel(this->_text);
+	AstNode::dig3(builder);
+}
+
+void fay::AstLabel::dig4(FayBuilder * builder)
+{
+	builder->fun()->labels()->setPos(this->_text, builder->instsSize());
+	AstNode::dig4(builder);
+}
+
+void fay::AstGoto::dig4(FayBuilder * builder)
+{
+	inst::Goto* inst = new inst::Goto(-1);
+	builder->fun()->labels()->addTarget(this->_text, &inst->target);
+	builder->addInst(inst);
+}

@@ -198,6 +198,33 @@ namespace fay
 		virtual void toString(mirror::utils::StringBuilder* sb) override;
 	};
 
+	//标签
+	class FayLabel
+	{
+	private:
+		std::string _name;
+		int32_t _pos = -1;
+		std::vector<int32_t*> _targets;
+
+	public:
+		FayLabel(const std::string &name) : _name(name) {}
+		void addTarget(int32_t* target);
+		void setPos(int32_t pos);
+	};
+
+	//标签表
+	class FayLabelTable : public FayObject
+	{
+	private:
+		MAP<std::string, PTR(FayLabel)> _labels;
+		PTR(FayLabel) findLabel(const std::string &name);
+
+	public:
+		void addLabel(const std::string &name);
+		void addTarget(const std::string &name, int32_t* target);
+		void setPos(const std::string &name, int32_t pos);
+	};
+
 	//函数
 	//包括函数、内部函数、匿名函数等
 	class FayFun : public FayLangObject, public std::enable_shared_from_this<FayFun>
@@ -210,8 +237,10 @@ namespace fay
 		std::string _fullname;  //全名
 		std::vector<PTR(FayParamDef)> _params;  //参数定义
 		std::vector<WPTR(FayClass)> _returns;  //返回值的类型，支持多返回值
+		PTR(FayLabelTable) _labels = MKPTR(FayLabelTable)();  //标签表，以后可以判断下，运行期不用创建此对象
 
 	public:
+
 		FayFun(PTR(FayDomain) domain, const std::string &name, FunType type, bool isStatic)
 			: FayLangObject(domain), _name(name), _type(type), _isStatic(isStatic) {}
 		virtual ~FayFun() {}
@@ -223,6 +252,7 @@ namespace fay
 		inline void clazz(PTR(FayClass) v) { this->_class = v; }
 		inline const PTR(FayClass) clazz() { return this->_class.lock(); }
 		inline const size_t returnsCount() { return this->_returns.size(); }
+		inline const PTR(FayLabelTable) labels() { return this->_labels; }
 
 		//添加参数描述
 		void addParam(PTR(FayParamDef) def);

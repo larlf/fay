@@ -43,6 +43,8 @@ namespace fay
 		void addParamDefine(const std::string &name, const std::string &type);
 		void addInst(FayInst *inst);
 		void optimizeInsts();
+		//当前指令数量
+		size_t instsSize() { return this->_insts.size(); }
 
 		PTR(FayVarDef) findVar(const std::string &name);
 		pos_t findVarIndex(const std::string &name);

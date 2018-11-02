@@ -38,6 +38,8 @@ fay::Lexer::Lexer()
 	this->_rules.push_back((ITokenRule*)new WordTokenRule(LexMode::Program, TokenType::While, "while"));
 	this->_rules.push_back((ITokenRule*)new WordTokenRule(LexMode::Program, TokenType::Do, "do"));
 	this->_rules.push_back((ITokenRule*)new WordTokenRule(LexMode::Program, TokenType::Return, "return"));
+	this->_rules.push_back((ITokenRule*)new WordTokenRule(LexMode::Program, TokenType::Label, "label"));
+	this->_rules.push_back((ITokenRule*)new WordTokenRule(LexMode::Program, TokenType::Goto, "goto"));
 
 	//分隔符
 	this->_rules.push_back((ITokenRule*)new SymbolTokenRule(LexMode::Program, TokenType::Semicolon,  ';'));

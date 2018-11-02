@@ -39,6 +39,8 @@ namespace fay
 
 		//支持的各种语句
 		static PTR(AstNode) _Stmt(TokenStack* stack);
+		static PTR(AstNode) _StmtLabel(TokenStack* stack);
+		static PTR(AstNode) _StmtGoto(TokenStack* stack);
 		static PTR(AstNode) _StmtBlock(TokenStack* stack);
 		static PTR(AstNode) _StmtVar(TokenStack* stack);
 		static PTR(AstNode) _StmtAssign(TokenStack* stack);

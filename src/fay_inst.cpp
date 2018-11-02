@@ -8,6 +8,13 @@ void fay::inst::Nop::toString(mirror::utils::StringBuilder * sb)
 		->endl();
 }
 
+void fay::inst::Goto::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("Goto")
+		->add(" ")->add(this->target)
+		->endl();
+}
+
 void fay::inst::PushBool::toString(mirror::utils::StringBuilder * sb)
 {
 	sb->add("PushBool")

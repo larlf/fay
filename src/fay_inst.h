@@ -34,6 +34,14 @@ namespace fay
 			virtual void toString(mirror::utils::StringBuilder* sb) override;
 		};
 		
+		class Goto : public fay::FayInst 
+		{ 
+		public:
+			int32_t target;
+			Goto(int32_t target) : FayInst(InstType::Goto),target(target) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
 		class PushBool : public fay::FayInst 
 		{ 
 		public:

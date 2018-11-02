@@ -7,15 +7,23 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 {
 	std::vector<PTR(FayValue)> localVars(fun->varsSize());
 	std::vector<FayInst*>* insts = fun->getPreparedInsts();
+	FayInst* inst;
 
-	for each(FayInst* inst in *insts)
+	for(int i=0; i<insts->size(); ++i)
 	{
+		inst = (*insts)[i];
+
 		switch (inst->type())
 		{
 			//InstCodeStart
 			case InstType::Nop:
 			{
 				//DoNothing
+				break;
+			}
+			case InstType::Goto:
+			{
+				i=((inst::Goto*)inst)->target-1;
 				break;
 			}
 			case InstType::PushBool:
@@ -335,7 +343,10 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 void fay::FayVM::run(PTR(FayFun) fun)
 {
 	if (!fun)
+	{
+		LOG_ERROR("Fun is null");
 		return;
+	}
 
 	switch (fun->type())
 	{

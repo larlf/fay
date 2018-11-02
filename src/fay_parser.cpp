@@ -265,16 +265,20 @@ PTR(AstNode) fay::Parser::_Call(TokenStack* stack)
 
 PTR(AstNode) fay::Parser::_Stmt(TokenStack* stack)
 {
-	if(stack->now()->is(TokenType::LeftBrace))
+	if (stack->now()->is(TokenType::LeftBrace))
 		return _StmtBlock(stack);
-	else if(stack->now()->is(TokenType::Var))
+	else if (stack->now()->is(TokenType::Var))
 		return _StmtVar(stack);
-	else if(stack->now()->is(TokenType::Return))
+	else if (stack->now()->is(TokenType::Return))
 		return _StmtReturn(stack);
-	else if(stack->now()->is(TokenType::If))
+	else if (stack->now()->is(TokenType::If))
 		return _StmtIf(stack);
-	else if(stack->now()->is(TokenType::For))
+	else if (stack->now()->is(TokenType::For))
 		return _StmtFor(stack);
+	else if (stack->now()->is(TokenType::Label))
+		return _StmtLabel(stack);
+	else if (stack->now()->is(TokenType::Goto))
+		return _StmtGoto(stack);
 
 	auto nextToken = stack->findNextToken({ TokenType::Assign, TokenType::Semicolon });
 	switch(nextToken->type())
@@ -286,6 +290,46 @@ PTR(AstNode) fay::Parser::_Stmt(TokenStack* stack)
 	}
 
 	//throw ParseException(stack, "unknow statement");
+}
+
+PTR(AstNode) fay::Parser::_StmtLabel(TokenStack * stack)
+{
+	PTR(AstLabel) node;
+
+	if (!stack->now()->is(TokenType::Label))
+		throw ParseException(stack, "expect label");
+
+	stack->next();
+	if (!stack->now()->is(TokenType::ID))
+		throw ParseException(stack, "cannot find label name");
+
+	node = MKPTR(AstLabel)(stack->now());
+
+	stack->next();
+	if (!stack->now()->is(TokenType::Semicolon))
+		throw ParseException(stack, "expect ;");
+
+	return node;
+}
+
+PTR(AstNode) fay::Parser::_StmtGoto(TokenStack * stack)
+{
+	PTR(AstGoto) node;
+
+	if (!stack->now()->is(TokenType::Goto))
+		throw ParseException(stack, "expect goto");
+
+	stack->next();
+	if (!stack->now()->is(TokenType::ID))
+		throw ParseException(stack, "cannot find label name");
+
+	node=MKPTR(AstGoto)(stack->now());
+
+	stack->next();
+	if (!stack->now()->is(TokenType::Semicolon))
+		throw ParseException(stack, "expect ;");
+
+	return node;
 }
 
 PTR(AstNode) fay::Parser::_StmtBlock(TokenStack* stack)

@@ -40,6 +40,8 @@ namespace fay
 		Interface,
 		DescSymbol,
 		SystemName,
+		Goto,
+		Label,
 		If,
 		Else,
 		ElseIf,
@@ -118,6 +120,7 @@ namespace fay
 	{
 		//InstTypeStart
 		Nop = 0,
+		Goto = 1,
 		PushBool = 18,
 		PushByte = 19,
 		PushInt = 20,

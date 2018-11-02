@@ -350,4 +350,19 @@ namespace fay
 
 	};
 
+	class AstLabel : public AstNode
+	{
+		using AstNode::AstNode;
+	public:
+		virtual void dig3(FayBuilder *builder) override;
+		virtual void dig4(FayBuilder *builder) override;
+	};
+
+	class AstGoto : public AstNode
+	{
+		using AstNode::AstNode;
+	public:
+		virtual void dig4(FayBuilder *builder) override;
+	};
+
 }

@@ -28,6 +28,8 @@ void fay::TypeDict::Init()
 	TypeDict::TokenTypeName[TokenType::Interface] = "Interface";
 	TypeDict::TokenTypeName[TokenType::DescSymbol] = "DescSymbol";
 	TypeDict::TokenTypeName[TokenType::SystemName] = "SystemName";
+	TypeDict::TokenTypeName[TokenType::Goto] = "Goto";
+	TypeDict::TokenTypeName[TokenType::Label] = "Label";
 	TypeDict::TokenTypeName[TokenType::If] = "If";
 	TypeDict::TokenTypeName[TokenType::Else] = "Else";
 	TypeDict::TokenTypeName[TokenType::ElseIf] = "ElseIf";
@@ -72,6 +74,7 @@ void fay::TypeDict::Init()
 
 	//InstTypeNameStart
 	TypeDict::InstTypeName[InstType::Nop] = "Nop";
+	TypeDict::InstTypeName[InstType::Goto] = "Goto";
 	TypeDict::InstTypeName[InstType::PushBool] = "PushBool";
 	TypeDict::InstTypeName[InstType::PushByte] = "PushByte";
 	TypeDict::InstTypeName[InstType::PushInt] = "PushInt";
