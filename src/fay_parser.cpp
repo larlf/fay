@@ -265,69 +265,89 @@ PTR(AstNode) fay::Parser::_Call(TokenStack* stack)
 
 PTR(AstNode) fay::Parser::_Stmt(TokenStack* stack)
 {
-	if (stack->now()->is(TokenType::LeftBrace))
+	if(stack->now()->is(TokenType::LeftBrace))
 		return _StmtBlock(stack);
-	else if (stack->now()->is(TokenType::Var))
+	else if(stack->now()->is(TokenType::Var))
 		return _StmtVar(stack);
-	else if (stack->now()->is(TokenType::Return))
+	else if(stack->now()->is(TokenType::Return))
 		return _StmtReturn(stack);
-	else if (stack->now()->is(TokenType::If))
+	else if(stack->now()->is(TokenType::If))
 		return _StmtIf(stack);
-	else if (stack->now()->is(TokenType::For))
+	else if(stack->now()->is(TokenType::For))
 		return _StmtFor(stack);
-	else if (stack->now()->is(TokenType::Label))
+	else if(stack->now()->is(TokenType::Label))
 		return _StmtLabel(stack);
-	else if (stack->now()->is(TokenType::Goto))
+	else if(stack->now()->is(TokenType::Goto))
 		return _StmtGoto(stack);
 
-	auto nextToken = stack->findNextToken({ TokenType::Assign, TokenType::Semicolon });
-	switch(nextToken->type())
+	auto nextToken = stack->findNextToken({ TokenType::Assign, TokenType::Semicolon, TokenType::RightBrace });
+	if(nextToken)
 	{
-		case TokenType::Assign:
-			return _StmtAssign(stack);
-		default:
-			return _Expr(stack);
-	}
+		switch(nextToken->type())
+		{
+			case TokenType::Assign:
+				return _StmtAssign(stack);
+			case TokenType::Semicolon:
+			{
+				PTR(AstNode) expr = _Expr(stack);
+				if (expr)
+				{
+					if (stack->now()->is(TokenType::Semicolon))
+					{
+						PTR(AstExprStmt) node = MKPTR(AstExprStmt)(stack->now());
+						node->addChildNode(expr);
+						stack->next();
+						return node;
+					}
+					else
+						return expr;
+				}
 
-	//throw ParseException(stack, "unknow statement");
+			}
+		}
+	}
+	else
+		throw ParseException(stack, "unknow statement");
+
+	return nullptr;
 }
 
-PTR(AstNode) fay::Parser::_StmtLabel(TokenStack * stack)
+PTR(AstNode) fay::Parser::_StmtLabel(TokenStack* stack)
 {
 	PTR(AstLabel) node;
 
-	if (!stack->now()->is(TokenType::Label))
+	if(!stack->now()->is(TokenType::Label))
 		throw ParseException(stack, "expect label");
-
 	stack->next();
-	if (!stack->now()->is(TokenType::ID))
+
+	if(!stack->now()->is(TokenType::ID))
 		throw ParseException(stack, "cannot find label name");
-
 	node = MKPTR(AstLabel)(stack->now());
-
 	stack->next();
-	if (!stack->now()->is(TokenType::Semicolon))
+
+	if(!stack->now()->is(TokenType::Semicolon))
 		throw ParseException(stack, "expect ;");
+	stack->next();
 
 	return node;
 }
 
-PTR(AstNode) fay::Parser::_StmtGoto(TokenStack * stack)
+PTR(AstNode) fay::Parser::_StmtGoto(TokenStack* stack)
 {
 	PTR(AstGoto) node;
 
-	if (!stack->now()->is(TokenType::Goto))
+	if(!stack->now()->is(TokenType::Goto))
 		throw ParseException(stack, "expect goto");
-
 	stack->next();
-	if (!stack->now()->is(TokenType::ID))
+
+	if(!stack->now()->is(TokenType::ID))
 		throw ParseException(stack, "cannot find label name");
-
-	node=MKPTR(AstGoto)(stack->now());
-
+	node = MKPTR(AstGoto)(stack->now());
 	stack->next();
-	if (!stack->now()->is(TokenType::Semicolon))
+
+	if(!stack->now()->is(TokenType::Semicolon))
 		throw ParseException(stack, "expect ;");
+	stack->next();
 
 	return node;
 }
@@ -346,8 +366,8 @@ PTR(AstNode) fay::Parser::_StmtBlock(TokenStack* stack)
 			break;
 
 		//跳过空语句
-		while(stack->now()->is(TokenType::Semicolon))
-			stack->next();
+		//while(stack->now()->is(TokenType::Semicolon))
+		//	stack->next();
 
 		auto subNode = _Stmt(stack);
 		if(subNode)
@@ -356,8 +376,8 @@ PTR(AstNode) fay::Parser::_StmtBlock(TokenStack* stack)
 			break;
 
 		//跳过空语句
-		while(stack->now()->is(TokenType::Semicolon))
-			stack->next();
+		//while(stack->now()->is(TokenType::Semicolon))
+		//	stack->next();
 	}
 
 	if(!stack->now()->is(TokenType::RightBrace))
@@ -397,6 +417,7 @@ PTR(AstNode) fay::Parser::_StmtVar(TokenStack* stack)
 
 	if(!stack->now()->is(TokenType::Semicolon))
 		throw ParseException(stack, "expect ;");
+	stack->next();
 
 	PTR(AstVar) node = MKPTR(AstVar)(varName);
 	node->addChildNode(typeNode);
@@ -411,7 +432,51 @@ PTR(AstNode) fay::Parser::_StmtAssign(TokenStack* stack)
 
 PTR(AstNode) fay::Parser::_StmtIf(TokenStack* stack)
 {
-	return PTR(AstNode)();
+	//if
+	if(!stack->now()->is(TokenType::If))
+		throw ParseException(stack, "expect if");
+	PTR(AstIf) node = MKPTR(AstIf)(stack->now());
+	PTR(AstBranch) branch = MKPTR(AstBranch)(stack->now());
+	stack->next();
+
+	//(
+	if(!stack->now()->is("("))
+		throw ParseException(stack, "expect (");
+	stack->next();
+
+	//判断条件
+	PTR(AstNode) stmt = _Expr(stack);
+	if(!stmt)
+		throw ParseException(stack, "if condition error");
+	node->addChildNode(stmt);
+
+	//)
+	if(!stack->now()->is(")"))
+		throw ParseException(stack, "expect )");
+	stack->next();
+
+	//主分支
+	stmt = _Stmt(stack);
+	if(!stmt)
+		throw ParseException(stack, "if statement error");
+	branch->addChildNode(stmt);
+	node->addChildNode(branch);
+
+	LOG_DEBUG(stack->now()->toString());
+
+	//else
+	if(stack->now()->is(TokenType::Else))
+	{
+		branch = MKPTR(AstBranch)(stack->now());
+		stack->next();
+		stmt = _Stmt(stack);
+		if(!stmt)
+			throw ParseException(stack, "else statement error");
+		branch->addChildNode(stmt);
+		node->addChildNode(branch);
+	}
+
+	return node;
 }
 
 PTR(AstNode) fay::Parser::_StmtFor(TokenStack* stack)

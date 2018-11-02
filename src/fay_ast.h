@@ -263,6 +263,12 @@ namespace fay
 		using AstNode::AstNode;
 	};
 
+	//只有表达式的语句
+	class AstExprStmt : public AstNode
+	{
+		using AstNode::AstNode;
+	};
+
 	class AstAssign : public AstNode
 	{
 		using AstNode::AstNode;
@@ -277,6 +283,12 @@ namespace fay
 	};
 
 	class AstIf : public AstNode
+	{
+		using AstNode::AstNode;
+	};
+
+	//在流程语句中用于对分支进行处理
+	class AstBranch : public AstNode
 	{
 		using AstNode::AstNode;
 	};

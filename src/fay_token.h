@@ -13,7 +13,7 @@ namespace fay
 	{
 	private:
 		std::string _text;
-		TokenType _class = TokenType::None;
+		TokenType _type = TokenType::None;
 		int _line = -1;
 		int _col = -1;
 
@@ -22,19 +22,19 @@ namespace fay
 		Token() {}
 		Token(TokenType type, mirror::data::ByteData &data, int pos, int size, int line, int col)
 		{
-			this->_class = type;
+			this->_type = type;
 			this->_text = std::string((char*)data.data(), pos, size);
 			this->_line = line;
 			this->_col = col;
 		}
 
-		TokenType type() { return this->_class; }
+		TokenType type() { return this->_type; }
 		const std::string &text() { return this->_text; }
 		int line() { return this->_line; }
 		int col() { return this->_col; }
 		size_t size() { return this->_text.size(); }
 
-		bool is(TokenType type) { return this->_class == type; }
+		bool is(TokenType type) { return this->_type == type; }
 		bool is(const std::string &text) { return this->_text == text; }
 
 		std::string toString();

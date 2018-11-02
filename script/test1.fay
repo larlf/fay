@@ -26,20 +26,10 @@ public class MyTest
 		fay.System.Print("PointB");
 		label label1;
 		fay.System.Print("PointC");
-	}
-
-	static public fun fun3():void
-	{
 		
-	}
-
-	static public fun fun4():void
-	{
-		
-	}
-
-	static public fun fun5():void
-	{
-		
+		if(true)
+			fay.System.Print("True");
+		else 
+			fay.System.Print("False");
 	}
 }

@@ -17,7 +17,7 @@ std::string fay::Token::toString()
 	sprintf_s(&*buffer, size, "%-5i %-5i %-16s  %s",
 		this->_line,
 		this->_col,
-		TypeDict::ToName(this->_class).c_str(),
+		TypeDict::ToName(this->_type).c_str(),
 		text.c_str());
 	return std::string(&*buffer);
 }
