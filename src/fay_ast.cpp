@@ -488,7 +488,61 @@ void fay::AstLabel::dig4(FayBuilder * builder)
 
 void fay::AstGoto::dig4(FayBuilder * builder)
 {
-	inst::Goto* inst = new inst::Goto(-1);
+	inst::Jump* inst = new inst::Jump(-1);
 	builder->fun()->labels()->addTarget(this->_text, &inst->target);
 	builder->addInst(inst);
+}
+
+void fay::AstIf::dig3(FayBuilder * builder)
+{
+	AstNode::dig3(builder);
+
+	//如果不是Bool，这里进行一下转换
+	ValueType type = this->_nodes[0]->valueType();
+	if(type!=ValueType::Bool)
+		this->insertChldNode(0, MKPTR(AstTypeConvert)(type, ValueType::Bool));
+
+	this->endLabel = builder->makeLabelName();
+	builder->fun()->labels()->addLabel(this->endLabel);
+}
+
+void fay::AstIf::dig4(FayBuilder * builder)
+{
+	this->_nodes[0]->dig4(builder);
+
+	//查找是否有Else分支
+	if (this->_nodes.size() > 2 && this->_nodes[this->_nodes.size() - 1]->token()->is(TokenType::Else))
+	{
+		PTR(AstBranch) elseBranch = TOPTR(AstBranch, this->_nodes[this->_nodes.size() - 1]);
+
+		inst::JumpFalse* inst = new inst::JumpFalse(-1);
+		builder->fun()->labels()->addTarget(elseBranch->label(), &inst->target);
+		builder->addInst(inst);
+	}
+
+	//生成每个分支的代码
+	for (int i = 1; i < this->_nodes.size(); ++i)
+	{
+		this->_nodes[i]->dig4(builder);
+
+		//跳转到结束
+		inst::Jump* inst = new inst::Jump(-1);
+		builder->fun()->labels()->addTarget(this->endLabel, &inst->target);
+		builder->addInst(inst);
+	}
+
+	//设置结束的位置
+	builder->fun()->labels()->setPos(this->endLabel, builder->instsSize());
+}
+
+void fay::AstBranch::dig3(FayBuilder * builder)
+{
+	this->_label = builder->makeLabelName();
+	builder->fun()->labels()->addLabel(this->_label);
+}
+
+void fay::AstBranch::dig4(FayBuilder * builder)
+{
+	builder->fun()->labels()->setPos(this->_label, builder->instsSize());
+	AstNode::dig4(builder);
 }

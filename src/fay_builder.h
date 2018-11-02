@@ -16,6 +16,7 @@ namespace fay
 		PTR(FayInstClass) _class;
 		PTR(FayInstFun) _fun;
 		std::vector<FayInst*> _insts;
+		int64_t labelIndex = 1;  //用于生成label
 
 	public:
 		FayBuilder(PTR(FayDomain) domain)
@@ -26,6 +27,8 @@ namespace fay
 		PTR(FayLib) lib() { return this->_lib; }
 		PTR(FayInstClass) clazz() { return this->_class; }
 		PTR(FayInstFun) fun() { return this->_fun; }
+
+		std::string makeLabelName();
 
 		void package(const std::string &name);
 

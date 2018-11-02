@@ -93,6 +93,7 @@ namespace fay
 	enum class InstGroupType
 	{
 		//InstGroupTypeStart
+		Jump = 10,
 		Push = 1,
 		Pop = 2,
 		PopTo = 3,
@@ -120,7 +121,8 @@ namespace fay
 	{
 		//InstTypeStart
 		Nop = 0,
-		Goto = 1,
+		Jump = 160,
+		JumpFalse = 162,
 		PushBool = 18,
 		PushByte = 19,
 		PushInt = 20,

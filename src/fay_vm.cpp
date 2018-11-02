@@ -21,9 +21,16 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 				//DoNothing
 				break;
 			}
-			case InstType::Goto:
+			case InstType::Jump:
 			{
-				i=((inst::Goto*)inst)->target-1;
+				i=((inst::Jump*)inst)->target-1;
+				break;
+			}
+			case InstType::JumpFalse:
+			{
+				PTR(FayValue) v=this->stack.top();
+				this->stack.pop();
+				if(!v->boolVal()) i=((inst::JumpFalse*)inst)->target-1;
 				break;
 			}
 			case InstType::PushBool:

@@ -8,9 +8,16 @@ void fay::inst::Nop::toString(mirror::utils::StringBuilder * sb)
 		->endl();
 }
 
-void fay::inst::Goto::toString(mirror::utils::StringBuilder * sb)
+void fay::inst::Jump::toString(mirror::utils::StringBuilder * sb)
 {
-	sb->add("Goto")
+	sb->add("Jump")
+		->add(" ")->add(this->target)
+		->endl();
+}
+
+void fay::inst::JumpFalse::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("JumpFalse")
 		->add(" ")->add(this->target)
 		->endl();
 }

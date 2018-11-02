@@ -74,7 +74,8 @@ void fay::TypeDict::Init()
 
 	//InstTypeNameStart
 	TypeDict::InstTypeName[InstType::Nop] = "Nop";
-	TypeDict::InstTypeName[InstType::Goto] = "Goto";
+	TypeDict::InstTypeName[InstType::Jump] = "Jump";
+	TypeDict::InstTypeName[InstType::JumpFalse] = "JumpFalse";
 	TypeDict::InstTypeName[InstType::PushBool] = "PushBool";
 	TypeDict::InstTypeName[InstType::PushByte] = "PushByte";
 	TypeDict::InstTypeName[InstType::PushInt] = "PushInt";

@@ -1,7 +1,13 @@
 ﻿#include <fay_builder.h>
 #include <mirror_utils_log.h>
+#include <string>
 
 using namespace fay;
+
+std::string fay::FayBuilder::makeLabelName()
+{
+	return "__label__" + std::to_string(this->labelIndex++);
+}
 
 void fay::FayBuilder::package(const std::string &name)
 {

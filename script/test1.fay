@@ -26,8 +26,8 @@ public class MyTest
 		fay.System.Print("PointB");
 		label label1;
 		fay.System.Print("PointC");
-		
-		if(true)
+
+		if(false)
 			fay.System.Print("True");
 		else 
 			fay.System.Print("False");
