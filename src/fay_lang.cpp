@@ -866,6 +866,46 @@ FayInst* fay::FayLangUtils::OPInst(InstGroupType op, ValueType type)
 		return new inst::DivObject();
 	else if (op == InstGroupType::Div && type == ValueType::Function)
 		return new inst::DivFunction();
+	else if (op == InstGroupType::Equal && type == ValueType::Void)
+		return new inst::EqualVoid();
+	else if (op == InstGroupType::Equal && type == ValueType::Bool)
+		return new inst::EqualBool();
+	else if (op == InstGroupType::Equal && type == ValueType::Byte)
+		return new inst::EqualByte();
+	else if (op == InstGroupType::Equal && type == ValueType::Int)
+		return new inst::EqualInt();
+	else if (op == InstGroupType::Equal && type == ValueType::Long)
+		return new inst::EqualLong();
+	else if (op == InstGroupType::Equal && type == ValueType::Float)
+		return new inst::EqualFloat();
+	else if (op == InstGroupType::Equal && type == ValueType::Double)
+		return new inst::EqualDouble();
+	else if (op == InstGroupType::Equal && type == ValueType::String)
+		return new inst::EqualString();
+	else if (op == InstGroupType::Equal && type == ValueType::Object)
+		return new inst::EqualObject();
+	else if (op == InstGroupType::Equal && type == ValueType::Function)
+		return new inst::EqualFunction();
+	else if (op == InstGroupType::Greater && type == ValueType::Void)
+		return new inst::GreaterVoid();
+	else if (op == InstGroupType::Greater && type == ValueType::Bool)
+		return new inst::GreaterBool();
+	else if (op == InstGroupType::Greater && type == ValueType::Byte)
+		return new inst::GreaterByte();
+	else if (op == InstGroupType::Greater && type == ValueType::Int)
+		return new inst::GreaterInt();
+	else if (op == InstGroupType::Greater && type == ValueType::Long)
+		return new inst::GreaterLong();
+	else if (op == InstGroupType::Greater && type == ValueType::Float)
+		return new inst::GreaterFloat();
+	else if (op == InstGroupType::Greater && type == ValueType::Double)
+		return new inst::GreaterDouble();
+	else if (op == InstGroupType::Greater && type == ValueType::String)
+		return new inst::GreaterString();
+	else if (op == InstGroupType::Greater && type == ValueType::Object)
+		return new inst::GreaterObject();
+	else if (op == InstGroupType::Greater && type == ValueType::Function)
+		return new inst::GreaterFunction();
 	//OPInstEnd
 
 	return nullptr;

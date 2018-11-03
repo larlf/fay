@@ -27,7 +27,9 @@ public class MyTest
 		label label1;
 		fay.System.Print("PointC");
 
-		if(false)
+		var a:int=5;
+
+		if(a>4)
 			fay.System.Print("True");
 		else 
 			fay.System.Print("False");

@@ -486,7 +486,7 @@ Cmds.convert_inst = function()
 
 	replaceFileBody("src/fay_lang.cpp", "ConvertInst", convertText, "\t");
 
-	let ops = ["Add", "Sub", "Mul", "Div"];
+	let ops = ["Add", "Sub", "Mul", "Div", "Equal", "Greater"];
 	let opText = "";
 	ops.forEach(op =>
 	{

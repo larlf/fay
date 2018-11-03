@@ -6,9 +6,10 @@ cmake_minimum_required(VERSION 2.6)
 #设置Debug版的编译参数，Windows下只支持Debug版
 if(WIN32)
 	set(CMAKE_C_FLAGS 				"-DWIN32 /MT /EHsc -D_WIN32_WINNT=0x0502")
-	set(CMAKE_C_FLAGS_DEBUG			"/MTd -DDEBUG /Zi")
+	set(CMAKE_C_FLAGS_DEBUG			"/MTd -DDEBUG /Zi /Od")
 	set(CMAKE_CXX_FLAGS				"-DWIN32 /GR /MT /EHsc -D_WIN32_WINNT=0x0502")
-	set(CMAKE_CXX_FLAGS_DEBUG		"/MTd -DDEBUG /Zi")
+	set(CMAKE_CXX_FLAGS_DEBUG		"/MTd -DDEBUG /Zi /Od")
+	set(CMAKE_EXE_LINKER_FLAGS		"${CMAKE_EXE_LINKER_FLAGS}")
 	set(type win64)
 else()
 	set(CMAKE_CXX_FLAGS "-fPIC -std=c++0x -g -O2 -static -Wall -pipe -frtti")
@@ -101,7 +102,7 @@ set(fayvm_src
 add_executable(fayvm ${fayvm_src})
 
 if(WIN32)
-	target_link_libraries(fayvm fay mirror.lib winmm.lib mirage.lib jansson.lib libiconv.lib)
+	target_link_libraries(fayvm fay mirror winmm.lib mirage.lib jansson.lib libiconv.lib)
 else()
 	target_link_libraries(fayvm fay mirror.lib)
 endif()
@@ -115,7 +116,7 @@ set(fayc_src
 add_executable(fayc ${fayc_src})
 
 if(WIN32)
-	target_link_libraries(fayc mirror.lib winmm.lib mirage.lib jansson.lib libiconv.lib)
+	target_link_libraries(fayc fay mirror winmm.lib mirage.lib jansson.lib libiconv.lib)
 else()
 	target_link_libraries(fayc mirror.lib)
 endif()
@@ -130,12 +131,12 @@ set(test_src
 	src/test_fay.cpp
 )
 
-add_executable(test ${test_src})
+add_executable(fay_test ${test_src})
 
 if(WIN32)
-	target_link_libraries(test mirror fay winmm.lib mirage.lib jansson.lib libiconv.lib)
+	target_link_libraries(fay_test mirror fay winmm.lib mirage.lib jansson.lib libiconv.lib)
 else()
-	target_link_libraries(test mirror fay)
+	target_link_libraries(fay_test mirror fay)
 endif()
 
 

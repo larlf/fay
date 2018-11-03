@@ -231,6 +231,13 @@ namespace fay
 	class AstBoolOP : public AstNode
 	{
 		using AstNode::AstNode;
+	private:
+		ValueType _itemType = ValueType::Void;
+
+	public:
+		virtual ValueType valueType() override;
+		virtual void dig3(FayBuilder *builder) override;
+		virtual void dig4(FayBuilder *builder) override;
 	};
 
 	class AstBracket : public AstNode

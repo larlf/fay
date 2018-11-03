@@ -984,4 +984,364 @@ void fay::inst::DivFunction::toString(mirror::utils::StringBuilder * sb)
 		->endl();
 }
 
+void fay::inst::EqualVoid::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("EqualVoid")
+		->endl();
+}
+
+void fay::inst::EqualBool::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("EqualBool")
+		->endl();
+}
+
+void fay::inst::EqualByte::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("EqualByte")
+		->endl();
+}
+
+void fay::inst::EqualInt::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("EqualInt")
+		->endl();
+}
+
+void fay::inst::EqualLong::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("EqualLong")
+		->endl();
+}
+
+void fay::inst::EqualFloat::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("EqualFloat")
+		->endl();
+}
+
+void fay::inst::EqualDouble::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("EqualDouble")
+		->endl();
+}
+
+void fay::inst::EqualString::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("EqualString")
+		->endl();
+}
+
+void fay::inst::EqualObject::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("EqualObject")
+		->endl();
+}
+
+void fay::inst::EqualFunction::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("EqualFunction")
+		->endl();
+}
+
+void fay::inst::NotEqualVoid::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("NotEqualVoid")
+		->endl();
+}
+
+void fay::inst::NotEqualBool::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("NotEqualBool")
+		->endl();
+}
+
+void fay::inst::NotEqualByte::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("NotEqualByte")
+		->endl();
+}
+
+void fay::inst::NotEqualInt::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("NotEqualInt")
+		->endl();
+}
+
+void fay::inst::NotEqualLong::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("NotEqualLong")
+		->endl();
+}
+
+void fay::inst::NotEqualFloat::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("NotEqualFloat")
+		->endl();
+}
+
+void fay::inst::NotEqualDouble::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("NotEqualDouble")
+		->endl();
+}
+
+void fay::inst::NotEqualString::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("NotEqualString")
+		->endl();
+}
+
+void fay::inst::NotEqualObject::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("NotEqualObject")
+		->endl();
+}
+
+void fay::inst::NotEqualFunction::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("NotEqualFunction")
+		->endl();
+}
+
+void fay::inst::GreaterVoid::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("GreaterVoid")
+		->endl();
+}
+
+void fay::inst::GreaterBool::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("GreaterBool")
+		->endl();
+}
+
+void fay::inst::GreaterByte::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("GreaterByte")
+		->endl();
+}
+
+void fay::inst::GreaterInt::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("GreaterInt")
+		->endl();
+}
+
+void fay::inst::GreaterLong::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("GreaterLong")
+		->endl();
+}
+
+void fay::inst::GreaterFloat::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("GreaterFloat")
+		->endl();
+}
+
+void fay::inst::GreaterDouble::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("GreaterDouble")
+		->endl();
+}
+
+void fay::inst::GreaterString::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("GreaterString")
+		->endl();
+}
+
+void fay::inst::GreaterObject::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("GreaterObject")
+		->endl();
+}
+
+void fay::inst::GreaterFunction::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("GreaterFunction")
+		->endl();
+}
+
+void fay::inst::GreaterEqualVoid::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("GreaterEqualVoid")
+		->endl();
+}
+
+void fay::inst::GreaterEqualBool::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("GreaterEqualBool")
+		->endl();
+}
+
+void fay::inst::GreaterEqualByte::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("GreaterEqualByte")
+		->endl();
+}
+
+void fay::inst::GreaterEqualInt::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("GreaterEqualInt")
+		->endl();
+}
+
+void fay::inst::GreaterEqualLong::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("GreaterEqualLong")
+		->endl();
+}
+
+void fay::inst::GreaterEqualFloat::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("GreaterEqualFloat")
+		->endl();
+}
+
+void fay::inst::GreaterEqualDouble::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("GreaterEqualDouble")
+		->endl();
+}
+
+void fay::inst::GreaterEqualString::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("GreaterEqualString")
+		->endl();
+}
+
+void fay::inst::GreaterEqualObject::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("GreaterEqualObject")
+		->endl();
+}
+
+void fay::inst::GreaterEqualFunction::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("GreaterEqualFunction")
+		->endl();
+}
+
+void fay::inst::LessVoid::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("LessVoid")
+		->endl();
+}
+
+void fay::inst::LessBool::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("LessBool")
+		->endl();
+}
+
+void fay::inst::LessByte::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("LessByte")
+		->endl();
+}
+
+void fay::inst::LessInt::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("LessInt")
+		->endl();
+}
+
+void fay::inst::LessLong::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("LessLong")
+		->endl();
+}
+
+void fay::inst::LessFloat::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("LessFloat")
+		->endl();
+}
+
+void fay::inst::LessDouble::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("LessDouble")
+		->endl();
+}
+
+void fay::inst::LessString::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("LessString")
+		->endl();
+}
+
+void fay::inst::LessObject::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("LessObject")
+		->endl();
+}
+
+void fay::inst::LessFunction::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("LessFunction")
+		->endl();
+}
+
+void fay::inst::LessEqualVoid::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("LessEqualVoid")
+		->endl();
+}
+
+void fay::inst::LessEqualBool::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("LessEqualBool")
+		->endl();
+}
+
+void fay::inst::LessEqualByte::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("LessEqualByte")
+		->endl();
+}
+
+void fay::inst::LessEqualInt::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("LessEqualInt")
+		->endl();
+}
+
+void fay::inst::LessEqualLong::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("LessEqualLong")
+		->endl();
+}
+
+void fay::inst::LessEqualFloat::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("LessEqualFloat")
+		->endl();
+}
+
+void fay::inst::LessEqualDouble::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("LessEqualDouble")
+		->endl();
+}
+
+void fay::inst::LessEqualString::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("LessEqualString")
+		->endl();
+}
+
+void fay::inst::LessEqualObject::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("LessEqualObject")
+		->endl();
+}
+
+void fay::inst::LessEqualFunction::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("LessEqualFunction")
+		->endl();
+}
+
 //InstEnd

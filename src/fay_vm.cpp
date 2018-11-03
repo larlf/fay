@@ -339,6 +339,60 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 				(*this->stack.top()->strVal())+=*v->strVal();
 				break;
 			}
+			case InstType::GreaterBool:
+			{
+				PTR(FayValue) v2=this->stack.top();
+				this->stack.pop();
+				PTR(FayValue) v1=this->stack.top();
+				this->stack.pop();
+				this->stack.push(MKPTR(FayValue)(v1->boolVal()>v2->boolVal()));
+				break;
+			}
+			case InstType::GreaterByte:
+			{
+				PTR(FayValue) v2=this->stack.top();
+				this->stack.pop();
+				PTR(FayValue) v1=this->stack.top();
+				this->stack.pop();
+				this->stack.push(MKPTR(FayValue)(v1->byteVal()>v2->byteVal()));
+				break;
+			}
+			case InstType::GreaterInt:
+			{
+				PTR(FayValue) v2=this->stack.top();
+				this->stack.pop();
+				PTR(FayValue) v1=this->stack.top();
+				this->stack.pop();
+				this->stack.push(MKPTR(FayValue)(v1->intVal()>v2->intVal()));
+				break;
+			}
+			case InstType::GreaterLong:
+			{
+				PTR(FayValue) v2=this->stack.top();
+				this->stack.pop();
+				PTR(FayValue) v1=this->stack.top();
+				this->stack.pop();
+				this->stack.push(MKPTR(FayValue)(v1->longVal()>v2->longVal()));
+				break;
+			}
+			case InstType::GreaterFloat:
+			{
+				PTR(FayValue) v2=this->stack.top();
+				this->stack.pop();
+				PTR(FayValue) v1=this->stack.top();
+				this->stack.pop();
+				this->stack.push(MKPTR(FayValue)(v1->floatVal()>v2->floatVal()));
+				break;
+			}
+			case InstType::GreaterDouble:
+			{
+				PTR(FayValue) v2=this->stack.top();
+				this->stack.pop();
+				PTR(FayValue) v1=this->stack.top();
+				this->stack.pop();
+				this->stack.push(MKPTR(FayValue)(v1->doubleVal()>v2->doubleVal()));
+				break;
+			}
 			//InstCodeEnd
 			default:
 				LOG_ERROR("Unrealized inst : "+TypeDict::ToName(inst->type()));

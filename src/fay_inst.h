@@ -1173,6 +1173,426 @@ namespace fay
 			virtual void toString(mirror::utils::StringBuilder* sb) override;
 		};
 		
+		class EqualVoid : public fay::FayInst 
+		{ 
+		public:
+			EqualVoid() : FayInst(InstType::EqualVoid) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class EqualBool : public fay::FayInst 
+		{ 
+		public:
+			EqualBool() : FayInst(InstType::EqualBool) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class EqualByte : public fay::FayInst 
+		{ 
+		public:
+			EqualByte() : FayInst(InstType::EqualByte) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class EqualInt : public fay::FayInst 
+		{ 
+		public:
+			EqualInt() : FayInst(InstType::EqualInt) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class EqualLong : public fay::FayInst 
+		{ 
+		public:
+			EqualLong() : FayInst(InstType::EqualLong) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class EqualFloat : public fay::FayInst 
+		{ 
+		public:
+			EqualFloat() : FayInst(InstType::EqualFloat) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class EqualDouble : public fay::FayInst 
+		{ 
+		public:
+			EqualDouble() : FayInst(InstType::EqualDouble) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class EqualString : public fay::FayInst 
+		{ 
+		public:
+			EqualString() : FayInst(InstType::EqualString) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class EqualObject : public fay::FayInst 
+		{ 
+		public:
+			EqualObject() : FayInst(InstType::EqualObject) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class EqualFunction : public fay::FayInst 
+		{ 
+		public:
+			EqualFunction() : FayInst(InstType::EqualFunction) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class NotEqualVoid : public fay::FayInst 
+		{ 
+		public:
+			NotEqualVoid() : FayInst(InstType::NotEqualVoid) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class NotEqualBool : public fay::FayInst 
+		{ 
+		public:
+			NotEqualBool() : FayInst(InstType::NotEqualBool) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class NotEqualByte : public fay::FayInst 
+		{ 
+		public:
+			NotEqualByte() : FayInst(InstType::NotEqualByte) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class NotEqualInt : public fay::FayInst 
+		{ 
+		public:
+			NotEqualInt() : FayInst(InstType::NotEqualInt) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class NotEqualLong : public fay::FayInst 
+		{ 
+		public:
+			NotEqualLong() : FayInst(InstType::NotEqualLong) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class NotEqualFloat : public fay::FayInst 
+		{ 
+		public:
+			NotEqualFloat() : FayInst(InstType::NotEqualFloat) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class NotEqualDouble : public fay::FayInst 
+		{ 
+		public:
+			NotEqualDouble() : FayInst(InstType::NotEqualDouble) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class NotEqualString : public fay::FayInst 
+		{ 
+		public:
+			NotEqualString() : FayInst(InstType::NotEqualString) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class NotEqualObject : public fay::FayInst 
+		{ 
+		public:
+			NotEqualObject() : FayInst(InstType::NotEqualObject) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class NotEqualFunction : public fay::FayInst 
+		{ 
+		public:
+			NotEqualFunction() : FayInst(InstType::NotEqualFunction) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class GreaterVoid : public fay::FayInst 
+		{ 
+		public:
+			GreaterVoid() : FayInst(InstType::GreaterVoid) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class GreaterBool : public fay::FayInst 
+		{ 
+		public:
+			GreaterBool() : FayInst(InstType::GreaterBool) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class GreaterByte : public fay::FayInst 
+		{ 
+		public:
+			GreaterByte() : FayInst(InstType::GreaterByte) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class GreaterInt : public fay::FayInst 
+		{ 
+		public:
+			GreaterInt() : FayInst(InstType::GreaterInt) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class GreaterLong : public fay::FayInst 
+		{ 
+		public:
+			GreaterLong() : FayInst(InstType::GreaterLong) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class GreaterFloat : public fay::FayInst 
+		{ 
+		public:
+			GreaterFloat() : FayInst(InstType::GreaterFloat) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class GreaterDouble : public fay::FayInst 
+		{ 
+		public:
+			GreaterDouble() : FayInst(InstType::GreaterDouble) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class GreaterString : public fay::FayInst 
+		{ 
+		public:
+			GreaterString() : FayInst(InstType::GreaterString) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class GreaterObject : public fay::FayInst 
+		{ 
+		public:
+			GreaterObject() : FayInst(InstType::GreaterObject) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class GreaterFunction : public fay::FayInst 
+		{ 
+		public:
+			GreaterFunction() : FayInst(InstType::GreaterFunction) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class GreaterEqualVoid : public fay::FayInst 
+		{ 
+		public:
+			GreaterEqualVoid() : FayInst(InstType::GreaterEqualVoid) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class GreaterEqualBool : public fay::FayInst 
+		{ 
+		public:
+			GreaterEqualBool() : FayInst(InstType::GreaterEqualBool) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class GreaterEqualByte : public fay::FayInst 
+		{ 
+		public:
+			GreaterEqualByte() : FayInst(InstType::GreaterEqualByte) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class GreaterEqualInt : public fay::FayInst 
+		{ 
+		public:
+			GreaterEqualInt() : FayInst(InstType::GreaterEqualInt) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class GreaterEqualLong : public fay::FayInst 
+		{ 
+		public:
+			GreaterEqualLong() : FayInst(InstType::GreaterEqualLong) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class GreaterEqualFloat : public fay::FayInst 
+		{ 
+		public:
+			GreaterEqualFloat() : FayInst(InstType::GreaterEqualFloat) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class GreaterEqualDouble : public fay::FayInst 
+		{ 
+		public:
+			GreaterEqualDouble() : FayInst(InstType::GreaterEqualDouble) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class GreaterEqualString : public fay::FayInst 
+		{ 
+		public:
+			GreaterEqualString() : FayInst(InstType::GreaterEqualString) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class GreaterEqualObject : public fay::FayInst 
+		{ 
+		public:
+			GreaterEqualObject() : FayInst(InstType::GreaterEqualObject) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class GreaterEqualFunction : public fay::FayInst 
+		{ 
+		public:
+			GreaterEqualFunction() : FayInst(InstType::GreaterEqualFunction) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class LessVoid : public fay::FayInst 
+		{ 
+		public:
+			LessVoid() : FayInst(InstType::LessVoid) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class LessBool : public fay::FayInst 
+		{ 
+		public:
+			LessBool() : FayInst(InstType::LessBool) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class LessByte : public fay::FayInst 
+		{ 
+		public:
+			LessByte() : FayInst(InstType::LessByte) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class LessInt : public fay::FayInst 
+		{ 
+		public:
+			LessInt() : FayInst(InstType::LessInt) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class LessLong : public fay::FayInst 
+		{ 
+		public:
+			LessLong() : FayInst(InstType::LessLong) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class LessFloat : public fay::FayInst 
+		{ 
+		public:
+			LessFloat() : FayInst(InstType::LessFloat) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class LessDouble : public fay::FayInst 
+		{ 
+		public:
+			LessDouble() : FayInst(InstType::LessDouble) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class LessString : public fay::FayInst 
+		{ 
+		public:
+			LessString() : FayInst(InstType::LessString) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class LessObject : public fay::FayInst 
+		{ 
+		public:
+			LessObject() : FayInst(InstType::LessObject) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class LessFunction : public fay::FayInst 
+		{ 
+		public:
+			LessFunction() : FayInst(InstType::LessFunction) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class LessEqualVoid : public fay::FayInst 
+		{ 
+		public:
+			LessEqualVoid() : FayInst(InstType::LessEqualVoid) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class LessEqualBool : public fay::FayInst 
+		{ 
+		public:
+			LessEqualBool() : FayInst(InstType::LessEqualBool) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class LessEqualByte : public fay::FayInst 
+		{ 
+		public:
+			LessEqualByte() : FayInst(InstType::LessEqualByte) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class LessEqualInt : public fay::FayInst 
+		{ 
+		public:
+			LessEqualInt() : FayInst(InstType::LessEqualInt) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class LessEqualLong : public fay::FayInst 
+		{ 
+		public:
+			LessEqualLong() : FayInst(InstType::LessEqualLong) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class LessEqualFloat : public fay::FayInst 
+		{ 
+		public:
+			LessEqualFloat() : FayInst(InstType::LessEqualFloat) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class LessEqualDouble : public fay::FayInst 
+		{ 
+		public:
+			LessEqualDouble() : FayInst(InstType::LessEqualDouble) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class LessEqualString : public fay::FayInst 
+		{ 
+		public:
+			LessEqualString() : FayInst(InstType::LessEqualString) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class LessEqualObject : public fay::FayInst 
+		{ 
+		public:
+			LessEqualObject() : FayInst(InstType::LessEqualObject) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class LessEqualFunction : public fay::FayInst 
+		{ 
+		public:
+			LessEqualFunction() : FayInst(InstType::LessEqualFunction) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
 		//InstEnd
 	}
 }
