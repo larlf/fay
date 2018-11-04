@@ -504,10 +504,7 @@ void fay::AstIf::dig3(FayBuilder* builder)
 {
 	AstNode::dig3(builder);
 
-	//如果不是Bool，这里进行一下转换
-	ValueType type = this->_nodes[0]->valueType();
-	if(type != ValueType::Bool)
-		this->insertChldNode(0, MKPTR(AstTypeConvert)(type, ValueType::Bool));
+
 
 	this->endLabel = builder->makeLabelName();
 	builder->fun()->labels()->addLabel(this->endLabel);
@@ -515,22 +512,24 @@ void fay::AstIf::dig3(FayBuilder* builder)
 
 void fay::AstIf::dig4(FayBuilder* builder)
 {
-	this->_nodes[0]->dig4(builder);
-
-	//查找是否有Else分支
-	if(this->_nodes.size() > 2 && this->_nodes[this->_nodes.size() - 1]->token()->is(TokenType::Else))
+	//处理结构为<条件><代码><条件><代码>...<代码>
+	for(auto i = 0; i < this->_nodes.size(); i += 2)
 	{
-		PTR(AstBranch) elseBranch = TOPTR(AstBranch, this->_nodes[this->_nodes.size() - 1]);
-
-		inst::JumpFalse* inst = new inst::JumpFalse(-1);
-		builder->fun()->labels()->addTarget(elseBranch->label(), &inst->target);
-		builder->addInst(inst);
-	}
-
-	//生成每个分支的代码
-	for(int i = 1; i < this->_nodes.size(); ++i)
-	{
+		//条件入栈
 		this->_nodes[i]->dig4(builder);
+
+		if(this->_nodes.size() > i + 2)
+		{
+			if(!this->_nodes[i + 2]->is<AstCondition>())
+				throw BuildException(this->_nodes[i + 2], "bad branch");
+
+			std::string nextBranchLabel = TOPTR(AstCondition, this->_nodes[i + 2])->label();
+			inst::JumpFalse* inst = new inst::JumpFalse(-1);
+			builder->fun()->labels()->addTarget(nextBranchLabel, &inst->target);
+			builder->addInst(inst);
+		}
+
+		this->_nodes[i + 1]->dig4(builder);
 
 		//跳转到结束
 		inst::Jump* inst = new inst::Jump(-1);
@@ -569,9 +568,9 @@ void fay::AstBoolOP::dig3(FayBuilder* builder)
 	this->_itemType = FayLangUtils::WeightValueType(t1, t2);
 
 	//如果和目标类型不一致，就转换一下
-	if (t1 != this->_itemType)
+	if(t1 != this->_itemType)
 		this->insertChldNode(0, MKPTR(AstTypeConvert)(t1, this->_itemType));
-	if (t2 != this->_itemType)
+	if(t2 != this->_itemType)
 		this->insertChldNode(1, MKPTR(AstTypeConvert)(t2, this->_itemType));
 }
 
@@ -582,13 +581,44 @@ void fay::AstBoolOP::dig4(FayBuilder* builder)
 	FayInst* inst = nullptr;
 
 	//生成操作代码
-	if (this->_text == "==")
+	if(this->_text == "==")
 		inst = FayLangUtils::OPInst(InstGroupType::Equal, this->_itemType);
-	else if (this->_text == ">")
+	else if(this->_text == ">")
 		inst = FayLangUtils::OPInst(InstGroupType::Greater, this->_itemType);
+	else if(this->_text == "<")
+		inst = FayLangUtils::OPInst(InstGroupType::Less, this->_itemType);
+	else if(this->_text == ">=")
+		inst = FayLangUtils::OPInst(InstGroupType::GreaterEqual, this->_itemType);
+	else if(this->_text == "<=")
+		inst = FayLangUtils::OPInst(InstGroupType::LessEqual, this->_itemType);
+	else if(this->_text == "!=")
+		inst = FayLangUtils::OPInst(InstGroupType::NotEqual, this->_itemType);
 
-	if (inst)
+	if(inst)
 		builder->addInst(inst);
 	else
 		throw BuildException(this->shared_from_this(), "unknow bool inst : " + this->_text + " " + TypeDict::ToName(this->_itemType));
+}
+
+void fay::AstCondition::dig3(FayBuilder * builder)
+{
+	this->_label = builder->makeLabelName();
+	builder->fun()->labels()->addLabel(this->_label);
+
+	AstNode::dig3(builder);
+
+	if (this->_nodes.size() > 0)
+	{
+		//如果不是Bool，这里进行一下转换
+		ValueType type = this->_nodes[0]->valueType();
+		if (type != ValueType::Bool)
+			this->insertChldNode(0, MKPTR(AstTypeConvert)(type, ValueType::Bool));
+	}
+
+}
+
+void fay::AstCondition::dig4(FayBuilder * builder)
+{
+	builder->fun()->labels()->setPos(this->_label, builder->instsSize());
+	AstNode::dig4(builder);
 }

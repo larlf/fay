@@ -436,44 +436,43 @@ PTR(AstNode) fay::Parser::_StmtIf(TokenStack* stack)
 	if(!stack->now()->is(TokenType::If))
 		throw ParseException(stack, "expect if");
 	PTR(AstIf) node = MKPTR(AstIf)(stack->now());
-	PTR(AstBranch) branch = MKPTR(AstBranch)(stack->now());
-	stack->next();
-
-	//(
-	if(!stack->now()->is("("))
-		throw ParseException(stack, "expect (");
-	stack->next();
-
-	//判断条件
-	PTR(AstNode) stmt = _Expr(stack);
-	if(!stmt)
-		throw ParseException(stack, "if condition error");
-	node->addChildNode(stmt);
-
-	//)
-	if(!stack->now()->is(")"))
-		throw ParseException(stack, "expect )");
-	stack->next();
-
-	//主分支
-	stmt = _Stmt(stack);
-	if(!stmt)
-		throw ParseException(stack, "if statement error");
-	branch->addChildNode(stmt);
-	node->addChildNode(branch);
-
-	LOG_DEBUG(stack->now()->toString());
-
-	//else
-	if(stack->now()->is(TokenType::Else))
+	   
+	//elseif
+	while (stack->now()->is(TokenType::If) || stack->now()->is(TokenType::ElseIf) || stack->now()->is(TokenType::Else))
 	{
-		branch = MKPTR(AstBranch)(stack->now());
-		stack->next();
-		stmt = _Stmt(stack);
-		if(!stmt)
-			throw ParseException(stack, "else statement error");
-		branch->addChildNode(stmt);
-		node->addChildNode(branch);
+		PTR(AstCondition) cond = MKPTR(AstCondition)(stack->now());
+		
+		if (stack->now()->is(TokenType::If) || stack->now()->is(TokenType::ElseIf))
+		{
+			stack->next();
+
+			//(
+			if (!stack->now()->is("("))
+				throw ParseException(stack, "expect (");
+			stack->next();
+
+			//判断条件
+			PTR(AstNode) condition = _Expr(stack);
+			if (!condition)
+				throw ParseException(stack, "if condition error");
+			cond->addChildNode(condition);
+
+			//)
+			if (!stack->now()->is(")"))
+				throw ParseException(stack, "expect )");
+			stack->next();
+		}
+		else
+			stack->next();
+
+		//添加条件子节点
+		node->addChildNode(cond);
+
+		//分支的执行语句
+		PTR(AstNode) stmt = _Stmt(stack);
+		if (!stmt)
+			throw ParseException(stack, "if statement error");
+		node->addChildNode(stmt);
 	}
 
 	return node;

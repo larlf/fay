@@ -150,11 +150,6 @@ namespace fay
 		virtual void dig4(FayBuilder *builder) override;
 	};
 
-	class AstCondition : public AstNode
-	{
-		using AstNode::AstNode;
-	};
-
 	class AstField : public AstNode
 	{
 		using AstNode::AstNode;
@@ -302,6 +297,17 @@ namespace fay
 
 	//在流程语句中用于对分支进行处理
 	class AstBranch : public AstNode
+	{
+		using AstNode::AstNode;
+	private:
+		std::string _label;
+	public:
+		const std::string &label() { return this->_label; }
+		virtual void dig3(FayBuilder *builder) override;
+		virtual void dig4(FayBuilder *builder) override;
+	};
+
+	class AstCondition : public AstNode
 	{
 		using AstNode::AstNode;
 	private:

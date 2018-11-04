@@ -906,6 +906,26 @@ FayInst* fay::FayLangUtils::OPInst(InstGroupType op, ValueType type)
 		return new inst::GreaterObject();
 	else if (op == InstGroupType::Greater && type == ValueType::Function)
 		return new inst::GreaterFunction();
+	else if (op == InstGroupType::Less && type == ValueType::Void)
+		return new inst::LessVoid();
+	else if (op == InstGroupType::Less && type == ValueType::Bool)
+		return new inst::LessBool();
+	else if (op == InstGroupType::Less && type == ValueType::Byte)
+		return new inst::LessByte();
+	else if (op == InstGroupType::Less && type == ValueType::Int)
+		return new inst::LessInt();
+	else if (op == InstGroupType::Less && type == ValueType::Long)
+		return new inst::LessLong();
+	else if (op == InstGroupType::Less && type == ValueType::Float)
+		return new inst::LessFloat();
+	else if (op == InstGroupType::Less && type == ValueType::Double)
+		return new inst::LessDouble();
+	else if (op == InstGroupType::Less && type == ValueType::String)
+		return new inst::LessString();
+	else if (op == InstGroupType::Less && type == ValueType::Object)
+		return new inst::LessObject();
+	else if (op == InstGroupType::Less && type == ValueType::Function)
+		return new inst::LessFunction();
 	//OPInstEnd
 
 	return nullptr;
