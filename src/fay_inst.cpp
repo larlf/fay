@@ -144,6 +144,25 @@ void fay::inst::LoadStatic::toString(mirror::utils::StringBuilder * sb)
 		->endl();
 }
 
+void fay::inst::CopyLocal::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("CopyLocal")
+		->add(" ")->add(this->fieldIndex)
+		->endl();
+}
+
+void fay::inst::CopyField::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("CopyField")
+		->endl();
+}
+
+void fay::inst::CopyStatic::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("CopyStatic")
+		->endl();
+}
+
 void fay::inst::VoidToVoid::toString(mirror::utils::StringBuilder * sb)
 {
 	sb->add("VoidToVoid")

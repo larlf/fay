@@ -287,7 +287,7 @@ void fay::AstVar::dig3(FayBuilder* builder)
 		ValueType leftType = this->_nodes[0]->valueType();
 		ValueType rightType = this->_nodes[1]->valueType();
 		if(leftType != rightType)
-			this->insertChldNode(1, MKPTR(AstTypeConvert)(rightType, leftType));
+			this->insertChldNode(1, MKPTR(AstTypeConvert)(this->_token, rightType, leftType));
 	}
 }
 
@@ -305,37 +305,6 @@ void fay::AstVar::dig4(FayBuilder* builder)
 
 	//存入本地变量
 	builder->addInst(new inst::SetLocal(varIndex));
-}
-
-fay::AstNumber::AstNumber(const PTR(Token)& token)
-	: AstNode(token)
-{
-	if(this->_text.find('.') != std::string::npos)
-	{
-		if(this->_text[this->_text.size() - 1] == 'D' || this->_text[this->_text.size() - 1] == 'd')
-		{
-			double v = std::stod(this->_text);
-			this->_val = FayValue(v);
-		}
-		else
-		{
-			float v = std::stof(this->_text);
-			this->_val = FayValue(v);
-		}
-	}
-	else
-	{
-		if(this->_text[this->_text.size() - 1] == 'L' || this->_text[this->_text.size() - 1] == 'l')
-		{
-			int64_t v = std::stoll(this->_text);
-			this->_val = FayValue(v);
-		}
-		else
-		{
-			int32_t v = std::stoi(this->_text);
-			this->_val = FayValue(v);
-		}
-	}
 }
 
 void fay::AstNumber::dig4(FayBuilder* builder)
@@ -365,6 +334,39 @@ void fay::AstNumber::dig4(FayBuilder* builder)
 fay::ValueType fay::AstNumber::valueType()
 {
 	return this->_val.type();
+}
+
+fay::AstNumber::AstNumber(const PTR(Token)& token, const std::string & text)
+	: AstNode::AstNode(token)
+{
+	this->_text = text;
+
+	if (this->_text.find('.') != std::string::npos)
+	{
+		if (this->_text[this->_text.size() - 1] == 'D' || this->_text[this->_text.size() - 1] == 'd')
+		{
+			double v = std::stod(this->_text);
+			this->_val = FayValue(v);
+		}
+		else
+		{
+			float v = std::stof(this->_text);
+			this->_val = FayValue(v);
+		}
+	}
+	else
+	{
+		if (this->_text[this->_text.size() - 1] == 'L' || this->_text[this->_text.size() - 1] == 'l')
+		{
+			int64_t v = std::stoll(this->_text);
+			this->_val = FayValue(v);
+		}
+		else
+		{
+			int32_t v = std::stoi(this->_text);
+			this->_val = FayValue(v);
+		}
+	}
 }
 
 std::vector<PTR(FayClass)> fay::AstParams::paramsType(FayBuilder* builder)
@@ -419,9 +421,9 @@ void fay::AstLeftRightOP::dig3(FayBuilder* builder)
 
 	//如果和目标类型不一致，就转换一下
 	if(t1 != this->_valueType)
-		this->insertChldNode(0, MKPTR(AstTypeConvert)(t1, this->_valueType));
+		this->insertChldNode(0, MKPTR(AstTypeConvert)(this->_token, t1, this->_valueType));
 	if(t2 != this->_valueType)
-		this->insertChldNode(1, MKPTR(AstTypeConvert)(t2, this->_valueType));
+		this->insertChldNode(1, MKPTR(AstTypeConvert)(this->_token, t2, this->_valueType));
 }
 
 void fay::AstLeftRightOP::dig4(FayBuilder* builder)
@@ -506,8 +508,8 @@ void fay::AstIf::dig3(FayBuilder* builder)
 
 
 
-	this->endLabel = builder->makeLabelName();
-	builder->fun()->labels()->addLabel(this->endLabel);
+	this->_endLabel = builder->makeLabelName();
+	builder->fun()->labels()->addLabel(this->_endLabel);
 }
 
 void fay::AstIf::dig4(FayBuilder* builder)
@@ -518,6 +520,7 @@ void fay::AstIf::dig4(FayBuilder* builder)
 		//条件入栈
 		this->_nodes[i]->dig4(builder);
 
+		//检测条件，如果else或elseif就跳到对应位置
 		if(this->_nodes.size() > i + 2)
 		{
 			if(!this->_nodes[i + 2]->is<AstCondition>())
@@ -528,29 +531,24 @@ void fay::AstIf::dig4(FayBuilder* builder)
 			builder->fun()->labels()->addTarget(nextBranchLabel, &inst->target);
 			builder->addInst(inst);
 		}
+		else
+		{
+			//没有的话，条件为false的时候跳到结束
+			inst::JumpFalse* inst = new inst::JumpFalse(-1);
+			builder->fun()->labels()->addTarget(this->_endLabel, &inst->target);
+			builder->addInst(inst);
+		}
 
 		this->_nodes[i + 1]->dig4(builder);
 
 		//跳转到结束
 		inst::Jump* inst = new inst::Jump(-1);
-		builder->fun()->labels()->addTarget(this->endLabel, &inst->target);
+		builder->fun()->labels()->addTarget(this->_endLabel, &inst->target);
 		builder->addInst(inst);
 	}
 
 	//设置结束的位置
-	builder->fun()->labels()->setPos(this->endLabel, builder->instsSize());
-}
-
-void fay::AstBranch::dig3(FayBuilder* builder)
-{
-	this->_label = builder->makeLabelName();
-	builder->fun()->labels()->addLabel(this->_label);
-}
-
-void fay::AstBranch::dig4(FayBuilder* builder)
-{
-	builder->fun()->labels()->setPos(this->_label, builder->instsSize());
-	AstNode::dig4(builder);
+	builder->fun()->labels()->setPos(this->_endLabel, builder->instsSize());
 }
 
 fay::ValueType fay::AstBoolOP::valueType()
@@ -569,9 +567,9 @@ void fay::AstBoolOP::dig3(FayBuilder* builder)
 
 	//如果和目标类型不一致，就转换一下
 	if(t1 != this->_itemType)
-		this->insertChldNode(0, MKPTR(AstTypeConvert)(t1, this->_itemType));
+		this->insertChldNode(0, MKPTR(AstTypeConvert)(this->_token, t1, this->_itemType));
 	if(t2 != this->_itemType)
-		this->insertChldNode(1, MKPTR(AstTypeConvert)(t2, this->_itemType));
+		this->insertChldNode(1, MKPTR(AstTypeConvert)(this->_token, t2, this->_itemType));
 }
 
 void fay::AstBoolOP::dig4(FayBuilder* builder)
@@ -612,7 +610,7 @@ void fay::AstCondition::dig3(FayBuilder * builder)
 		//如果不是Bool，这里进行一下转换
 		ValueType type = this->_nodes[0]->valueType();
 		if (type != ValueType::Bool)
-			this->insertChldNode(0, MKPTR(AstTypeConvert)(type, ValueType::Bool));
+			this->insertChldNode(0, MKPTR(AstTypeConvert)(this->_token, type, ValueType::Bool));
 	}
 
 }
@@ -621,4 +619,85 @@ void fay::AstCondition::dig4(FayBuilder * builder)
 {
 	builder->fun()->labels()->setPos(this->_label, builder->instsSize());
 	AstNode::dig4(builder);
+}
+
+void fay::AstFor::dig3(FayBuilder * builder)
+{
+	AstNode::dig3(builder);
+
+	this->expr2Label = builder->makeLabelName();
+	builder->fun()->labels()->addLabel(this->expr2Label);
+	this->endLabel = builder->makeLabelName();
+	builder->fun()->labels()->addLabel(this->endLabel);
+
+	//如果expr2不是Bool，这里进行一下转换
+	ValueType type = this->_nodes[1]->valueType();
+	if (type != ValueType::Bool)
+		this->insertChldNode(1, MKPTR(AstTypeConvert)(this->_token, type, ValueType::Bool));
+}
+
+void fay::AstFor::dig4(FayBuilder * builder)
+{
+	//expr1
+	if (this->_nodes[0])
+		this->_nodes[0]->dig4(builder);
+
+	//再生成expr2的代码，用于对结果进行判断
+	builder->fun()->labels()->setPos(this->expr2Label, builder->instsSize());
+	this->_nodes[1]->dig4(builder);
+
+	//如果不成立，就跳向结束
+	inst::JumpFalse* inst2 = new inst::JumpFalse(-1);
+	builder->fun()->labels()->addTarget(this->endLabel, &inst2->target);
+	builder->addInst(inst2);
+
+	//循环体
+	if (this->_nodes[3])
+		this->_nodes[3]->dig4(builder);
+
+	//expr3
+	if (this->_nodes[2])
+		this->_nodes[2]->dig4(builder);
+
+	//跳回到expr2进行判断
+	inst::Jump* inst = new inst::Jump(-1);
+	builder->fun()->labels()->addTarget(this->expr2Label, &inst->target);
+	builder->addInst(inst);
+
+	//结束的位置
+	builder->fun()->labels()->setPos(this->endLabel, builder->instsSize());
+}
+
+void fay::AstPreOP::dig3(FayBuilder * builder)
+{
+	if (this->_nodes[0]->is<AstID>())
+	{
+		this->idName = this->_nodes[0]->text();
+	}
+
+	if (this->_text == "++")
+	{
+		PTR(AstNumber) rightNode = MKPTR(AstNumber)(this->_token, "1");
+		PTR(AstLeftRightOP) op = MKPTR(AstLeftRightOP)(this->_token, "+");
+		this->insertChldNode(0, op);
+		op->addChildNode(rightNode);
+	}
+	else
+	{
+		LOG_ERROR("unknow pre op : " << this->_text);
+	}
+
+	AstNode::dig3(builder);
+}
+
+void fay::AstPreOP::dig4(FayBuilder * builder)
+{
+	AstNode::dig4(builder);
+
+	//如果是ID，需要把值给复制过去
+	if (!this->idName.empty())
+	{
+		pos_t index=builder->fun()->getVarIndex(this->idName);
+		builder->addInst(new inst::CopyLocal(index));
+	}
 }

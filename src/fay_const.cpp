@@ -93,6 +93,9 @@ void fay::TypeDict::Init()
 	TypeDict::InstTypeName[InstType::LoadLocal] = "LoadLocal";
 	TypeDict::InstTypeName[InstType::LoadField] = "LoadField";
 	TypeDict::InstTypeName[InstType::LoadStatic] = "LoadStatic";
+	TypeDict::InstTypeName[InstType::CopyLocal] = "CopyLocal";
+	TypeDict::InstTypeName[InstType::CopyField] = "CopyField";
+	TypeDict::InstTypeName[InstType::CopyStatic] = "CopyStatic";
 	TypeDict::InstTypeName[InstType::VoidToVoid] = "VoidToVoid";
 	TypeDict::InstTypeName[InstType::VoidToBool] = "VoidToBool";
 	TypeDict::InstTypeName[InstType::VoidToByte] = "VoidToByte";

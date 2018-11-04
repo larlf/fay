@@ -27,13 +27,22 @@ public class MyTest
 		label label1;
 		fay.System.Print("PointC");
 
-		var aaa:int=5;
+		var aaa:int=15;
 
 		if(aaa<4)
 			fay.System.Print("Small");
 		elseif(aaa<10)
 			fay.System.Print("Middel");
-		else 
-			fay.System.Print("Large");
+
+		if(aaa)
+			fay.System.Print(aaa);
+	}
+
+	static public fun fun3():void
+	{
+		for(var i:int=0; i<10; ++i)
+		{
+			fay.System.Print(i);
+		}
 	}
 }

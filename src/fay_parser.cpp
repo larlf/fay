@@ -354,10 +354,9 @@ PTR(AstNode) fay::Parser::_StmtGoto(TokenStack* stack)
 
 PTR(AstNode) fay::Parser::_StmtBlock(TokenStack* stack)
 {
-	PTR(AstBlock) node = MKPTR(AstBlock)();
-
 	if(!stack->now()->is(TokenType::LeftBrace))
 		throw ParseException(stack, "expect {");
+	PTR(AstBlock) node = MKPTR(AstBlock)(stack->now());
 	stack->next();
 
 	while(true)
@@ -480,12 +479,71 @@ PTR(AstNode) fay::Parser::_StmtIf(TokenStack* stack)
 
 PTR(AstNode) fay::Parser::_StmtFor(TokenStack* stack)
 {
-	return PTR(AstNode)();
+	//for
+	if (!stack->now()->is(TokenType::For))
+		throw ParseException(stack, "expect for");
+	PTR(AstFor) node = MKPTR(AstFor)(stack->now());
+	stack->next();
+
+	//(
+	if (!stack->now()->is("("))
+		throw ParseException(stack, "expect (");
+	stack->next();
+
+	//expr1
+	if (stack->now()->is(TokenType::Semicolon))
+	{
+		node->addChildNode(nullptr);
+		stack->next();
+	}
+	else
+	{
+		PTR(AstNode) stmt = _Stmt(stack);
+		if (!stmt)
+			throw ParseException(stack, "bad expr1");
+		node->addChildNode(stmt);
+	}
+
+	//expr2
+	{
+		PTR(AstNode) stmt = _Expr(stack);
+		if (!stmt)
+			throw ParseException(stack, "bad expr2");
+		node->addChildNode(stmt);
+
+		if (!stack->now()->is(TokenType::Semicolon))
+			throw ParseException(stack, "expect ;");
+		stack->next();
+	}
+
+	//expr3
+	if (!stack->now()->is(")"))
+	{
+		PTR(AstNode) stmt = _Stmt(stack);
+		if (!stmt)
+			throw ParseException(stack, "bad expr3");
+		node->addChildNode(stmt);
+	}
+
+	//)
+	if (!stack->now()->is(")"))
+		throw ParseException(stack, "expect )");
+	stack->next();
+
+	//循环体
+	{
+		PTR(AstNode) stmt = _Stmt(stack);
+		if (!stmt)
+			throw ParseException(stack, "cannot find statement");
+		node->addChildNode(stmt);
+	}
+
+	return node;
 }
 
 PTR(AstNode) fay::Parser::_StmtReturn(TokenStack* stack)
 {
-	PTR(AstReturn) node = MKPTR(AstReturn)();
+	PTR(AstReturn) node = MKPTR(AstReturn)(stack->now());
 	stack->next();
 
 	//是否有参数
@@ -512,9 +570,9 @@ PTR(AstNode) fay::Parser::_Array(TokenStack* stack)
 {
 	if(!stack->now()->is("["))
 		throw ParseException(stack, "expect array start with [");
+	auto node = MKPTR(AstArray)(stack->now());
 	stack->next();
 
-	auto node = MKPTR(AstArray)();
 	while(stack->now() && !stack->now()->is("]"))
 	{
 		auto expr1 = _Expr(stack);
@@ -576,7 +634,7 @@ PTR(AstNode) fay::Parser::_ParamDef(TokenStack* stack)
 
 PTR(AstNode) fay::Parser::_ParamDefList(TokenStack* stack)
 {
-	PTR(AstParamDefineList) node = MKPTR(AstParamDefineList)();
+	PTR(AstParamDefineList) node = MKPTR(AstParamDefineList)(stack->now());
 
 	while(true)
 	{
@@ -597,7 +655,7 @@ PTR(AstNode) fay::Parser::_ParamDefList(TokenStack* stack)
 
 PTR(AstNode) fay::Parser::_ParamList(TokenStack* stack)
 {
-	PTR(AstParams) node = MKPTR(AstParams)();
+	PTR(AstParams) node = MKPTR(AstParams)(stack->now());
 
 	while(true)
 	{
@@ -658,6 +716,7 @@ PTR(AstNode) fay::Parser::_ExprBracket(TokenStack* stack)
 
 	while(leftNode && stack->now()->is("["))
 	{
+		leftNode = MKPTR(AstBracket)(stack->now());
 		stack->next();
 
 		//取下标
@@ -669,7 +728,6 @@ PTR(AstNode) fay::Parser::_ExprBracket(TokenStack* stack)
 			throw ParseException(stack, "except ]");
 
 		stack->next();
-		leftNode = MKPTR(AstBracket)();
 		leftNode->addChildNode(leftNode);
 		leftNode->addChildNode(n);
 	}
@@ -747,12 +805,12 @@ PTR(AstNode) fay::Parser::_AddrExprItem(TokenStack* stack)
 	}
 	else if(stack->now()->is("("))   //处理括号里的内容
 	{
+		PTR(AstBracket) node = MKPTR(AstBracket)(stack->now());
 		stack->next();
 		auto expr1 = _Expr(stack);
 		if(!stack->move()->is(")"))
 			throw ParseException(stack, "expect )");
 
-		PTR(AstBracket) node = MKPTR(AstBracket)();
 		node->addChildNode(expr1);
 		return node;
 	}
@@ -765,6 +823,7 @@ PTR(AstNode) fay::Parser::_AddrExprBracket(TokenStack* stack)
 	auto leftNode = _AddrExprItem(stack);
 	while(leftNode && stack->now()->is("["))
 	{
+		leftNode = MKPTR(AstBracket)(stack->now());
 		stack->next();
 		auto index = _Expr(stack);
 		if(!index)
@@ -772,7 +831,6 @@ PTR(AstNode) fay::Parser::_AddrExprBracket(TokenStack* stack)
 
 		if(!stack->move()->is("]"))
 			throw ParseException(stack, "expect ]");
-		leftNode = MKPTR(AstBracket)();
 		leftNode->addChildNode(leftNode);
 		leftNode->addChildNode(index);
 	}

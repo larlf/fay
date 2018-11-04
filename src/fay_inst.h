@@ -193,6 +193,28 @@ namespace fay
 			virtual void toString(mirror::utils::StringBuilder* sb) override;
 		};
 		
+		class CopyLocal : public fay::FayInst 
+		{ 
+		public:
+			int32_t fieldIndex;
+			CopyLocal(int32_t fieldIndex) : FayInst(InstType::CopyLocal),fieldIndex(fieldIndex) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class CopyField : public fay::FayInst 
+		{ 
+		public:
+			CopyField() : FayInst(InstType::CopyField) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class CopyStatic : public fay::FayInst 
+		{ 
+		public:
+			CopyStatic() : FayInst(InstType::CopyStatic) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
 		class VoidToVoid : public fay::FayInst 
 		{ 
 		public:

@@ -783,6 +783,43 @@ fay::FayInst* fay::FayLangUtils::ConvertInst(ValueType src, ValueType dest)
 	return nullptr;
 }
 
+FayInst * fay::FayLangUtils::PushNumber(ValueType type, int32_t value)
+{
+	switch (type)
+	{
+	case fay::ValueType::Void:
+		break;
+	case fay::ValueType::Bool:
+		return new inst::PushBool((bool)value);
+		break;
+	case fay::ValueType::Byte:
+		return new inst::PushByte((byte)value);
+		break;
+	case fay::ValueType::Int:
+		return new inst::PushInt((int32_t)value);
+		break;
+	case fay::ValueType::Long:
+		return new inst::PushLong((int64_t)value);
+		break;
+	case fay::ValueType::Float:
+		return new inst::PushFloat((float)value);
+		break;
+	case fay::ValueType::Double:
+		return new inst::PushDouble((double)value);
+		break;
+	case fay::ValueType::String:
+		return new inst::PushString(std::to_string(value));
+		break;
+	case fay::ValueType::Object:
+		break;
+	case fay::ValueType::Function:
+		break;
+	default:
+		break;
+	}
+	return nullptr;
+}
+
 FayInst* fay::FayLangUtils::OPInst(InstGroupType op, ValueType type)
 {
 	//OPInstStart
