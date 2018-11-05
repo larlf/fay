@@ -88,12 +88,11 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 			case InstType::LoadLocal:
 			{
 				this->stack.push(localVars[((inst::LoadLocal*)inst)->varIndex]->clone());
-				this->stack.pop();
 				break;
 			}
 			case InstType::CopyLocal:
 			{
-				this->stack.push(localVars[((inst::CopyLocal*)inst)->fieldIndex]->clone());
+				localVars[((inst::CopyLocal*)inst)->fieldIndex]=this->stack.top()->clone();
 				break;
 			}
 			case InstType::VoidToVoid:

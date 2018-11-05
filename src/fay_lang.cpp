@@ -783,41 +783,56 @@ fay::FayInst* fay::FayLangUtils::ConvertInst(ValueType src, ValueType dest)
 	return nullptr;
 }
 
-FayInst * fay::FayLangUtils::PushNumber(ValueType type, int32_t value)
+FayInst* fay::FayLangUtils::PushNumber(ValueType type, int32_t value)
 {
-	switch (type)
+	switch(type)
 	{
-	case fay::ValueType::Void:
-		break;
-	case fay::ValueType::Bool:
-		return new inst::PushBool((bool)value);
-		break;
-	case fay::ValueType::Byte:
-		return new inst::PushByte((byte)value);
-		break;
-	case fay::ValueType::Int:
-		return new inst::PushInt((int32_t)value);
-		break;
-	case fay::ValueType::Long:
-		return new inst::PushLong((int64_t)value);
-		break;
-	case fay::ValueType::Float:
-		return new inst::PushFloat((float)value);
-		break;
-	case fay::ValueType::Double:
-		return new inst::PushDouble((double)value);
-		break;
-	case fay::ValueType::String:
-		return new inst::PushString(std::to_string(value));
-		break;
-	case fay::ValueType::Object:
-		break;
-	case fay::ValueType::Function:
-		break;
-	default:
-		break;
+		case fay::ValueType::Void:
+			break;
+		case fay::ValueType::Bool:
+			return new inst::PushBool((bool)value);
+			break;
+		case fay::ValueType::Byte:
+			return new inst::PushByte((byte)value);
+			break;
+		case fay::ValueType::Int:
+			return new inst::PushInt((int32_t)value);
+			break;
+		case fay::ValueType::Long:
+			return new inst::PushLong((int64_t)value);
+			break;
+		case fay::ValueType::Float:
+			return new inst::PushFloat((float)value);
+			break;
+		case fay::ValueType::Double:
+			return new inst::PushDouble((double)value);
+			break;
+		case fay::ValueType::String:
+			return new inst::PushString(std::to_string(value));
+			break;
+		case fay::ValueType::Object:
+			break;
+		case fay::ValueType::Function:
+			break;
+		default:
+			break;
 	}
 	return nullptr;
+}
+
+bool fay::FayLangUtils::IsNumberType(ValueType type)
+{
+	switch(type)
+	{
+		case fay::ValueType::Byte:
+		case fay::ValueType::Int:
+		case fay::ValueType::Long:
+		case fay::ValueType::Float:
+		case fay::ValueType::Double:
+			return true;
+	}
+
+	return false;
 }
 
 FayInst* fay::FayLangUtils::OPInst(InstGroupType op, ValueType type)
@@ -1084,9 +1099,9 @@ void fay::FayVarDef::toString(mirror::utils::StringBuilder* sb)
 	sb->add(this->fullname());
 }
 
-void fay::FayLabel::addTarget(int32_t * target)
+void fay::FayLabel::addTarget(int32_t* target)
 {
-	if (this->_pos >= 0)
+	if(this->_pos >= 0)
 		(*target) = this->_pos;
 	this->_targets.push_back(target);
 }
@@ -1098,10 +1113,10 @@ void fay::FayLabel::setPos(int32_t pos)
 		(*it) = pos;
 }
 
-PTR(FayLabel) fay::FayLabelTable::findLabel(const std::string & name)
+PTR(FayLabel) fay::FayLabelTable::findLabel(const std::string &name)
 {
 	auto it = this->_labels.find(name);
-	if (it == this->_labels.end())
+	if(it == this->_labels.end())
 	{
 		PTR(FayLabel) label = MKPTR(FayLabel)(name);
 		this->_labels[name] = label;
@@ -1111,17 +1126,17 @@ PTR(FayLabel) fay::FayLabelTable::findLabel(const std::string & name)
 		return it->second;
 }
 
-void fay::FayLabelTable::addLabel(const std::string & name)
+void fay::FayLabelTable::addLabel(const std::string &name)
 {
 	this->findLabel(name);
 }
 
-void fay::FayLabelTable::addTarget(const std::string & name, int32_t * target)
+void fay::FayLabelTable::addTarget(const std::string &name, int32_t* target)
 {
 	this->findLabel(name)->addTarget(target);
 }
 
-void fay::FayLabelTable::setPos(const std::string & name, int32_t pos)
+void fay::FayLabelTable::setPos(const std::string &name, int32_t pos)
 {
 	this->findLabel(name)->setPos(pos);
 }

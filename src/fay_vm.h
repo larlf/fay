@@ -16,6 +16,8 @@ namespace fay
 		FayVM(PTR(FayDomain) domain)
 			: _domain(domain) {}
 
+		size_t stackSize() { return this->stack.size(); }
+
 		void run(PTR(FayFun) fun);
 	};
 }

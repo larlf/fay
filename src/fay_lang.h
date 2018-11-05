@@ -34,6 +34,8 @@ namespace fay
 		static FayInst* ConvertInst(ValueType src, ValueType dest);
 		//生成压入数字的代码
 		static FayInst* PushNumber(ValueType type, int32_t value);
+		//根据类型转换为对应的数字
+		static bool IsNumberType(ValueType type);
 		//根据类型生成操作代码
 		static FayInst* OPInst(InstGroupType op, ValueType type);
 	};

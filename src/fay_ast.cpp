@@ -1,6 +1,7 @@
 ﻿#include "fay_ast.h"
 #include "fay_ast.h"
 #include "fay_ast.h"
+#include "fay_ast.h"
 #include <fay_ast.h>
 #include <typeinfo>
 #include <mirror_utils_log.h>
@@ -336,14 +337,14 @@ fay::ValueType fay::AstNumber::valueType()
 	return this->_val.type();
 }
 
-fay::AstNumber::AstNumber(const PTR(Token)& token, const std::string & text)
+fay::AstNumber::AstNumber(const PTR(Token)& token, const std::string &text)
 	: AstNode::AstNode(token)
 {
 	this->_text = text;
 
-	if (this->_text.find('.') != std::string::npos)
+	if(this->_text.find('.') != std::string::npos)
 	{
-		if (this->_text[this->_text.size() - 1] == 'D' || this->_text[this->_text.size() - 1] == 'd')
+		if(this->_text[this->_text.size() - 1] == 'D' || this->_text[this->_text.size() - 1] == 'd')
 		{
 			double v = std::stod(this->_text);
 			this->_val = FayValue(v);
@@ -356,7 +357,7 @@ fay::AstNumber::AstNumber(const PTR(Token)& token, const std::string & text)
 	}
 	else
 	{
-		if (this->_text[this->_text.size() - 1] == 'L' || this->_text[this->_text.size() - 1] == 'l')
+		if(this->_text[this->_text.size() - 1] == 'L' || this->_text[this->_text.size() - 1] == 'l')
 		{
 			int64_t v = std::stoll(this->_text);
 			this->_val = FayValue(v);
@@ -598,30 +599,30 @@ void fay::AstBoolOP::dig4(FayBuilder* builder)
 		throw BuildException(this->shared_from_this(), "unknow bool inst : " + this->_text + " " + TypeDict::ToName(this->_itemType));
 }
 
-void fay::AstCondition::dig3(FayBuilder * builder)
+void fay::AstCondition::dig3(FayBuilder* builder)
 {
 	this->_label = builder->makeLabelName();
 	builder->fun()->labels()->addLabel(this->_label);
 
 	AstNode::dig3(builder);
 
-	if (this->_nodes.size() > 0)
+	if(this->_nodes.size() > 0)
 	{
 		//如果不是Bool，这里进行一下转换
 		ValueType type = this->_nodes[0]->valueType();
-		if (type != ValueType::Bool)
+		if(type != ValueType::Bool)
 			this->insertChldNode(0, MKPTR(AstTypeConvert)(this->_token, type, ValueType::Bool));
 	}
 
 }
 
-void fay::AstCondition::dig4(FayBuilder * builder)
+void fay::AstCondition::dig4(FayBuilder* builder)
 {
 	builder->fun()->labels()->setPos(this->_label, builder->instsSize());
 	AstNode::dig4(builder);
 }
 
-void fay::AstFor::dig3(FayBuilder * builder)
+void fay::AstFor::dig3(FayBuilder* builder)
 {
 	AstNode::dig3(builder);
 
@@ -632,14 +633,14 @@ void fay::AstFor::dig3(FayBuilder * builder)
 
 	//如果expr2不是Bool，这里进行一下转换
 	ValueType type = this->_nodes[1]->valueType();
-	if (type != ValueType::Bool)
+	if(type != ValueType::Bool)
 		this->insertChldNode(1, MKPTR(AstTypeConvert)(this->_token, type, ValueType::Bool));
 }
 
-void fay::AstFor::dig4(FayBuilder * builder)
+void fay::AstFor::dig4(FayBuilder* builder)
 {
 	//expr1
-	if (this->_nodes[0])
+	if(this->_nodes[0])
 		this->_nodes[0]->dig4(builder);
 
 	//再生成expr2的代码，用于对结果进行判断
@@ -652,11 +653,11 @@ void fay::AstFor::dig4(FayBuilder * builder)
 	builder->addInst(inst2);
 
 	//循环体
-	if (this->_nodes[3])
+	if(this->_nodes[3])
 		this->_nodes[3]->dig4(builder);
 
 	//expr3
-	if (this->_nodes[2])
+	if(this->_nodes[2])
 		this->_nodes[2]->dig4(builder);
 
 	//跳回到expr2进行判断
@@ -668,36 +669,75 @@ void fay::AstFor::dig4(FayBuilder * builder)
 	builder->fun()->labels()->setPos(this->endLabel, builder->instsSize());
 }
 
-void fay::AstPreOP::dig3(FayBuilder * builder)
+ValueType fay::AstPreOP::valueType()
 {
-	if (this->_nodes[0]->is<AstID>())
-	{
-		this->idName = this->_nodes[0]->text();
-	}
-
-	if (this->_text == "++")
-	{
-		PTR(AstNumber) rightNode = MKPTR(AstNumber)(this->_token, "1");
-		PTR(AstLeftRightOP) op = MKPTR(AstLeftRightOP)(this->_token, "+");
-		this->insertChldNode(0, op);
-		op->addChildNode(rightNode);
-	}
-	else
-	{
-		LOG_ERROR("unknow pre op : " << this->_text);
-	}
-
-	AstNode::dig3(builder);
+	return this->_valueType;
 }
 
-void fay::AstPreOP::dig4(FayBuilder * builder)
+void fay::AstPreOP::dig3(FayBuilder* builder)
+{
+	//要先执行一下才能确定子节点的类型
+	AstNode::dig3(builder);
+
+	PTR(AstNode) leftNode = this->_nodes[0];
+
+	//如果是ID，记录一下ID的名字
+	if(leftNode->is<AstID>())
+		this->idName = leftNode->text();
+
+	//必需要是数值
+	if(!FayLangUtils::IsNumberType(leftNode->valueType()))
+		throw BuildException(this->shared_from_this(), "not a number type : " + TypeDict::ToName(leftNode->valueType()));
+
+	//根据类型生成右值
+	this->_valueType = leftNode->valueType();
+	PTR(AstFixedNumber) rightNode = MKPTR(AstFixedNumber)(this->_token, this->_valueType, 1);
+
+	//生成转换后的操作符
+	std::string opStr;
+	if(this->_text == "++")
+		opStr = "+";
+	else if(this->_text == "--")
+		opStr = "-";
+	else
+		throw BuildException(this->shared_from_this(), "unknow pre op : " + this->_text);
+
+	//生成操作并取代现有的节点
+	PTR(AstLeftRightOP) op = MKPTR(AstLeftRightOP)(this->_token, opStr);
+	this->insertChldNode(0, op);
+	op->addChildNode(rightNode);
+
+	//需要再执行一下这个，确定操作的类型
+	op->dig3(builder);
+}
+
+void fay::AstPreOP::dig4(FayBuilder* builder)
 {
 	AstNode::dig4(builder);
 
 	//如果是ID，需要把值给复制过去
-	if (!this->idName.empty())
+	if(!this->idName.empty())
 	{
-		pos_t index=builder->fun()->getVarIndex(this->idName);
+		pos_t index = builder->fun()->getVarIndex(this->idName);
 		builder->addInst(new inst::CopyLocal(index));
 	}
+
+	//根据上层节点判断是否要把值留在堆栈中一份
+	//如果上层的值是void，说明不会用于计算，那就清除
+	if (this->_parent.lock()->valueType() == ValueType::Void)
+		builder->addInst(new inst::Pop());
+}
+
+ValueType fay::AstFixedNumber::valueType()
+{
+	return this->_type;
+}
+
+void fay::AstFixedNumber::dig4(FayBuilder* builder)
+{
+	FayInst* inst = FayLangUtils::PushNumber(this->_type, this->_value);
+	if(inst == nullptr)
+		throw BuildException(this->shared_from_this(), "make push number error : " + TypeDict::ToName(this->_type));
+
+	builder->addInst(inst);
 }

@@ -81,8 +81,10 @@ void test::FayTests::TestLexer()
 	auto fun = domain->findFun("com.larlf.MyTest", "fun3()", false);
 
 	PRINT("-------------------Start--------------------");
-	//vm.run(fun);
+	vm.run(fun);
 	PRINT("--------------------End--------------------");
+
+	LOG_DEBUG("Stack Size : " << vm.stackSize());
 }
 
 void test::FayTests::Test1()

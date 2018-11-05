@@ -259,8 +259,10 @@ namespace fay
 		using AstNode::AstNode;
 	private:
 		std::string idName;
+		ValueType _valueType = ValueType::Void;
 
 	public:
+		virtual ValueType valueType() override;
 		virtual void dig3(FayBuilder* builder) override;
 		virtual void dig4(FayBuilder* builder) override;
 	};
@@ -348,6 +350,21 @@ namespace fay
 		AstNumber(const PTR(Token) &token, const std::string &text);
 		virtual void dig4(FayBuilder* builder) override;
 		virtual ValueType valueType() override;
+	};
+
+	//指定类型的数值
+	class AstFixedNumber : public AstNode
+	{
+	private:
+		ValueType _type;
+		int32_t _value;
+
+	public:
+		AstFixedNumber(const PTR(Token) &token, ValueType type, int32_t value)
+			: AstNode(token), _type(type), _value(value) {}
+
+		virtual ValueType valueType() override;
+		virtual void dig4(FayBuilder* builder) override;
 	};
 
 	class AstString : public AstNode
