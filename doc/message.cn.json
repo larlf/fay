@@ -1,3 +1,4 @@
 {
-    "error1":"Bad message"
+    "error_expect":"找不到预期的{1}",
+    "error_test":"这是测试 {1} {2} {3}"
 }

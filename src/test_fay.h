@@ -57,6 +57,13 @@ namespace test
 		static void Test1();
 		static void TestRTTI();
 		static void TestInternalFun();
+
+		template<typename... Params>
+		static void Printf(const std::string &strFormat, Params... args)
+		{
+			std::vector<std::string> strs{ args... };
+			std::cout << strs.size() << std::endl;
+		}
 	};
 
 

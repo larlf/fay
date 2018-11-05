@@ -87,3 +87,19 @@ std::string mirror::utils::StringUtils::EncodeSpecialChar(const std::string & st
 
 	return r;
 }
+
+std::string mirror::utils::StringUtils::ReplaceAll(const std::string & str, const std::string & src, const std::string & dest)
+{
+	std::string rstr = str;
+	std::string::size_type pos = 0;
+	std::string::size_type srclen = src.size();
+	std::string::size_type dstlen = dest.size();
+
+	while ((pos = rstr.find(src, pos)) != std::string::npos)
+	{
+		rstr.replace(pos, srclen, dest);
+		pos += dstlen;
+	}
+
+	return rstr;
+}

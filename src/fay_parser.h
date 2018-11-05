@@ -25,7 +25,11 @@ namespace fay
 	{
 	private:
 		//生成左右双向式操作的节点
-		static PTR(AstNode) _MakeLeftRightOPNode(std::function<PTR(AstNode)(TokenStack*)> subExpr, const std::vector<std::string> &ops, TokenStack* stack);
+		static PTR(AstNode) _MakeLeftRightOPNode(
+			std::function<PTR(AstNode)(TokenStack*)> subExpr, 
+			const std::vector<std::string> &ops, 
+			TokenStack* stack, 
+			std::function<PTR(AstNode)(PTR(Token))> nodeCreater);
 		//生成布尔操作的节点
 		static PTR(AstNode) _MakeBoolOPNode(std::function<PTR(AstNode)(TokenStack*)> subExpr, std::vector<std::string> ops, TokenStack* stack);
 

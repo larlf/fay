@@ -26,6 +26,10 @@ namespace mirror
 			* 对特殊字符进行转码
 			*/
 			static std::string EncodeSpecialChar(const std::string &str);
+			/**
+			 * 替换字符串中的所有内容
+			 */
+			static std::string ReplaceAll(const std::string &str, const std::string &src, const std::string &dest);
 		};
 		
 		//字符串构造类

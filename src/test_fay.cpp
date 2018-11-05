@@ -6,6 +6,7 @@
 #include <fay_parser.h>
 #include <fay_internal_fun.h>
 #include <fay_vm.h>
+#include <fay_i18n.h>
 #include <stack>
 
 using namespace mirror;
@@ -89,10 +90,18 @@ void test::FayTests::TestLexer()
 
 void test::FayTests::Test1()
 {
-	std::stack<PTR(TestValue)> stack;
-	stack.push(MKPTR(TestValue)("aaa"));
-	//stack.pop();
-	PRINT("--------------------End--------------------");
+	char str[1024];
+	sprintf(str, "Hello!\d \d", 5, 4);
+
+	FayTests::Printf("Hello!", "aaa", "bbb");
+
+	std::string filename = "../doc/i18n.cn.json";
+	std::string text = utils::FileUtils::ReadTextFile(filename);
+	LOG_DEBUG(text);
+
+	fay::I18N::Init(text);
+
+
 }
 
 void test::FayTests::TestRTTI()

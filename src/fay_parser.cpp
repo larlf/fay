@@ -5,14 +5,14 @@
 using namespace fay;
 using namespace mirror;
 
-PTR(AstNode) fay::Parser::_MakeLeftRightOPNode(std::function<PTR(AstNode)(TokenStack*)> subExpr, const std::vector<std::string> &ops, TokenStack* stack)
+PTR(AstNode) fay::Parser::_MakeLeftRightOPNode(std::function<PTR(AstNode)(TokenStack*)> subExpr, const std::vector<std::string> &ops, TokenStack* stack, std::function<PTR(AstNode)(PTR(Token))> nodeCreater)
 {
 	auto leftNode = subExpr(stack);
 	while(stack->now()->is(TokenType::OP)
 		&& (std::find(ops.begin(), ops.end(), stack->now()->text()) != ops.end()))
 	{
 		//生成节点
-		auto node = MKPTR(AstLeftRightOP)(stack->now());
+		auto node = nodeCreater(stack->now());
 		node->addChildNode(leftNode);
 
 		//取右值
@@ -757,17 +757,17 @@ PTR(AstNode) fay::Parser::_ExprPre(TokenStack* stack)
 
 PTR(AstNode) fay::Parser::_ExprMulDiv(TokenStack* stack)
 {
-	return _MakeLeftRightOPNode(_ExprPre, { "*", "/", "%" }, stack);
+	return _MakeLeftRightOPNode(_ExprPre, { "*", "/", "%" }, stack, [](PTR(Token) token)->PTR(AstNode) { return MKPTR(AstLeftRightOP)(token); });
 }
 
 PTR(AstNode) fay::Parser::_ExprAddSub(TokenStack* stack)
 {
-	return _MakeLeftRightOPNode(_ExprMulDiv, { "+", "-" }, stack);
+	return _MakeLeftRightOPNode(_ExprMulDiv, { "+", "-" }, stack, [](PTR(Token) token)->PTR(AstNode) { return MKPTR(AstLeftRightOP)(token); });
 }
 
 PTR(AstNode) fay::Parser::_ExprLeftRightMove(TokenStack* stack)
 {
-	return _MakeLeftRightOPNode(_ExprAddSub, { ">>", "<<" }, stack);
+	return _MakeLeftRightOPNode(_ExprAddSub, { ">>", "<<" }, stack, [](PTR(Token) token)->PTR(AstNode) { return MKPTR(AstLeftRightOP)(token); });
 }
 
 PTR(AstNode) fay::Parser::_ExprBool(TokenStack* stack)
@@ -777,7 +777,7 @@ PTR(AstNode) fay::Parser::_ExprBool(TokenStack* stack)
 
 PTR(AstNode) fay::Parser::_ExprAssign(TokenStack* stack)
 {
-	return _MakeLeftRightOPNode(_ExprBool, { "=", "*=", "/=", "+=", "-=", "%=", "<<=", ">>=", "&=", "^=", "|=" }, stack);
+	return _MakeLeftRightOPNode(_ExprBool, { "=", "*=", "/=", "+=", "-=", "%=", "<<=", ">>=", "&=", "^=", "|=" }, stack, [](PTR(Token) token)->PTR(AstNode) { return MKPTR(AstAssign)(token); });
 }
 
 PTR(AstNode) fay::Parser::_Expr(TokenStack* stack)
