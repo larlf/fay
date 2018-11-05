@@ -2,6 +2,7 @@
 
 #include <fay_ast.h>
 #include <fay_token_stack.h>
+#include <fay_i18n.h>
 
 namespace fay
 {
@@ -13,8 +14,13 @@ namespace fay
 
 	public:
 		//stack : 当前正在处理的TokenStack
-		//msg : 错误信息
-		ParseException(TokenStack* stack, const std::string &msg);
+		//key : 错误信息的国际化信息
+		template<typename... Params>
+		ParseException(TokenStack* stack, const std::string &key, Params... args)
+			: std::exception::exception((I18N::Get(key, args...) + "\n" + stack->now()->toString()).c_str())
+		{
+			this->_trace = mirror::log::SysTrace::TraceInfo();
+		}
 
 		//取抛出异常的堆栈
 		const std::string trace() { return _trace; }

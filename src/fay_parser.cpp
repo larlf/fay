@@ -822,8 +822,8 @@ PTR(AstNode) fay::Parser::_AddrExprBracket(TokenStack* stack)
 		if(!index)
 			throw ParseException(stack, "bad index");
 
-		if(!stack->move()->is("]"))
-			throw ParseException(stack, "expect ]");
+		if (!stack->move()->is("]"))
+			throw ParseException(stack, "err_expect", "]");
 		leftNode->addChildNode(leftNode);
 		leftNode->addChildNode(index);
 	}
@@ -876,11 +876,5 @@ PTR(AstNode) fay::Parser::Parse(PTR(std::vector<PTR(Token)>) tokens, const std::
 	}
 
 	return ast;
-}
-
-fay::ParseException::ParseException(TokenStack* stack, const std::string &msg)
-	: std::exception::exception((msg + "\n" + stack->now()->toString()).c_str())
-{
-	this->_trace = mirror::log::SysTrace::TraceInfo();
 }
 

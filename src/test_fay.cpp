@@ -100,8 +100,7 @@ void test::FayTests::Test1()
 	LOG_DEBUG(text);
 
 	fay::I18N::Init(text);
-
-
+	LOG_DEBUG(I18N::Get("err_test", "aaa", "bbb", "ccc"));
 }
 
 void test::FayTests::TestRTTI()
