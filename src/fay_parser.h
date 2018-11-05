@@ -79,6 +79,8 @@ namespace fay
 		static PTR(AstNode) _ExprLeftRightMove(TokenStack* stack);
 		//逻辑操作符
 		static PTR(AstNode) _ExprBool(TokenStack* stack);
+		//赋值运算符
+		static PTR(AstNode) _ExprAssign(TokenStack* stack);
 		//表达式
 		static PTR(AstNode) _Expr(TokenStack* stack);
 

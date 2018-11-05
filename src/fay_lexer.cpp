@@ -43,7 +43,7 @@ fay::Lexer::Lexer()
 
 	//分隔符
 	this->_rules.push_back((ITokenRule*)new SymbolTokenRule(LexMode::Program, TokenType::Semicolon,  ';'));
-	this->_rules.push_back((ITokenRule*)new SymbolTokenRule(LexMode::Program, TokenType::Assign, '='));
+	//this->_rules.push_back((ITokenRule*)new SymbolTokenRule(LexMode::Program, TokenType::Assign, '='));
 	this->_rules.push_back((ITokenRule*)new SymbolTokenRule(LexMode::Program, TokenType::Colon, ':'));
 	this->_rules.push_back((ITokenRule*)new SymbolTokenRule(LexMode::Program, TokenType::Comma, ','));
 	this->_rules.push_back((ITokenRule*)new SymbolTokenRule(LexMode::Program, TokenType::LeftBrace, '{'));
@@ -85,7 +85,8 @@ fay::Lexer::Lexer()
 		"(", ")", "[", "]",
 		"++", "--", ">>", "<<",
 		"+", "-", "*", "/", "%",
-		"~", "!", ">", "<", "==", ">=", "<="
+		"~", "!", ">", "<", "==", ">=", "<=",
+		"=", "*=", "/=", "+=", "-=", "%=", "<<=", ">>=", "&=", "^=", "|="
 	}));
 
 	//字符和字符串

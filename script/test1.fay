@@ -40,9 +40,6 @@ public class MyTest
 
 	static public fun fun3():void
 	{
-		for(var i:int=0; i<10; ++i)
-		{
-			fay.System.Print(i);
-		}
+		for(var i:int=0; i<10; ++i) {}
 	}
 }

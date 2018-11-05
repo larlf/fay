@@ -23,7 +23,6 @@ namespace fay
 	{
 		//TokenTypeStart
 		None,
-		Assign,  //=
 		Colon,  //:
 		Semicolon,  //;
 		Comma,  //,

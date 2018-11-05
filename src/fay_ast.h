@@ -81,6 +81,7 @@ namespace fay
 		//第二次，生成函数和函数参数列表
 		virtual void dig2(FayBuilder* builder);
 		//第三次，做一些生成代码之前的准备和优化的工作
+		//因为一些特别的原因，这个方法编写的时候应该尽量考虑到多次执行的情况
 		virtual void dig3(FayBuilder* builder);
 		//第四次，生成中间代码
 		virtual void dig4(FayBuilder* builder);
@@ -265,6 +266,12 @@ namespace fay
 		virtual ValueType valueType() override;
 		virtual void dig3(FayBuilder* builder) override;
 		virtual void dig4(FayBuilder* builder) override;
+	};
+
+	//空语句
+	class AstEmptyStmt : public AstNode
+	{
+		using AstNode::AstNode;
 	};
 
 	//只有表达式的语句

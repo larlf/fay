@@ -11,7 +11,6 @@ void fay::TypeDict::Init()
 {
 	//TokenTypeNameStart
 	TypeDict::TokenTypeName[TokenType::None] = "None";
-	TypeDict::TokenTypeName[TokenType::Assign] = "Assign";
 	TypeDict::TokenTypeName[TokenType::Colon] = "Colon";
 	TypeDict::TokenTypeName[TokenType::Semicolon] = "Semicolon";
 	TypeDict::TokenTypeName[TokenType::Comma] = "Comma";
