@@ -120,7 +120,7 @@ namespace mirror
 				this->indent++;
 				this->indentStr.clear();
 				for (auto i = 0; i < this->indent; ++i)
-					this->indentStr.append("  ");
+					this->indentStr.append(".   ");
 				return this;
 			}
 
@@ -130,7 +130,7 @@ namespace mirror
 				this->indent--;
 				this->indentStr.clear();
 				for (auto i = 0; i < this->indent; ++i)
-					this->indentStr.append("  ");
+					this->indentStr.append(".   ");
 				return this;
 			}
 
