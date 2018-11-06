@@ -83,7 +83,7 @@ void test::FayTests::TestLexer()
 	PRINT(sb.toString());
 
 	fay::FayVM vm(domain);
-	auto fun = domain->findFun("com.larlf.MyTest", "fun3()", false);
+	auto fun = domain->findFun("com.larlf.MyTest", "fun4()", false);
 
 	PRINT("-------------------Start--------------------");
 	vm.run(fun);

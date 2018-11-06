@@ -1,8 +1,4 @@
-﻿#include "fay_ast.h"
-#include "fay_ast.h"
-#include "fay_ast.h"
-#include "fay_ast.h"
-#include <fay_ast.h>
+﻿#include <fay_ast.h>
 #include <typeinfo>
 #include <mirror_utils_log.h>
 
@@ -15,14 +11,6 @@ std::string fay::AstNode::className()
 		name = name.substr(6);
 	return name;
 }
-
-//bool fay::AstNode::is(const type_info &type)
-//{
-//	if(typeid(*this) == type)
-//		return true;
-//
-//	return false;
-//}
 
 void fay::AstNode::addChildNode(PTR(AstNode) node)
 {
@@ -47,17 +35,6 @@ void fay::AstNode::insertChldNode(size_t index, PTR(AstNode) node)
 
 	if(oldNode)
 		node->addChildNode(oldNode);
-}
-
-std::string fay::AstNode::traceInfo()
-{
-	std::string str;
-
-	str.append(this->className()).append("(").append(this->_text).append(")");
-	if(this->_token)
-		str.append(" @ ").append(this->_token->toString());
-
-	return str;
 }
 
 PTR(FayClass) fay::AstNode::classType(FayBuilder* builder)
@@ -277,7 +254,7 @@ void fay::AstVar::dig3(FayBuilder* builder)
 	AstNode::dig3(builder);
 
 	//如果有赋值，检查是否要进行类型转换
-	if(this->_nodes.size() > 1)
+	if(this->_nodes.size() > 1 && this->_nodes[1])
 	{
 		ValueType leftType = this->_nodes[0]->valueType();
 		ValueType rightType = this->_nodes[1]->valueType();
@@ -296,7 +273,17 @@ void fay::AstVar::dig4(FayBuilder* builder)
 
 	pos_t varIndex = builder->fun()->addVar(varName, varType);
 
-	AstNode::dig4(builder);
+	if (this->_nodes.size() > 1 && this->_nodes[1])
+	{
+		this->_nodes[1]->dig4(builder);
+	}
+	else
+	{
+		FayInst *inst = FayLangUtils::PushDefault(this->_nodes[0]->valueType());
+		if (inst == nullptr)
+			throw  BuildException(this->shared_from_this(), "err_no_default_value", TypeDict::ToName(this->_nodes[0]->valueType()));
+		builder->addInst(inst);
+	}
 
 	//存入本地变量
 	builder->addInst(new inst::SetLocal(varIndex));
@@ -402,7 +389,11 @@ void fay::AstID::dig4(FayBuilder* builder)
 	if(index < 0)
 		throw BuildException(this->shared_from_this(), "connt find var : " + this->text());
 
-	builder->addInst(new inst::LoadLocal(index));
+	//不同模式下的操作不一样
+	if(builder->exprMode==BuildExprMode::Assign)
+		builder->addInst(new inst::SetLocal(index));
+	else
+		builder->addInst(new inst::LoadLocal(index));
 }
 
 void fay::AstLeftRightOP::dig3(FayBuilder* builder)
@@ -734,4 +725,23 @@ void fay::AstFixedNumber::dig4(FayBuilder* builder)
 		throw BuildException(this->shared_from_this(), "make push number error : " + TypeDict::ToName(this->_type));
 
 	builder->addInst(inst);
+}
+
+void fay::AstAssign::dig3(FayBuilder * builder)
+{
+	AstNode::dig3(builder);
+
+	//要转换成左值需要的类型
+	ValueType t1 = this->_nodes[0]->valueType();
+	ValueType t2 = this->_nodes[1]->valueType();
+	if(t1!=t2)
+		this->insertChldNode(1, MKPTR(AstTypeConvert)(this->_token, t2, t1));
+}
+
+void fay::AstAssign::dig4(FayBuilder * builder)
+{
+	this->_nodes[1]->dig4(builder);
+	builder->exprMode = BuildExprMode::Assign;
+	this->_nodes[0]->dig4(builder);
+	builder->exprMode = BuildExprMode::Count;
 }

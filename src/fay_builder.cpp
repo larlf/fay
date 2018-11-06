@@ -4,6 +4,19 @@
 
 using namespace fay;
 
+fay::FayBuilder::~FayBuilder()
+{
+	//清除临时的指令
+	if (this->_insts.size() > 0)
+	{
+		for each(auto it in this->_insts)
+		{
+			if (it != nullptr)
+				delete it;
+		}
+	}
+}
+
 std::string fay::FayBuilder::makeLabelName()
 {
 	return "__label__" + std::to_string(this->labelIndex++);

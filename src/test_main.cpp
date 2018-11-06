@@ -16,9 +16,9 @@ void main()
 		//test::UtilsTest::testTrace();
 
 		test::FayTests::Init();
-		//test::FayTests::TestLexer();
+		test::FayTests::TestLexer();
 		//test::FayTests::Test1();
-		test::FayTests::TestRTTI();
+		//test::FayTests::TestRTTI();
 		//test::FayTests::TestInternalFun();
 	}
 	catch (fay::FayCompileException &e)

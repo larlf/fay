@@ -5,6 +5,12 @@
 
 namespace fay
 {
+	enum class BuildExprMode
+	{
+		Count,  //计算
+		Assign  //赋值
+	};
+
 	//用于生成整体的代码结构
 	class FayBuilder
 	{
@@ -19,9 +25,12 @@ namespace fay
 		int64_t labelIndex = 1;  //用于生成label
 
 	public:
+		//用于控制表达式中的模式，在赋值运算符左边和右边的处理不一样
+		BuildExprMode exprMode = BuildExprMode::Count;
+
 		FayBuilder(PTR(FayDomain) domain)
 			: _domain(domain) {}
-		~FayBuilder() {}
+		~FayBuilder();
 
 		PTR(FayDomain) domain() { return this->_domain; }
 		PTR(FayLib) lib() { return this->_lib; }
@@ -44,7 +53,7 @@ namespace fay
 		void bindFun(pos_t index);
 
 		void addParamDefine(const std::string &name, const std::string &type);
-		void addInst(FayInst *inst);
+		void addInst(FayInst* inst);
 		void optimizeInsts();
 		//当前指令数量
 		size_t instsSize() { return this->_insts.size(); }

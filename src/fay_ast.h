@@ -82,8 +82,6 @@ namespace fay
 		void addChildNode(PTR(AstNode) node);
 		//插入并替换现有节点
 		void insertChldNode(size_t index, PTR(AstNode) node);
-		//生成当前节点的信息
-		std::string traceInfo();
 
 		//值类型
 		virtual ValueType valueType() { return ValueType::Void; }
@@ -301,6 +299,9 @@ namespace fay
 	class AstAssign : public AstNode
 	{
 		using AstNode::AstNode;
+	public:
+		virtual void dig3(FayBuilder* builder) override;
+		virtual void dig4(FayBuilder* builder) override;
 	};
 
 	class AstCall : public AstNode

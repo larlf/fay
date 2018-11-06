@@ -235,7 +235,10 @@ void fay::FayInstFun::toString(mirror::utils::StringBuilder* sb)
 	{
 		auto it = this->_insts[i];
 		sb->add(i)->add(" : ");
-		it->toString(sb);
+		if (it)
+			it->toString(sb);
+		else
+			sb->add("<nullptr>");
 	}
 
 	sb->decreaseIndent();
@@ -782,6 +785,45 @@ fay::FayInst* fay::FayLangUtils::ConvertInst(ValueType src, ValueType dest)
 
 	return nullptr;
 }
+
+FayInst* fay::FayLangUtils::PushDefault(ValueType type)
+{
+	switch (type)
+	{
+	case fay::ValueType::Void:
+		break;
+	case fay::ValueType::Bool:
+		return new inst::PushBool(false);
+		break;
+	case fay::ValueType::Byte:
+		return new inst::PushByte((byte)0);
+		break;
+	case fay::ValueType::Int:
+		return new inst::PushInt((int32_t)0);
+		break;
+	case fay::ValueType::Long:
+		return new inst::PushLong((int64_t)0);
+		break;
+	case fay::ValueType::Float:
+		return new inst::PushFloat((float)0);
+		break;
+	case fay::ValueType::Double:
+		return new inst::PushDouble((double)0);
+		break;
+	case fay::ValueType::String:
+		return new inst::PushString("");
+		break;
+	case fay::ValueType::Object:
+		break;
+	case fay::ValueType::Function:
+		break;
+	default:
+		break;
+	}
+	return nullptr;
+}
+
+
 
 FayInst* fay::FayLangUtils::PushNumber(ValueType type, int32_t value)
 {
