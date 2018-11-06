@@ -28,6 +28,7 @@ namespace fay
 			this->_text = std::string((char*)data.data(), pos, size);
 		}
 
+		PTR(FayFile) file() { return this->_file; }
 		TokenType type() { return this->_type; }
 		const std::string &text() { return this->_text; }
 		int line() { return this->_line; }

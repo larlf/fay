@@ -48,7 +48,7 @@ std::string fay::I18N::Get(const std::string & key, std::vector<std::string>& wo
 	auto it=_Dict.find(key);
 	if (it == _Dict.end())
 	{
-		LOG_ERROR("Cannot find i18n data : " << key);
+		//LOG_ERROR("Cannot find i18n data : " << key);
 		std::string str = key;
 		for each(auto it2 in words)
 		{

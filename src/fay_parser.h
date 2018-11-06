@@ -7,23 +7,23 @@
 namespace fay
 {
 	//语法解析中的异常
-	class ParseException : public std::exception
+	class ParseException : public FayCompileException
 	{
-	private:
-		std::string _trace;
-
 	public:
 		//stack : 当前正在处理的TokenStack
 		//key : 错误信息的国际化信息
 		template<typename... Params>
 		ParseException(TokenStack* stack, const std::string &key, Params... args)
-			: std::exception::exception((I18N::Get(key, args...) + "\n" + stack->now()->toString()).c_str())
+			: FayCompileException((I18N::Get(key, args...)))
 		{
-			this->_trace = mirror::log::SysTrace::TraceInfo();
+			PTR(Token) token = stack->now();
+			if(token)
+			{
+				this->_file = token->file();
+				this->_line = token->line();
+				this->_col = token->col();
+			}
 		}
-
-		//取抛出异常的堆栈
-		const std::string trace() { return _trace; }
 	};
 
 	//语法解析器
@@ -32,9 +32,9 @@ namespace fay
 	private:
 		//生成左右双向式操作的节点
 		static PTR(AstNode) _MakeLeftRightOPNode(
-			std::function<PTR(AstNode)(TokenStack*)> subExpr, 
-			const std::vector<std::string> &ops, 
-			TokenStack* stack, 
+			std::function<PTR(AstNode)(TokenStack*)> subExpr,
+			const std::vector<std::string> &ops,
+			TokenStack* stack,
 			std::function<PTR(AstNode)(PTR(Token))> nodeCreater);
 		//生成布尔操作的节点
 		static PTR(AstNode) _MakeBoolOPNode(std::function<PTR(AstNode)(TokenStack*)> subExpr, std::vector<std::string> ops, TokenStack* stack);
@@ -57,7 +57,7 @@ namespace fay
 		static PTR(AstNode) _StmtIf(TokenStack* stack);
 		static PTR(AstNode) _StmtFor(TokenStack* stack);
 		static PTR(AstNode) _StmtReturn(TokenStack* stack);
-		
+
 		//数组
 		static PTR(AstNode) _Array(TokenStack* stack);
 		//类型定义

@@ -25,11 +25,12 @@ void test::FayTests::TestLexer()
 	std::string filename = "../script/test1.fay";
 	std::string text = utils::FileUtils::ReadTextFile(filename);
 	LOG_DEBUG(text);
+	PTR(FayFile) file = MKPTR(FayFile)(filename, text);
 
 	PRINT("----------------------------------------");
 
 	fay::Lexer lexer;
-	auto tokens = lexer.Execute(filename, text);
+	auto tokens = lexer.Execute(file);
 
 	for(auto i = 0; i < tokens->size(); ++i)
 		PRINT(i << "\t" << (*tokens)[i]->toString());
@@ -110,7 +111,11 @@ void test::FayTests::TestRTTI()
 {
 	PTR(AstNode) node = MKPTR(AstFile)("aabbcc");
 	LOG_DEBUG(node->className());
-	LOG_DEBUG(node->is(typeid(AstNode)));
+
+	PTR(AstNode) ast1 = MKPTR(AstFor)(nullptr);
+	LOG_DEBUG("RTTI : " << ast1->is<AstFor>());
+	LOG_DEBUG("RTTI : " << ast1->is<AstNode>());
+	LOG_DEBUG("RTTI : " << ast1->is<TestA>());
 }
 
 void test::FayTests::TestInternalFun()

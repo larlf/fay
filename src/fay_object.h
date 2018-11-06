@@ -20,36 +20,40 @@ namespace fay
 		virtual void toString(mirror::utils::StringBuilder* sb) {}
 	};
 
-	//用于处理报错信息的异常
-	class FayException : public std::exception
-	{
-	private:
-		std::string _filename;  //文件名称
-		std::string _trace;  //堆栈
-		int _line;  //行号
-		int _col;  //列
-
-	public:
-		FayException(const std::string &msg);
-		FayException(const std::string &msg, const std::string &filename, int line, int col);
-
-		const std::string &filename() { return this->_filename; }
-		const std::string &trace() { return this->_trace; }
-		int line() { return this->_line; }
-		int col() { return this->_col; }
-	};
-
 	//文件对象
 	class FayFile : public FayObject
 	{
 	private:
 		std::string _filename;
+		std::string _text;
 
 	public:
-		FayFile(const std::string &filename)
-			: _filename(filename) {}
+		FayFile(const std::string &filename, const std::string &text)
+			: _filename(filename), _text(text) {}
 
 		const std::string &filename() { return this->_filename; }
+		const std::string &text() { return this->_text; }
+		const std::string line(int index);
+	};
+
+	//用于处理报错信息的异常
+	class FayCompileException : public std::exception
+	{
+	protected:
+		PTR(FayFile) _file;  //文件名称
+		std::string _trace;  //堆栈
+		int _line;  //行号
+		int _col;  //列
+
+	public:
+		FayCompileException(const std::string &msg);
+		FayCompileException(const std::string &msg, PTR(FayFile) file, int line, int col);
+
+		const PTR(FayFile) file() { return this->_file; }
+		const std::string &trace() { return this->_trace; }
+		const std::string source();
+		int line() { return this->_line; }
+		int col() { return this->_col; }
 	};
 
 	//有索引的Mpa结构

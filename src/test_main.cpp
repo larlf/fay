@@ -16,19 +16,16 @@ void main()
 		//test::UtilsTest::testTrace();
 
 		test::FayTests::Init();
-		test::FayTests::TestLexer();
+		//test::FayTests::TestLexer();
 		//test::FayTests::Test1();
-		//test::FayTests::TestRTTI();
+		test::FayTests::TestRTTI();
 		//test::FayTests::TestInternalFun();
 	}
-	catch (fay::ParseException &e)
+	catch (fay::FayCompileException &e)
 	{
-		LOG_ERROR(e.what());
-		PRINT(e.trace());
-	}
-	catch (fay::BuildException &e)
-	{
-		LOG_ERROR(e.what());
+		PRINT("Error : " << e.what());
+		PRINT("Line:" << e.line() << " Col:" << e.col() << " @ " << e.file()->filename());
+		PRINT(e.source());
 		PRINT(e.trace());
 	}
 

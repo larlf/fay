@@ -10,24 +10,33 @@
 #include <fay_type.h>
 #include <fay_builder.h>
 #include <fay_token.h>
+#include <fay_i18n.h>
 
 namespace fay
 {
 	class AstNode;
 
 	//语法解析中的异常
-	class BuildException : public std::exception
+	class BuildException : public FayCompileException
 	{
-	private:
-		std::string _trace;
-
 	public:
 		//stack : 当前正在处理的TokenStack
-		//msg : 错误信息
-		BuildException(PTR(fay::AstNode) ast, const std::string &msg);
-
-		//取抛出异常的堆栈
-		const std::string trace() { return _trace; }
+		//key : 错误信息的国际化信息
+		template<typename... Params>
+		BuildException(PTR(fay::AstNode) ast, const std::string &key, Params... args)
+			: FayCompileException((I18N::Get(key, args...)))
+		{
+			if (ast)
+			{
+				PTR(Token) token = ast->token();
+				if (token)
+				{
+					this->_file = token->file();
+					this->_line = token->line();
+					this->_col = token->col();
+				}
+			}
+		}
 	};
 
 	class AstNode : public FayObject, public std::enable_shared_from_this<AstNode>
@@ -57,8 +66,17 @@ namespace fay
 		virtual std::string className();
 
 		//用于判断类型
-		template<typename T> bool is() { return typeid(*this) == typeid(T); }
-		virtual bool is(const type_info &type);
+		template<typename T> bool is() 
+		{ 
+			if (typeid(*this) == typeid(T))
+				return true;
+
+			T* t = dynamic_cast<T*>(this);
+			if (t != nullptr)
+				return true;
+
+			return false;
+		}
 
 		//添加子节点
 		void addChildNode(PTR(AstNode) node);

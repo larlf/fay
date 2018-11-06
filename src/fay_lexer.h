@@ -8,9 +8,9 @@ namespace fay
 	/**
 	* 词法解析错误后的异常处理
 	*/
-	class LexerException : public FayException
+	class LexerException : public FayCompileException
 	{
-		using FayException::FayException;
+		using FayCompileException::FayCompileException;
 	};
 
 	class Lexer
@@ -27,7 +27,7 @@ namespace fay
 	public:
 		Lexer();
 		~Lexer();
-		PTR(std::vector<PTR(Token)>) Execute(const std::string &filename, const std::string &text);
+		PTR(std::vector<PTR(Token)>) Execute(PTR(FayFile) file);
 	};
 
 

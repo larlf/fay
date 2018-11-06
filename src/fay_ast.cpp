@@ -16,13 +16,13 @@ std::string fay::AstNode::className()
 	return name;
 }
 
-bool fay::AstNode::is(const type_info &type)
-{
-	if(typeid(*this) == type)
-		return true;
-
-	return false;
-}
+//bool fay::AstNode::is(const type_info &type)
+//{
+//	if(typeid(*this) == type)
+//		return true;
+//
+//	return false;
+//}
 
 void fay::AstNode::addChildNode(PTR(AstNode) node)
 {
@@ -246,12 +246,6 @@ void fay::AstCall::dig4(FayBuilder* builder)
 
 	pos_t index = builder->findFun(this->text(), paramsType);
 	builder->addInst(new inst::CallStatic(index, paramSize));
-}
-
-fay::BuildException::BuildException(PTR(fay::AstNode) ast, const std::string &msg)
-	: std::exception::exception((msg + "\n" + ast->traceInfo()).c_str())
-{
-	this->_trace = mirror::log::SysTrace::TraceInfo();
 }
 
 std::vector<PTR(FayClass)> fay::AstParamDefineList::getTypeList(FayBuilder* builder)
