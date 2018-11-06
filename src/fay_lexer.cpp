@@ -1,4 +1,5 @@
 ﻿#include <fay_lexer.h>
+#include <fay_i18n.h>
 #include <mirror_utils_string.h>
 #include <mirror_utils_log.h>
 
@@ -110,8 +111,10 @@ fay::Lexer::~Lexer()
 	this->_rules.clear();
 }
 
-PTR(std::vector<PTR(Token)>) fay::Lexer::Execute(std::string text)
+PTR(std::vector<PTR(Token)>) fay::Lexer::Execute(const std::string &filename, const std::string &text)
 {
+	PTR(FayFile) file = MKPTR(FayFile)(filename);
+
 	//输入和输出
 	ByteData chars((byte*)text.c_str(), text.size());
 	PTR(std::vector<PTR(Token)>) r = MKPTR(std::vector<PTR(Token)>)();
@@ -147,7 +150,7 @@ PTR(std::vector<PTR(Token)>) fay::Lexer::Execute(std::string text)
 		{
 			if(it->mode() == this->_mode)
 			{
-				Token* t = it->match(chars, pos, line, col);
+				Token* t = it->match(file, chars, pos, line, col);
 				if(t != nullptr)
 					tokens.push_back(PTR(Token)(t));
 			}
@@ -190,8 +193,9 @@ PTR(std::vector<PTR(Token)>) fay::Lexer::Execute(std::string text)
 		}
 		else
 		{
+			//生成错误信息
 			utils::StringBuilder sb;
-			sb.add("Lexer error at line:")->add(line)->add(" column:")->add(col)->endl();
+			sb.add(I18N::Get("err_lex"))->endl();
 
 			//取当前行的内容
 			int strPos = lineEnd + 1;
@@ -211,8 +215,8 @@ PTR(std::vector<PTR(Token)>) fay::Lexer::Execute(std::string text)
 				sb.add(' ');
 			sb.add('^');
 
-			//生成错误信息
-			throw LexerException(sb.toString().c_str());
+			//抛出异常
+			throw LexerException(sb.toString(), filename, line, col);
 		}
 	}
 

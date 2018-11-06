@@ -1,19 +1,16 @@
 ﻿#pragma once
 
 #include <fay_token.h>
+#include <fay_object.h>
 
 namespace fay
 {
 	/**
 	* 词法解析错误后的异常处理
 	*/
-	class LexerException : public std::exception
+	class LexerException : public FayException
 	{
-	public:
-		using std::exception::exception;
-
-		LexerException(const std::string &msg)
-			: std::exception(msg.c_str()) {}
+		using FayException::FayException;
 	};
 
 	class Lexer
@@ -30,7 +27,7 @@ namespace fay
 	public:
 		Lexer();
 		~Lexer();
-		PTR(std::vector<PTR(Token)>) Execute(std::string text);
+		PTR(std::vector<PTR(Token)>) Execute(const std::string &filename, const std::string &text);
 	};
 
 

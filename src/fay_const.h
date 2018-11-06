@@ -75,6 +75,14 @@ namespace fay
 		//ValueTypeEnd
 	};
 
+	//变量类型
+	enum class VarType
+	{
+		Static,  //静态变量
+		Field,  //字段变量
+		Local  //局部变量
+	};
+
 	//类的类型
 	enum class ClassType
 	{

@@ -19,6 +19,9 @@ void test::FayTests::Init()
 
 void test::FayTests::TestLexer()
 {
+	std::string i18nText = utils::FileUtils::ReadTextFile("../doc/i18n.cn.json");
+	fay::I18N::Init(i18nText);
+
 	std::string filename = "../script/test1.fay";
 	std::string text = utils::FileUtils::ReadTextFile(filename);
 	LOG_DEBUG(text);
@@ -26,7 +29,7 @@ void test::FayTests::TestLexer()
 	PRINT("----------------------------------------");
 
 	fay::Lexer lexer;
-	auto tokens = lexer.Execute(text);
+	auto tokens = lexer.Execute(filename, text);
 
 	for(auto i = 0; i < tokens->size(); ++i)
 		PRINT(i << "\t" << (*tokens)[i]->toString());
@@ -91,7 +94,7 @@ void test::FayTests::TestLexer()
 void test::FayTests::Test1()
 {
 	char str[1024];
-	sprintf(str, "Hello!\d \d", 5, 4);
+	sprintf(str, "Hello!%d%d", 5, 4);
 
 	FayTests::Printf("Hello!", "aaa", "bbb");
 

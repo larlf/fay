@@ -22,23 +22,23 @@ std::string fay::Token::toString()
 	return std::string(&*buffer);
 }
 
-fay::Token* fay::CharTokenRule::match(ByteData &data, int pos, int line, int col)
+fay::Token* fay::CharTokenRule::match(PTR(FayFile) file, ByteData &data, int pos, int line, int col)
 {
 	if (data[pos] == '\'' && data.size() > pos + 2)
 	{
 		if (data[pos + 1] == '\\')  //是否有转义字符
 		{
 			if (data.size() > pos + 3 && data[pos + 3] == '\'')
-				return new Token(this->_class, data, pos, 4, line, col);
+				return new Token(file, this->_class, data, pos, 4, line, col);
 		}
 		else if (data[pos + 2] == '\'')
-			return new Token(this->_class, data, pos, 3, line, col);
+			return new Token(file, this->_class, data, pos, 3, line, col);
 	}
 
 	return nullptr;
 }
 
-Token* fay::NumberTokenRule::match(ByteData &data, int pos, int line, int col)
+Token* fay::NumberTokenRule::match(PTR(FayFile) file, ByteData &data, int pos, int line, int col)
 {
 	int startPos = pos;  //记录下开始位置
 
@@ -66,10 +66,10 @@ Token* fay::NumberTokenRule::match(ByteData &data, int pos, int line, int col)
 	if (data[pos] == 'l' || data[pos] == 'L' || data[pos] == 'd' || data[pos] == 'D')
 		pos++;
 
-	return new Token(this->_class, data, startPos, pos - startPos, line, col);
+	return new Token(file, this->_class, data, startPos, pos - startPos, line, col);
 }
 
-Token* fay::StringTokenRule::match(ByteData &data, int pos, int line, int col)
+Token* fay::StringTokenRule::match(PTR(FayFile) file, ByteData &data, int pos, int line, int col)
 {
 	if (data[pos] == '"')
 	{
@@ -83,7 +83,7 @@ Token* fay::StringTokenRule::match(ByteData &data, int pos, int line, int col)
 			if (data[i] == '"' && data[i - 1] != '\\')
 			{
 				//返回字符串的token
-				return new Token(this->_class, data, pos, i - pos + 1, line, col);
+				return new Token(file, this->_class, data, pos, i - pos + 1, line, col);
 			}
 		}
 	}
@@ -91,16 +91,16 @@ Token* fay::StringTokenRule::match(ByteData &data, int pos, int line, int col)
 	return nullptr;
 }
 
-fay::Token* fay::SymbolTokenRule::match(ByteData &data, int pos, int line, int col)
+fay::Token* fay::SymbolTokenRule::match(PTR(FayFile) file, ByteData &data, int pos, int line, int col)
 {
 
 	if (data[pos] == this->_value)
-		return new Token(this->_class, data, pos, 1, line, col);
+		return new Token(file, this->_class, data, pos, 1, line, col);
 
 	return nullptr;
 }
 
-Token* fay::WordsTokenRule::match(ByteData &data, int pos, int line, int col)
+Token* fay::WordsTokenRule::match(PTR(FayFile) file, ByteData &data, int pos, int line, int col)
 {
 	for(auto i=0; i<this->_words.size(); ++i)
 	{
@@ -116,13 +116,13 @@ Token* fay::WordsTokenRule::match(ByteData &data, int pos, int line, int col)
 		}
 
 		if (isMatch)
-			return new Token(this->type(), data, pos, word->size(), line, col);
+			return new Token(file, this->type(), data, pos, word->size(), line, col);
 	}
 
 	return nullptr;
 }
 
-fay::Token* fay::WordTokenRule::match(ByteData &data, int pos, int line, int col)
+fay::Token* fay::WordTokenRule::match(PTR(FayFile) file, ByteData &data, int pos, int line, int col)
 {
 	for (auto i = 0; i < this->_word.size(); ++i)
 	{
@@ -130,10 +130,10 @@ fay::Token* fay::WordTokenRule::match(ByteData &data, int pos, int line, int col
 			return nullptr;
 	}
 
-	return new Token(this->type(), data, pos, this->_word.size(), line, col);
+	return new Token(file, this->type(), data, pos, this->_word.size(), line, col);
 }
 
-Token* fay::IDTokenRule::match(ByteData &data, int pos, int line, int col)
+Token* fay::IDTokenRule::match(PTR(FayFile) file, ByteData &data, int pos, int line, int col)
 {
 
 	if ((data[pos] >= 'a' && data[pos] <= 'z') || (data[pos] >= 'A' && data[pos] <= 'Z') || data[pos]=='_')
@@ -151,13 +151,13 @@ Token* fay::IDTokenRule::match(ByteData &data, int pos, int line, int col)
 				break;
 		}
 
-		return new Token(this->_class, data, pos, p - pos, line, col);
+		return new Token(file, this->_class, data, pos, p - pos, line, col);
 	}
 
 	return nullptr;
 }
 
-Token* fay::SingleCommentTokenRule::match(ByteData &data, int pos, int line, int col)
+Token* fay::SingleCommentTokenRule::match(PTR(FayFile) file, ByteData &data, int pos, int line, int col)
 {
 	int p = pos;
 	while (p < data.size())
@@ -169,7 +169,7 @@ Token* fay::SingleCommentTokenRule::match(ByteData &data, int pos, int line, int
 	}
 
 	if(p>pos)
-		return new Token(this->_class, data, pos, p-pos, line, col);
+		return new Token(file, this->_class, data, pos, p-pos, line, col);
 
 	return nullptr;
 }
