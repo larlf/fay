@@ -27,6 +27,7 @@ include_directories(
 	${PROJECT_SOURCE_DIR}/deps/${type}/jansson/inc
 	${PROJECT_SOURCE_DIR}/deps/${type}/iconv/inc
 	${PROJECT_SOURCE_DIR}/deps/${type}/vld/inc
+	${PROJECT_SOURCE_DIR}/deps/${type}/gtest/inc
 )
 
 link_directories(
@@ -35,6 +36,7 @@ link_directories(
 	${PROJECT_SOURCE_DIR}/deps/${type}/jansson/lib
 	${PROJECT_SOURCE_DIR}/deps/${type}/iconv/lib
 	${PROJECT_SOURCE_DIR}/deps/${type}/vld/lib
+	${PROJECT_SOURCE_DIR}/deps/${type}/gtest/lib
 )
 
 #########################################################
@@ -136,7 +138,7 @@ set(test_src
 add_executable(fay_test ${test_src})
 
 if(WIN32)
-	target_link_libraries(fay_test mirror fay winmm.lib mirage.lib jansson.lib libiconv.lib)
+	target_link_libraries(fay_test mirror fay winmm.lib mirage.lib jansson.lib libiconv.lib gtestd.lib)
 else()
 	target_link_libraries(fay_test mirror fay)
 endif()
