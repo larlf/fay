@@ -1,0 +1,57 @@
+using fay.system;
+
+package com.larlf;
+
+public class MyTest
+{
+	static public fun fun1():void
+	{
+		fay.System.Print("Hello, World!");
+		var a:int=5;
+		fay.System.Print(a);
+		var b:int=5+6.0;
+		fay.System.Print(b);
+		var c:string="aabbccdd";
+		fay.System.Print(c);
+
+		var s1:string="s1";
+		var s2:string="s2";
+		fay.System.Print(s1+s2);
+	}
+
+	static public fun fun2():void
+	{
+		fay.System.Print("PointA");
+		goto label1;
+		fay.System.Print("PointB");
+		label label1;
+		fay.System.Print("PointC");
+
+		var aaa:int=15;
+
+		if(aaa<4)
+			fay.System.Print("Small");
+		elseif(aaa<10)
+			fay.System.Print("Middel");
+
+		if(aaa)
+			fay.System.Print(aaa);
+	}
+
+	static public fun fun3():void
+	{
+		for(var i:int=0; i<10; ++i) 
+		{
+			fay.System.Print(i);
+		}
+	}
+
+	static public fun fun4():void
+	{
+		var a:int=5;
+		var b:int=6;
+		var c:int;
+		c=a+b;
+		fay.System.Print(c);
+	}
+}

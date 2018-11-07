@@ -1,4 +1,4 @@
-﻿#include <test_main.h>
+﻿#include <test_fay.h>
 #include <mirror_utils_file.h>
 #include <mirror_utils_log.h>
 #include <fay_token_stack.h>

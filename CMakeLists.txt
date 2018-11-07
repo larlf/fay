@@ -129,8 +129,9 @@ endif()
 
 set(test_src
 	src/test_main.cpp
-	src/test_main.h
+	src/test_utils.h
 	src/test_utils.cpp
+	src/test_fay.h
 	src/test_fay.cpp
 )
 

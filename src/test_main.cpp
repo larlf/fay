@@ -1,9 +1,10 @@
 ﻿#if WIN32
 #include <vld.h>
 #endif
-#include <test_main.h>
 #include <fay_const.h>
 #include <gtest/gtest.h>
+#include <test_utils.h>
+#include <test_fay.h>
 
 int main(int argc, char** argv)
 {
