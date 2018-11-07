@@ -11,7 +11,7 @@
 int main(int argc, char** argv)
 {
 
-	VLDDisable();
+	//VLDDisable();
 	testing::FLAGS_gtest_death_test_style = "fast";
 
 	testing::InitGoogleTest(&argc, argv);

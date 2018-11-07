@@ -1,14 +1,11 @@
 ﻿#pragma once
 #include <iostream>
+#include <gtest/gtest.h>
+#include <mirror_utils_log.h>
 
 namespace test
 {
-	class UtilsTest
+	class UtilsTest : public testing::Test
 	{
-	public:
-		static void testLog();
-		static void testString();
-		static void testString(std::string* strs);
-		static void testTrace();
 	};
 }
