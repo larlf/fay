@@ -193,7 +193,7 @@ PTR(std::vector<PTR(Token)>) fay::Lexer::Execute(PTR(FayFile) file)
 		{
 			//生成错误信息
 			utils::StringBuilder sb;
-			sb.add(I18N::Get("err_lex"))->endl();
+			sb.add(I18N::Get("err.lex"))->endl();
 
 			//取当前行的内容
 			int strPos = lineEnd + 1;

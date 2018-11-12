@@ -13,7 +13,7 @@ namespace fay
 	class Token
 	{
 	private:
-		PTR(FayFile) _file;
+		WPTR(FayFile) _file;
 		std::string _text;
 		TokenType _type = TokenType::None;
 		int _line = -1;
@@ -28,7 +28,7 @@ namespace fay
 			this->_text = std::string((char*)data.data(), pos, size);
 		}
 
-		PTR(FayFile) file() { return this->_file; }
+		PTR(FayFile) file() { return this->_file.lock(); }
 		TokenType type() { return this->_type; }
 		const std::string &text() { return this->_text; }
 		int line() { return this->_line; }

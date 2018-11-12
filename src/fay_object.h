@@ -33,6 +33,9 @@ namespace fay
 
 		const std::string &filename() { return this->_filename; }
 		const std::string &text() { return this->_text; }
+
+		//取出指定行的内容
+		//处理的时候没有考虑性能，只在报错的时候再用
 		const std::string line(int index);
 	};
 

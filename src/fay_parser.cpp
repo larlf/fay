@@ -823,7 +823,7 @@ PTR(AstNode) fay::Parser::_AddrExprBracket(TokenStack* stack)
 			throw ParseException(stack, "bad index");
 
 		if (!stack->move()->is("]"))
-			throw ParseException(stack, "err_expect", "]");
+			throw ParseException(stack, "err.expect", "]");
 		leftNode->addChildNode(leftNode);
 		leftNode->addChildNode(index);
 	}

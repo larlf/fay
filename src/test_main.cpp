@@ -9,9 +9,6 @@
 int main(int argc, char** argv)
 {
 	//VLDDisable();
-
-	fay::TypeDict::Init();
-
 	testing::FLAGS_gtest_death_test_style = "fast";
 	testing::InitGoogleTest(&argc, argv);
 	return RUN_ALL_TESTS();

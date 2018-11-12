@@ -281,7 +281,7 @@ void fay::AstVar::dig4(FayBuilder* builder)
 	{
 		FayInst *inst = FayLangUtils::PushDefault(this->_nodes[0]->valueType());
 		if (inst == nullptr)
-			throw BuildException(this->shared_from_this(), "err_no_default_value", TypeDict::ToName(this->_nodes[0]->valueType()));
+			throw BuildException(this->shared_from_this(), "err.no_default_value", TypeDict::ToName(this->_nodes[0]->valueType()));
 		builder->addInst(inst);
 	}
 

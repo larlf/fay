@@ -7,19 +7,38 @@
 #include <fay_internal_fun.h>
 #include <fay_vm.h>
 #include <fay_i18n.h>
+#include <fay_project.h>
 #include <stack>
 #include <gtest/gtest.h>
 
 using namespace mirror;
 using namespace fay;
+using namespace test;
 
-TEST(FayLang, Run)
+void test::FayLang::SetUpTestCase()
+{
+	//初始化字典数据
+	fay::TypeDict::Init();
+
+	//初始化国际化信息
+	std::string i18nText = utils::FileUtils::ReadTextFile("../doc/i18n.cn.json");
+	fay::I18N::Init(i18nText);
+}
+
+TEST_F(FayLang, Test1)
+{
+	//取得所有的代码文件
+	std::string projectPath = "../script/test1";
+	std::vector<std::string> files = utils::FileUtils::FindFiles(projectPath+"/src", true,".fay");
+
+	FayProject project;
+	project.addFiles(files);
+}
+
+TEST_F(FayLang, Run)
 {
 	try
 	{
-		std::string i18nText = utils::FileUtils::ReadTextFile("../doc/i18n.cn.json");
-		fay::I18N::Init(i18nText);
-
 		std::string filename = "../script/test1.fay";
 		std::string text = utils::FileUtils::ReadTextFile(filename);
 		LOG_DEBUG(text);
@@ -100,10 +119,11 @@ TEST(FayLang, Run)
 
 }
 
-TEST(FayLang, RTTI)
+TEST_F(FayLang, RTTI)
 {
 	PTR(AstNode) ast1 = MKPTR(AstFor)(nullptr);
 	ASSERT_EQ(ast1->is<AstFor>(), true); 
 	ASSERT_EQ(ast1->is<AstNode>(), true);
 	ASSERT_EQ(ast1->is<test::FayLang>(), false);
 }
+

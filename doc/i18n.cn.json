@@ -1,6 +1,6 @@
 {
-	"err_lex": "词法解析错误",
-	"err_expect": "找不到预期的{1}",
-    "err_test": "这是测试 {1} {2} {3}",
-    "err_no_default_value":"无法生成类型 {1} 的默认值"
+	"err.lex": "词法解析错误",
+	"err.expect": "找不到预期的{1}",
+    "err.test": "这是测试 {1} {2} {3}",
+    "err.no_default_value":"无法生成类型 {1} 的默认值"
 }
