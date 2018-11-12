@@ -33,6 +33,8 @@ TEST_F(FayLang, Test1)
 
 	FayProject project;
 	project.addFiles(files);
+	project.parse();
+	project.build();
 }
 
 TEST_F(FayLang, Run)

@@ -16,6 +16,8 @@ namespace fay
 	public:
 		FaySource(PTR(FayFile) file) : _file(file) {}
 
+		PTR(AstNode) ast() { return this->_ast; }
+
 		//对内容进行解析
 		void parse(PTR(Lexer) lexer);
 	};
@@ -25,9 +27,16 @@ namespace fay
 	{
 	private:
 		MAP<std::string, PTR(FaySource)> _files;
+		PTR(FayDomain) _domain;
+		PTR(FayBuilder) _builder;
 
 	public:
+		FayProject();
+
+		PTR(FayDomain) domain() { return this->_domain; }
+
 		void addFiles(std::vector<std::string> &files);
 		void parse();
+		void build();
 	};
 }

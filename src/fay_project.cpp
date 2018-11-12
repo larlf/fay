@@ -4,6 +4,13 @@
 
 using namespace mirror;
 
+fay::FayProject::FayProject()
+{
+	_domain = MKPTR(fay::FayDomain)();
+	_domain->initSysLib();
+	_builder = MKPTR(FayBuilder)(_domain);
+}
+
 void fay::FayProject::addFiles(std::vector<std::string> &files)
 {
 	for(auto filename : files)
@@ -31,7 +38,54 @@ void fay::FayProject::parse()
 		{
 			LOG_ERROR(e.what());
 		}
-		catch(std::exception &e)
+	}
+}
+
+void fay::FayProject::build()
+{
+	for (auto it : this->_files)
+	{
+		try
+		{
+			it.second->ast()->dig1(this->_builder.get());
+		}
+		catch (FayCompileException &e)
+		{
+			LOG_ERROR(e.what());
+		}
+	}
+
+	for (auto it : this->_files)
+	{
+		try
+		{
+			it.second->ast()->dig2(this->_builder.get());
+		}
+		catch (FayCompileException &e)
+		{
+			LOG_ERROR(e.what());
+		}
+	}
+
+	for (auto it : this->_files)
+	{
+		try
+		{
+			it.second->ast()->dig3(this->_builder.get());
+		}
+		catch (FayCompileException &e)
+		{
+			LOG_ERROR(e.what());
+		}
+	}
+
+	for (auto it : this->_files)
+	{
+		try
+		{
+			it.second->ast()->dig4(this->_builder.get());
+		}
+		catch (FayCompileException &e)
 		{
 			LOG_ERROR(e.what());
 		}
