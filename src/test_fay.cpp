@@ -31,7 +31,7 @@ TEST_F(FayLang, Test1)
 	std::string projectPath = "../script/test1";
 	std::vector<std::string> files = utils::FileUtils::FindFiles(projectPath+"/src", true,".fay");
 
-	FayProject project;
+	FayProject project("Test1", 1, 0);
 	project.addFiles(files);
 	project.parse();
 	project.build();
@@ -114,11 +114,6 @@ TEST_F(FayLang, Run)
 	{
 		LOG_ERROR(e.what());
 	}
-	catch (std::exception &e)
-	{
-		LOG_ERROR(e.what());
-	}
-
 }
 
 TEST_F(FayLang, RTTI)

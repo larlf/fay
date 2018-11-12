@@ -1,14 +1,18 @@
-﻿#include <fay_project.h>
+﻿#include "fay_project.h"
+#include <fay_project.h>
 #include <fay_parser.h>
 #include <mirror_utils_file.h>
 
 using namespace mirror;
 
-fay::FayProject::FayProject()
+fay::FayProject::FayProject(const std::string & name, int marjor, int minjor)
+	: _name(name), _marjor(marjor), _minjor(minjor)
 {
 	_domain = MKPTR(fay::FayDomain)();
 	_domain->initSysLib();
+
 	_builder = MKPTR(FayBuilder)(_domain);
+	_builder->beginLib(name);
 }
 
 void fay::FayProject::addFiles(std::vector<std::string> &files)

@@ -26,12 +26,16 @@ namespace fay
 	class FayProject : FayObject
 	{
 	private:
+		std::string _name;
+		int _marjor;
+		int _minjor;
+
 		MAP<std::string, PTR(FaySource)> _files;
 		PTR(FayDomain) _domain;
 		PTR(FayBuilder) _builder;
 
 	public:
-		FayProject();
+		FayProject(const std::string &name, int marjor, int minjor);
 
 		PTR(FayDomain) domain() { return this->_domain; }
 
