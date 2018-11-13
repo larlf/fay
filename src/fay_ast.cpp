@@ -40,7 +40,7 @@ void fay::AstNode::insertChldNode(size_t index, PTR(AstNode) node)
 PTR(FayClass) fay::AstNode::classType(FayBuilder* builder)
 {
 	ValueType vtype = this->valueType();
-	return builder->domain()->findType(vtype);
+	return builder->domain()->findClass(vtype);
 }
 
 void fay::AstNode::toString(mirror::utils::StringBuilder* sb)
@@ -192,7 +192,7 @@ void fay::AstPackage::dig1(FayBuilder* builder)
 
 PTR(FayClass) fay::AstType::toFayType(FayBuilder* builder)
 {
-	auto t = builder->domain()->findType(this->text());
+	auto t = builder->domain()->findClass(this->text());
 	if(!t)
 		throw BuildException(this->shared_from_this(), "connt find type : " + this->text());
 	return t;
@@ -245,7 +245,7 @@ void fay::AstVar::dig3(FayBuilder* builder)
 {
 	//新添加了变量
 	std::string varName = this->text();
-	PTR(FayClass) varType = builder->domain()->findType(this->_nodes[0]->text());
+	PTR(FayClass) varType = builder->domain()->findClass(this->_nodes[0]->text());
 	if(!varType)
 		throw BuildException(this->_nodes[0], "cannot find type : " + this->_nodes[0]->text());
 
@@ -267,7 +267,7 @@ void fay::AstVar::dig4(FayBuilder* builder)
 {
 	//新添加了变量
 	std::string varName = this->text();
-	PTR(FayClass) varType = builder->domain()->findType(this->_nodes[0]->text());
+	PTR(FayClass) varType = builder->domain()->findClass(this->_nodes[0]->text());
 	if(!varType)
 		throw BuildException(this->_nodes[0], "cannot find type : " + this->_nodes[0]->text());
 

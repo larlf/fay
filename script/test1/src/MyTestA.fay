@@ -54,4 +54,10 @@ public class MyTest
 		c=a+b;
 		fay.System.Print(c);
 	}
+
+	static public fun fun5():void
+	{
+		var a:long=105;	
+		sys.Print(a);
+	}
 }

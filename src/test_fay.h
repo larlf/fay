@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <gtest/gtest.h>
+#include <fay_type.h>
 
 namespace test
 {
@@ -7,8 +8,7 @@ namespace test
 	{
 	public:
 		static void SetUpTestCase();
-
-
+		static fay::FayValue makeValue();
 	};
 
 }

@@ -25,17 +25,43 @@ void test::FayLang::SetUpTestCase()
 	fay::I18N::Init(i18nText);
 }
 
+FayValue test::FayLang::makeValue()
+{
+	FayValue v= FayValue("test...");
+	return v;
+}
+
 TEST_F(FayLang, Test1)
 {
 	//取得所有的代码文件
 	std::string projectPath = "../script/test1";
-	std::vector<std::string> files = utils::FileUtils::FindFiles(projectPath+"/src", true,".fay");
+	std::vector<std::string> files = utils::FileUtils::FindFiles(projectPath + "/src", true, ".fay");
 
 	FayProject project("Test1", 1, 0);
 	project.addFiles(files);
 	project.parse();
 	project.build();
+
+	fay::FayVM vm(project.domain());
+
+	auto type = project.domain()->findClass("com.larlf.MyTest");
+	auto funs = type->findFunByName("fun1", false);
+	if (funs.size() > 0)
+	{
+		vm.run(funs[0]);
+	}
 }
+
+TEST_F(FayLang, FayValue)
+{
+	FayValue v1("aabbccdd***");
+	FayValue v2 = FayLang::makeValue();
+
+	//LOG_DEBUG(*v1.val()->strVal);
+	//LOG_DEBUG(v2.val()->strVal);
+	//LOG_DEBUG(*v3.strVal());
+}
+
 
 TEST_F(FayLang, Run)
 {
@@ -51,13 +77,13 @@ TEST_F(FayLang, Run)
 		fay::Lexer lexer;
 		auto tokens = lexer.Execute(file);
 
-		for (auto i = 0; i < tokens->size(); ++i)
+		for(auto i = 0; i < tokens->size(); ++i)
 			PRINT(i << "\t" << (*tokens)[i]->toString());
 
 		PRINT("----------------------------------------");
 
 		PTR(fay::AstNode) ast = fay::Parser::Parse(tokens, filename);
-		if (ast)
+		if(ast)
 		{
 			utils::StringBuilder sb;
 			ast->toString(&sb);
@@ -88,7 +114,7 @@ TEST_F(FayLang, Run)
 
 		ast->dig3(builder.get());
 		PRINT("--------------------Dig3--------------------");
-		if (ast)
+		if(ast)
 		{
 			utils::StringBuilder sb;
 			ast->toString(&sb);
@@ -110,7 +136,7 @@ TEST_F(FayLang, Run)
 
 		LOG_DEBUG("Stack Size : " << vm.stackSize());
 	}
-	catch (fay::FayCompileException &e)
+	catch(fay::FayCompileException &e)
 	{
 		LOG_ERROR(e.what());
 	}
@@ -119,7 +145,7 @@ TEST_F(FayLang, Run)
 TEST_F(FayLang, RTTI)
 {
 	PTR(AstNode) ast1 = MKPTR(AstFor)(nullptr);
-	ASSERT_EQ(ast1->is<AstFor>(), true); 
+	ASSERT_EQ(ast1->is<AstFor>(), true);
 	ASSERT_EQ(ast1->is<AstNode>(), true);
 	ASSERT_EQ(ast1->is<test::FayLang>(), false);
 }

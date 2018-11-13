@@ -1,5 +1,6 @@
 ﻿#include "fay_lang.h"
 #include "fay_lang.h"
+#include "fay_lang.h"
 #include <fay_lang.h>
 #include <mirror_utils_log.h>
 #include <fay_internal_fun.h>
@@ -63,6 +64,14 @@ PTR(FayFun) fay::FayClass::findFun(const std::string &fullname, bool isStatic)
 		return this->_vft.findFun(fullname);
 }
 
+std::vector<PTR(FayFun)> fay::FayClass::findFunByName(const std::string & name, bool isStatic)
+{
+	if (isStatic)
+		return this->_sft.findFunByName(name);
+	else
+		return this->_vft.findFunByName(name);
+}
+
 pos_t fay::FayClass::getFunIndex(const std::string &fullname, bool isStatic)
 {
 	if(isStatic)
@@ -98,7 +107,7 @@ pos_t fay::FayLib::findOutsideFun(const std::string &className, const std::strin
 		return -1;
 	}
 
-	auto clazz = domain->findType(className);
+	auto clazz = domain->findClass(className);
 	if(!clazz)
 	{
 		LOG_ERROR("Cannot find type : " << className);
@@ -404,7 +413,7 @@ pos_t fay::FayDomain::getTypeIndex(PTR(FayClass) t)
 	return this->_types.findIndex(t->fullname());
 }
 
-PTR(FayClass) fay::FayDomain::findType(const std::string &typeFullname)
+PTR(FayClass) fay::FayDomain::findClass(const std::string &typeFullname)
 {
 	auto type = this->_types.find(typeFullname);
 	if(!type)
@@ -413,7 +422,7 @@ PTR(FayClass) fay::FayDomain::findType(const std::string &typeFullname)
 	return type;
 }
 
-PTR(FayClass) fay::FayDomain::findType(pos_t index)
+PTR(FayClass) fay::FayDomain::findClass(pos_t index)
 {
 	auto type = this->_types.find(index);
 	if(!type)
@@ -422,19 +431,25 @@ PTR(FayClass) fay::FayDomain::findType(pos_t index)
 	return type;
 }
 
-PTR(FayClass) fay::FayDomain::findType(ValueType type)
+PTR(FayClass) fay::FayDomain::findClass(ValueType type)
 {
 	return FaySimpleClass::Get(type);
 }
 
-std::vector<PTR(FayClass)> fay::FayDomain::findType(std::vector<std::string> &imports, const std::string &typeName)
+std::vector<PTR(FayClass)> fay::FayDomain::findClass(std::vector<std::string> &imports, const std::string &typeName)
 {
 	std::vector<PTR(FayClass)> types;
 
+	//直接根据名称查找
+	auto type = this->findClass(typeName);
+	if (type)
+		types.push_back(type);
+
+	//加上import的前缀查找
 	for each(auto it in imports)
 	{
 		std::string typeFullname = it + "." + typeName;
-		auto type = this->findType(typeFullname);
+		auto type = this->findClass(typeFullname);
 		if(type)
 			types.push_back(type);
 	}
@@ -444,7 +459,7 @@ std::vector<PTR(FayClass)> fay::FayDomain::findType(std::vector<std::string> &im
 
 PTR(FayFun) fay::FayDomain::findFun(const std::string &typeFullname, const std::string &funFullname, bool isStatic)
 {
-	auto type = this->findType(typeFullname);
+	auto type = this->findClass(typeFullname);
 	if(type)
 		return type->findFun(funFullname, isStatic);
 
@@ -1043,7 +1058,7 @@ fay::FayInternalFun::FayInternalFun(PTR(FayDomain) domain, const std::string &na
 	{
 		auto it = params[i];
 		std::string paramName = "p" + std::to_string(i);
-		auto t = domain->findType(it);
+		auto t = domain->findClass(it);
 		PTR(FayParamDef) p = MKPTR(FayParamDef)(domain, paramName, t);
 		this->addParam(p);
 	}
@@ -1119,6 +1134,21 @@ PTR(FayFun) fay::FunTable::findFun(const std::string &fullname)
 	return nullptr;
 }
 
+std::vector<PTR(FayFun)> fay::FunTable::findFunByName(const std::string & name)
+{
+	std::vector<PTR(FayFun)> list;
+
+	for (auto fun : this->_funs)
+	{
+		if (fun->name() == name)
+		{
+			list.push_back(fun);
+		}
+	}
+
+	return list;
+}
+
 void fay::FunTable::toString(mirror::utils::StringBuilder* sb)
 {
 	for(auto i = 0; i < this->_funs.size(); ++i)
@@ -1131,7 +1161,7 @@ void fay::FunTable::toString(mirror::utils::StringBuilder* sb)
 const std::string &fay::FayVarDef::fullname()
 {
 	if(!this->_fullname.size())
-		this->_fullname = this->_name + ":" + this->_class.lock()->fullname();
+		this->_fullname = this->_name + ":" + this->_type.lock()->fullname();
 
 	return this->_fullname;
 }

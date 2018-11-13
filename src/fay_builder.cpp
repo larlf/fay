@@ -52,7 +52,7 @@ pos_t fay::FayBuilder::beginClass(const std::string &name)
 
 void fay::FayBuilder::bindClass(pos_t index)
 {
-	this->_class = TOPTR(FayInstClass, this->_domain->findType(index));
+	this->_class = TOPTR(FayInstClass, this->_domain->findClass(index));
 }
 
 pos_t fay::FayBuilder::beginFun(const std::string &name)
@@ -78,7 +78,7 @@ void fay::FayBuilder::bindFun(pos_t index)
 
 void fay::FayBuilder::addParamDefine(const std::string &name, const std::string &type)
 {
-	PTR(FayClass) t=this->_domain->findType(type);
+	PTR(FayClass) t=this->_domain->findClass(type);
 	PTR(FayParamDef) def = MKPTR(FayParamDef)(this->_domain, name, t);
 	this->_fun->addParam(def);
 }
