@@ -251,6 +251,7 @@ namespace fay
 	protected:
 		FunType _type;  //函数的类型
 		bool _isStatic;  //是否是静态函数，非静态函数需要有this参数
+		FunAccessType _accessType = FunAccessType::Public;  //访问权限
 		WPTR(FayClass) _class;  //所属的Class
 		std::string _name;  //函数名称
 		std::string _fullname;  //全名
@@ -259,8 +260,8 @@ namespace fay
 		PTR(FayLabelTable) _labels = MKPTR(FayLabelTable)();  //标签表，以后可以判断下，运行期不用创建此对象
 
 	public:
-		FayFun(PTR(FayDomain) domain, const std::string &name, FunType type, bool isStatic)
-			: FayLangObject(domain), _name(name), _type(type), _isStatic(isStatic) {}
+		FayFun(PTR(FayDomain) domain, const std::string &name, FunType type, bool isStatic, FunAccessType accessType)
+			: FayLangObject(domain), _name(name), _type(type), _isStatic(isStatic), _accessType(accessType) {}
 		virtual ~FayFun() {}
 
 		//Get & Set
@@ -298,8 +299,8 @@ namespace fay
 		void prepareInsts();
 
 	public:
-		FayInstFun(PTR(FayDomain) domain, const std::string &name, bool isStatic)
-			: FayFun(domain, name, FunType::Code, isStatic) {}
+		FayInstFun(PTR(FayDomain) domain, const std::string &name, bool isStatic, FunAccessType accessType)
+			: FayFun(domain, name, FunType::Code, isStatic, accessType) {}
 		virtual ~FayInstFun();
 
 		//添加指令集

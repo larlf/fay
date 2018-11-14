@@ -90,7 +90,7 @@ void fay::AstNode::dig4(FayBuilder* builder)
 
 void fay::AstClass::dig1(FayBuilder* builder)
 {
-	this->typeIndex = builder->beginClass(this->_text);
+	this->typeIndex = builder->addClass(this->_text);
 	AstNode::dig1(builder);
 }
 
@@ -114,19 +114,39 @@ void fay::AstClass::dig4(FayBuilder* builder)
 
 void fay::AstFun::dig2(FayBuilder* builder)
 {
-	this->_index = builder->beginFun(this->_text);
+	FunAccessType _accessType = FunAccessType::Public;
+	for(auto it : this->_descWords)
+	{
+		if(it == "static")
+			this->isStatic = true;
+		else if(it == "private")
+			_accessType = FunAccessType::Private;
+		else if(it == "protected")
+			_accessType = FunAccessType::Protected;
+	}
+
+	//创建这个函数定义
+	PTR(FayInstFun) fun = MKPTR(FayInstFun)(builder->domain(), this->_text, this->isStatic, _accessType);
+	this->_index = builder->addFun(fun);
+
 	AstNode::dig2(builder);
 }
 
 void fay::AstFun::dig3(FayBuilder* builder)
 {
-	builder->bindFun(this->_index);
+	builder->bindFun(this->_index, this->isStatic);
+	if (!builder->fun())
+		throw BuildException(this->shared_from_this(), "err.cannot_find_fun", this->_text);
+
 	AstNode::dig3(builder);
 }
 
 void fay::AstFun::dig4(FayBuilder* builder)
 {
-	builder->bindFun(this->_index);
+	builder->bindFun(this->_index, this->isStatic);
+	if (!builder->fun())
+		throw BuildException(this->shared_from_this(), "err.cannot_find_fun", this->_text);
+
 	AstNode::dig4(builder);
 	builder->optimizeInsts();
 }
@@ -273,14 +293,12 @@ void fay::AstVar::dig4(FayBuilder* builder)
 
 	pos_t varIndex = builder->fun()->addVar(varName, varType);
 
-	if (this->_nodes.size() > 1 && this->_nodes[1])
-	{
+	if(this->_nodes.size() > 1 && this->_nodes[1])
 		this->_nodes[1]->dig4(builder);
-	}
 	else
 	{
-		FayInst *inst = FayLangUtils::PushDefault(this->_nodes[0]->valueType());
-		if (inst == nullptr)
+		FayInst* inst = FayLangUtils::PushDefault(this->_nodes[0]->valueType());
+		if(inst == nullptr)
 			throw BuildException(this->shared_from_this(), "err.no_default_value", TypeDict::ToName(this->_nodes[0]->valueType()));
 		builder->addInst(inst);
 	}
@@ -390,7 +408,7 @@ void fay::AstID::dig4(FayBuilder* builder)
 		throw BuildException(this->shared_from_this(), "connt find var : " + this->text());
 
 	//不同模式下的操作不一样
-	if(builder->exprMode==BuildExprMode::Assign)
+	if(builder->exprMode == BuildExprMode::Assign)
 		builder->addInst(new inst::SetLocal(index));
 	else
 		builder->addInst(new inst::LoadLocal(index));
@@ -709,7 +727,7 @@ void fay::AstPreOP::dig4(FayBuilder* builder)
 
 	//根据上层节点判断是否要把值留在堆栈中一份
 	//如果上层的值是void，说明不会用于计算，那就清除
-	if (this->_parent.lock()->valueType() == ValueType::Void)
+	if(this->_parent.lock()->valueType() == ValueType::Void)
 		builder->addInst(new inst::Pop());
 }
 
@@ -727,18 +745,18 @@ void fay::AstFixedNumber::dig4(FayBuilder* builder)
 	builder->addInst(inst);
 }
 
-void fay::AstAssign::dig3(FayBuilder * builder)
+void fay::AstAssign::dig3(FayBuilder* builder)
 {
 	AstNode::dig3(builder);
 
 	//要转换成左值需要的类型
 	ValueType t1 = this->_nodes[0]->valueType();
 	ValueType t2 = this->_nodes[1]->valueType();
-	if(t1!=t2)
+	if(t1 != t2)
 		this->insertChldNode(1, MKPTR(AstTypeConvert)(this->_token, t2, t1));
 }
 
-void fay::AstAssign::dig4(FayBuilder * builder)
+void fay::AstAssign::dig4(FayBuilder* builder)
 {
 	this->_nodes[1]->dig4(builder);
 	builder->exprMode = BuildExprMode::Assign;

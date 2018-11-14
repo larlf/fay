@@ -43,7 +43,7 @@ void fay::FayBuilder::beginLib(const std::string &name)
 	this->_domain->addLib(this->_lib);
 }
 
-pos_t fay::FayBuilder::beginClass(const std::string &name)
+pos_t fay::FayBuilder::addClass(const std::string &name)
 {
 	PTR(FayInstClass) clazz = MKPTR(FayInstClass)(this->_domain, this->_package, name);
 	this->_class = clazz;
@@ -55,13 +55,13 @@ void fay::FayBuilder::bindClass(pos_t index)
 	this->_class = TOPTR(FayInstClass, this->_domain->findClass(index));
 }
 
-pos_t fay::FayBuilder::beginFun(const std::string &name)
+pos_t fay::FayBuilder::addFun(PTR(FayInstFun) fun)
 {
-	this->_fun = MKPTR(FayInstFun)(this->_domain, name, false);
+	this->_fun = fun;
 	return this->_class->addFun(this->_fun);
 }
 
-void fay::FayBuilder::bindFun(pos_t index)
+void fay::FayBuilder::bindFun(pos_t index, bool isStatic)
 {
 	if (index < 0)
 	{
@@ -69,7 +69,7 @@ void fay::FayBuilder::bindFun(pos_t index)
 		return;
 	}
 
-	this->_fun = TOPTR(FayInstFun, this->_class->findFun(index, false));
+	this->_fun = TOPTR(FayInstFun, this->_class->findFun(index, isStatic));
 
 	//清空指令集
 	if (this->_insts.size() > 0)

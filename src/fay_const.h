@@ -97,6 +97,14 @@ namespace fay
 		Code,  //代码中的方法
 	};
 
+	//方法的访问权限类型
+	enum class FunAccessType
+	{
+		Public,
+		Private,
+		Protected
+	};
+
 	enum class InstGroupType
 	{
 		//InstGroupTypeStart

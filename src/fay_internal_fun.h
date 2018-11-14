@@ -14,6 +14,7 @@ namespace fay
 		static void Print_Float(std::stack<FayValue> &stack);
 		static void Print_Double(std::stack<FayValue> &stack);
 		static void Print_String(std::stack<FayValue> &stack);
+		static void MSTime(std::stack<FayValue> &stack);
 	};
 }
 

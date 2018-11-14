@@ -39,7 +39,13 @@ TEST_F(FayLang, Test1)
 	fay::FayVM vm(project.domain());
 
 	auto type = project.domain()->findClass("com.larlf.MyTest");
-	auto funs = type->findFunByName("fun1", false);
+	if (type == nullptr)
+	{
+		LOG_ERROR("Cannot find type : com.larlf.MyTest");
+		return;
+	}
+
+	auto funs = type->findFunByName("fun1", true);
 	if(funs.size() > 0)
 		vm.run(funs[0]);
 }

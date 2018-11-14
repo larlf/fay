@@ -89,6 +89,8 @@ set(faylib_src
 	src/fay_builder.cpp
 	src/fay_inst.h
 	src/fay_inst.cpp
+	src/fay_internal_object.h
+	src/fay_internal_object.cpp
 	src/fay_internal_fun.h
 	src/fay_internal_fun.cpp
 	src/fay_vm.h

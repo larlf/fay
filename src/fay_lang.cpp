@@ -1052,7 +1052,7 @@ void fay::OutsideFun::toString(mirror::utils::StringBuilder* sb)
 }
 
 fay::FayInternalFun::FayInternalFun(PTR(FayDomain) domain, const std::string &name, std::function<void(std::stack<FayValue>&)> fun, std::vector<std::string> params)
-	: FayFun(domain, name, FunType::Internal, true), _fun(fun)
+	: FayFun(domain, name, FunType::Internal, true, FunAccessType::Public), _fun(fun)
 {
 	for(auto i = 0; i < params.size(); ++i)
 	{

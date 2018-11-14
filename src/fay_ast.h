@@ -167,10 +167,15 @@ namespace fay
 	//下面会有三个节点：<参数表><返回值><函数体>
 	class AstFun : public AstNode
 	{
-		using AstNode::AstNode;
 	private:
 		pos_t _index = -1;
+		bool isStatic = false;
+		std::vector<std::string> _descWords;
+
 	public:
+		AstFun(const PTR(Token) &token, std::vector<std::string> descWords)
+			: AstNode(token), _descWords(descWords) {}
+
 		virtual void dig2(FayBuilder* builder) override;
 		virtual void dig3(FayBuilder* builder) override;
 		virtual void dig4(FayBuilder* builder) override;

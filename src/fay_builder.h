@@ -46,11 +46,11 @@ namespace fay
 
 		void beginLib(const std::string &name);
 
-		pos_t beginClass(const std::string &name);
+		pos_t addClass(const std::string &name);
 		void bindClass(pos_t index);
 
-		pos_t beginFun(const std::string &name);
-		void bindFun(pos_t index);
+		pos_t addFun(PTR(FayInstFun) fun);
+		void bindFun(pos_t index, bool isStatic);
 
 		void addParamDefine(const std::string &name, const std::string &type);
 		void addInst(FayInst* inst);

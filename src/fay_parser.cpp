@@ -206,7 +206,7 @@ PTR(AstNode) fay::Parser::_Fun(TokenStack* stack)
 	if(!stack->now()->is(TokenType::ID) && !stack->now()->is(TokenType::SystemName))
 		throw ParseException(stack, "bad function name");
 
-	PTR(AstFun) node = MKPTR(AstFun)(stack->move());
+	PTR(AstFun) node = MKPTR(AstFun)(stack->move(), descWords);
 
 	//参数列表
 	if(!stack->now()->is("("))
@@ -822,7 +822,7 @@ PTR(AstNode) fay::Parser::_AddrExprBracket(TokenStack* stack)
 		if(!index)
 			throw ParseException(stack, "bad index");
 
-		if (!stack->move()->is("]"))
+		if(!stack->move()->is("]"))
 			throw ParseException(stack, "err.expect", "]");
 		leftNode->addChildNode(leftNode);
 		leftNode->addChildNode(index);

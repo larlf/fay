@@ -1,9 +1,18 @@
 ﻿#include <fay_internal_fun.h>
+#include <mirror_utils_time.h>
+
+using namespace mirror;
 
 void fay::InternalFun::Print_String(std::stack<FayValue> &stack)
 {
 	std::cout << stack.top().strVal()->c_str() << std::endl;
 	stack.pop();
+}
+
+void fay::InternalFun::MSTime(std::stack<FayValue> &stack)
+{
+	int64_t ms = utils::TimeUtils::MSTime();
+	stack.push(FayValue(ms));
 }
 
 void fay::InternalFun::Print_Int(std::stack<FayValue> &stack)
