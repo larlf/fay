@@ -138,6 +138,9 @@ namespace fay
 			this->_fullname = (package.size() > 0 ? package + "." : "") + name;
 		}
 
+		//用于对Class进行初始化
+		virtual PTR(FayClass) init() { return this->shared_from_this(); }
+
 		//Get or set
 		//ClassType type() { return this->_type; }
 		void lib(PTR(FayLib) v) { this->_lib = v; }

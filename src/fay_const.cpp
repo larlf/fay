@@ -46,16 +46,16 @@ void fay::TypeDict::Init()
 	//TokenTypeNameEnd
 
 	//ValueTypeNameStart
-	TypeDict::ValueTypeName[ValueType::Void] = "Void";
-	TypeDict::ValueTypeName[ValueType::Bool] = "Bool";
-	TypeDict::ValueTypeName[ValueType::Byte] = "Byte";
-	TypeDict::ValueTypeName[ValueType::Int] = "Int";
-	TypeDict::ValueTypeName[ValueType::Long] = "Long";
-	TypeDict::ValueTypeName[ValueType::Float] = "Float";
-	TypeDict::ValueTypeName[ValueType::Double] = "Double";
-	TypeDict::ValueTypeName[ValueType::String] = "String";
-	TypeDict::ValueTypeName[ValueType::Object] = "Object";
-	TypeDict::ValueTypeName[ValueType::Function] = "Function";
+	TypeDict::ValueTypeName[ValueType::Void] = "void";
+	TypeDict::ValueTypeName[ValueType::Bool] = "bool";
+	TypeDict::ValueTypeName[ValueType::Byte] = "byte";
+	TypeDict::ValueTypeName[ValueType::Int] = "int";
+	TypeDict::ValueTypeName[ValueType::Long] = "long";
+	TypeDict::ValueTypeName[ValueType::Float] = "float";
+	TypeDict::ValueTypeName[ValueType::Double] = "double";
+	TypeDict::ValueTypeName[ValueType::String] = "string";
+	TypeDict::ValueTypeName[ValueType::Object] = "object";
+	TypeDict::ValueTypeName[ValueType::Function] = "function";
 	//ValueTypeNameEnd
 
 	//ValueTypeMapStart

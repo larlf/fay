@@ -389,7 +389,7 @@ Cmds.value_type = function()
 				str1 += "  //" + it.Comment;
 
 			str2 += str2.length ? "\n" : "";
-			str2 += larlf.text.format("TypeDict::ValueTypeName[ValueType::{0}] = \"{0}\";", it['Name']);
+			str2 += larlf.text.format("TypeDict::ValueTypeName[ValueType::{0}] = \"{1}\";", it['Name'], (it['Name']+"").toLowerCase());
 
 			str3 += str3.length ? "\n" : "";
 			str3 += larlf.text.format("TypeDict::ValueTypeMap[\"{0}\"] = ValueType::{1};", (it.Name + "").toLowerCase(), it.Name);

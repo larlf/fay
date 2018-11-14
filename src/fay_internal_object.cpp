@@ -12,14 +12,22 @@ PTR(FayClass) fay::ObjectClass::init()
 	return this->shared_from_this();
 }
 
-PTR(FayLib) fay::SystemLib::init1()
+void fay::SystemLib::preInit()
 {
-	PTR(ObjectClass) type = MKPTR(ObjectClass)(this->domain(), "fay.system", "Object");
-	this->addClass(type);
-
-	return this->shared_from_this();
+	this->addClass(MKPTR(BoolClass)(this->domain(), "fay.system", "Bool"));
+	this->addClass(MKPTR(ByteClass)(this->domain(), "fay.system", "Byte"));
+	this->addClass(MKPTR(IntClass)(this->domain(), "fay.system", "Int"));
+	this->addClass(MKPTR(LongClass)(this->domain(), "fay.system", "Long"));
+	this->addClass(MKPTR(FloatClass)(this->domain(), "fay.system", "Float"));
+	this->addClass(MKPTR(DoubleClass)(this->domain(), "fay.system", "Double"));
+	this->addClass(MKPTR(StringClass)(this->domain(), "fay.system", "String"));
+	this->addClass(MKPTR(ObjectClass)(this->domain(), "fay.system", "Object"));
 }
 
-void fay::SystemLib::init2()
+void fay::SystemLib::postInit()
 {
+	for (auto it : this->classes)
+	{
+		it->init();
+	}
 }
