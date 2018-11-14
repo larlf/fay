@@ -25,12 +25,6 @@ void test::FayLang::SetUpTestCase()
 	fay::I18N::Init(i18nText);
 }
 
-FayValue test::FayLang::makeValue()
-{
-	FayValue v= FayValue("test...");
-	return v;
-}
-
 TEST_F(FayLang, Test1)
 {
 	//取得所有的代码文件
@@ -46,22 +40,53 @@ TEST_F(FayLang, Test1)
 
 	auto type = project.domain()->findClass("com.larlf.MyTest");
 	auto funs = type->findFunByName("fun1", false);
-	if (funs.size() > 0)
-	{
+	if(funs.size() > 0)
 		vm.run(funs[0]);
-	}
 }
 
 TEST_F(FayLang, FayValue)
 {
-	FayValue v1("aabbccdd***");
-	FayValue v2 = FayLang::makeValue();
+	std::string str = "one";
+	FayValue v4;
+	FayValue v5;
 
-	//LOG_DEBUG(*v1.val()->strVal);
-	//LOG_DEBUG(v2.val()->strVal);
-	//LOG_DEBUG(*v3.strVal());
+	{
+		FayValue v1(str);
+		FayValue v2("two");
+
+		FayValue v3 = FayLang::makeValue(*v1.strVal());
+		v4 = v3;
+		v3 = v2;
+		v5 = FayValue(v3);
+		 
+		FayValue v6(100); 
+		FayValue v7;
+
+		TestValue v11;
+		TestValue v12;
+
+		auto t1 = utils::TimeUtils::MSTime();
+
+		for (auto i = 0; i < 100000000; ++i)
+			v7 = v6;
+
+		LOG_DEBUG("Value : " << v7.intVal());
+
+		auto t2 = utils::TimeUtils::MSTime();
+
+		LOG_INFO("Time : " << (t2 - t1));
+		ASSERT_LE((t2 - t1), 1000)<<"赋值性能测试";
+	}
+
+	ASSERT_EQ(*v4.strVal(), "one");
+	ASSERT_EQ(*v5.strVal(), "two");
 }
 
+FayValue test::FayLang::makeValue(const std::string &str)
+{
+	FayValue v = FayValue(str.c_str());
+	return v;
+}
 
 TEST_F(FayLang, Run)
 {

@@ -26,9 +26,25 @@ namespace fay
 	//语言中的值类型
 	class FayValue // : public std::enable_shared_from_this<FayValue>
 	{
-	protected:
+	private:
 		ValueType _type;
 		FayValueUnion _val;
+
+		//用于对值进行移动
+		inline static void _move(FayValue &left, const FayValue &right)
+		{
+			switch (right._type)
+			{
+			case ValueType::String:
+				left._val.strVal = new std::string(*right._val.strVal);
+				break;
+			default:
+				left._val = right._val;
+				break;
+			}
+
+			left._type = right._type;
+		}
 
 	public:
 		FayValue() : _type(ValueType::Void) { LOG_DEBUG("Create void " << this); }
@@ -43,22 +59,12 @@ namespace fay
 
 		inline FayValue(const FayValue &v)
 		{
-			switch(v._type)
-			{
-				case ValueType::String:
-					this->_val.strVal = new std::string(*v._val.strVal);
-					break;
-				default:
-					this->_val = v._val;
-					break;
-			}
-
-			this->_type = v._type;
+			_move(*this, v);
 		}
 
 		~FayValue()
 		{
-			LOG_DEBUG("Destory " << this);
+			//LOG_DEBUG("Destory " << this);
 
 			switch(this->_type)
 			{
@@ -89,48 +95,10 @@ namespace fay
 		template<class T>
 		inline T* ptrValue() { return (T*)this->_val.ptrValue; }
 
-		FayValue &operator =(const FayValue &value)
+		void operator =(const FayValue &value)
 		{
-			if(value._type == ValueType::String)
-			{
-				this->_type = value._type;
-				this->_val.strVal = new std::string(*value._val.strVal);
-			}
-			else
-			{
-				this->_type = value._type;
-				this->_val = value._val;
-			}
-
-			return *this;
+			_move(*this, value);
 		}
-
-		//switch (this->_type)
-		//{
-		//case ValueType::Void:
-		//	break;
-		//case ValueType::Bool:
-		//	break;
-		//case ValueType::Byte:
-		//	break;
-		//case ValueType::Int:
-		//	break;
-		//case ValueType::Long:
-		//	break;
-		//case ValueType::Float:
-		//	break;
-		//case ValueType::Double:
-		//	break;
-		//case ValueType::String:
-		//	break;
-		//case ValueType::Object:
-		//	break;
-		//case ValueType::Function:
-		//	break;
-		//default:
-		//	LOG_ERROR("Cannot convert " << (int)this->_type << " to bool");
-		//	break;
-		//}
 	};
 
 }

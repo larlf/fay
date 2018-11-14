@@ -140,7 +140,7 @@ set(test_src
 add_executable(fay_test ${test_src})
 
 if(WIN32)
-	target_link_libraries(fay_test mirror fay winmm.lib mirage.lib jansson.lib libiconv.lib gtestd.lib)
+	target_link_libraries(fay_test mirror fay winmm.lib jansson.lib libiconv.lib gtestd.lib)
 else()
 	target_link_libraries(fay_test mirror fay)
 endif()

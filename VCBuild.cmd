@@ -9,5 +9,9 @@ mkdir bin\Debug
 copy /y ..\deps\win64\iconv\lib\*.dll bin\Debug
 copy /y ..\deps\win64\jasson\lib\*.dll bin\Debug
 copy /y ..\deps\win64\vld\lib\*.* bin\Debug
+mkdir bin\Release
+copy /y ..\deps\win64\iconv\lib\*.dll bin\Release
+copy /y ..\deps\win64\jasson\lib\*.dll bin\Release
+copy /y ..\deps\win64\vld\lib\*.* bin\Release
 cd ..
 pause
