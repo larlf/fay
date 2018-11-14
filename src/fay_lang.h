@@ -320,13 +320,13 @@ namespace fay
 	class FayInternalFun : public FayFun
 	{
 	private:
-		std::function<void(std::stack<PTR(FayValue)>&)> _fun;
+		std::function<void(std::stack<FayValue>&)> _fun;
 
 	public:
-		FayInternalFun(PTR(FayDomain) domain, const std::string &name, std::function<void(std::stack<PTR(FayValue)>&)> fun, std::vector<std::string> params);
+		FayInternalFun(PTR(FayDomain) domain, const std::string &name, std::function<void(std::stack<FayValue>&)> fun, std::vector<std::string> params);
 
 		//执行内部函数
-		inline void Invoke(std::stack<PTR(FayValue)> &stack) { this->_fun(stack); }
+		inline void Invoke(std::stack<FayValue> &stack) { this->_fun(stack); }
 	};
 
 	//////////////////////////////////////////////////////////////////////
@@ -419,7 +419,7 @@ namespace fay
 	{
 	private:
 		PTR(FayClass) _class;  //所属的类型
-		std::list<PTR(FayValue)> _fields;  //字段
+		std::list<FayValue> _fields;  //字段
 
 	public:
 		FayInstance(PTR(FayClass) clazz) : _class(clazz), _fields(5) {}

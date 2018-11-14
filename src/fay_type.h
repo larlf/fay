@@ -33,29 +33,29 @@ namespace fay
 		//用于对值进行移动
 		inline static void _move(FayValue &left, const FayValue &right)
 		{
-			switch (right._type)
+			switch(right._type)
 			{
-			case ValueType::String:
-				left._val.strVal = new std::string(*right._val.strVal);
-				break;
-			default:
-				left._val = right._val;
-				break;
+				case ValueType::String:
+					left._val.strVal = new std::string(*right._val.strVal);
+					break;
+				default:
+					left._val = right._val;
+					break;
 			}
 
 			left._type = right._type;
 		}
 
 	public:
-		FayValue() : _type(ValueType::Void) { LOG_DEBUG("Create void " << this); }
-		FayValue(bool val) : _type(ValueType::Bool) { LOG_DEBUG("Create bool " << this); _val.boolVal = val; }
-		FayValue(unsigned char val) : _type(ValueType::Byte) { LOG_DEBUG("Create bool " << this); _val.byteVal = val; }
-		FayValue(int32_t val) : _type(ValueType::Int) { LOG_DEBUG("Create int " << this); _val.intVal = val; }
-		FayValue(int64_t val) : _type(ValueType::Long) { LOG_DEBUG("Create long " << this); _val.longVal = val; }
-		FayValue(float val) : _type(ValueType::Float) { LOG_DEBUG("Create float " << this); _val.floatVal = val; }
-		FayValue(double val) : _type(ValueType::Double) { LOG_DEBUG("Create double " << this); _val.doubleVal = val; }
-		FayValue(const char* str) : _type(ValueType::String) { LOG_DEBUG("Create string " << this); _val.strVal = new std::string(str); }
-		FayValue(const std::string &str) : _type(ValueType::String) { LOG_DEBUG("Create string "<<this); _val.strVal = new std::string(str); }
+		FayValue() : _type(ValueType::Void) {  }
+		FayValue(bool val) : _type(ValueType::Bool) {  _val.boolVal = val; }
+		FayValue(unsigned char val) : _type(ValueType::Byte) { _val.byteVal = val; }
+		FayValue(int32_t val) : _type(ValueType::Int) {  _val.intVal = val; }
+		FayValue(int64_t val) : _type(ValueType::Long) {  _val.longVal = val; }
+		FayValue(float val) : _type(ValueType::Float) {  _val.floatVal = val; }
+		FayValue(double val) : _type(ValueType::Double) { _val.doubleVal = val; }
+		FayValue(const char* str) : _type(ValueType::String) { _val.strVal = new std::string(str); }
+		FayValue(const std::string &str) : _type(ValueType::String) { _val.strVal = new std::string(str); }
 
 		inline FayValue(const FayValue &v)
 		{
@@ -74,11 +74,6 @@ namespace fay
 			}
 
 			this->_type = ValueType::Void;
-		}
-
-		inline PTR(FayValue) clone()
-		{
-			return MKPTR(FayValue)(*this);
 		}
 
 		inline ValueType type() { return this->_type; }

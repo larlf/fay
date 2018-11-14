@@ -248,8 +248,8 @@ class FayInst
 		}
 
 		str = str.replace(/\#s/g, "this->stack");
-		str = str.replace(/\#val/g, "PTR(FayValue)");
-		str = str.replace(/\#new/g, "MKPTR(FayValue)");
+		str = str.replace(/\#val/g, "FayValue");
+		str = str.replace(/\#new/g, "FayValue");
 		str = str.replace(/\n/g, "\n\t");  //缩进
 		str = "case InstType::" + this.name + ":\n{" + (str ? "\n\t" + str : str) + "\n\tbreak;\n}";
 		return str;

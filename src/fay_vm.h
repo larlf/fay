@@ -8,7 +8,7 @@ namespace fay
 	{
 	private:
 		PTR(FayDomain) _domain;
-		std::stack<PTR(FayValue)> stack;
+		std::stack<FayValue> stack;
 
 		void _run(PTR(FayInstFun) fun);
 

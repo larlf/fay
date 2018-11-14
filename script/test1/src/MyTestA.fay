@@ -58,6 +58,6 @@ public class MyTest
 	static public fun fun5():void
 	{
 		var a:long=105;	
-		sys.Print(a);
+		//sys.Print(a);
 	}
 }

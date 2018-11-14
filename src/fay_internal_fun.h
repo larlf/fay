@@ -7,13 +7,13 @@ namespace fay
 	class InternalFun
 	{
 	public:
-		static void Print_Bool(std::stack<PTR(FayValue)> &stack);
-		static void Print_Byte(std::stack<PTR(FayValue)> &stack);
-		static void Print_Int(std::stack<PTR(FayValue)> &stack);
-		static void Print_Long(std::stack<PTR(FayValue)> &stack);
-		static void Print_Float(std::stack<PTR(FayValue)> &stack);
-		static void Print_Double(std::stack<PTR(FayValue)> &stack);
-		static void Print_String(std::stack<PTR(FayValue)> &stack);
+		static void Print_Bool(std::stack<FayValue> &stack);
+		static void Print_Byte(std::stack<FayValue> &stack);
+		static void Print_Int(std::stack<FayValue> &stack);
+		static void Print_Long(std::stack<FayValue> &stack);
+		static void Print_Float(std::stack<FayValue> &stack);
+		static void Print_Double(std::stack<FayValue> &stack);
+		static void Print_String(std::stack<FayValue> &stack);
 	};
 }
 
