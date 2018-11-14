@@ -124,7 +124,7 @@ TEST_F(FayLang, Run)
 		PRINT("----------------------------------------");
 
 		PTR(fay::FayDomain) domain = MKPTR(fay::FayDomain)();
-		domain->initSysLib();
+		domain->init();
 
 		PTR(fay::FayBuilder) builder = MKPTR(fay::FayBuilder)(domain);
 		builder->beginLib("TestLib");

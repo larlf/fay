@@ -8,8 +8,7 @@ using namespace mirror;
 fay::FayProject::FayProject(const std::string & name, int marjor, int minjor)
 	: _name(name), _marjor(marjor), _minjor(minjor)
 {
-	_domain = MKPTR(fay::FayDomain)();
-	_domain->initSysLib();
+	_domain = MKPTR(fay::FayDomain)()->init();
 
 	_builder = MKPTR(FayBuilder)(_domain);
 	_builder->beginLib(name);

@@ -39,7 +39,7 @@ void fay::FayBuilder::endFile()
 
 void fay::FayBuilder::beginLib(const std::string &name)
 {
-	this->_lib = MKPTR(FayLib)(this->_domain, name);
+	this->_lib = MKPTR(FayLib)(this->_domain, name, 0, 0);
 	this->_domain->addLib(this->_lib);
 }
 

@@ -7,6 +7,7 @@ namespace fay
 	class InternalFun
 	{
 	public:
+		static void ToString(std::stack<FayValue> &stack);
 		static void Print_Bool(std::stack<FayValue> &stack);
 		static void Print_Byte(std::stack<FayValue> &stack);
 		static void Print_Int(std::stack<FayValue> &stack);

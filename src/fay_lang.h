@@ -119,19 +119,27 @@ namespace fay
 	//数据类型
 	class FayClass : public FayLangObject, public std::enable_shared_from_this<FayClass>
 	{
+	private:
+		std::string _fullname;
+
 	protected:
-		ClassType _type;
+		//ClassType _type;
+		std::string _package;
+		std::string _name;
 		WPTR(FayLib) _lib;
 		WPTR(FayClass) _parent;  //父类
 		FunTable _sft;  //静态函数表
 		FunTable _vft;  //虚函数表
 
 	public:
-		FayClass(PTR(FayDomain) domain, ClassType type)
-			: FayLangObject(domain), _type(type) {}
+		FayClass(PTR(FayDomain) domain, const std::string &package, const std::string &name)
+			: FayLangObject(domain), _package(package), _name(name) 
+		{
+			this->_fullname = (package.size() > 0 ? package + "." : "") + name;
+		}
 
 		//Get or set
-		ClassType type() { return this->_type; }
+		//ClassType type() { return this->_type; }
 		void lib(PTR(FayLib) v) { this->_lib = v; }
 		PTR(FayLib) lib() { return this->_lib.lock(); }
 
@@ -152,48 +160,20 @@ namespace fay
 		PTR(FayFun) findFun(const std::string &fullname, bool isStatic);
 		std::vector<PTR(FayFun)> findFunByName(const std::string &name, bool isStatic);
 		pos_t getFunIndex(const std::string &fullname, bool isStatic);
-	};
 
-	//简单类型
-	class FaySimpleClass : public FayClass
-	{
-	private:
-		static MAP<ValueType, PTR(FayClass)> _Types;
+		virtual ValueType valueType() { return ValueType::Void; }
+		virtual const std::string & fullname() override;
+		virtual void toString(mirror::utils::StringBuilder* sb) override;
 
-		ValueType _valueType;
-
-		//这种类型，不能从外部创建
-		FaySimpleClass(ValueType classType)
-			: FayClass(nullptr, ClassType::Simple), _valueType(classType) {}
-
-	public:
-		static PTR(FayClass) Get(ValueType classType);
-
-		inline ValueType valueType() { return this->_valueType; }
-
-		// 通过 FayType 继承
-		virtual const std::string &fullname() override;
 	};
 
 	//Class类型
 	class FayInstClass : public FayClass
 	{
-	private:
-
-		std::string _fullname;  //全名
-
+		using FayClass::FayClass;
 	public:
-		std::string package;  //所在的名
-		std::string name;  //类的名称
+		virtual ValueType valueType() override;
 
-		FayInstClass(PTR(FayDomain) domain, const std::string &package, const std::string &name)
-			: FayClass(domain, ClassType::Inst), package(package), name(name)
-		{
-			this->_fullname = (package.size() > 0 ? package + "." : "") + name;
-		}
-
-		virtual const std::string &fullname() override;
-		virtual void toString(mirror::utils::StringBuilder* sb) override;
 	};
 
 	//////////////////////////////////////////////////////////////////
@@ -275,8 +255,24 @@ namespace fay
 
 		//添加参数描述
 		void addParam(PTR(FayParamDef) def);
+		void addParam(std::vector<PTR(FayParamDef)> defs);
+		template<typename... Params>
+		void addParams(Params... args)
+		{
+			std::vector<PTR(FayParamDef)> defs{ args... };
+			this->addParam(defs);
+		}
+
 		//添加返回值类型
 		void addReturn(PTR(FayClass) type);
+		void addReturn(std::vector<PTR(FayClass)> types);
+		template<typename... Params>
+		void addReturns(Params... args)
+		{
+			std::vector<PTR(FayClass)> types{ args... };
+			this->addReturn(types);
+		}
+
 		//检查参数是否匹配
 		bool match(const std::vector<PTR(FayClass)> &paramsType);
 
@@ -324,7 +320,8 @@ namespace fay
 		std::function<void(std::stack<FayValue>&)> _fun;
 
 	public:
-		FayInternalFun(PTR(FayDomain) domain, const std::string &name, std::function<void(std::stack<FayValue>&)> fun, std::vector<std::string> params);
+		FayInternalFun(PTR(FayDomain) domain, const std::string &name, bool isStatic, std::function<void(std::stack<FayValue>&)> fun)
+			: FayFun(domain, name, FunType::Internal, isStatic, FunAccessType::Public), _fun(fun) {}
 
 		//执行内部函数
 		inline void Invoke(std::stack<FayValue> &stack) { this->_fun(stack); }
@@ -359,19 +356,22 @@ namespace fay
 	class FayLib : public FayLangObject, public std::enable_shared_from_this<FayLib>
 	{
 	private:
+		int _marjor = 0;
+		int _minjor = 0;
+
 		//外部函数的列表
 		//这个表的主要用处，是把本Lib中的函数调用转换成索引值
 		IndexMap<PTR(OutsideFun)> _outsideFuns;
 
 	public:
 		std::string name;
-		std::vector<PTR(FayInstClass)> classes;
+		std::vector<PTR(FayClass)> classes;
 
-		FayLib(PTR(FayDomain) domain, const std::string &name)
+		FayLib(PTR(FayDomain) domain, const std::string &name, int marjor, int minjor)
 			: FayLangObject(domain), name(name) {}
 		~FayLib() {}
 
-		pos_t addClass(PTR(FayInstClass) clazz);
+		pos_t addClass(PTR(FayClass) clazz);
 		//返回调用方法在外部函数表中的索引
 		pos_t findOutsideFun(const std::string &className, const std::string &funName, const std::vector<PTR(FayClass)> &paramsType);
 		PTR(OutsideFun) findOutsideFun(pos_t index) { return this->_outsideFuns.find(index); }
@@ -389,7 +389,7 @@ namespace fay
 	public:
 		FayDomain();
 		//初始化系统库
-		void initSysLib();
+		PTR(FayDomain) init();
 		//添加Lib
 		void addLib(PTR(FayLib) lib);
 		//添加新的类型
