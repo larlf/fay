@@ -1,7 +1,4 @@
-﻿#include "fay_lang.h"
-#include "fay_lang.h"
-#include "fay_lang.h"
-#include <fay_lang.h>
+﻿#include <fay_lang.h>
 #include <mirror_utils_log.h>
 #include <fay_internal_fun.h>
 #include <fay_internal_object.h>
@@ -22,7 +19,7 @@ bool fay::FayClass::match(PTR(FayClass) type)
 	return false;
 }
 
-std::vector<pos_t> fay::FayClass::matchFun(const std::string &funName, const std::vector<PTR(FayClass)> &paramsType, bool isStatic)
+std::vector<PTR(FayFun)> fay::FayClass::matchFun(const std::string &funName, const std::vector<PTR(FayClass)> &paramsType, bool isStatic)
 {
 	if(isStatic)
 		return this->_sft.matchFun(funName, paramsType);
@@ -57,9 +54,9 @@ std::vector<PTR(FayFun)> fay::FayClass::findFunByName(const std::string &name, b
 pos_t fay::FayClass::getFunIndex(const std::string &fullname, bool isStatic)
 {
 	if(isStatic)
-		return this->_sft.findFunIndex(fullname);
+		return this->_sft.getFunIndex(fullname);
 	else
-		return this->_vft.findFunIndex(fullname);
+		return this->_vft.getFunIndex(fullname);
 }
 
 const std::string &fay::FayClass::fullname()
@@ -97,45 +94,62 @@ pos_t fay::FayLib::addClass(PTR(FayClass) clazz)
 	return -1;
 }
 
-pos_t fay::FayLib::findOutsideFun(const std::string &className, const std::string &funName, const std::vector<PTR(FayClass)> &paramsType)
+PTR(OutsideFun) fay::FayLib::findOutsideFun(const std::string &className, const std::string &funName, const std::vector<PTR(FayClass)> &paramsType)
 {
 	//查找当前是否已经有了
 	std::string fullname = FayLangUtils::Fullname(className, funName, paramsType);
 	pos_t index = this->_outsideFuns.findIndex(fullname);
-	if(index >= 0) return index;
+	if(index >= 0) return this->_outsideFuns[index];
 
 	//检查domain是否正常
 	auto domain = this->domain();
 	if(!domain)
 	{
 		LOG_ERROR("Cannot find domain");
-		return -1;
+		return nullptr;
 	}
 
 	auto clazz = domain->findClass(className);
 	if(!clazz)
 	{
 		LOG_ERROR("Cannot find type : " << className);
-		return -1;
+		return nullptr;
 	}
 
 	auto funs = clazz->matchFun(funName, paramsType, true);
 	if(funs.size() <= 0)
 	{
 		LOG_ERROR("Cannot find fun : " << fullname);
-		return -1;
+		return nullptr;
 	}
 	else if(funs.size() > 1)
 	{
 		LOG_ERROR("Too many fun : " << fullname);
-		return -1;
+		return nullptr;
+	}
+
+	pos_t classIndex;
+	pos_t funIndex;
+	domain->getFunIndex(funs[0], classIndex, funIndex);
+
+	if (classIndex < 0)
+	{
+		LOG_ERROR("Cannot find class index : " << funs[0]->clazz()->fullname());
+		return nullptr;
+	}
+
+	if (funIndex < 0)
+	{
+		LOG_ERROR("Cannot find fun index : " << funs[0]->fullname());
+		return nullptr;
 	}
 
 	//添加外部函数
 	PTR(OutsideFun) ofun = MKPTR(OutsideFun)(
-			className, domain->getTypeIndex(clazz),
-			funName, funs[0]);
-	return this->_outsideFuns.add(fullname, ofun);
+			className, classIndex,
+			funName, funIndex);
+	ofun->index(this->_outsideFuns.add(fullname, ofun));
+	return ofun;
 }
 
 void fay::FayLib::toString(mirror::utils::StringBuilder* sb)
@@ -342,28 +356,6 @@ fay::FayDomain::FayDomain()
 
 PTR(FayDomain) fay::FayDomain::init()
 {
-	//内置类型在这里创建
-	//this->_types.add("bool", FaySimpleClass::Get(ValueType::Bool));
-	//this->_types.add("byte", FaySimpleClass::Get(ValueType::Byte));
-	//this->_types.add("int", FaySimpleClass::Get(ValueType::Int));
-	//this->_types.add("long", FaySimpleClass::Get(ValueType::Long));
-	//this->_types.add("float", FaySimpleClass::Get(ValueType::Float));
-	//this->_types.add("double", FaySimpleClass::Get(ValueType::Double));
-	//this->_types.add("string", FaySimpleClass::Get(ValueType::String));
-
-	//PTR(FayLib) lib(new FayLib(MYPTR, "System", 0, 0));
-	//PTR(FayInstClass) clazz(new FayInstClass(MYPTR, "fay", "System"));
-	//clazz->addFun(MKPTR(FayInternalFun)(MYPTR, "Print", InternalFun::Print_Bool, std::vector<std::string>({ "bool" })));
-	//clazz->addFun(MKPTR(FayInternalFun)(MYPTR, "Print", InternalFun::Print_Byte, std::vector<std::string>({ "byte" })));
-	//clazz->addFun(MKPTR(FayInternalFun)(MYPTR, "Print", InternalFun::Print_Int, std::vector<std::string>({ "int" })));
-	//clazz->addFun(MKPTR(FayInternalFun)(MYPTR, "Print", InternalFun::Print_Long, std::vector<std::string>({ "long" })));
-	//clazz->addFun(MKPTR(FayInternalFun)(MYPTR, "Print", InternalFun::Print_Float, std::vector<std::string>({ "float" })));
-	//clazz->addFun(MKPTR(FayInternalFun)(MYPTR, "Print", InternalFun::Print_Double, std::vector<std::string>({ "double" })));
-	//clazz->addFun(MKPTR(FayInternalFun)(MYPTR, "Print", InternalFun::Print_String, std::vector<std::string>({ "string" })));
-
-	//lib->addClass(clazz);
-	//this->addLib(lib);
-
 	//添加系统库。因为存在循环依赖的问题，要分两次进行初始化
 	PTR(SystemLib) lib = MKPTR(SystemLib)(this->shared_from_this(), "system", 1, 1);
 	lib->preInit();
@@ -490,7 +482,7 @@ PTR(FayFun) fay::FayDomain::findFun(pos_t typeIndex, pos_t funIndex, bool isStat
 	return fun;
 }
 
-bool fay::FayDomain::findFunIndex(const std::string &typeFullname, const std::string &funFullname, bool isStatic, pos_t &typeIndex, pos_t &funIndex)
+bool fay::FayDomain::getFunIndex(const std::string &typeFullname, const std::string &funFullname, bool isStatic, pos_t &typeIndex, pos_t &funIndex)
 {
 	typeIndex = -1;
 	funIndex = -1;
@@ -512,7 +504,7 @@ bool fay::FayDomain::findFunIndex(const std::string &typeFullname, const std::st
 	return true;
 }
 
-bool fay::FayDomain::findFunIndex(PTR(FayFun) fun, pos_t &typeIndex, pos_t &funIndex)
+bool fay::FayDomain::getFunIndex(PTR(FayFun) fun, pos_t &typeIndex, pos_t &funIndex)
 {
 	typeIndex = -1;
 	funIndex = -1;
@@ -1081,21 +1073,21 @@ void fay::FunTable::rebuild(std::vector<PTR(FayFun)> &parentFuns)
 		this->addFun(funs[i]);
 }
 
-std::vector<pos_t> fay::FunTable::matchFun(const std::string &funName, const std::vector<PTR(FayClass)> &paramsType)
+std::vector<PTR(FayFun)> fay::FunTable::matchFun(const std::string &funName, const std::vector<PTR(FayClass)> &paramsType)
 {
-	std::vector<pos_t> funs;
+	std::vector<PTR(FayFun)> funs;
 
 	for(auto i = 0; i < this->_funs.size(); ++i)
 	{
 		auto it = this->_funs[i];
 		if(it->name() == funName && it->match(paramsType))
-			funs.push_back(i);
+			funs.push_back(it);
 	}
 
 	return funs;
 }
 
-pos_t fay::FunTable::findFunIndex(const std::string &fullname)
+pos_t fay::FunTable::getFunIndex(const std::string &fullname)
 {
 	for(auto i = 0; i < this->_funs.size(); ++i)
 	{

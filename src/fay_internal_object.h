@@ -80,4 +80,13 @@ namespace fay
 	public:
 		virtual PTR(FayClass) init() override;
 	};
+
+	class DateClass : public ObjectClass
+	{
+		using ObjectClass::ObjectClass;
+	public:
+		static void Now(std::stack<FayValue> &stack);
+
+		virtual PTR(FayClass) init() override;
+	};
 }

@@ -78,8 +78,8 @@ namespace fay
 		//根据父类的虚函数进行重建
 		void rebuild(std::vector<PTR(FayFun)> &parentFuns);
 		//匹配函数
-		std::vector<pos_t> matchFun(const std::string &funName, const std::vector<PTR(FayClass)> &paramsType);
-		pos_t findFunIndex(const std::string &fullname);
+		std::vector<PTR(FayFun)> matchFun(const std::string &funName, const std::vector<PTR(FayClass)> &paramsType);
+		pos_t getFunIndex(const std::string &fullname);
 		PTR(FayFun) findFun(const std::string &fullname);
 		std::vector<PTR(FayFun)> findFunByName(const std::string &name);
 
@@ -157,7 +157,7 @@ namespace fay
 		//添加函数
 		pos_t addFun(PTR(FayFun) fun);
 		//匹配符合要求的函数
-		std::vector<pos_t> matchFun(const std::string &funName, const std::vector<PTR(FayClass)> &paramsType, bool isStatic);
+		std::vector<PTR(FayFun)> matchFun(const std::string &funName, const std::vector<PTR(FayClass)> &paramsType, bool isStatic);
 		//根据Index取得函数
 		PTR(FayFun) findFun(pos_t index, bool isStatic);
 		PTR(FayFun) findFun(const std::string &fullname, bool isStatic);
@@ -344,11 +344,14 @@ namespace fay
 		std::string _funFullname;
 		int32_t _funIndex;
 		bool _resolved = false;  //是否已经确定是函数的位置
+		pos_t _index = -1;  //自己的索引值，这里存一份
 
 	public:
 		OutsideFun(const std::string &typeFullname, int32_t typeIndex, const std::string &funName, int32_t funIndex)
 			: _resolved(true), _typeFullname(typeFullname), _typeIndex(typeIndex), _funFullname(funName), _funIndex(funIndex) {}
 
+		pos_t index() { return this->_index; }
+		void index(pos_t value) { this->_index = value; }
 		int32_t typeIndex() { return this->_typeIndex; }
 		int32_t funIndex() { return this->_funIndex; }
 
@@ -376,7 +379,7 @@ namespace fay
 
 		pos_t addClass(PTR(FayClass) clazz);
 		//返回调用方法在外部函数表中的索引
-		pos_t findOutsideFun(const std::string &className, const std::string &funName, const std::vector<PTR(FayClass)> &paramsType);
+		PTR(OutsideFun) findOutsideFun(const std::string &className, const std::string &funName, const std::vector<PTR(FayClass)> &paramsType);
 		PTR(OutsideFun) findOutsideFun(pos_t index) { return this->_outsideFuns.find(index); }
 
 		virtual void toString(mirror::utils::StringBuilder* sb) override;
@@ -412,8 +415,8 @@ namespace fay
 		//std::vector<PTR(FayFun)> findFun(const std::string &className, const std::string &funName, const std::vector<PTR(FayType)> &paramsType);
 		PTR(FayFun) findFun(const std::string &typeFullname, const std::string &funFullname, bool isStatic);
 		PTR(FayFun) findFun(pos_t typeIndex, pos_t funIndex, bool isStatic);
-		bool findFunIndex(const std::string &typeFullname, const std::string &funFullname, bool isStatic, pos_t &typeIndex, pos_t &funIndex);
-		bool findFunIndex(PTR(FayFun) fun, pos_t &typeIndex, pos_t &funIndex);
+		bool getFunIndex(const std::string &typeFullname, const std::string &funFullname, bool isStatic, pos_t &typeIndex, pos_t &funIndex);
+		bool getFunIndex(PTR(FayFun) fun, pos_t &typeIndex, pos_t &funIndex);
 
 		virtual void toString(mirror::utils::StringBuilder* sb) override;
 

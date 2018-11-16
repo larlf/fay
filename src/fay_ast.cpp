@@ -290,11 +290,11 @@ void fay::AstCall::dig4(FayBuilder* builder)
 		else if(classes.size() > 1)
 			throw BuildException(this->shared_from_this(), "err.too_many_class", className);
 
-		pos_t index = builder->lib()->findOutsideFun(classes[0]->fullname(), funName, paramsType);
-		if(index < 0)
+		auto outsideFun = builder->lib()->findOutsideFun(classes[0]->fullname(), funName, paramsType);
+		if(!outsideFun)
 			throw BuildException(this->shared_from_this(), "err.no_outside_fun", this->_text);
 
-		builder->addInst(new inst::CallStatic(index, paramSize));
+		builder->addInst(new inst::CallStatic(outsideFun->index(), paramSize));
 	}
 	else
 	{

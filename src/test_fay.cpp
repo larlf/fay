@@ -45,9 +45,16 @@ TEST_F(FayLang, Test1)
 		return;
 	}
 
-	auto funs = type->findFunByName("fun1", true);
-	if(funs.size() > 0)
+	auto funs = type->findFunByName("fun5", true);
+	if (funs.size() > 0)
+	{
+		//显示函数的内容
+		utils::StringBuilder sb;
+		funs[0]->toString(&sb);
+		PRINT(sb.toString());
+
 		vm.run(funs[0]);
+	}
 }
 
 TEST_F(FayLang, FayValue)

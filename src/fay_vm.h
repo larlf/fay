@@ -18,6 +18,6 @@ namespace fay
 
 		size_t stackSize() { return this->stack.size(); }
 
-		void run(PTR(FayFun) fun);
+		std::vector<FayValue> run(PTR(FayFun) fun);
 	};
 }
