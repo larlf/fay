@@ -30,11 +30,17 @@ void fay::FayBuilder::package(const std::string &name)
 void fay::FayBuilder::beginFile(const std::string &filename)
 {
 	this->_filename = filename;
+	this->_usings.clear();
 }
 
 void fay::FayBuilder::endFile()
 {
 	this->_filename = "";
+}
+
+void fay::FayBuilder::addUsing(const std::string & packageName)
+{
+	this->_usings.push_back(packageName);
 }
 
 void fay::FayBuilder::beginLib(const std::string &name)
@@ -65,7 +71,7 @@ void fay::FayBuilder::bindFun(pos_t index, bool isStatic)
 {
 	if (index < 0)
 	{
-		LOG_ERROR("Bad fun index : "<<index);
+		LOG_ERROR("Bad fun index : " << index);
 		return;
 	}
 
@@ -78,7 +84,7 @@ void fay::FayBuilder::bindFun(pos_t index, bool isStatic)
 
 void fay::FayBuilder::addParamDefine(const std::string &name, const std::string &type)
 {
-	PTR(FayClass) t=this->_domain->findClass(type);
+	PTR(FayClass) t = this->_domain->findClass(type);
 	PTR(FayParamDef) def = MKPTR(FayParamDef)(this->_domain, name, t);
 	this->_fun->addParam(def);
 }
@@ -97,7 +103,7 @@ void fay::FayBuilder::optimizeInsts()
 
 PTR(FayVarDef) fay::FayBuilder::findVar(const std::string & name)
 {
-	auto var=this->_fun->findVar(name);
+	auto var = this->_fun->findVar(name);
 	return var;
 }
 
@@ -106,16 +112,3 @@ pos_t fay::FayBuilder::findVarIndex(const std::string & name)
 	return this->_fun->getVarIndex(name);
 }
 
-pos_t fay::FayBuilder::findFun(const std::string &name, const std::vector<PTR(FayClass)> types)
-{
-	std::string className;
-	std::string funName;
-	size_t p = name.find_last_of('.');
-	if (p != std::string::npos)
-	{
-		className = name.substr(0, p);
-		funName = name.substr(p + 1);
-	}
-
-	return this->_lib->findOutsideFun(className, funName, types);
-}

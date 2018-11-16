@@ -95,7 +95,7 @@ namespace fay
 		WPTR(FayClass) _type;  //类型
 
 	public:
-		FayVarDef(PTR(FayDomain) domain,  const std::string &name, PTR(FayClass) clazz)
+		FayVarDef(PTR(FayDomain) domain, const std::string &name, PTR(FayClass) clazz)
 			: FayLangObject(domain), _name(name), _type(clazz) {}
 
 		inline const std::string &name() { return  this->_name; }
@@ -133,7 +133,7 @@ namespace fay
 
 	public:
 		FayClass(PTR(FayDomain) domain, const std::string &package, const std::string &name)
-			: FayLangObject(domain), _package(package), _name(name) 
+			: FayLangObject(domain), _package(package), _name(name)
 		{
 			this->_fullname = (package.size() > 0 ? package + "." : "") + name;
 		}
@@ -402,8 +402,10 @@ namespace fay
 		pos_t getTypeIndex(PTR(FayClass) t);
 		//根据类型的全称查找类型定义
 		PTR(FayClass) findClass(const std::string &typeFullname);
-		PTR(FayClass) findClass(pos_t index);
+		PTR(FayClass) operator[](const std::string &typeFullname) { return this->findClass(typeFullname); }
 		PTR(FayClass) findClass(ValueType type);
+		PTR(FayClass) operator[](ValueType type) { return this->findClass(type); }
+		PTR(FayClass) findClass(pos_t index);
 		//根据引用和类型名，查找类型的定义
 		std::vector<PTR(FayClass)> findClass(std::vector<std::string> &imports, const std::string &typeName);
 		//下面是用各种方式来查找函数
@@ -414,6 +416,8 @@ namespace fay
 		bool findFunIndex(PTR(FayFun) fun, pos_t &typeIndex, pos_t &funIndex);
 
 		virtual void toString(mirror::utils::StringBuilder* sb) override;
+
+
 	};
 
 	/////////////////////////////////////////////////

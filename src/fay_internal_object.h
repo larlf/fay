@@ -73,4 +73,11 @@ namespace fay
 		virtual ValueType valueType() override { return ValueType::String; }
 		virtual const std::string & fullname() override { return TypeDict::ToName(ValueType::String); }
 	};
+
+	class IOClass : public ObjectClass
+	{
+		using ObjectClass::ObjectClass;
+	public:
+		virtual PTR(FayClass) init() override;
+	};
 }

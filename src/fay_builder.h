@@ -21,6 +21,7 @@ namespace fay
 		PTR(FayLib) _lib;
 		PTR(FayInstClass) _class;
 		PTR(FayInstFun) _fun;
+		std::vector<std::string> _usings;
 		std::vector<FayInst*> _insts;
 		int64_t labelIndex = 1;  //用于生成label
 
@@ -36,6 +37,7 @@ namespace fay
 		PTR(FayLib) lib() { return this->_lib; }
 		PTR(FayInstClass) clazz() { return this->_class; }
 		PTR(FayInstFun) fun() { return this->_fun; }
+		std::vector<std::string> &usings() { return this->_usings; }
 
 		std::string makeLabelName();
 
@@ -43,6 +45,7 @@ namespace fay
 
 		void beginFile(const std::string &filename);
 		void endFile();
+		void addUsing(const std::string &packageName);
 
 		void beginLib(const std::string &name);
 
@@ -60,7 +63,6 @@ namespace fay
 
 		PTR(FayVarDef) findVar(const std::string &name);
 		pos_t findVarIndex(const std::string &name);
-		pos_t findFun(const std::string &name, const std::vector<PTR(FayClass)> types);
 	};
 }
 

@@ -418,9 +418,6 @@ pos_t fay::FayDomain::getTypeIndex(PTR(FayClass) t)
 PTR(FayClass) fay::FayDomain::findClass(const std::string &typeFullname)
 {
 	auto type = this->_types.find(typeFullname);
-	if(!type)
-		LOG_ERROR("Cannot find type : " << typeFullname);
-
 	return type;
 }
 
