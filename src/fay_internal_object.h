@@ -18,6 +18,14 @@ namespace fay
 		virtual PTR(FayClass) init();
 	};
 
+	class VoidClass : public ObjectClass
+	{
+		using ObjectClass::ObjectClass;
+	public:
+		virtual ValueType valueType() override { return ValueType::Void; }
+		virtual const std::string & fullname() override { return TypeDict::ToName(ValueType::Void); }
+	};
+
 	class BoolClass : public ObjectClass
 	{
 		using ObjectClass::ObjectClass;

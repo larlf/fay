@@ -17,6 +17,7 @@ PTR(FayClass) fay::ObjectClass::init()
 
 void fay::SystemLib::preInit()
 {
+	this->addClass(MKPTR(VoidClass)(this->domain(), "fay.system", "Void"));
 	this->addClass(MKPTR(BoolClass)(this->domain(), "fay.system", "Bool"));
 	this->addClass(MKPTR(ByteClass)(this->domain(), "fay.system", "Byte"));
 	this->addClass(MKPTR(IntClass)(this->domain(), "fay.system", "Int"));

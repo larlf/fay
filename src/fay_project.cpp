@@ -55,6 +55,7 @@ void fay::FayProject::build()
 		catch (FayCompileException &e)
 		{
 			LOG_ERROR(e.what());
+			return;
 		}
 	}
 
@@ -67,6 +68,7 @@ void fay::FayProject::build()
 		catch (FayCompileException &e)
 		{
 			LOG_ERROR(e.what());
+			return;
 		}
 	}
 
@@ -79,6 +81,9 @@ void fay::FayProject::build()
 		catch (FayCompileException &e)
 		{
 			LOG_ERROR(e.what());
+			PRINT(e.source());
+			PRINT(e.trace());
+			return;
 		}
 	}
 
@@ -91,6 +96,7 @@ void fay::FayProject::build()
 		catch (FayCompileException &e)
 		{
 			LOG_ERROR(e.what());
+			return;
 		}
 	}
 }
