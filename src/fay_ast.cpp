@@ -37,10 +37,13 @@ void fay::AstNode::insertChldNode(size_t index, PTR(AstNode) node)
 		node->addChildNode(oldNode);
 }
 
-PTR(FayClass) fay::AstNode::classType(FayBuilder* builder)
+ValueType fay::AstNode::valueType()
 {
-	ValueType vtype = this->valueType();
-	return builder->domain()->findClass(vtype);
+	PTR(FayClass) clazz = this->classType();
+	if(clazz)
+		return clazz->valueType();
+
+	return ValueType::Void;
 }
 
 void fay::AstNode::toString(mirror::utils::StringBuilder* sb)
@@ -200,9 +203,11 @@ fay::AstString::AstString(const PTR(Token)& token)
 	}
 }
 
-ValueType fay::AstString::valueType()
+void fay::AstString::dig3(FayBuilder* builder)
 {
-	return ValueType::String;
+	this->_classType = (*builder->domain())[ValueType::String];
+
+	AstNode::dig3(builder);
 }
 
 void fay::AstString::dig4(FayBuilder* builder)
@@ -215,7 +220,7 @@ PTR(FayClass) fay::AstParamDefine::getType(FayBuilder* builder)
 {
 	auto n1 = this->childNode<AstType>(0);
 	if(n1)
-		return n1->toFayType(builder);
+		return n1->classType();
 
 	return nullptr;
 }
@@ -231,27 +236,14 @@ void fay::AstPackage::dig1(FayBuilder* builder)
 	builder->package(this->_text);
 }
 
-PTR(FayClass) fay::AstType::toFayType(FayBuilder* builder)
+void fay::AstCall::dig3(FayBuilder* builder)
 {
-	auto t = builder->domain()->findClass(this->text());
-	if(!t)
-		throw BuildException(this->shared_from_this(), "connt find type : " + this->text());
-	return t;
-}
+	AstNode::dig3(builder);
 
-fay::ValueType fay::AstType::valueType()
-{
-	//如果还没有处理
-	if(this->_valueType == ValueType::Void)
-	{
-		this->_valueType = TypeDict::ToValueType(this->_text);
-
-		//如果不是简单类型就是对象
-		if(this->_valueType == ValueType::Void)
-			this->_valueType = ValueType::Object;
-	}
-
-	return this->_valueType;
+	//取得参数的长度和类型
+	PTR(AstParams) paramsNode = this->childNode<AstParams>(0);
+	size_t paramSize = paramsNode->size();
+	std::vector<PTR(FayClass)> paramsType = paramsNode->paramsType(builder);
 }
 
 void fay::AstCall::dig4(FayBuilder* builder)
@@ -302,6 +294,22 @@ void fay::AstCall::dig4(FayBuilder* builder)
 	}
 }
 
+//PTR(FayClass) fay::AstCall::classType(FayBuilder * builder)
+//{
+//	PTR(FayFun) fun = this->_fun.lock();
+//	if (!fun)
+//		return nullptr;
+//
+//	if (fun->returnsCount() <= 0)
+//		return nullptr;
+//
+//	PTR(FayClass) type = fun->returns()[0].lock();
+//	if (!type)
+//		return nullptr;
+//
+//	return type;
+//}
+
 std::vector<PTR(FayClass)> fay::AstParamDefineList::getTypeList(FayBuilder* builder)
 {
 	std::vector<PTR(FayClass)> list;
@@ -333,8 +341,8 @@ void fay::AstVar::dig3(FayBuilder* builder)
 	//如果有赋值，检查是否要进行类型转换
 	if(this->_nodes.size() > 1 && this->_nodes[1])
 	{
-		ValueType leftType = this->_nodes[0]->valueType();
-		ValueType rightType = this->_nodes[1]->valueType();
+		auto leftType = this->_nodes[0]->classType();
+		auto rightType = this->_nodes[1]->classType();
 		if(leftType != rightType)
 			this->insertChldNode(1, MKPTR(AstTypeConvert)(this->_token, rightType, leftType));
 	}
@@ -356,7 +364,7 @@ void fay::AstVar::dig4(FayBuilder* builder)
 	{
 		FayInst* inst = FayLangUtils::PushDefault(this->_nodes[0]->valueType());
 		if(inst == nullptr)
-			throw BuildException(this->shared_from_this(), "err.no_default_value", TypeDict::ToName(this->_nodes[0]->valueType()));
+			throw BuildException(this->shared_from_this(), "err.no_default_value", this->_nodes[0]->classType()->fullname());
 		builder->addInst(inst);
 	}
 
@@ -383,15 +391,15 @@ void fay::AstNumber::dig4(FayBuilder* builder)
 			builder->addInst(new inst::PushDouble(this->_val.doubleVal()));
 			break;
 		default:
-			LOG_ERROR("Unknow value type : " << (int)this->_class);
+			LOG_ERROR("Unknow value type : " << (int)this->_val.type());
 			break;
 	}
 }
 
-fay::ValueType fay::AstNumber::valueType()
-{
-	return this->_val.type();
-}
+//PTR(FayClass) fay::AstNumber::classType(FayBuilder * builder)
+//{
+//	return (*builder->domain())[this->_val.type()];
+//}
 
 fay::AstNumber::AstNumber(const PTR(Token)& token, const std::string &text)
 	: AstNode::AstNode(token)
@@ -426,27 +434,20 @@ fay::AstNumber::AstNumber(const PTR(Token)& token, const std::string &text)
 	}
 }
 
+void fay::AstNumber::dig3(FayBuilder* builder)
+{
+	this->_classType = (*builder->domain())[this->_val.type()];
+
+	AstNode::dig3(builder);
+}
+
 std::vector<PTR(FayClass)> fay::AstParams::paramsType(FayBuilder* builder)
 {
 	std::vector<PTR(FayClass)> ts;
 	for each(auto it in this->_nodes)
-		ts.push_back(it->classType(builder));
+		ts.push_back(it->classType());
 
 	return ts;
-}
-
-PTR(FayClass) fay::AstID::classType(FayBuilder* builder)
-{
-	auto var = builder->findVar(this->_text);
-	if(!var)
-		throw BuildException(this->shared_from_this(), "connt find var : " + this->text());
-
-	return var->type();
-}
-
-fay::ValueType fay::AstID::valueType()
-{
-	return this->_valueType;
 }
 
 void fay::AstID::dig3(FayBuilder* builder)
@@ -455,7 +456,7 @@ void fay::AstID::dig3(FayBuilder* builder)
 	if(!var)
 		throw BuildException(this->shared_from_this(), "connt find var : " + this->text());
 
-	this->_valueType = FayLangUtils::ClassToValueType(var->type());
+	this->_classType = var->type();
 }
 
 void fay::AstID::dig4(FayBuilder* builder)
@@ -476,15 +477,16 @@ void fay::AstLeftRightOP::dig3(FayBuilder* builder)
 	AstNode::dig3(builder);
 
 	//先算出目标类型
-	ValueType t1 = this->_nodes[0]->valueType();
-	ValueType t2 = this->_nodes[1]->valueType();
-	this->_valueType = FayLangUtils::WeightValueType(t1, t2);
+	auto t1 = this->_nodes[0]->classType();
+	auto t2 = this->_nodes[1]->classType();
+	auto t3 = FayLangUtils::WeightValueType(t1, t2);
+	this->_classType = t3;
 
 	//如果和目标类型不一致，就转换一下
-	if(t1 != this->_valueType)
-		this->insertChldNode(0, MKPTR(AstTypeConvert)(this->_token, t1, this->_valueType));
-	if(t2 != this->_valueType)
-		this->insertChldNode(1, MKPTR(AstTypeConvert)(this->_token, t2, this->_valueType));
+	if(t1 != t3)
+		this->insertChldNode(0, MKPTR(AstTypeConvert)(this->_token, t1, t3));
+	if(t2 != t3)
+		this->insertChldNode(1, MKPTR(AstTypeConvert)(this->_token, t2, t3));
 }
 
 void fay::AstLeftRightOP::dig4(FayBuilder* builder)
@@ -495,34 +497,24 @@ void fay::AstLeftRightOP::dig4(FayBuilder* builder)
 
 	//生成操作代码
 	if(this->_text == "+")
-		inst = FayLangUtils::OPInst(InstGroupType::Add, this->_valueType);
+		inst = FayLangUtils::OPInst(InstGroupType::Add, this->_classType.lock()->valueType());
 	else if(this->_text == "-")
-		inst = FayLangUtils::OPInst(InstGroupType::Sub, this->_valueType);
+		inst = FayLangUtils::OPInst(InstGroupType::Sub, this->_classType.lock()->valueType());
 	else if(this->_text == "*")
-		inst = FayLangUtils::OPInst(InstGroupType::Mul, this->_valueType);
+		inst = FayLangUtils::OPInst(InstGroupType::Mul, this->_classType.lock()->valueType());
 	else if(this->_text == "/")
-		inst = FayLangUtils::OPInst(InstGroupType::Div, this->_valueType);
+		inst = FayLangUtils::OPInst(InstGroupType::Div, this->_classType.lock()->valueType());
 
 	if(inst)
 		builder->addInst(inst);
 	else
-		throw BuildException(this->shared_from_this(), "unknow op inst : " + this->_text + " " + TypeDict::ToName(this->_valueType));
-}
-
-fay::ValueType fay::AstLeftRightOP::valueType()
-{
-	return this->_valueType;
+		throw BuildException(this->shared_from_this(), "unknow op inst : " + this->_text + " " + this->_classType.lock()->fullname());
 }
 
 void fay::AstTypeConvert::dig4(FayBuilder* builder)
 {
 	AstNode::dig4(builder);
-	builder->addInst(FayLangUtils::ConvertInst(this->_srcType, this->_destType));
-}
-
-fay::ValueType fay::AstTypeConvert::valueType()
-{
-	return this->_destType;
+	builder->addInst(FayLangUtils::ConvertInst(this->_srcType.lock()->valueType(), this->classType()->valueType()));
 }
 
 fay::AstBool::AstBool(const PTR(Token)& token)
@@ -534,9 +526,10 @@ fay::AstBool::AstBool(const PTR(Token)& token)
 		this->_value = false;
 }
 
-ValueType fay::AstBool::valueType()
+void fay::AstBool::dig3(FayBuilder* builder)
 {
-	return ValueType::Bool;
+	this->_classType = (*builder->domain())[ValueType::Bool];
+	AstNode::dig3(builder);
 }
 
 void fay::AstBool::dig4(FayBuilder* builder)
@@ -612,25 +605,23 @@ void fay::AstIf::dig4(FayBuilder* builder)
 	builder->fun()->labels()->setPos(this->_endLabel, builder->instsSize());
 }
 
-fay::ValueType fay::AstBoolOP::valueType()
-{
-	return ValueType::Bool;
-}
-
 void fay::AstBoolOP::dig3(FayBuilder* builder)
 {
+	this->_classType = (*builder->domain())[ValueType::Bool];
+
 	AstNode::dig3(builder);
 
 	//先算出目标类型
-	ValueType t1 = this->_nodes[0]->valueType();
-	ValueType t2 = this->_nodes[1]->valueType();
-	this->_itemType = FayLangUtils::WeightValueType(t1, t2);
+	auto t1 = this->_nodes[0]->classType();
+	auto t2 = this->_nodes[1]->classType();
+	auto t3 = FayLangUtils::WeightValueType(t1, t2);
+	this->_itemType = t3;
 
 	//如果和目标类型不一致，就转换一下
-	if(t1 != this->_itemType)
-		this->insertChldNode(0, MKPTR(AstTypeConvert)(this->_token, t1, this->_itemType));
-	if(t2 != this->_itemType)
-		this->insertChldNode(1, MKPTR(AstTypeConvert)(this->_token, t2, this->_itemType));
+	if(t1 != t3)
+		this->insertChldNode(0, MKPTR(AstTypeConvert)(this->_token, t1, t3));
+	if(t2 != t3)
+		this->insertChldNode(1, MKPTR(AstTypeConvert)(this->_token, t2, t3));
 }
 
 void fay::AstBoolOP::dig4(FayBuilder* builder)
@@ -638,25 +629,26 @@ void fay::AstBoolOP::dig4(FayBuilder* builder)
 	AstNode::dig4(builder);
 
 	FayInst* inst = nullptr;
+	ValueType type = this->_itemType.lock()->valueType();
 
 	//生成操作代码
 	if(this->_text == "==")
-		inst = FayLangUtils::OPInst(InstGroupType::Equal, this->_itemType);
+		inst = FayLangUtils::OPInst(InstGroupType::Equal, type);
 	else if(this->_text == ">")
-		inst = FayLangUtils::OPInst(InstGroupType::Greater, this->_itemType);
+		inst = FayLangUtils::OPInst(InstGroupType::Greater, type);
 	else if(this->_text == "<")
-		inst = FayLangUtils::OPInst(InstGroupType::Less, this->_itemType);
+		inst = FayLangUtils::OPInst(InstGroupType::Less, type);
 	else if(this->_text == ">=")
-		inst = FayLangUtils::OPInst(InstGroupType::GreaterEqual, this->_itemType);
+		inst = FayLangUtils::OPInst(InstGroupType::GreaterEqual, type);
 	else if(this->_text == "<=")
-		inst = FayLangUtils::OPInst(InstGroupType::LessEqual, this->_itemType);
+		inst = FayLangUtils::OPInst(InstGroupType::LessEqual, type);
 	else if(this->_text == "!=")
-		inst = FayLangUtils::OPInst(InstGroupType::NotEqual, this->_itemType);
+		inst = FayLangUtils::OPInst(InstGroupType::NotEqual, type);
 
 	if(inst)
 		builder->addInst(inst);
 	else
-		throw BuildException(this->shared_from_this(), "unknow bool inst : " + this->_text + " " + TypeDict::ToName(this->_itemType));
+		throw BuildException(this->shared_from_this(), "unknow bool inst : " + this->_text + " " + this->_itemType.lock()->fullname());
 }
 
 void fay::AstCondition::dig3(FayBuilder* builder)
@@ -669,9 +661,9 @@ void fay::AstCondition::dig3(FayBuilder* builder)
 	if(this->_nodes.size() > 0)
 	{
 		//如果不是Bool，这里进行一下转换
-		ValueType type = this->_nodes[0]->valueType();
-		if(type != ValueType::Bool)
-			this->insertChldNode(0, MKPTR(AstTypeConvert)(this->_token, type, ValueType::Bool));
+		auto type = this->_nodes[0]->classType();
+		if (type->valueType() != ValueType::Bool)
+			this->insertChldNode(0, MKPTR(AstTypeConvert)(this->_token, type, (*builder->domain())[ValueType::Bool]));
 	}
 
 }
@@ -692,9 +684,9 @@ void fay::AstFor::dig3(FayBuilder* builder)
 	builder->fun()->labels()->addLabel(this->endLabel);
 
 	//如果expr2不是Bool，这里进行一下转换
-	ValueType type = this->_nodes[1]->valueType();
-	if(type != ValueType::Bool)
-		this->insertChldNode(1, MKPTR(AstTypeConvert)(this->_token, type, ValueType::Bool));
+	auto type = this->_nodes[1]->classType();
+	if (type->valueType() != ValueType::Bool)
+		this->insertChldNode(1, MKPTR(AstTypeConvert)(this->_token, type, (*builder->domain())[ValueType::Bool]));
 }
 
 void fay::AstFor::dig4(FayBuilder* builder)
@@ -729,11 +721,6 @@ void fay::AstFor::dig4(FayBuilder* builder)
 	builder->fun()->labels()->setPos(this->endLabel, builder->instsSize());
 }
 
-ValueType fay::AstPreOP::valueType()
-{
-	return this->_valueType;
-}
-
 void fay::AstPreOP::dig3(FayBuilder* builder)
 {
 	//要先执行一下才能确定子节点的类型
@@ -750,8 +737,8 @@ void fay::AstPreOP::dig3(FayBuilder* builder)
 		throw BuildException(this->shared_from_this(), "not a number type : " + TypeDict::ToName(leftNode->valueType()));
 
 	//根据类型生成右值
-	this->_valueType = leftNode->valueType();
-	PTR(AstFixedNumber) rightNode = MKPTR(AstFixedNumber)(this->_token, this->_valueType, 1);
+	this->_classType = leftNode->classType();
+	PTR(AstFixedNumber) rightNode = MKPTR(AstFixedNumber)(this->_token, this->valueType(), 1);
 
 	//生成转换后的操作符
 	std::string opStr;
@@ -788,9 +775,16 @@ void fay::AstPreOP::dig4(FayBuilder* builder)
 		builder->addInst(new inst::Pop());
 }
 
-ValueType fay::AstFixedNumber::valueType()
+//PTR(FayClass) fay::AstFixedNumber::classType(FayBuilder * builder)
+//{
+//	return (*builder->domain())[this->_type];
+//}
+
+void fay::AstFixedNumber::dig3(FayBuilder* builder)
 {
-	return this->_type;
+	this->_classType = (*builder->domain())[this->_type];
+
+	AstNode::dig3(builder);
 }
 
 void fay::AstFixedNumber::dig4(FayBuilder* builder)
@@ -807,8 +801,8 @@ void fay::AstAssign::dig3(FayBuilder* builder)
 	AstNode::dig3(builder);
 
 	//要转换成左值需要的类型
-	ValueType t1 = this->_nodes[0]->valueType();
-	ValueType t2 = this->_nodes[1]->valueType();
+	auto t1 = this->_nodes[0]->classType();
+	auto t2 = this->_nodes[1]->classType();
 	if(t1 != t2)
 		this->insertChldNode(1, MKPTR(AstTypeConvert)(this->_token, t2, t1));
 }
@@ -824,4 +818,17 @@ void fay::AstAssign::dig4(FayBuilder* builder)
 void fay::AstUsing::dig4(FayBuilder* builder)
 {
 	builder->addUsing(this->_text);
+}
+
+void fay::AstType::dig3(FayBuilder* builder)
+{
+	AstNode::dig3(builder);
+
+	auto classes = builder->domain()->findClass(builder->usings(), this->_text);
+	if(classes.size() <= 0)
+		throw BuildException(this->shared_from_this(), "err.cannot_find_class", this->_text);
+	else if(classes.size() > 1)
+		throw BuildException(this->shared_from_this(), "err.unsolved_class", this->_text);
+
+	this->_classType = classes[0];
 }

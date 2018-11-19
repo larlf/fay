@@ -27,6 +27,7 @@ namespace fay
 
 		//在两个类型中选出要转换的目标类型
 		static ValueType WeightValueType(ValueType t1, ValueType t2);
+		static PTR(FayClass) WeightValueType(PTR(FayClass) t1, PTR(FayClass) t2);
 		//Class类型转换到ValueType类型
 		static ValueType ClassToValueType(PTR(FayClass) clazz);
 
@@ -165,7 +166,7 @@ namespace fay
 		pos_t getFunIndex(const std::string &fullname, bool isStatic);
 
 		virtual ValueType valueType() { return ValueType::Void; }
-		virtual const std::string & fullname() override;
+		virtual const std::string &fullname() override;
 		virtual void toString(mirror::utils::StringBuilder* sb) override;
 
 	};
@@ -254,6 +255,7 @@ namespace fay
 		inline void clazz(PTR(FayClass) v) { this->_class = v; }
 		inline const PTR(FayClass) clazz() { return this->_class.lock(); }
 		inline const size_t returnsCount() { return this->_returns.size(); }
+		inline const std::vector<WPTR(FayClass)> &returns() { return this->_returns; }
 		inline const PTR(FayLabelTable) labels() { return this->_labels; }
 
 		//添加参数描述

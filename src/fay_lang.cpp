@@ -576,6 +576,14 @@ fay::ValueType fay::FayLangUtils::WeightValueType(ValueType t1, ValueType t2)
 	return (t1 >= t2) ? t1 : t2;
 }
 
+PTR(FayClass) fay::FayLangUtils::WeightValueType(PTR(FayClass) t1, PTR(FayClass) t2)
+{
+	if (t1->valueType() >= ValueType::String || t2->valueType() >= ValueType::String)
+		return (*t1->domain())[ValueType::String];
+
+	return (t1->valueType() >= t2->valueType()) ? t1 : t2;
+}
+
 ValueType fay::FayLangUtils::ClassToValueType(PTR(FayClass) clazz)
 {
 	return clazz->valueType();
