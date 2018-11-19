@@ -110,7 +110,7 @@ set(fayvm_src
 add_executable(fayvm ${fayvm_src})
 
 if(WIN32)
-	target_link_libraries(fayvm fay mirror winmm.lib mirage.lib jansson.lib libiconv.lib)
+	target_link_libraries(fayvm fay mirror winmm.lib jansson.lib libiconv.lib)
 else()
 	target_link_libraries(fayvm fay mirror.lib)
 endif()
@@ -124,7 +124,7 @@ set(fayc_src
 add_executable(fayc ${fayc_src})
 
 if(WIN32)
-	target_link_libraries(fayc fay mirror winmm.lib mirage.lib jansson.lib libiconv.lib)
+	target_link_libraries(fayc fay mirror winmm.lib jansson.lib libiconv.lib)
 else()
 	target_link_libraries(fayc mirror.lib)
 endif()
