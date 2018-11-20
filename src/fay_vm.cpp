@@ -9,11 +9,11 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 	std::vector<FayInst*>* insts = fun->getPreparedInsts();
 	FayInst* inst;
 
-	for (int i = 0; i < insts->size(); ++i)
+	for(int i = 0; i < insts->size(); ++i)
 	{
 		inst = (*insts)[i];
 
-		switch (inst->type())
+		switch(inst->type())
 		{
 			//InstCodeStart
 			case InstType::Nop:
@@ -31,6 +31,11 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 				FayValue v=this->stack.top();
 				this->stack.pop();
 				if(!v.boolVal()) i=((inst::JumpFalse*)inst)->target-1;
+				break;
+			}
+			case InstType::Return:
+			{
+				i=insts->size();
 				break;
 			}
 			case InstType::PushBool:
@@ -668,33 +673,33 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 				this->stack.push(FayValue(v1.doubleVal()<v2.doubleVal()));
 				break;
 			}
-		//InstCodeEnd
-		default:
-			LOG_ERROR("Unrealized inst : " + TypeDict::ToName(inst->type()));
-			break;
+			//InstCodeEnd
+			default:
+				LOG_ERROR("Unrealized inst : " + TypeDict::ToName(inst->type()));
+				break;
 		}
 	}
 }
 
 void fay::FayVM::_run(PTR(FayFun) fun)
 {
-	switch (fun->type())
+	switch(fun->type())
 	{
-	case FunType::Code:
-	{
-		PTR(FayInstFun) f = TOPTR(FayInstFun, fun);
-		this->_run(f);
-		break;
-	}
-	case FunType::Internal:
-	{
-		PTR(FayInternalFun) f = TOPTR(FayInternalFun, fun);
-		f->Invoke(this->stack);
-		break;
-	}
-	default:
-		LOG_ERROR("Unknow function type : " << (int)fun->type());
-		break;
+		case FunType::Code:
+		{
+			PTR(FayInstFun) f = TOPTR(FayInstFun, fun);
+			this->_run(f);
+			break;
+		}
+		case FunType::Internal:
+		{
+			PTR(FayInternalFun) f = TOPTR(FayInternalFun, fun);
+			f->Invoke(this->stack);
+			break;
+		}
+		default:
+			LOG_ERROR("Unknow function type : " << (int)fun->type());
+			break;
 	}
 }
 
@@ -702,7 +707,7 @@ std::vector<FayValue> fay::FayVM::run(PTR(FayFun) fun)
 {
 	std::vector<FayValue> values;
 
-	if (!fun)
+	if(!fun)
 	{
 		LOG_ERROR("Fun is null");
 		return values;
@@ -712,18 +717,22 @@ std::vector<FayValue> fay::FayVM::run(PTR(FayFun) fun)
 
 	//确定返回值的数量
 	auto size = fun->returnsCount();
-	if (this->stack.size() < fun->returnsCount())
+	if(this->stack.size() < fun->returnsCount())
 	{
 		LOG_ERROR("Stack size error : " << this->stack.size() << "<" << size);
 		size = this->stack.size();
 	}
 
 	//取返回值
-	for (auto i = 0; i < size; ++i)
+	for(auto i = 0; i < size; ++i)
 	{
 		values.push_back(this->stack.top());
 		this->stack.pop();
 	}
+
+	//清空堆栈
+	while(!this->stack.empty())
+		this->stack.pop();
 
 	return values;
 }

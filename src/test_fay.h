@@ -1,6 +1,10 @@
 ﻿#pragma once
 #include <gtest/gtest.h>
 #include <fay_type.h>
+#include <fay_project.h>
+#include <fay_vm.h>
+
+using namespace fay;
 
 namespace test
 {
@@ -14,6 +18,9 @@ namespace test
 	class FayLang : public testing::Test
 	{
 	public:
+		static PTR(FayProject) project;
+		static PTR(FayVM) vm;
+
 		static void SetUpTestCase();
 		static fay::FayValue makeValue(const std::string &str);
 	};

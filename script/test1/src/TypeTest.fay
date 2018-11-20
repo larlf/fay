@@ -1,0 +1,13 @@
+using fay.system;
+
+package fay.dev.test;
+
+public class TypeTest
+{
+	static public fun test1():int
+	{
+		var a:int=5;
+		var b:int=6;
+		return 5+6;
+	}
+}
