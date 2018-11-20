@@ -22,6 +22,12 @@ void fay::inst::JumpFalse::toString(mirror::utils::StringBuilder * sb)
 		->endl();
 }
 
+void fay::inst::Return::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("Return")
+		->endl();
+}
+
 void fay::inst::PushBool::toString(mirror::utils::StringBuilder * sb)
 {
 	sb->add("PushBool")

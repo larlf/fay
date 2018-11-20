@@ -11,6 +11,7 @@ namespace fay
 		std::stack<FayValue> stack;
 
 		void _run(PTR(FayInstFun) fun);
+		void _run(PTR(FayFun) fun);
 
 	public:
 		FayVM(PTR(FayDomain) domain)
@@ -18,6 +19,7 @@ namespace fay
 
 		size_t stackSize() { return this->stack.size(); }
 
+		//对外部提供的运行接口，会把堆栈里的值返回
 		std::vector<FayValue> run(PTR(FayFun) fun);
 	};
 }

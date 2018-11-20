@@ -1,4 +1,5 @@
 ﻿#include "fay_project.h"
+#include "fay_project.h"
 #include <fay_project.h>
 #include <fay_parser.h>
 #include <mirror_utils_file.h>
@@ -40,6 +41,8 @@ void fay::FayProject::parse()
 		catch(FayCompileException &e)
 		{
 			LOG_ERROR(e.what());
+			PRINT(e.source());
+			PRINT(e.trace());
 		}
 	}
 }
@@ -55,6 +58,8 @@ void fay::FayProject::build()
 		catch (FayCompileException &e)
 		{
 			LOG_ERROR(e.what());
+			PRINT(e.source());
+			PRINT(e.trace());
 			return;
 		}
 	}
@@ -68,6 +73,8 @@ void fay::FayProject::build()
 		catch (FayCompileException &e)
 		{
 			LOG_ERROR(e.what());
+			PRINT(e.source());
+			PRINT(e.trace());
 			return;
 		}
 	}
@@ -96,9 +103,33 @@ void fay::FayProject::build()
 		catch (FayCompileException &e)
 		{
 			LOG_ERROR(e.what());
+			PRINT(e.source());
+			PRINT(e.trace());
 			return;
 		}
 	}
+}
+
+std::string fay::FayProject::tokenString(const std::string & name)
+{
+	PTR(FaySource) file;
+	for (auto it : this->_files)
+	{
+		if (it.second->filename().find(name)>=0)
+		{
+			file = it.second;
+			break;
+		}
+	}
+
+	utils::StringBuilder sb;
+
+	if (file)
+	{
+
+	}
+
+	return sb.toString();
 }
 
 void fay::FaySource::parse(PTR(Lexer) lexer)

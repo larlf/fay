@@ -94,62 +94,42 @@ pos_t fay::FayLib::addClass(PTR(FayClass) clazz)
 	return -1;
 }
 
-PTR(OutsideFun) fay::FayLib::findOutsideFun(const std::string &className, const std::string &funName, const std::vector<PTR(FayClass)> &paramsType)
+pos_t fay::FayLib::findOutsideFun(PTR(FayFun) fun)
 {
 	//查找当前是否已经有了
-	std::string fullname = FayLangUtils::Fullname(className, funName, paramsType);
+	std::string fullname = fun->clazz()->fullname() + "." + fun->fullname();
 	pos_t index = this->_outsideFuns.findIndex(fullname);
-	if(index >= 0) return this->_outsideFuns[index];
+	if(index >= 0) return index;
 
 	//检查domain是否正常
 	auto domain = this->domain();
 	if(!domain)
 	{
 		LOG_ERROR("Cannot find domain");
-		return nullptr;
-	}
-
-	auto clazz = domain->findClass(className);
-	if(!clazz)
-	{
-		LOG_ERROR("Cannot find type : " << className);
-		return nullptr;
-	}
-
-	auto funs = clazz->matchFun(funName, paramsType, true);
-	if(funs.size() <= 0)
-	{
-		LOG_ERROR("Cannot find fun : " << fullname);
-		return nullptr;
-	}
-	else if(funs.size() > 1)
-	{
-		LOG_ERROR("Too many fun : " << fullname);
-		return nullptr;
+		return -1;
 	}
 
 	pos_t classIndex;
 	pos_t funIndex;
-	domain->getFunIndex(funs[0], classIndex, funIndex);
+	domain->getFunIndex(fun, classIndex, funIndex);
 
-	if (classIndex < 0)
+	if(classIndex < 0)
 	{
-		LOG_ERROR("Cannot find class index : " << funs[0]->clazz()->fullname());
-		return nullptr;
+		LOG_ERROR("Cannot find class index : " << fullname);
+		return -1;
 	}
 
-	if (funIndex < 0)
+	if(funIndex < 0)
 	{
-		LOG_ERROR("Cannot find fun index : " << funs[0]->fullname());
-		return nullptr;
+		LOG_ERROR("Cannot find fun index : " << fullname);
+		return -1;
 	}
 
 	//添加外部函数
 	PTR(OutsideFun) ofun = MKPTR(OutsideFun)(
-			className, classIndex,
-			funName, funIndex);
-	ofun->index(this->_outsideFuns.add(fullname, ofun));
-	return ofun;
+			fun->clazz()->fullname(), classIndex,
+			fun->fullname(), funIndex);
+	return this->_outsideFuns.add(fullname, ofun);
 }
 
 void fay::FayLib::toString(mirror::utils::StringBuilder* sb)
@@ -188,7 +168,7 @@ void fay::FayInstFun::prepareInsts()
 				PTR(OutsideFun) fun = this->clazz()->lib()->findOutsideFun(i->outsideFunIndex);
 				if(fun)
 				{
-					i->typeIndex = fun->typeIndex();
+					i->typeIndex = fun->classIndex();
 					i->funIndex = fun->funIndex();
 				}
 				else
@@ -578,7 +558,7 @@ fay::ValueType fay::FayLangUtils::WeightValueType(ValueType t1, ValueType t2)
 
 PTR(FayClass) fay::FayLangUtils::WeightValueType(PTR(FayClass) t1, PTR(FayClass) t2)
 {
-	if (t1->valueType() >= ValueType::String || t2->valueType() >= ValueType::String)
+	if(t1->valueType() >= ValueType::String || t2->valueType() >= ValueType::String)
 		return (*t1->domain())[ValueType::String];
 
 	return (t1->valueType() >= t2->valueType()) ? t1 : t2;
@@ -1043,7 +1023,7 @@ std::string fay::FayLangUtils::Fullname(const std::string &className, const std:
 
 void fay::OutsideFun::toString(mirror::utils::StringBuilder* sb)
 {
-	sb->add(this->_typeFullname)->add(":")->add(this->_typeIndex)->add(" ");
+	sb->add(this->_classFullname)->add(":")->add(this->_classIndex)->add(" ");
 	sb->add(this->_funFullname)->add(":")->add(this->_funIndex)->endl();
 }
 

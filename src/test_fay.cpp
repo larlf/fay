@@ -15,6 +15,9 @@ using namespace mirror;
 using namespace fay;
 using namespace test;
 
+PTR(FayProject) test::FayLang::project;
+PTR(FayVM) test::FayLang::vm;
+
 void test::FayLang::SetUpTestCase()
 {
 	//初始化字典数据
@@ -23,22 +26,30 @@ void test::FayLang::SetUpTestCase()
 	//初始化国际化信息
 	std::string i18nText = utils::FileUtils::ReadTextFile("../doc/i18n.cn.json");
 	fay::I18N::Init(i18nText);
-}
 
-TEST_F(FayLang, Test1)
-{
 	//取得所有的代码文件
 	std::string projectPath = "../script/test1";
 	std::vector<std::string> files = utils::FileUtils::FindFiles(projectPath + "/src", true, ".fay");
 
-	FayProject project("Test1", 1, 0);
-	project.addFiles(files);
-	project.parse();
-	project.build();
+	project = MKPTR(FayProject)("Test1", 1, 0);
+	project->addFiles(files);
+	project->parse();
+	project->build();
 
-	fay::FayVM vm(project.domain());
+	vm = MKPTR(FayVM)(project->domain());
+}
 
-	auto type = project.domain()->findClass("com.larlf.MyTest");
+TEST_F(FayLang, TypeTest1)
+{
+	auto type = project->domain()->findClass("fay.dev.test.TypeTest");
+	auto funs = type->findFunByName("test1", true);
+	auto rs = vm->run(funs[0]);
+	LOG_DEBUG(rs.size());
+}
+
+TEST_F(FayLang, Test1)
+{
+	auto type = project->domain()->findClass("com.larlf.MyTest");
 	if (type == nullptr)
 	{
 		LOG_ERROR("Cannot find type : com.larlf.MyTest");
@@ -53,7 +64,7 @@ TEST_F(FayLang, Test1)
 		funs[0]->toString(&sb);
 		PRINT(sb.toString());
 
-		vm.run(funs[0]);
+		vm->run(funs[0]);
 	}
 }
 
@@ -100,6 +111,8 @@ FayValue test::FayLang::makeValue(const std::string &str)
 	FayValue v = FayValue(str.c_str());
 	return v;
 }
+
+
 
 TEST_F(FayLang, Run)
 {

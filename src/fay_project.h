@@ -16,6 +16,8 @@ namespace fay
 	public:
 		FaySource(PTR(FayFile) file) : _file(file) {}
 
+		const std::string &filename() { return this->_file->filename; }
+		PTR(std::vector<PTR(Token)>) tokens() { return this->_tokens; }
 		PTR(AstNode) ast() { return this->_ast; }
 
 		//对内容进行解析
@@ -42,5 +44,7 @@ namespace fay
 		void addFiles(std::vector<std::string> &files);
 		void parse();
 		void build();
+
+		std::string tokenString(const std::string& name);
 	};
 }

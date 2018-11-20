@@ -109,6 +109,7 @@ namespace fay
 	{
 		//InstGroupTypeStart
 		Jump = 10,
+		Return = 11,
 		Push = 1,
 		Pop = 2,
 		PopTo = 3,
@@ -145,6 +146,7 @@ namespace fay
 		Nop = 0,
 		Jump = 160,
 		JumpFalse = 162,
+		Return = 176,
 		PushBool = 18,
 		PushByte = 19,
 		PushInt = 20,

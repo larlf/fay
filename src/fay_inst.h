@@ -50,6 +50,13 @@ namespace fay
 			virtual void toString(mirror::utils::StringBuilder* sb) override;
 		};
 		
+		class Return : public fay::FayInst 
+		{ 
+		public:
+			Return() : FayInst(InstType::Return) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
 		class PushBool : public fay::FayInst 
 		{ 
 		public:
