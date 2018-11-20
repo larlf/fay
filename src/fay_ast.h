@@ -307,8 +307,6 @@ namespace fay
 	public:
 		virtual void dig3(FayBuilder* builder) override;
 		virtual void dig4(FayBuilder* builder) override;
-
-		//virtual PTR(FayClass) classType(FayBuilder* builder) override;
 	};
 
 	class AstIf : public AstNode

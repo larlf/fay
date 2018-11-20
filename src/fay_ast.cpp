@@ -244,28 +244,18 @@ void fay::AstCall::dig3(FayBuilder* builder)
 	PTR(AstParams) paramsNode = this->childNode<AstParams>(0);
 	size_t paramSize = paramsNode->size();
 	std::vector<PTR(FayClass)> paramsType = paramsNode->paramsType(builder);
-}
-
-void fay::AstCall::dig4(FayBuilder* builder)
-{
-	AstNode::dig4(builder);
-
-	//取得参数的长度和类型
-	PTR(AstParams) paramsNode = this->childNode<AstParams>(0);
-	size_t paramSize = paramsNode->size();
-	std::vector<PTR(FayClass)> paramsType = paramsNode->paramsType(builder);
 
 	//判断是内部函数还是外部函数
 	std::string className;
 	std::string funName;
 	size_t p = this->_text.find_last_of('.');
-	if(p != std::string::npos)
+	if (p != std::string::npos)
 	{
 		className = this->_text.substr(0, p);
 		funName = this->_text.substr(p + 1);
 
 		//内部函数
-		if(className == "this")
+		if (className == "this")
 			className = "";
 	}
 	else
@@ -274,24 +264,43 @@ void fay::AstCall::dig4(FayBuilder* builder)
 		funName = this->_text;
 	}
 
-	if(className.size() > 0)
+	if (className.size() > 0)
 	{
 		auto classes = builder->domain()->findClass(builder->usings(), className);
-		if(classes.size() < 1)
+		if (classes.size() < 1)
 			throw BuildException(this->shared_from_this(), "err.no_class", className);
-		else if(classes.size() > 1)
+		else if (classes.size() > 1)
 			throw BuildException(this->shared_from_this(), "err.too_many_class", className);
 
-		auto outsideFun = builder->lib()->findOutsideFun(classes[0]->fullname(), funName, paramsType);
-		if(!outsideFun)
-			throw BuildException(this->shared_from_this(), "err.no_outside_fun", this->_text);
+		auto funs=classes[0]->matchFun(funName, paramsType, true);
+		if (funs.size() < 1)
+			throw BuildException(this->shared_from_this(), "err.no_fun", className, funName);
+		else if (funs.size() > 1)
+			throw BuildException(this->shared_from_this(), "err.too_many_fun", className, funName);
 
-		builder->addInst(new inst::CallStatic(outsideFun->index(), paramSize));
+		this->_fun = funs[0];
+
+		//以第一个参数的返回值为准
+		this->_classType = funs[0]->returns()[0].lock();
 	}
 	else
 	{
 		//TODO ：内部函数调用的实现
 	}
+}
+
+void fay::AstCall::dig4(FayBuilder* builder)
+{
+	AstNode::dig4(builder);
+
+	PTR(FayFun) fun = this->_fun.lock();
+	if (!fun)
+		throw BuildException(this->shared_from_this(), "err.unknow_fun", this->_text);
+
+	pos_t index = builder->lib()->findOutsideFun(fun);
+	if (fun->isStatic())
+		builder->addInst(new inst::CallStatic(index, fun->paramsCount()));
+	//TODO : 处理非静态方法
 }
 
 //PTR(FayClass) fay::AstCall::classType(FayBuilder * builder)

@@ -254,6 +254,8 @@ namespace fay
 		inline const bool isStatic() { return this->_isStatic; }
 		inline void clazz(PTR(FayClass) v) { this->_class = v; }
 		inline const PTR(FayClass) clazz() { return this->_class.lock(); }
+		inline const size_t paramsCount() { return this->_params.size(); }
+		inline const std::vector<PTR(FayParamDef)> params(){ return this->_params; }
 		inline const size_t returnsCount() { return this->_returns.size(); }
 		inline const std::vector<WPTR(FayClass)> &returns() { return this->_returns; }
 		inline const PTR(FayLabelTable) labels() { return this->_labels; }
@@ -340,21 +342,18 @@ namespace fay
 	class OutsideFun : public FayObject
 	{
 	private:
-		std::string _fullname;
-		std::string _typeFullname;
-		int32_t _typeIndex;
+		//std::string _fullname;
+		std::string _classFullname;
+		int32_t _classIndex;
 		std::string _funFullname;
 		int32_t _funIndex;
 		bool _resolved = false;  //是否已经确定是函数的位置
-		pos_t _index = -1;  //自己的索引值，这里存一份
 
 	public:
 		OutsideFun(const std::string &typeFullname, int32_t typeIndex, const std::string &funName, int32_t funIndex)
-			: _resolved(true), _typeFullname(typeFullname), _typeIndex(typeIndex), _funFullname(funName), _funIndex(funIndex) {}
+			: _resolved(true), _classFullname(typeFullname), _classIndex(typeIndex), _funFullname(funName), _funIndex(funIndex) {}
 
-		pos_t index() { return this->_index; }
-		void index(pos_t value) { this->_index = value; }
-		int32_t typeIndex() { return this->_typeIndex; }
+		int32_t classIndex() { return this->_classIndex; }
 		int32_t funIndex() { return this->_funIndex; }
 
 		virtual void toString(mirror::utils::StringBuilder* sb) override;
@@ -381,7 +380,7 @@ namespace fay
 
 		pos_t addClass(PTR(FayClass) clazz);
 		//返回调用方法在外部函数表中的索引
-		PTR(OutsideFun) findOutsideFun(const std::string &className, const std::string &funName, const std::vector<PTR(FayClass)> &paramsType);
+		pos_t findOutsideFun(PTR(FayFun) fun);
 		PTR(OutsideFun) findOutsideFun(pos_t index) { return this->_outsideFuns.find(index); }
 
 		virtual void toString(mirror::utils::StringBuilder* sb) override;
