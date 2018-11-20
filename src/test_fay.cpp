@@ -41,6 +41,9 @@ void test::FayLang::SetUpTestCase()
 
 TEST_F(FayLang, TypeTest1)
 {
+	PRINT(project->findSource("TypeTest.fay")->tokensStr());
+	PRINT(project->findSource("TypeTest.fay")->astStr());
+
 	auto type = project->domain()->findClass("fay.dev.test.TypeTest");
 	auto funs = type->findFunByName("test1", true);
 	auto rs = vm->run(funs[0]);

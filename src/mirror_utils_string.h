@@ -58,6 +58,8 @@ namespace mirror
 			{
 			}
 
+			size_t size() { return this->text.size(); }
+
 			StringBuilder *add(const char *str)
 			{
 				this->checkNewline();

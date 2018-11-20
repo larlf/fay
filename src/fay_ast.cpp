@@ -858,3 +858,8 @@ void fay::AstType::dig3(FayBuilder* builder)
 
 	this->_classType = classes[0];
 }
+
+void fay::AstReturn::dig4(FayBuilder* builder)
+{
+
+}

@@ -5,6 +5,7 @@
 #include <mirror_utils_file.h>
 
 using namespace mirror;
+using namespace fay;
 
 fay::FayProject::FayProject(const std::string & name, int marjor, int minjor)
 	: _name(name), _marjor(marjor), _minjor(minjor)
@@ -110,30 +111,44 @@ void fay::FayProject::build()
 	}
 }
 
-std::string fay::FayProject::tokenString(const std::string & name)
+PTR(FaySource) fay::FayProject::findSource(const std::string & name)
 {
-	PTR(FaySource) file;
 	for (auto it : this->_files)
 	{
-		if (it.second->filename().find(name)>=0)
+		if (it.second->filename().find(name) != std::string::npos)
 		{
-			file = it.second;
-			break;
+			return it.second;
 		}
 	}
 
-	utils::StringBuilder sb;
-
-	if (file)
-	{
-
-	}
-
-	return sb.toString();
+	return nullptr;
 }
 
 void fay::FaySource::parse(PTR(Lexer) lexer)
 {
 	this->_tokens = lexer->Execute(this->_file);
 	this->_ast = fay::Parser::Parse(this->_tokens, this->_file->filename());
+}
+
+std::string fay::FaySource::tokensStr()
+{
+	utils::StringBuilder sb;
+
+	for (auto it : *this->_tokens)
+	{
+		if (sb.size() > 0)
+			sb.add("\n");
+
+		sb.add(it->toString());
+	}
+
+	return sb.toString();
+}
+
+std::string fay::FaySource::astStr()
+{
+	utils::StringBuilder sb;
+	this->_ast->toString(&sb);
+	return sb.toString();
+
 }

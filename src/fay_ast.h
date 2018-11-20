@@ -350,6 +350,8 @@ namespace fay
 	class AstReturn : public AstNode
 	{
 		using AstNode::AstNode;
+	public:
+		virtual void dig4(FayBuilder* builder) override;
 	};
 
 	class AstVar : public AstNode
