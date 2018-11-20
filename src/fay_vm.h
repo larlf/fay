@@ -11,6 +11,7 @@ namespace fay
 		std::stack<FayValue> stack;
 
 		void _run(PTR(FayInstFun) fun);
+		void _run(PTR(FayFun) fun);
 
 	public:
 		FayVM(PTR(FayDomain) domain)

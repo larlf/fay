@@ -249,13 +249,13 @@ void fay::AstCall::dig3(FayBuilder* builder)
 	std::string className;
 	std::string funName;
 	size_t p = this->_text.find_last_of('.');
-	if (p != std::string::npos)
+	if(p != std::string::npos)
 	{
 		className = this->_text.substr(0, p);
 		funName = this->_text.substr(p + 1);
 
 		//内部函数
-		if (className == "this")
+		if(className == "this")
 			className = "";
 	}
 	else
@@ -264,24 +264,26 @@ void fay::AstCall::dig3(FayBuilder* builder)
 		funName = this->_text;
 	}
 
-	if (className.size() > 0)
+	if(className.size() > 0)
 	{
 		auto classes = builder->domain()->findClass(builder->usings(), className);
-		if (classes.size() < 1)
+		if(classes.size() < 1)
 			throw BuildException(this->shared_from_this(), "err.no_class", className);
-		else if (classes.size() > 1)
+		else if(classes.size() > 1)
 			throw BuildException(this->shared_from_this(), "err.too_many_class", className);
 
-		auto funs=classes[0]->matchFun(funName, paramsType, true);
-		if (funs.size() < 1)
+		auto funs = classes[0]->matchFun(funName, paramsType, true);
+		if(funs.size() < 1)
 			throw BuildException(this->shared_from_this(), "err.no_fun", className, funName);
-		else if (funs.size() > 1)
+		else if(funs.size() > 1)
 			throw BuildException(this->shared_from_this(), "err.too_many_fun", className, funName);
 
-		this->_fun = funs[0];
+		PTR(FayFun) fun = funs[0];
+		this->_fun = fun;
 
 		//以第一个参数的返回值为准
-		this->_classType = funs[0]->returns()[0].lock();
+		if(fun->returnsCount() > 0)
+			this->_classType = fun->returns()[0].lock();
 	}
 	else
 	{
@@ -294,11 +296,11 @@ void fay::AstCall::dig4(FayBuilder* builder)
 	AstNode::dig4(builder);
 
 	PTR(FayFun) fun = this->_fun.lock();
-	if (!fun)
+	if(!fun)
 		throw BuildException(this->shared_from_this(), "err.unknow_fun", this->_text);
 
 	pos_t index = builder->lib()->findOutsideFun(fun);
-	if (fun->isStatic())
+	if(fun->isStatic())
 		builder->addInst(new inst::CallStatic(index, fun->paramsCount()));
 	//TODO : 处理非静态方法
 }
@@ -671,7 +673,7 @@ void fay::AstCondition::dig3(FayBuilder* builder)
 	{
 		//如果不是Bool，这里进行一下转换
 		auto type = this->_nodes[0]->classType();
-		if (type->valueType() != ValueType::Bool)
+		if(type->valueType() != ValueType::Bool)
 			this->insertChldNode(0, MKPTR(AstTypeConvert)(this->_token, type, (*builder->domain())[ValueType::Bool]));
 	}
 
@@ -694,7 +696,7 @@ void fay::AstFor::dig3(FayBuilder* builder)
 
 	//如果expr2不是Bool，这里进行一下转换
 	auto type = this->_nodes[1]->classType();
-	if (type->valueType() != ValueType::Bool)
+	if(type->valueType() != ValueType::Bool)
 		this->insertChldNode(1, MKPTR(AstTypeConvert)(this->_token, type, (*builder->domain())[ValueType::Bool]));
 }
 
@@ -822,6 +824,21 @@ void fay::AstAssign::dig4(FayBuilder* builder)
 	builder->exprMode = BuildExprMode::Assign;
 	this->_nodes[0]->dig4(builder);
 	builder->exprMode = BuildExprMode::Count;
+}
+
+void fay::AstUsing::dig1(FayBuilder* builder)
+{
+	builder->addUsing(this->_text);
+}
+
+void fay::AstUsing::dig2(FayBuilder* builder)
+{
+	builder->addUsing(this->_text);
+}
+
+void fay::AstUsing::dig3(FayBuilder* builder)
+{
+	builder->addUsing(this->_text);
 }
 
 void fay::AstUsing::dig4(FayBuilder* builder)

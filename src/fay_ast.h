@@ -128,6 +128,9 @@ namespace fay
 	{
 		using AstNode::AstNode;
 	public:
+		virtual void dig1(FayBuilder* builder) override;
+		virtual void dig2(FayBuilder* builder) override;
+		virtual void dig3(FayBuilder* builder) override;
 		virtual void dig4(FayBuilder* builder) override;
 	};
 
