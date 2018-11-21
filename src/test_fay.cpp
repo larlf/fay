@@ -46,8 +46,14 @@ TEST_F(FayLang, TypeTest1)
 
 	auto type = project->domain()->findClass("fay.dev.test.TypeTest");
 	auto funs = type->findFunByName("test1", true);
+
+	utils::StringBuilder sb;
+	funs[0]->toString(&sb);
+	PRINT(sb.toString());
+
 	auto rs = vm->run(funs[0]);
 	LOG_DEBUG(rs.size());
+	LOG_DEBUG(rs[0].intVal());
 }
 
 TEST_F(FayLang, Test1)

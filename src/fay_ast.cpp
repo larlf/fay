@@ -130,6 +130,15 @@ void fay::AstFun::dig2(FayBuilder* builder)
 
 	//创建这个函数定义
 	PTR(FayInstFun) fun = MKPTR(FayInstFun)(builder->domain(), this->_text, this->isStatic, _accessType);
+
+	//处理参数
+
+	//处理返回值
+	if (this->_nodes[1])
+	{
+		fun->addReturn(this->_nodes[1]->classType());
+	}
+
 	this->_index = builder->addFun(fun);
 
 	AstNode::dig2(builder);
@@ -861,5 +870,5 @@ void fay::AstType::dig3(FayBuilder* builder)
 
 void fay::AstReturn::dig4(FayBuilder* builder)
 {
-
+	AstNode::dig4(builder);
 }

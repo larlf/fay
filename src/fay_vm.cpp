@@ -717,6 +717,7 @@ std::vector<FayValue> fay::FayVM::run(PTR(FayFun) fun)
 
 	//确定返回值的数量
 	auto size = fun->returnsCount();
+	LOG_DEBUG("Return Size : " << size);
 	if(this->stack.size() < fun->returnsCount())
 	{
 		LOG_ERROR("Stack size error : " << this->stack.size() << "<" << size);
