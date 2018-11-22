@@ -282,15 +282,12 @@ void fay::FayFun::addParam(std::vector<PTR(FayParamDef)> defs)
 		this->addParam(it);
 }
 
-void fay::FayFun::addReturn(PTR(FayClass) type)
+void fay::FayFun::returnValue(PTR(FayClass) type)
 {
-	this->_returns.push_back(type);
-}
+	if (!this->_returnValue.expired())
+		LOG_ERROR("Reset return value");
 
-void fay::FayFun::addReturn(std::vector<PTR(FayClass)> types)
-{
-	for(auto it : types)
-		this->addReturn(it);
+	this->_returnValue = type;
 }
 
 bool fay::FayFun::match(const std::vector<PTR(FayClass)> &paramsType)

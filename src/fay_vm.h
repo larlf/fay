@@ -20,6 +20,6 @@ namespace fay
 		size_t stackSize() { return this->stack.size(); }
 
 		//对外部提供的运行接口，会把堆栈里的值返回
-		std::vector<FayValue> run(PTR(FayFun) fun);
+		FayValue run(PTR(FayFun) fun);
 	};
 }

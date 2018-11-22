@@ -240,7 +240,7 @@ namespace fay
 		std::string _name;  //函数名称
 		std::string _fullname;  //全名
 		std::vector<PTR(FayParamDef)> _params;  //参数定义
-		std::vector<WPTR(FayClass)> _returns;  //返回值的类型，支持多返回值
+		WPTR(FayClass) _returnValue;  //返回值的类型，支持多返回值
 		PTR(FayLabelTable) _labels = MKPTR(FayLabelTable)();  //标签表，以后可以判断下，运行期不用创建此对象
 
 	public:
@@ -256,8 +256,8 @@ namespace fay
 		inline const PTR(FayClass) clazz() { return this->_class.lock(); }
 		inline const size_t paramsCount() { return this->_params.size(); }
 		inline const std::vector<PTR(FayParamDef)> params(){ return this->_params; }
-		inline const size_t returnsCount() { return this->_returns.size(); }
-		inline const std::vector<WPTR(FayClass)> &returns() { return this->_returns; }
+		inline const PTR(FayClass) returnValue() { return this->_returnValue.lock(); }
+		void returnValue(PTR(FayClass) type);
 		inline const PTR(FayLabelTable) labels() { return this->_labels; }
 
 		//添加参数描述
@@ -268,16 +268,6 @@ namespace fay
 		{
 			std::vector<PTR(FayParamDef)> defs{ args... };
 			this->addParam(defs);
-		}
-
-		//添加返回值类型
-		void addReturn(PTR(FayClass) type);
-		void addReturn(std::vector<PTR(FayClass)> types);
-		template<typename... Params>
-		void addReturns(Params... args)
-		{
-			std::vector<PTR(FayClass)> types{ args... };
-			this->addReturn(types);
 		}
 
 		//检查参数是否匹配

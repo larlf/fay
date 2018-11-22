@@ -52,8 +52,7 @@ TEST_F(FayLang, TypeTest1)
 	PRINT(sb.toString());
 
 	auto rs = vm->run(funs[0]);
-	LOG_DEBUG(rs.size());
-	LOG_DEBUG(rs[0].intVal());
+	LOG_DEBUG(rs.intVal());
 }
 
 TEST_F(FayLang, Test1)

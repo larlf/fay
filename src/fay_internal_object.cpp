@@ -9,7 +9,7 @@ PTR(FayClass) fay::ObjectClass::init()
 {
 	PTR(FayInternalFun) fun;
 	fun = MKPTR(FayInternalFun)(this->domain(), "toString", false, fay::InternalFun::ToString);
-	fun->addReturns((*this->domain())[ValueType::String]);
+	fun->returnValue((*this->domain())[ValueType::String]);
 	this->addFun(fun);
 
 	return this->shared_from_this();
@@ -81,7 +81,7 @@ PTR(FayClass) fay::DateClass::init()
 {
 	PTR(FayInternalFun) fun;
 	fun = MKPTR(FayInternalFun)(this->domain(), "Now", true, DateClass::Now);
-	fun->addReturn((*this->domain())[ValueType::Long]);
+	fun->returnValue((*this->domain())[ValueType::Long]);
 	this->addFun(fun);
 
 	return this->shared_from_this();

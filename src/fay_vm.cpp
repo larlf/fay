@@ -703,9 +703,9 @@ void fay::FayVM::_run(PTR(FayFun) fun)
 	}
 }
 
-std::vector<FayValue> fay::FayVM::run(PTR(FayFun) fun)
+FayValue fay::FayVM::run(PTR(FayFun) fun)
 {
-	std::vector<FayValue> values;
+	FayValue values;
 
 	if(!fun)
 	{
@@ -716,18 +716,14 @@ std::vector<FayValue> fay::FayVM::run(PTR(FayFun) fun)
 	this->_run(fun);
 
 	//确定返回值的数量
-	auto size = fun->returnsCount();
-	LOG_DEBUG("Return Size : " << size);
-	if(this->stack.size() < fun->returnsCount())
+	if (fun->returnValue())
 	{
-		LOG_ERROR("Stack size error : " << this->stack.size() << "<" << size);
-		size = this->stack.size();
-	}
+		if (this->stack.size() !=1)
+		{
+			LOG_ERROR("Stack size error : " << this->stack.size());
+		}
 
-	//取返回值
-	for(auto i = 0; i < size; ++i)
-	{
-		values.push_back(this->stack.top());
+		values = this->stack.top();
 		this->stack.pop();
 	}
 

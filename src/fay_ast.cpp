@@ -117,6 +117,8 @@ void fay::AstClass::dig4(FayBuilder* builder)
 
 void fay::AstFun::dig2(FayBuilder* builder)
 {
+	AstNode::dig2(builder);
+
 	FunAccessType _accessType = FunAccessType::Public;
 	for(auto it : this->_descWords)
 	{
@@ -132,16 +134,13 @@ void fay::AstFun::dig2(FayBuilder* builder)
 	PTR(FayInstFun) fun = MKPTR(FayInstFun)(builder->domain(), this->_text, this->isStatic, _accessType);
 
 	//处理参数
-
-	//处理返回值
 	if (this->_nodes[1])
 	{
-		fun->addReturn(this->_nodes[1]->classType());
+		this->_classType = this->_nodes[1]->classType();
+		fun->returnValue(this->_nodes[1]->classType());
 	}
 
 	this->_index = builder->addFun(fun);
-
-	AstNode::dig2(builder);
 }
 
 void fay::AstFun::dig3(FayBuilder* builder)
@@ -291,8 +290,8 @@ void fay::AstCall::dig3(FayBuilder* builder)
 		this->_fun = fun;
 
 		//以第一个参数的返回值为准
-		if(fun->returnsCount() > 0)
-			this->_classType = fun->returns()[0].lock();
+		if (fun->returnValue())
+			this->_classType = fun->returnValue();
 	}
 	else
 	{
@@ -855,9 +854,9 @@ void fay::AstUsing::dig4(FayBuilder* builder)
 	builder->addUsing(this->_text);
 }
 
-void fay::AstType::dig3(FayBuilder* builder)
+void fay::AstType::dig2(FayBuilder* builder)
 {
-	AstNode::dig3(builder);
+	AstNode::dig2(builder);
 
 	auto classes = builder->domain()->findClass(builder->usings(), this->_text);
 	if(classes.size() <= 0)

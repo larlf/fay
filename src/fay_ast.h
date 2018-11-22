@@ -218,7 +218,7 @@ namespace fay
 	{
 		using AstNode::AstNode;
 	public:
-		virtual void dig3(FayBuilder* builder) override;
+		virtual void dig2(FayBuilder* builder) override;
 	};
 
 	class AstArrayType : public AstNode
