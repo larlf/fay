@@ -10,4 +10,16 @@ public class TypeTest
 		var b:int=6;
 		return 5+6;
 	}
+
+	static public fun test2():long
+	{
+		var a:int=5;
+		var b:long=9;
+		return a+b;
+	}
+
+	static public fun test3():long
+	{
+		return 101;
+	}
 }

@@ -45,14 +45,42 @@ TEST_F(FayLang, TypeTest1)
 	PRINT(project->findSource("TypeTest.fay")->astStr());
 
 	auto type = project->domain()->findClass("fay.dev.test.TypeTest");
-	auto funs = type->findFunByName("test1", true);
 
-	utils::StringBuilder sb;
-	funs[0]->toString(&sb);
-	PRINT(sb.toString());
+	{
+		auto funs = type->findFunByName("test1", true);
 
-	auto rs = vm->run(funs[0]);
-	LOG_DEBUG(rs.intVal());
+		utils::StringBuilder sb;
+		funs[0]->toString(&sb);
+		PRINT(sb.toString());
+
+		auto rs = vm->run(funs[0]);
+		ASSERT_EQ(rs.type(), ValueType::Int);
+		ASSERT_EQ(rs.intVal(), 11);
+	}
+
+	{
+		auto funs = type->findFunByName("test2", true);
+
+		utils::StringBuilder sb;
+		funs[0]->toString(&sb);
+		PRINT(sb.toString());
+
+		auto rs = vm->run(funs[0]);
+		ASSERT_EQ(rs.type(), ValueType::Long);
+		ASSERT_EQ(rs.longVal(), 14);
+	}
+
+	{
+		auto funs = type->findFunByName("test3", true);
+
+		utils::StringBuilder sb;
+		funs[0]->toString(&sb);
+		PRINT(sb.toString());
+
+		auto rs = vm->run(funs[0]);
+		ASSERT_EQ(rs.type(), ValueType::Long);
+		ASSERT_EQ(rs.longVal(), 101);
+	}
 }
 
 TEST_F(FayLang, Test1)

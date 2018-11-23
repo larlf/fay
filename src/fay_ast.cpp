@@ -867,7 +867,25 @@ void fay::AstType::dig2(FayBuilder* builder)
 	this->_classType = classes[0];
 }
 
+void fay::AstReturn::dig3(FayBuilder * builder)
+{
+	AstNode::dig3(builder);
+
+	PTR(FayFun) fun = builder->fun();
+
+	//先算出目标类型
+	auto t1 = this->_nodes[0]->classType();
+	auto t2 = fun->returnValue();
+
+	//如果和目标类型不一致，就转换一下
+	if (t1 != t2)
+		this->insertChldNode(0, MKPTR(AstTypeConvert)(this->_token, t1, t2));
+}
+
 void fay::AstReturn::dig4(FayBuilder* builder)
 {
 	AstNode::dig4(builder);
+
+	
+
 }
