@@ -70,8 +70,10 @@ class FayInst {
         //记录一下最后一条指令
         if (this.action.trim() == "same" && LastAction)
             this.action = LastAction;
-        else if (this.action)
+        else if (this.action && this.action.trim() != "nothing")
             LastAction = this.action;
+        if (this.action.trim() == "nothing")
+            this.action = "//DoNothing";
         if (data.Params) {
             let list = data.Params.trim().split("\n");
             for (let i = 0; i <= list.length; ++i) {

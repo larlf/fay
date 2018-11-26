@@ -22,7 +22,7 @@ let TypeMap: { [key: string]: string } = {
 	"double": "double"
 };
 
-let LastAction:string=null;  //用于保存最后一条Action
+let LastAction: string = null;  //用于保存最后一条Action
 
 class FayCfg
 {
@@ -106,10 +106,13 @@ class FayInst
 		this.action = data.Action ? data.Action.toString() : "";
 
 		//记录一下最后一条指令
-		if(this.action.trim()=="same" && LastAction)
-			this.action=LastAction;
-		else if(this.action)
-			LastAction=this.action;
+		if (this.action.trim() == "same" && LastAction)
+			this.action = LastAction;
+		else if (this.action && this.action.trim() != "nothing")
+			LastAction = this.action;
+
+		if (this.action.trim() == "nothing")
+			this.action = "//DoNothing";
 
 		if (data.Params)
 		{
@@ -296,7 +299,7 @@ function main()
 }
 
 Cmds._help = "帮助信息";
-Cmds.help = function()
+Cmds.help = function ()
 {
 	for (let cmd in Cmds)
 	{
@@ -311,7 +314,7 @@ Cmds.help = function()
 }
 
 Cmds._run = "运行的所有";
-Cmds.run = function()
+Cmds.run = function ()
 {
 	Cmds.token_type();
 	Cmds.value_type();
@@ -320,7 +323,7 @@ Cmds.run = function()
 }
 
 Cmds._token_type = "生成Token类型的数据";
-Cmds.token_type = function()
+Cmds.token_type = function ()
 {
 	let file = xlsx.readFile(path.resolve(__dirname, "../doc/FayLang.xlsx"));
 	let json = xlsx.utils.sheet_to_json(file.Sheets['TokenType']);
@@ -349,7 +352,7 @@ Cmds.token_type = function()
 	replaceFileBody("src/fay_const.cpp", "TokenTypeName", str2, "\t");
 }
 
-Cmds.value_type = function()
+Cmds.value_type = function ()
 {
 	let file = xlsx.readFile(path.resolve(__dirname, "../doc/FayLang.xlsx"));
 	let json = xlsx.utils.sheet_to_json(file.Sheets['ValueType']);
@@ -371,7 +374,7 @@ Cmds.value_type = function()
 				str1 += "  //" + it.Comment;
 
 			str2 += str2.length ? "\n" : "";
-			str2 += larlf.text.format("TypeDict::ValueTypeName[ValueType::{0}] = \"{1}\";", it['Name'], (it['Name']+"").toLowerCase());
+			str2 += larlf.text.format("TypeDict::ValueTypeName[ValueType::{0}] = \"{1}\";", it['Name'], (it['Name'] + "").toLowerCase());
 
 			str3 += str3.length ? "\n" : "";
 			str3 += larlf.text.format("TypeDict::ValueTypeMap[\"{0}\"] = ValueType::{1};", (it.Name + "").toLowerCase(), it.Name);
@@ -383,20 +386,20 @@ Cmds.value_type = function()
 	replaceFileBody("src/fay_const.cpp", "ValueTypeMap", str3, "\t");
 }
 
-Cmds.inst = function()
+Cmds.inst = function ()
 {
 	let file = xlsx.readFile(path.resolve(__dirname, "../doc/FayLang.xlsx"));
 	let json = xlsx.utils.sheet_to_json(file.Sheets['Inst']);
-	let valueFilename=path.resolve(__dirname, "../data/inst.json");
-	let values=JSON.parse(fs.readFileSync(valueFilename).toString());
+	let valueFilename = path.resolve(__dirname, "../data/inst.json");
+	let values = JSON.parse(fs.readFileSync(valueFilename).toString());
 
-	let maxValue=0;
-	for(let key in values)
+	let maxValue = 0;
+	for (let key in values)
 	{
-		if(values[key]>maxValue)
-			maxValue=values[key];
+		if (values[key] > maxValue)
+			maxValue = values[key];
 	}
-	log.debug("Max inst : "+maxValue);
+	log.debug("Max inst : " + maxValue);
 
 	//用于处理Code到Value的转换
 	let Code1Value: Map<string, number> = new Map();
@@ -410,17 +413,17 @@ Cmds.inst = function()
 	for (let i = 0; i < json.length; ++i)
 	{
 		let it: any = json[i];
-		let value=-1;
+		let value = -1;
 
-		if(values[it.Name]===undefined)
+		if (values[it.Name] === undefined)
 		{
 			maxValue++;
-			value=maxValue;
-			values[it.Name]=maxValue;
+			value = maxValue;
+			values[it.Name] = maxValue;
 		}
 		else
 		{
-			value=values[it.Name];
+			value = values[it.Name];
 		}
 
 		//只处理需要处理的语句
@@ -452,7 +455,7 @@ Cmds.inst = function()
 	});
 
 	//保存已生成的代码值
-	log.debug("Write : "+valueFilename);
+	log.debug("Write : " + valueFilename);
 	fs.writeFileSync(valueFilename, JSON.stringify(values, null, "\t"));
 
 	replaceFileBody("src/fay_inst.h", "Inst", hText, "\t\t");
@@ -464,7 +467,7 @@ Cmds.inst = function()
 }
 
 Cmds._convert_inst = "生成类型转换的代码";
-Cmds.convert_inst = function()
+Cmds.convert_inst = function ()
 {
 	let file = xlsx.readFile(path.resolve(__dirname, "../doc/FayLang.xlsx"));
 	let json = xlsx.utils.sheet_to_json(file.Sheets['ValueType']);
@@ -502,7 +505,7 @@ Cmds.convert_inst = function()
 }
 
 Cmds._deps = "处理依赖关系";
-Cmds.deps = function()
+Cmds.deps = function ()
 {
 	//检查是不是有mirage项目
 	let mirageDir = path.resolve(__dirname, "../../mirage/cpp/");
