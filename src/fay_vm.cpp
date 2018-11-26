@@ -16,7 +16,7 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 		switch(inst->type())
 		{
 			//InstCodeStart
-			case InstType::Nop:
+			case InstType::undefinedNop:
 			{
 				//DoNothing
 				break;
@@ -163,7 +163,9 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 			}
 			case InstType::IntToInt:
 			{
-				//DoNothing
+				FayValue v=this->stack.top();
+				this->stack.pop();
+				this->stack.push(FayValue((int32_t)v.intVal()));
 				break;
 			}
 			case InstType::IntToLong:
@@ -217,7 +219,9 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 			}
 			case InstType::LongToLong:
 			{
-				//DoNothing
+				FayValue v=this->stack.top();
+				this->stack.pop();
+				this->stack.push(FayValue((int64_t)v.longVal()));
 				break;
 			}
 			case InstType::LongToFloat:

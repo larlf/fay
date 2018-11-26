@@ -27,10 +27,10 @@ namespace fay
 	{
 		//InstStart
 		
-		class Nop : public fay::FayInst 
+		class undefinedNop : public fay::FayInst 
 		{ 
 		public:
-			Nop() : FayInst(InstType::Nop) {}
+			undefinedNop() : FayInst(InstType::undefinedNop) {}
 			virtual void toString(mirror::utils::StringBuilder* sb) override;
 		};
 		

@@ -22,8 +22,11 @@ let TypeMap: { [key: string]: string } = {
 	"double": "double"
 };
 
+let LastAction:string=null;  //用于保存最后一条Action
+
 class FayCfg
 {
+
 	public dataType: Map<string, any> = new Map();
 
 	constructor()
@@ -101,6 +104,12 @@ class FayInst
 		this.code = code;
 		this.name = data.Code1 + (data.Code2 ? data.Code2 : "");
 		this.action = data.Action ? data.Action.toString() : "";
+
+		//记录一下最后一条指令
+		if(this.action.trim()=="same" && LastAction)
+			this.action=LastAction;
+		else if(this.action)
+			LastAction=this.action;
 
 		if (data.Params)
 		{
@@ -268,31 +277,6 @@ function replaceFileBody(filename: string, keyword: string, str: string, indent:
 	fs.writeFileSync(filename, text);
 }
 
-//取指令的编码
-function getInstCode(codeStr: string, valueStr: string, Code1Value: Map<string, number>): number
-{
-	if (codeStr)
-	{
-		if (valueStr)
-		{
-			let value = parseInt(valueStr);
-			if (Code1Value.has(codeStr) && Code1Value.get(codeStr) != value)
-				log.debug("Change '" + codeStr + "' code value from " + Code1Value.get(codeStr) + " to " + value);
-			Code1Value.set(codeStr, value);
-			return value;
-		}
-		else
-		{
-			if (!Code1Value.has(codeStr))
-				log.error("Cannot find code value : " + codeStr);
-			else
-				return Code1Value.get(codeStr);
-		}
-	}
-
-	return 0;
-}
-
 ////////////////////////////////////////////////////////////////////////////
 
 let CFG = new FayCfg();
@@ -403,6 +387,16 @@ Cmds.inst = function()
 {
 	let file = xlsx.readFile(path.resolve(__dirname, "../doc/FayLang.xlsx"));
 	let json = xlsx.utils.sheet_to_json(file.Sheets['Inst']);
+	let valueFilename=path.resolve(__dirname, "../data/inst.json");
+	let values=JSON.parse(fs.readFileSync(valueFilename).toString());
+
+	let maxValue=0;
+	for(let key in values)
+	{
+		if(values[key]>maxValue)
+			maxValue=values[key];
+	}
+	log.debug("Max inst : "+maxValue);
 
 	//用于处理Code到Value的转换
 	let Code1Value: Map<string, number> = new Map();
@@ -416,21 +410,23 @@ Cmds.inst = function()
 	for (let i = 0; i < json.length; ++i)
 	{
 		let it: any = json[i];
-		if (!it.Code1) it.Code1 = "";
-		if (!it.Code2) it.Code2 = "";
-		//log.dump(it);
+		let value=-1;
 
-		let value1 = getInstCode(it.Code1, it.Value1, Code1Value);
-		let value2 = getInstCode(it.Code2, it.Value2, Code2Value);
-
-		//检查限制，需要在4个字节以内
-		if (value2 < 0 || value2 >= 16)
-			log.error("Bad value2 code : " + value2);
+		if(values[it.Name]===undefined)
+		{
+			maxValue++;
+			value=maxValue;
+			values[it.Name]=maxValue;
+		}
+		else
+		{
+			value=values[it.Name];
+		}
 
 		//只处理需要处理的语句
 		if ((it.Code1 || it.Code2) && !it.Disabled)
 		{
-			let inst = new FayInst((value1 << 4) + value2, it);
+			let inst = new FayInst(value, it);
 			hText += inst.makeHeadCode();
 			cppText += inst.makeCppCode();
 			typeText += (typeText ? "\n" : "") + inst.name + " = " + inst.code + ",";
@@ -454,6 +450,10 @@ Cmds.inst = function()
 			groupText += key + " = " + value + ",";
 		}
 	});
+
+	//保存已生成的代码值
+	log.debug("Write : "+valueFilename);
+	fs.writeFileSync(valueFilename, JSON.stringify(values, null, "\t"));
 
 	replaceFileBody("src/fay_inst.h", "Inst", hText, "\t\t");
 	replaceFileBody("src/fay_inst.cpp", "Inst", cppText, "");

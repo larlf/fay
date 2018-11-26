@@ -2,9 +2,9 @@
 
 //InstStart
 
-void fay::inst::Nop::toString(mirror::utils::StringBuilder * sb)
+void fay::inst::undefinedNop::toString(mirror::utils::StringBuilder * sb)
 {
-	sb->add("Nop")
+	sb->add("undefinedNop")
 		->endl();
 }
 
