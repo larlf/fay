@@ -1,5 +1,3 @@
-/// <reference path="typings/index.d.ts" />
-
 import * as ejs from 'ejs';
 import * as fs from "fs";
 import * as fs_extra from 'fs-extra';
