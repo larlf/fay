@@ -16,7 +16,7 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 		switch(inst->type())
 		{
 			//InstCodeStart
-			case InstType::Nop:
+			case InstType::undefinedNop:
 			{
 				//DoNothing
 				break;
