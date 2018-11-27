@@ -22,4 +22,9 @@ public class TypeTest
 	{
 		return 101;
 	}
+
+	static public fun test4():string
+	{
+		return 3+4*5;
+	}
 }

@@ -81,6 +81,18 @@ TEST_F(FayLang, TypeTest1)
 		ASSERT_EQ(rs.type(), ValueType::Long);
 		ASSERT_EQ(rs.longVal(), 101);
 	}
+
+	{
+		auto funs = type->findFunByName("test4", true);
+
+		utils::StringBuilder sb;
+		funs[0]->toString(&sb);
+		PRINT(sb.toString());
+
+		auto rs = vm->run(funs[0]);
+		ASSERT_EQ(rs.type(), ValueType::String);
+		ASSERT_EQ(*rs.strVal(), "23");
+	}
 }
 
 TEST_F(FayLang, Test1)

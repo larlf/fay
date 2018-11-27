@@ -349,6 +349,34 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 				(*this->stack.top().strVal())+=*v.strVal();
 				break;
 			}
+			case InstType::MulInt:
+			{
+				int32_t v=this->stack.top().intVal();
+				this->stack.pop();
+				this->stack.top().val()->intVal*=v;
+				break;
+			}
+			case InstType::MulLong:
+			{
+				int64_t v=this->stack.top().longVal();
+				this->stack.pop();
+				this->stack.top().val()->longVal*=v;
+				break;
+			}
+			case InstType::MulFloat:
+			{
+				float v=this->stack.top().floatVal();
+				this->stack.pop();
+				this->stack.top().val()->floatVal*=v;
+				break;
+			}
+			case InstType::MulDouble:
+			{
+				double v=this->stack.top().doubleVal();
+				this->stack.pop();
+				this->stack.top().val()->doubleVal*=v;
+				break;
+			}
 			case InstType::EqualBool:
 			{
 				FayValue v2=this->stack.top();
@@ -722,9 +750,11 @@ FayValue fay::FayVM::run(PTR(FayFun) fun)
 		{
 			LOG_ERROR("Stack size error : " << this->stack.size());
 		}
-
-		values = this->stack.top();
-		this->stack.pop();
+		else
+		{
+			values = this->stack.top();
+			this->stack.pop();
+		}
 	}
 
 	//清空堆栈
