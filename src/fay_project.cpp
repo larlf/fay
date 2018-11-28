@@ -148,7 +148,7 @@ std::string fay::FaySource::tokensStr()
 std::string fay::FaySource::astStr()
 {
 	utils::StringBuilder sb;
-	this->_ast->toString(&sb);
+	this->_ast->buildString(&sb);
 	return sb.toString();
 
 }

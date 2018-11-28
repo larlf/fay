@@ -17,7 +17,8 @@ namespace fay
 		virtual ~FayObject() {}
 
 		//生成字符串的方法
-		virtual void toString(mirror::utils::StringBuilder* sb) {}
+		std::string toString();
+		virtual void buildString(mirror::utils::StringBuilder* sb) {}
 	};
 
 	//文件对象

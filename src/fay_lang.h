@@ -84,7 +84,7 @@ namespace fay
 		PTR(FayFun) findFun(const std::string &fullname);
 		std::vector<PTR(FayFun)> findFunByName(const std::string &name);
 
-		virtual void toString(mirror::utils::StringBuilder* sb) override;
+		virtual void buildString(mirror::utils::StringBuilder* sb) override;
 	};
 
 	//变量定义
@@ -103,7 +103,7 @@ namespace fay
 		PTR(FayClass) type() { return this->_type.lock(); }
 
 		virtual const std::string &fullname() override;
-		virtual void toString(mirror::utils::StringBuilder* sb) override;
+		virtual void buildString(mirror::utils::StringBuilder* sb) override;
 	};
 
 	//字段定义
@@ -167,7 +167,7 @@ namespace fay
 
 		virtual ValueType valueType() { return ValueType::Void; }
 		virtual const std::string &fullname() override;
-		virtual void toString(mirror::utils::StringBuilder* sb) override;
+		virtual void buildString(mirror::utils::StringBuilder* sb) override;
 
 	};
 
@@ -198,7 +198,7 @@ namespace fay
 		inline const PTR(FayClass) type() { return this->_class.lock(); }
 
 		virtual const std::string &fullname() override;
-		virtual void toString(mirror::utils::StringBuilder* sb) override;
+		virtual void buildString(mirror::utils::StringBuilder* sb) override;
 	};
 
 	//标签
@@ -274,7 +274,7 @@ namespace fay
 		bool match(const std::vector<PTR(FayClass)> &paramsType);
 
 		virtual const std::string &fullname() override;
-		virtual void toString(mirror::utils::StringBuilder* sb) override;
+		virtual void buildString(mirror::utils::StringBuilder* sb) override;
 	};
 
 	//指令函数
@@ -307,7 +307,7 @@ namespace fay
 		pos_t getVarIndex(const std::string &name);
 		size_t varsSize() { return this->_vars.size(); }
 
-		virtual void toString(mirror::utils::StringBuilder* sb) override;
+		virtual void buildString(mirror::utils::StringBuilder* sb) override;
 	};
 
 	//内部函数
@@ -346,7 +346,7 @@ namespace fay
 		int32_t classIndex() { return this->_classIndex; }
 		int32_t funIndex() { return this->_funIndex; }
 
-		virtual void toString(mirror::utils::StringBuilder* sb) override;
+		virtual void buildString(mirror::utils::StringBuilder* sb) override;
 	};
 
 	//库
@@ -373,7 +373,7 @@ namespace fay
 		pos_t findOutsideFun(PTR(FayFun) fun);
 		PTR(OutsideFun) findOutsideFun(pos_t index) { return this->_outsideFuns.find(index); }
 
-		virtual void toString(mirror::utils::StringBuilder* sb) override;
+		virtual void buildString(mirror::utils::StringBuilder* sb) override;
 	};
 
 	//当前总体管理类
@@ -409,7 +409,7 @@ namespace fay
 		bool getFunIndex(const std::string &typeFullname, const std::string &funFullname, bool isStatic, pos_t &typeIndex, pos_t &funIndex);
 		bool getFunIndex(PTR(FayFun) fun, pos_t &typeIndex, pos_t &funIndex);
 
-		virtual void toString(mirror::utils::StringBuilder* sb) override;
+		virtual void buildString(mirror::utils::StringBuilder* sb) override;
 
 
 	};

@@ -64,19 +64,19 @@ const std::string &fay::FayClass::fullname()
 	return this->_fullname;
 }
 
-void fay::FayClass::toString(mirror::utils::StringBuilder* sb)
+void fay::FayClass::buildString(mirror::utils::StringBuilder* sb)
 {
 	sb->add(this->fullname());
 	sb->increaseIndent();
 
 	sb->add("SFT : ")->endl();
 	sb->increaseIndent();
-	this->_sft.toString(sb);
+	this->_sft.buildString(sb);
 	sb->decreaseIndent();
 
 	sb->add("VFT : ")->endl();
 	sb->increaseIndent();
-	this->_vft.toString(sb);
+	this->_vft.buildString(sb);
 	sb->decreaseIndent();
 
 	sb->decreaseIndent();
@@ -132,7 +132,7 @@ pos_t fay::FayLib::findOutsideFun(PTR(FayFun) fun)
 	return this->_outsideFuns.add(fullname, ofun);
 }
 
-void fay::FayLib::toString(mirror::utils::StringBuilder* sb)
+void fay::FayLib::buildString(mirror::utils::StringBuilder* sb)
 {
 	sb->add("[FayLib]")->add(this->name)->endl();
 	sb->increaseIndent();
@@ -142,14 +142,14 @@ void fay::FayLib::toString(mirror::utils::StringBuilder* sb)
 	for(auto i = 0; i < this->_outsideFuns.list().size(); ++i)
 	{
 		sb->add(i)->add(" : ");
-		this->_outsideFuns.list()[i]->toString(sb);
+		this->_outsideFuns.list()[i]->buildString(sb);
 	}
 	sb->decreaseIndent();
 	//显示Class的内容
 	sb->add("[Classes]")->endl();
 	sb->increaseIndent();
 	for each(auto it in this->classes)
-		it->toString(sb);
+		it->buildString(sb);
 	sb->decreaseIndent();
 	sb->decreaseIndent();
 }
@@ -230,21 +230,21 @@ pos_t fay::FayInstFun::getVarIndex(const std::string &name)
 	return this->_vars.findIndex(name);
 }
 
-void fay::FayInstFun::toString(mirror::utils::StringBuilder* sb)
+void fay::FayInstFun::buildString(mirror::utils::StringBuilder* sb)
 {
 	sb->add("[FayInstFun]")->add(this->fullname())->endl();
 
 	sb->increaseIndent();
 
 	for each(auto it in this->_params)
-		it->toString(sb);
+		it->buildString(sb);
 
 	for(auto i = 0; i < this->_insts.size(); ++i)
 	{
 		auto it = this->_insts[i];
 		sb->add(i)->add(" : ");
 		if(it)
-			it->toString(sb);
+			it->buildString(sb);
 		else
 			sb->add("<nullptr>");
 	}
@@ -306,7 +306,7 @@ bool fay::FayFun::match(const std::vector<PTR(FayClass)> &paramsType)
 	return true;
 }
 
-void fay::FayFun::toString(mirror::utils::StringBuilder* sb)
+void fay::FayFun::buildString(mirror::utils::StringBuilder* sb)
 {
 	sb->add("[FayFun]")->add(this->fullname())->endl();
 
@@ -352,7 +352,7 @@ void fay::FayDomain::addLib(PTR(FayLib) lib)
 		this->_types.add(it->fullname(), it);
 }
 
-void fay::FayDomain::toString(mirror::utils::StringBuilder* sb)
+void fay::FayDomain::buildString(mirror::utils::StringBuilder* sb)
 {
 	sb->add("[FayDomain]")->endl();
 	sb->increaseIndent();
@@ -363,7 +363,7 @@ void fay::FayDomain::toString(mirror::utils::StringBuilder* sb)
 	}
 
 	for each(auto it in this->_libs)
-		it->toString(sb);
+		it->buildString(sb);
 	sb->decreaseIndent();
 }
 
@@ -521,7 +521,7 @@ const std::string &fay::FayParamDef::fullname()
 	return this->_fullname;
 }
 
-void fay::FayParamDef::toString(mirror::utils::StringBuilder* sb)
+void fay::FayParamDef::buildString(mirror::utils::StringBuilder* sb)
 {
 	sb->add("[FayParamDef] ")->add(this->fullname())->endl();
 }
@@ -1038,7 +1038,7 @@ std::string fay::FayLangUtils::Fullname(const std::string &className, const std:
 	return className + "." + FayLangUtils::Fullname(funName, params);
 }
 
-void fay::OutsideFun::toString(mirror::utils::StringBuilder* sb)
+void fay::OutsideFun::buildString(mirror::utils::StringBuilder* sb)
 {
 	sb->add(this->_classFullname)->add(":")->add(this->_classIndex)->add(" ");
 	sb->add(this->_funFullname)->add(":")->add(this->_funIndex)->endl();
@@ -1127,12 +1127,12 @@ std::vector<PTR(FayFun)> fay::FunTable::findFunByName(const std::string &name)
 	return list;
 }
 
-void fay::FunTable::toString(mirror::utils::StringBuilder* sb)
+void fay::FunTable::buildString(mirror::utils::StringBuilder* sb)
 {
 	for(auto i = 0; i < this->_funs.size(); ++i)
 	{
 		sb->add(i)->add(" : ");
-		this->_funs[i]->toString(sb);
+		this->_funs[i]->buildString(sb);
 	}
 }
 
@@ -1144,7 +1144,7 @@ const std::string &fay::FayVarDef::fullname()
 	return this->_fullname;
 }
 
-void fay::FayVarDef::toString(mirror::utils::StringBuilder* sb)
+void fay::FayVarDef::buildString(mirror::utils::StringBuilder* sb)
 {
 	sb->add(this->fullname());
 }

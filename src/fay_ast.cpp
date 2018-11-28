@@ -1,4 +1,5 @@
-﻿#include <fay_ast.h>
+﻿#include "fay_ast.h"
+#include <fay_ast.h>
 #include <typeinfo>
 #include <mirror_utils_log.h>
 
@@ -46,7 +47,7 @@ ValueType fay::AstNode::valueType()
 	return ValueType::Void;
 }
 
-void fay::AstNode::toString(mirror::utils::StringBuilder* sb)
+void fay::AstNode::buildString(mirror::utils::StringBuilder* sb)
 {
 	sb->add(this->className())
 	->add(" T=")->add(this->_text)
@@ -56,7 +57,7 @@ void fay::AstNode::toString(mirror::utils::StringBuilder* sb)
 	{
 		sb->endl();
 		if(it)
-			it->toString(sb);
+			it->buildString(sb);
 		else
 			sb->add("<null>");
 	}
@@ -755,40 +756,23 @@ void fay::AstPreOP::dig3(FayBuilder* builder)
 	if(!FayLangUtils::IsNumberType(leftNode->valueType()))
 		throw BuildException(this->shared_from_this(), "not a number type : " + TypeDict::ToName(leftNode->valueType()));
 
-	//取负值
-	if (this->_text == "-")
-	{
-		auto inst=FayLangUtils::OPInst(InstGroupType::Minus, leftNode->valueType());
-		builder->addInst(inst);
-		this->_classType = leftNode->classType();
-		return;
-	}
-
 	//根据类型生成右值
 	this->_classType = leftNode->classType();
-	PTR(AstFixedNumber) rightNode = MKPTR(AstFixedNumber)(this->_token, this->valueType(), 1);
-
-	//生成转换后的操作符
-	std::string opStr;
-	if(this->_text == "++")
-		opStr = "+";
-	else if(this->_text == "--")
-		opStr = "-";
-	else
-		throw BuildException(this->shared_from_this(), "unknow pre op : " + this->_text);
-
-	//生成操作并取代现有的节点
-	PTR(AstLeftRightOP) op = MKPTR(AstLeftRightOP)(this->_token, opStr);
-	this->insertChldNode(0, op);
-	op->addChildNode(rightNode);
-
-	//需要再执行一下这个，确定操作的类型
-	op->dig3(builder);
 }
 
 void fay::AstPreOP::dig4(FayBuilder* builder)
 {
 	AstNode::dig4(builder);
+
+	//添加值
+	builder->addInst(FayLangUtils::PushNumber(this->valueType(), 1));
+
+	if (this->_text == "++")
+		builder->addInst(FayLangUtils::OPInst(InstGroupType::Add, this->valueType()));
+	else if (this->_text == "--")
+		builder->addInst(FayLangUtils::OPInst(InstGroupType::Sub, this->valueType()));
+	else
+		throw BuildException(this->shared_from_this(), "err.unknow_pre_op : " + this->_text);
 
 	//如果是ID，需要把值给复制过去
 	if(!this->idName.empty())
@@ -799,14 +783,9 @@ void fay::AstPreOP::dig4(FayBuilder* builder)
 
 	//根据上层节点判断是否要把值留在堆栈中一份
 	//如果上层的值是void，说明不会用于计算，那就清除
-	if(this->_parent.lock()->valueType() == ValueType::Void && !this->_parent.lock()->is<AstAssign>())
+	if(this->_parent.lock()->valueType() == ValueType::Void)
 		builder->addInst(new inst::Pop());
 }
-
-//PTR(FayClass) fay::AstFixedNumber::classType(FayBuilder * builder)
-//{
-//	return (*builder->domain())[this->_type];
-//}
 
 void fay::AstFixedNumber::dig3(FayBuilder* builder)
 {
@@ -833,6 +812,9 @@ void fay::AstAssign::dig3(FayBuilder* builder)
 	auto t2 = this->_nodes[1]->classType();
 	if(t1 != t2)
 		this->insertChldNode(1, MKPTR(AstTypeConvert)(this->_token, t2, t1));
+
+	//表达式的值定义为目标值的类型
+	this->_classType = t1;
 }
 
 void fay::AstAssign::dig4(FayBuilder* builder)
@@ -895,11 +877,23 @@ void fay::AstReturn::dig3(FayBuilder * builder)
 		if (t1 != t2)
 			this->insertChldNode(0, MKPTR(AstTypeConvert)(this->_token, t1, t2));
 	}
-
 }
 
 void fay::AstReturn::dig4(FayBuilder* builder)
 {
 	AstNode::dig4(builder);
 	builder->addInst(new inst::Return());
+}
+
+void fay::AstMinusOP::dig3(FayBuilder* builder)
+{
+	AstNode::dig3(builder);
+	this->_classType = this->_nodes[0]->classType();
+}
+
+void fay::AstMinusOP::dig4(FayBuilder * builder)
+{
+	AstNode::dig4(builder);
+	auto inst = FayLangUtils::OPInst(InstGroupType::Minus, this->valueType());
+	builder->addInst(inst);
 }

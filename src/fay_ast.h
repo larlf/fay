@@ -89,7 +89,7 @@ namespace fay
 		//对象类型
 		PTR(FayClass) classType() { return this->_classType.lock(); }
 		//转换成字符串
-		virtual void toString(mirror::utils::StringBuilder* sb) override;
+		virtual void buildString(mirror::utils::StringBuilder* sb) override;
 
 		//因为生成数据的时候对结构会有依赖，只能先生成结构，再生成代码
 		//就像在田里挖土豆，挖一遍再挖一遍，需要经过多次dig()才能生成最终的结构
@@ -259,6 +259,14 @@ namespace fay
 		AstLeftRightOP(const PTR(Token) &token, const std::string &text)
 			:AstNode::AstNode(token) { this->_text = text; }
 
+		virtual void dig3(FayBuilder* builder) override;
+		virtual void dig4(FayBuilder* builder) override;
+	};
+
+	class AstMinusOP : public AstNode
+	{
+		using AstNode::AstNode;
+	public:
 		virtual void dig3(FayBuilder* builder) override;
 		virtual void dig4(FayBuilder* builder) override;
 	};

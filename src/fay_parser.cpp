@@ -727,7 +727,7 @@ PTR(AstNode) fay::Parser::_ExprMinus(TokenStack * stack)
 {
 	if (stack->now()->is(TokenType::OP) && stack->now()->is("-"))
 	{
-		auto node = MKPTR(AstPreOP)(stack->now());
+		auto node = MKPTR(AstMinusOP)(stack->now());
 		stack->next();
 		node->addChildNode(_ExprBracket(stack));
 		return node;

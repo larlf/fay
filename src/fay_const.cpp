@@ -206,6 +206,16 @@ void fay::TypeDict::Init()
 	TypeDict::InstTypeName[InstType::MinusString] = "MinusString";
 	TypeDict::InstTypeName[InstType::MinusObject] = "MinusObject";
 	TypeDict::InstTypeName[InstType::MinusFunction] = "MinusFunction";
+	TypeDict::InstTypeName[InstType::PlusVoid] = "PlusVoid";
+	TypeDict::InstTypeName[InstType::PlusBool] = "PlusBool";
+	TypeDict::InstTypeName[InstType::PlusByte] = "PlusByte";
+	TypeDict::InstTypeName[InstType::PlusInt] = "PlusInt";
+	TypeDict::InstTypeName[InstType::PlusLong] = "PlusLong";
+	TypeDict::InstTypeName[InstType::PlusFloat] = "PlusFloat";
+	TypeDict::InstTypeName[InstType::PlusDouble] = "PlusDouble";
+	TypeDict::InstTypeName[InstType::PlusString] = "PlusString";
+	TypeDict::InstTypeName[InstType::PlusObject] = "PlusObject";
+	TypeDict::InstTypeName[InstType::PlusFunction] = "PlusFunction";
 	TypeDict::InstTypeName[InstType::AddVoid] = "AddVoid";
 	TypeDict::InstTypeName[InstType::AddBool] = "AddBool";
 	TypeDict::InstTypeName[InstType::AddByte] = "AddByte";

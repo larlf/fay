@@ -1,8 +1,10 @@
 ﻿#include "fay_object.h"
 #include <fay_object.h>
 #include <mirror_utils_log.h>
+#include <mirror_utils_string.h>
 
 using namespace fay;
+using namespace mirror;
 
 fay::FayCompileException::FayCompileException(const std::string &msg)
 	: std::exception(msg.c_str())
@@ -71,4 +73,11 @@ const std::string fay::FayFile::line(int index)
 	}
 
 	return line;
+}
+
+std::string fay::FayObject::toString()
+{
+	utils::StringBuilder sb;
+	this->buildString(&sb);
+	return sb.toString();
 }

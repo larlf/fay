@@ -339,6 +339,31 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 				this->stack.top().val()->doubleVal = -this->stack.top().doubleVal();
 				break;
 			}
+			case InstType::PlusByte:
+			{
+				this->stack.top().val()->byteVal += (char)((inst::PlusByte*)inst)->val;
+				break;
+			}
+			case InstType::PlusInt:
+			{
+				this->stack.top().val()->intVal += (int32_t)((inst::PlusInt*)inst)->val;
+				break;
+			}
+			case InstType::PlusLong:
+			{
+				this->stack.top().val()->longVal += (int64_t)((inst::PlusLong*)inst)->val;
+				break;
+			}
+			case InstType::PlusFloat:
+			{
+				this->stack.top().val()->floatVal += (float)((inst::PlusFloat*)inst)->val;
+				break;
+			}
+			case InstType::PlusDouble:
+			{
+				this->stack.top().val()->doubleVal += (double)((inst::PlusDouble*)inst)->val;
+				break;
+			}
 			case InstType::AddInt:
 			{
 				int32_t v=this->stack.top().intVal();

@@ -50,7 +50,7 @@ TEST_F(FayLang, TypeTest1)
 		auto funs = type->findFunByName("test1", true);
 
 		utils::StringBuilder sb;
-		funs[0]->toString(&sb);
+		funs[0]->buildString(&sb);
 		PRINT(sb.toString());
 
 		auto rs = vm->run(funs[0]);
@@ -62,7 +62,7 @@ TEST_F(FayLang, TypeTest1)
 		auto funs = type->findFunByName("test2", true);
 
 		utils::StringBuilder sb;
-		funs[0]->toString(&sb);
+		funs[0]->buildString(&sb);
 		PRINT(sb.toString());
 
 		auto rs = vm->run(funs[0]);
@@ -74,7 +74,7 @@ TEST_F(FayLang, TypeTest1)
 		auto funs = type->findFunByName("test3", true);
 
 		utils::StringBuilder sb;
-		funs[0]->toString(&sb);
+		funs[0]->buildString(&sb);
 		PRINT(sb.toString());
 
 		auto rs = vm->run(funs[0]);
@@ -86,7 +86,7 @@ TEST_F(FayLang, TypeTest1)
 		auto funs = type->findFunByName("test4", true);
 
 		utils::StringBuilder sb;
-		funs[0]->toString(&sb);
+		funs[0]->buildString(&sb);
 		PRINT(sb.toString());
 
 		auto rs = vm->run(funs[0]);
@@ -102,15 +102,19 @@ TEST_F(FayLang, MathTest)
 	auto type = project->domain()->findClass("fay.dev.test.MathTest");
 
 	{
-		auto funs = type->findFunByName("test1", true);
-
-		utils::StringBuilder sb;
-		funs[0]->toString(&sb);
-		PRINT(sb.toString());
-
+		std::vector<PTR(FayFun)>funs = type->findFunByName("test1", true);
+		PRINT(funs[0]->toString());
 		auto rs = vm->run(funs[0]);
 		ASSERT_EQ(rs.type(), ValueType::Int);
 		ASSERT_EQ(rs.intVal(), -5);
+	}
+
+	{
+		std::vector<PTR(FayFun)>funs = type->findFunByName("test2", true);
+		PRINT(funs[0]->toString());
+		auto rs = vm->run(funs[0]);
+		ASSERT_EQ(rs.type(), ValueType::Int);
+		ASSERT_EQ(rs.intVal(), 6);
 	}
 }
 
@@ -128,7 +132,7 @@ TEST_F(FayLang, Test1)
 	{
 		//显示函数的内容
 		utils::StringBuilder sb;
-		funs[0]->toString(&sb);
+		funs[0]->buildString(&sb);
 		PRINT(sb.toString());
 
 		vm->run(funs[0]);
@@ -204,7 +208,7 @@ TEST_F(FayLang, Run)
 		if(ast)
 		{
 			utils::StringBuilder sb;
-			ast->toString(&sb);
+			ast->buildString(&sb);
 			PRINT(sb.toString());
 		}
 
@@ -220,14 +224,14 @@ TEST_F(FayLang, Run)
 
 		PRINT("--------------------Dig1--------------------");
 		utils::StringBuilder sb;
-		domain->toString(&sb);
+		domain->buildString(&sb);
 		PRINT(sb.toString());
 
 		ast->dig2(builder.get());
 
 		PRINT("--------------------Dig2--------------------");
 		sb.clear();
-		domain->toString(&sb);
+		domain->buildString(&sb);
 		PRINT(sb.toString());
 
 		ast->dig3(builder.get());
@@ -235,14 +239,14 @@ TEST_F(FayLang, Run)
 		if(ast)
 		{
 			utils::StringBuilder sb;
-			ast->toString(&sb);
+			ast->buildString(&sb);
 			PRINT(sb.toString());
 		}
 
 		ast->dig4(builder.get());
 		PRINT("--------------------Dig4--------------------");
 		sb.clear();
-		domain->toString(&sb);
+		domain->buildString(&sb);
 		PRINT(sb.toString());
 
 		fay::FayVM vm(domain);
