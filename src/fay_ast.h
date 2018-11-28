@@ -274,16 +274,18 @@ namespace fay
 	class AstPostOP : public AstNode
 	{
 		using AstNode::AstNode;
+	private:
+		std::string _id;
+	public:
+		virtual void dig3(FayBuilder* builder) override;
+		virtual void dig4(FayBuilder* builder) override;
 	};
 
 	class AstPreOP : public AstNode
 	{
 		using AstNode::AstNode;
 	private:
-		std::string idName;
-		//ValueType _valueType = ValueType::Void;
-		//WPTR(FayClass) _classType;
-
+		std::string _id;
 	public:
 		virtual void dig3(FayBuilder* builder) override;
 		virtual void dig4(FayBuilder* builder) override;
@@ -295,10 +297,13 @@ namespace fay
 		using AstNode::AstNode;
 	};
 
-	//只有表达式的语句
+	//表达式的语句
 	class AstExprStmt : public AstNode
 	{
 		using AstNode::AstNode;
+	public:
+		virtual void dig3(FayBuilder* builder) override;
+		virtual void dig4(FayBuilder* builder) override;
 	};
 
 	class AstAssign : public AstNode

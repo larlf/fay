@@ -9,5 +9,5 @@ public:
 	<%=it.fieldDefStr()%>
 	<%})%>
 	<%=data.name%>(<%=data.makeParamStr()%>) : FayInst(InstType::<%=data.name%>)<%=data.makeInitParamStr()%> {}
-	virtual void toString(mirror::utils::StringBuilder* sb) override;
+	virtual void buildString(mirror::utils::StringBuilder* sb) override;
 };

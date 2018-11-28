@@ -1,5 +1,5 @@
 
-void fay::inst::<%=data.name%>::toString(mirror::utils::StringBuilder * sb)
+void fay::inst::<%=data.name%>::buildString(mirror::utils::StringBuilder * sb)
 {
 	sb->add("<%=data.name%>")
 	<%data.props.forEach(it=>{%>

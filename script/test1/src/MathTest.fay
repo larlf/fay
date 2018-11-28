@@ -18,4 +18,32 @@ public class MathTest
 		++a;
 		return a;
 	}
+
+	static public fun test3():int
+	{
+		var a:int=5;
+		a=--a;
+		return a;
+	}
+
+	static public fun test4():int
+	{
+		var a:int=5;
+		a++;
+		return a;
+	}
+
+	static public fun test5():int
+	{
+		var a:int=5;
+		a=a--;
+		return a;
+	}
+
+	static public fun test6():int
+	{
+		var a:int=5;
+		var b:int=6;
+		return a+b;
+	}
 }

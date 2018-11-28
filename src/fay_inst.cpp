@@ -77,6 +77,12 @@ void fay::inst::PushString::buildString(mirror::utils::StringBuilder * sb)
 		->endl();
 }
 
+void fay::inst::Dup::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("Dup")
+		->endl();
+}
+
 void fay::inst::Pop::buildString(mirror::utils::StringBuilder * sb)
 {
 	sb->add("Pop")

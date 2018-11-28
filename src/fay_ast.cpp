@@ -487,7 +487,7 @@ void fay::AstID::dig4(FayBuilder* builder)
 
 	//不同模式下的操作不一样
 	if(builder->exprMode == BuildExprMode::Assign)
-		builder->addInst(new inst::SetLocal(index));
+		builder->addInst(new inst::CopyLocal(index));
 	else
 		builder->addInst(new inst::LoadLocal(index));
 }
@@ -746,18 +746,18 @@ void fay::AstPreOP::dig3(FayBuilder* builder)
 	//要先执行一下才能确定子节点的类型
 	AstNode::dig3(builder);
 
-	PTR(AstNode) leftNode = this->_nodes[0];
+	PTR(AstNode) subNode = this->_nodes[0];
 
 	//如果是ID，记录一下ID的名字
-	if(leftNode->is<AstID>())
-		this->idName = leftNode->text();
+	if(subNode->is<AstID>())
+		this->_id = subNode->text();
 
 	//必需要是数值
-	if(!FayLangUtils::IsNumberType(leftNode->valueType()))
-		throw BuildException(this->shared_from_this(), "not a number type : " + TypeDict::ToName(leftNode->valueType()));
+	if(!FayLangUtils::IsNumberType(subNode->valueType()))
+		throw BuildException(this->shared_from_this(), "not a number type : " + TypeDict::ToName(subNode->valueType()));
 
 	//根据类型生成右值
-	this->_classType = leftNode->classType();
+	this->_classType = subNode->classType();
 }
 
 void fay::AstPreOP::dig4(FayBuilder* builder)
@@ -775,16 +775,16 @@ void fay::AstPreOP::dig4(FayBuilder* builder)
 		throw BuildException(this->shared_from_this(), "err.unknow_pre_op : " + this->_text);
 
 	//如果是ID，需要把值给复制过去
-	if(!this->idName.empty())
+	if(!this->_id.empty())
 	{
-		pos_t index = builder->fun()->getVarIndex(this->idName);
+		pos_t index = builder->fun()->getVarIndex(this->_id);
 		builder->addInst(new inst::CopyLocal(index));
 	}
 
 	//根据上层节点判断是否要把值留在堆栈中一份
 	//如果上层的值是void，说明不会用于计算，那就清除
-	if(this->_parent.lock()->valueType() == ValueType::Void)
-		builder->addInst(new inst::Pop());
+	//if (this->_parent.lock()->valueType() == ValueType::Void)
+	//	builder->addInst(new inst::Pop());
 }
 
 void fay::AstFixedNumber::dig3(FayBuilder* builder)
@@ -896,4 +896,67 @@ void fay::AstMinusOP::dig4(FayBuilder * builder)
 	AstNode::dig4(builder);
 	auto inst = FayLangUtils::OPInst(InstGroupType::Minus, this->valueType());
 	builder->addInst(inst);
+}
+
+void fay::AstPostOP::dig3(FayBuilder * builder)
+{
+	AstNode::dig3(builder);
+
+	PTR(AstNode) subNode = this->_nodes[0];
+
+	//如果是ID，记录一下ID的名字
+	if (subNode->is<AstID>())
+		this->_id = subNode->text();
+
+	//必需要是数值
+	if (!FayLangUtils::IsNumberType(subNode->valueType()))
+		throw BuildException(this->shared_from_this(), "not a number type : " + TypeDict::ToName(subNode->valueType()));
+
+	//根据类型生成右值
+	this->_classType = subNode->classType();
+}
+
+void fay::AstPostOP::dig4(FayBuilder * builder)
+{
+	AstNode::dig4(builder);
+
+	//先把栈顶的值复制一个
+	builder->addInst(new inst::Dup());
+
+	//添加值
+	builder->addInst(FayLangUtils::PushNumber(this->valueType(), 1));
+
+	if (this->_text == "++")
+		builder->addInst(FayLangUtils::OPInst(InstGroupType::Add, this->valueType()));
+	else if (this->_text == "--")
+		builder->addInst(FayLangUtils::OPInst(InstGroupType::Sub, this->valueType()));
+	else
+		throw BuildException(this->shared_from_this(), "err.unknow_post_op : ", this->_text);
+
+	//如果是ID，需要把值给复制过去
+	if (!this->_id.empty())
+	{
+		pos_t index = builder->fun()->getVarIndex(this->_id);
+		builder->addInst(new inst::CopyLocal(index));
+	}
+
+	//把复制的值给移除了
+	builder->addInst(new inst::Pop());
+
+	//根据上层节点判断是否要把值留在堆栈中一份
+	//如果上层的值是void，说明不会用于计算，那就清除
+	//if (this->_parent.lock()->valueType() == ValueType::Void)
+	//	builder->addInst(new inst::Pop());
+}
+
+void fay::AstExprStmt::dig3(FayBuilder * builder)
+{
+	AstNode::dig3(builder);
+	this->_classType = this->_nodes[0]->classType();
+}
+
+void fay::AstExprStmt::dig4(FayBuilder * builder)
+{
+	AstNode::dig4(builder);
+	builder->addInst(new inst::Pop());
 }

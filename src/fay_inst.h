@@ -113,6 +113,13 @@ namespace fay
 			virtual void buildString(mirror::utils::StringBuilder* sb) override;
 		};
 		
+		class Dup : public fay::FayInst 
+		{ 
+		public:
+			Dup() : FayInst(InstType::Dup) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
 		class Pop : public fay::FayInst 
 		{ 
 		public:

@@ -743,9 +743,10 @@ PTR(AstNode) fay::Parser::_ExprPost(TokenStack* stack)
 	if(stack->now()->is(TokenType::OP) &&
 		(stack->now()->is("++") || stack->now()->is("--")))
 	{
-		node = MKPTR(AstPostOP)(stack->now());
-		node->addChildNode(node);
+		auto newNode = MKPTR(AstPostOP)(stack->now());
+		newNode->addChildNode(node);
 		stack->next();
+		node = newNode;
 	}
 
 	return node;

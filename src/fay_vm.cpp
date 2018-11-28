@@ -73,6 +73,11 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 				this->stack.push(FayValue(((inst::PushString*)inst)->val));
 				break;
 			}
+			case InstType::Dup:
+			{
+				this->stack.push(this->stack.top());
+				break;
+			}
 			case InstType::Pop:
 			{
 				this->stack.pop();

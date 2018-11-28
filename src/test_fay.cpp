@@ -116,6 +116,38 @@ TEST_F(FayLang, MathTest)
 		ASSERT_EQ(rs.type(), ValueType::Int);
 		ASSERT_EQ(rs.intVal(), 6);
 	}
+
+	{
+		std::vector<PTR(FayFun)>funs = type->findFunByName("test3", true);
+		PRINT(funs[0]->toString());
+		auto rs = vm->run(funs[0]);
+		ASSERT_EQ(rs.type(), ValueType::Int);
+		ASSERT_EQ(rs.intVal(), 4);
+	}
+
+	{
+		std::vector<PTR(FayFun)>funs = type->findFunByName("test4", true);
+		PRINT(funs[0]->toString());
+		auto rs = vm->run(funs[0]);
+		ASSERT_EQ(rs.type(), ValueType::Int);
+		ASSERT_EQ(rs.intVal(), 6);
+	}
+
+	{
+		std::vector<PTR(FayFun)>funs = type->findFunByName("test5", true);
+		PRINT(funs[0]->toString());
+		auto rs = vm->run(funs[0]);
+		ASSERT_EQ(rs.type(), ValueType::Int);
+		ASSERT_EQ(rs.intVal(), 5);
+	}
+
+	{
+		std::vector<PTR(FayFun)>funs = type->findFunByName("test6", true);
+		PRINT(funs[0]->toString());
+		auto rs = vm->run(funs[0]);
+		ASSERT_EQ(rs.type(), ValueType::Int);
+		ASSERT_EQ(rs.intVal(), 11);
+	}
 }
 
 TEST_F(FayLang, Test1)

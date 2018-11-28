@@ -83,6 +83,7 @@ void fay::TypeDict::Init()
 	TypeDict::InstTypeName[InstType::PushFloat] = "PushFloat";
 	TypeDict::InstTypeName[InstType::PushDouble] = "PushDouble";
 	TypeDict::InstTypeName[InstType::PushString] = "PushString";
+	TypeDict::InstTypeName[InstType::Dup] = "Dup";
 	TypeDict::InstTypeName[InstType::Pop] = "Pop";
 	TypeDict::InstTypeName[InstType::PopTo] = "PopTo";
 	TypeDict::InstTypeName[InstType::CallStatic] = "CallStatic";
