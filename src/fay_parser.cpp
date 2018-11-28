@@ -754,16 +754,27 @@ PTR(AstNode) fay::Parser::_ExprPost(TokenStack* stack)
 
 PTR(AstNode) fay::Parser::_ExprPre(TokenStack* stack)
 {
-	if(stack->now()->is(TokenType::OP)
-		&& (stack->now()->is("++")
-			|| stack->now()->is("--")
-			|| stack->now()->is("!")
-			|| stack->now()->is("~")))
+	if (stack->now()->is(TokenType::OP))
 	{
-		auto node = MKPTR(AstPreOP)(stack->move());
-		auto rightNode = _ExprPost(stack);
-		node->addChildNode(rightNode);
-		return node;
+		if (stack->now()->is("++")
+			|| stack->now()->is("--"))
+		{
+			auto node = MKPTR(AstPreOP)(stack->move());
+			auto rightNode = _ExprPost(stack);
+			node->addChildNode(rightNode);
+			return node;
+		}
+		else if (stack->now()->is("!"))
+		{
+			auto node = MKPTR(AstBoolNot)(stack->move());
+			auto rightNode = _ExprPost(stack);
+			node->addChildNode(rightNode);
+			return node;
+		}
+		else if (stack->now()->is("~"))
+		{
+			//TODO
+		}
 	}
 
 	return _ExprPost(stack);

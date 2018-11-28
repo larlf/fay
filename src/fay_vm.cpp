@@ -488,6 +488,11 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 				this->stack.top().val()->doubleVal/=v;
 				break;
 			}
+			case InstType::Not:
+			{
+				this->stack.top().val()->boolVal = !this->stack.top().val()->boolVal;
+				break;
+			}
 			case InstType::EqualBool:
 			{
 				FayValue v2=this->stack.top();

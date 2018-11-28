@@ -1354,6 +1354,13 @@ namespace fay
 			virtual void buildString(mirror::utils::StringBuilder* sb) override;
 		};
 		
+		class Not : public fay::FayInst 
+		{ 
+		public:
+			Not() : FayInst(InstType::Not) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
 		class EqualVoid : public fay::FayInst 
 		{ 
 		public:

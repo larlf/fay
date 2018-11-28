@@ -58,4 +58,21 @@ public class MathTest
 		var a=101;
 		return a;
 	}
+
+	static public fun test9():bool
+	{
+		var a=true;
+		return a;
+	}
+
+	static public fun test10():bool
+	{
+		var a=true;
+		return !a;
+	}
+
+	static public fun test11():bool
+	{
+		return !5;
+	}
 }

@@ -1140,6 +1140,12 @@ void fay::inst::DivFunction::buildString(mirror::utils::StringBuilder * sb)
 		->endl();
 }
 
+void fay::inst::Not::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("Not")
+		->endl();
+}
+
 void fay::inst::EqualVoid::buildString(mirror::utils::StringBuilder * sb)
 {
 	sb->add("EqualVoid")

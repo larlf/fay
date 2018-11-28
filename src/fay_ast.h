@@ -291,6 +291,14 @@ namespace fay
 		virtual void dig4(FayBuilder* builder) override;
 	};
 
+	class AstBoolNot : public AstNode
+	{
+		using AstNode::AstNode;
+	public:
+		virtual void dig3(FayBuilder* builder) override;
+		virtual void dig4(FayBuilder* builder) override;
+	};
+
 	//空语句
 	class AstEmptyStmt : public AstNode
 	{
@@ -415,22 +423,20 @@ namespace fay
 
 	class AstString : public AstNode
 	{
+		using AstNode::AstNode;
 	private:
 		std::string _value;
 	public:
-		AstString(const PTR(Token) &token);
 		virtual void dig3(FayBuilder* builder) override;
 		virtual void dig4(FayBuilder* builder) override;
 	};
 
 	class AstBool : public AstNode
 	{
+		using AstNode::AstNode;
 	private:
 		bool _value;
-		WPTR(FayClass) _classType;
-
 	public:
-		AstBool(const PTR(Token) &token);
 		virtual void dig3(FayBuilder* builder) override;
 		virtual void dig4(FayBuilder* builder) override;
 	};

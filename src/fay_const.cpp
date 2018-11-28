@@ -257,6 +257,7 @@ void fay::TypeDict::Init()
 	TypeDict::InstTypeName[InstType::DivString] = "DivString";
 	TypeDict::InstTypeName[InstType::DivObject] = "DivObject";
 	TypeDict::InstTypeName[InstType::DivFunction] = "DivFunction";
+	TypeDict::InstTypeName[InstType::Not] = "Not";
 	TypeDict::InstTypeName[InstType::EqualVoid] = "EqualVoid";
 	TypeDict::InstTypeName[InstType::EqualBool] = "EqualBool";
 	TypeDict::InstTypeName[InstType::EqualByte] = "EqualByte";

@@ -191,36 +191,34 @@ void fay::AstFile::dig4(FayBuilder* builder)
 	builder->endFile();
 }
 
-fay::AstString::AstString(const PTR(Token)& token)
-	: AstNode(token)
+void fay::AstString::dig3(FayBuilder* builder)
 {
-	for(auto i = 0; i < this->_text.size(); ++i)
+	AstNode::dig3(builder);
+
+	for (auto i = 0; i < this->_text.size(); ++i)
 	{
 		char c = this->_text[i];
 
 		//字符串开始标志
-		if(i == 0 && c == '\"')
+		if (i == 0 && c == '\"')
 			continue;
 
 		//字符串结束标志
-		if(i == this->_text.size() - 1 && c == '\"')
+		if (i == this->_text.size() - 1 && c == '\"')
 			continue;
 
 		//TODO： 处理转义字符
 
 		this->_value.push_back(c);
 	}
-}
 
-void fay::AstString::dig3(FayBuilder* builder)
-{
 	this->_classType = (*builder->domain())[ValueType::String];
-
-	AstNode::dig3(builder);
 }
 
 void fay::AstString::dig4(FayBuilder* builder)
 {
+	AstNode::dig4(builder);
+
 	inst::PushString* inst = new inst::PushString(this->_value);
 	builder->addInst(inst);
 }
@@ -543,23 +541,21 @@ void fay::AstTypeConvert::dig4(FayBuilder* builder)
 	builder->addInst(FayLangUtils::ConvertInst(this->_srcType.lock()->valueType(), this->classType()->valueType()));
 }
 
-fay::AstBool::AstBool(const PTR(Token)& token)
-	: AstNode(token)
+void fay::AstBool::dig3(FayBuilder* builder)
 {
-	if(this->_text == "true")
+	AstNode::dig3(builder);
+
+	if (this->_text == "true")
 		this->_value = true;
 	else
 		this->_value = false;
-}
 
-void fay::AstBool::dig3(FayBuilder* builder)
-{
 	this->_classType = (*builder->domain())[ValueType::Bool];
-	AstNode::dig3(builder);
 }
 
 void fay::AstBool::dig4(FayBuilder* builder)
 {
+	AstNode::dig4(builder);
 	builder->addInst(new inst::PushBool(this->_value));
 }
 
@@ -965,4 +961,22 @@ void fay::AstExprStmt::dig4(FayBuilder * builder)
 {
 	AstNode::dig4(builder);
 	builder->addInst(new inst::Pop());
+}
+
+void fay::AstBoolNot::dig3(FayBuilder * builder)
+{
+	AstNode::dig3(builder);
+
+	auto boolType= (*builder->domain())[ValueType::Bool];
+	this->_classType = boolType;
+
+	auto subType = this->_nodes[0]->classType();
+	if (subType != this->_classType.lock())
+		this->insertChldNode(0, MKPTR(AstTypeConvert)(this->_token, subType, boolType));
+}
+
+void fay::AstBoolNot::dig4(FayBuilder * builder)
+{
+	AstNode::dig4(builder);
+	builder->addInst(new inst::Not());
 }
