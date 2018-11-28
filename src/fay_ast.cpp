@@ -348,20 +348,33 @@ std::vector<PTR(FayClass)> fay::AstParamDefineList::getTypeList(FayBuilder* buil
 
 void fay::AstVar::dig3(FayBuilder* builder)
 {
-	//新添加了变量
-	std::string varName = this->text();
-	PTR(FayClass) varType = builder->domain()->findClass(this->_nodes[0]->text());
-	if(!varType)
-		throw BuildException(this->_nodes[0], "cannot find type : " + this->_nodes[0]->text());
-
-	pos_t varIndex = builder->fun()->addVar(varName, varType);
-
 	AstNode::dig3(builder);
+
+	//需要进行类型推断
+	if (this->_nodes[0] == nullptr)
+	{
+		if (this->_nodes[1] == nullptr)
+			throw BuildException(this->shared_from_this(), "err.unknow_type");
+		this->_classType = this->_nodes[1]->classType();
+	}
+	else
+	{
+		//跟据定义查找类型
+		this->_classType = builder->domain()->findClass(this->_nodes[0]->text());
+	}
+
+	//检查类型定义是否正确
+	if (this->_classType.expired())
+		throw BuildException(this->_nodes[0], "err.unknow_type", this->_nodes[0]->text());
+
+	//新添加变量
+	std::string varName = this->text();
+	this->_index = builder->fun()->addVar(varName, this->_classType.lock());
 
 	//如果有赋值，检查是否要进行类型转换
 	if(this->_nodes.size() > 1 && this->_nodes[1])
 	{
-		auto leftType = this->_nodes[0]->classType();
+		auto leftType = this->_classType.lock();
 		auto rightType = this->_nodes[1]->classType();
 		if(leftType != rightType)
 			this->insertChldNode(1, MKPTR(AstTypeConvert)(this->_token, rightType, leftType));
@@ -370,17 +383,10 @@ void fay::AstVar::dig3(FayBuilder* builder)
 
 void fay::AstVar::dig4(FayBuilder* builder)
 {
-	//新添加了变量
-	std::string varName = this->text();
-	PTR(FayClass) varType = builder->domain()->findClass(this->_nodes[0]->text());
-	if(!varType)
-		throw BuildException(this->_nodes[0], "cannot find type : " + this->_nodes[0]->text());
+	AstNode::dig4(builder);
 
-	pos_t varIndex = builder->fun()->addVar(varName, varType);
-
-	if(this->_nodes.size() > 1 && this->_nodes[1])
-		this->_nodes[1]->dig4(builder);
-	else
+	//添加默认值
+	if(this->_nodes[1]==nullptr)
 	{
 		FayInst* inst = FayLangUtils::PushDefault(this->_nodes[0]->valueType());
 		if(inst == nullptr)
@@ -389,7 +395,7 @@ void fay::AstVar::dig4(FayBuilder* builder)
 	}
 
 	//存入本地变量
-	builder->addInst(new inst::SetLocal(varIndex));
+	builder->addInst(new inst::SetLocal(this->_index));
 }
 
 void fay::AstNumber::dig4(FayBuilder* builder)

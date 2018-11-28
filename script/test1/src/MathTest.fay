@@ -6,7 +6,7 @@ public class MathTest
 {
 	static public fun test1():int
 	{
-		var a:int = 5;
+		var a = 5;
 		var b:int;
 		b= -a;
 		return b;
@@ -45,5 +45,17 @@ public class MathTest
 		var a:int=5;
 		var b:int=6;
 		return a+b;
+	}
+
+	static public fun test7():long
+	{
+		var a=101;
+		return a;
+	}
+
+	static public fun test8():double
+	{
+		var a=101;
+		return a;
 	}
 }

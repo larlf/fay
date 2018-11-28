@@ -371,6 +371,8 @@ namespace fay
 	class AstVar : public AstNode
 	{
 		using AstNode::AstNode;
+	private:
+		pos_t _index = -1;
 	public:
 		virtual void dig3(FayBuilder* builder) override;
 		virtual void dig4(FayBuilder* builder) override;
