@@ -72,7 +72,7 @@ void fay::TypeDict::Init()
 	//ValueTypeMapEnd
 
 	//InstTypeNameStart
-	TypeDict::InstTypeName[InstType::undefinedNop] = "undefinedNop";
+	TypeDict::InstTypeName[InstType::Nop] = "Nop";
 	TypeDict::InstTypeName[InstType::Jump] = "Jump";
 	TypeDict::InstTypeName[InstType::JumpFalse] = "JumpFalse";
 	TypeDict::InstTypeName[InstType::Return] = "Return";
@@ -196,6 +196,16 @@ void fay::TypeDict::Init()
 	TypeDict::InstTypeName[InstType::FunctionToString] = "FunctionToString";
 	TypeDict::InstTypeName[InstType::FunctionToObject] = "FunctionToObject";
 	TypeDict::InstTypeName[InstType::FunctionToFunction] = "FunctionToFunction";
+	TypeDict::InstTypeName[InstType::MinusVoid] = "MinusVoid";
+	TypeDict::InstTypeName[InstType::MinusBool] = "MinusBool";
+	TypeDict::InstTypeName[InstType::MinusByte] = "MinusByte";
+	TypeDict::InstTypeName[InstType::MinusInt] = "MinusInt";
+	TypeDict::InstTypeName[InstType::MinusLong] = "MinusLong";
+	TypeDict::InstTypeName[InstType::MinusFloat] = "MinusFloat";
+	TypeDict::InstTypeName[InstType::MinusDouble] = "MinusDouble";
+	TypeDict::InstTypeName[InstType::MinusString] = "MinusString";
+	TypeDict::InstTypeName[InstType::MinusObject] = "MinusObject";
+	TypeDict::InstTypeName[InstType::MinusFunction] = "MinusFunction";
 	TypeDict::InstTypeName[InstType::AddVoid] = "AddVoid";
 	TypeDict::InstTypeName[InstType::AddBool] = "AddBool";
 	TypeDict::InstTypeName[InstType::AddByte] = "AddByte";

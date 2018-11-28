@@ -2,9 +2,9 @@
 
 //InstStart
 
-void fay::inst::undefinedNop::toString(mirror::utils::StringBuilder * sb)
+void fay::inst::Nop::toString(mirror::utils::StringBuilder * sb)
 {
-	sb->add("undefinedNop")
+	sb->add("Nop")
 		->endl();
 }
 
@@ -766,6 +766,66 @@ void fay::inst::FunctionToObject::toString(mirror::utils::StringBuilder * sb)
 void fay::inst::FunctionToFunction::toString(mirror::utils::StringBuilder * sb)
 {
 	sb->add("FunctionToFunction")
+		->endl();
+}
+
+void fay::inst::MinusVoid::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("MinusVoid")
+		->endl();
+}
+
+void fay::inst::MinusBool::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("MinusBool")
+		->endl();
+}
+
+void fay::inst::MinusByte::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("MinusByte")
+		->endl();
+}
+
+void fay::inst::MinusInt::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("MinusInt")
+		->endl();
+}
+
+void fay::inst::MinusLong::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("MinusLong")
+		->endl();
+}
+
+void fay::inst::MinusFloat::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("MinusFloat")
+		->endl();
+}
+
+void fay::inst::MinusDouble::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("MinusDouble")
+		->endl();
+}
+
+void fay::inst::MinusString::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("MinusString")
+		->endl();
+}
+
+void fay::inst::MinusObject::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("MinusObject")
+		->endl();
+}
+
+void fay::inst::MinusFunction::toString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("MinusFunction")
 		->endl();
 }
 

@@ -27,10 +27,10 @@ namespace fay
 	{
 		//InstStart
 		
-		class undefinedNop : public fay::FayInst 
+		class Nop : public fay::FayInst 
 		{ 
 		public:
-			undefinedNop() : FayInst(InstType::undefinedNop) {}
+			Nop() : FayInst(InstType::Nop) {}
 			virtual void toString(mirror::utils::StringBuilder* sb) override;
 		};
 		
@@ -919,6 +919,76 @@ namespace fay
 		{ 
 		public:
 			FunctionToFunction() : FayInst(InstType::FunctionToFunction) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class MinusVoid : public fay::FayInst 
+		{ 
+		public:
+			MinusVoid() : FayInst(InstType::MinusVoid) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class MinusBool : public fay::FayInst 
+		{ 
+		public:
+			MinusBool() : FayInst(InstType::MinusBool) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class MinusByte : public fay::FayInst 
+		{ 
+		public:
+			MinusByte() : FayInst(InstType::MinusByte) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class MinusInt : public fay::FayInst 
+		{ 
+		public:
+			MinusInt() : FayInst(InstType::MinusInt) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class MinusLong : public fay::FayInst 
+		{ 
+		public:
+			MinusLong() : FayInst(InstType::MinusLong) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class MinusFloat : public fay::FayInst 
+		{ 
+		public:
+			MinusFloat() : FayInst(InstType::MinusFloat) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class MinusDouble : public fay::FayInst 
+		{ 
+		public:
+			MinusDouble() : FayInst(InstType::MinusDouble) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class MinusString : public fay::FayInst 
+		{ 
+		public:
+			MinusString() : FayInst(InstType::MinusString) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class MinusObject : public fay::FayInst 
+		{ 
+		public:
+			MinusObject() : FayInst(InstType::MinusObject) {}
+			virtual void toString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class MinusFunction : public fay::FayInst 
+		{ 
+		public:
+			MinusFunction() : FayInst(InstType::MinusFunction) {}
 			virtual void toString(mirror::utils::StringBuilder* sb) override;
 		};
 		

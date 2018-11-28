@@ -77,6 +77,8 @@ namespace fay
 		static PTR(AstNode) _ExprPrimary(TokenStack* stack);
 		//下标
 		static PTR(AstNode) _ExprBracket(TokenStack* stack);
+		//取负数的操作
+		static PTR(AstNode) _ExprMinus(TokenStack* stack);
 		//后置操作符
 		static PTR(AstNode) _ExprPost(TokenStack* stack);
 		//前置操作符

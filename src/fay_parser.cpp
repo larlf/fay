@@ -723,9 +723,22 @@ PTR(AstNode) fay::Parser::_ExprBracket(TokenStack* stack)
 	return leftNode;
 }
 
+PTR(AstNode) fay::Parser::_ExprMinus(TokenStack * stack)
+{
+	if (stack->now()->is(TokenType::OP) && stack->now()->is("-"))
+	{
+		auto node = MKPTR(AstPreOP)(stack->now());
+		stack->next();
+		node->addChildNode(_ExprBracket(stack));
+		return node;
+	}
+
+	return _ExprBracket(stack);
+}
+
 PTR(AstNode) fay::Parser::_ExprPost(TokenStack* stack)
 {
-	auto node = _ExprBracket(stack);
+	auto node = _ExprMinus(stack);
 
 	if(stack->now()->is(TokenType::OP) &&
 		(stack->now()->is("++") || stack->now()->is("--")))

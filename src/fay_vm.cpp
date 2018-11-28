@@ -16,7 +16,7 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 		switch(inst->type())
 		{
 			//InstCodeStart
-			case InstType::undefinedNop:
+			case InstType::Nop:
 			{
 				//DoNothing
 				break;
@@ -314,6 +314,31 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 				//DoNothing
 				break;
 			}
+			case InstType::MinusByte:
+			{
+				this->stack.top().val()->byteVal = -this->stack.top().byteVal();
+				break;
+			}
+			case InstType::MinusInt:
+			{
+				this->stack.top().val()->intVal = -this->stack.top().intVal();
+				break;
+			}
+			case InstType::MinusLong:
+			{
+				this->stack.top().val()->longVal = -this->stack.top().longVal();
+				break;
+			}
+			case InstType::MinusFloat:
+			{
+				this->stack.top().val()->floatVal = -this->stack.top().floatVal();
+				break;
+			}
+			case InstType::MinusDouble:
+			{
+				this->stack.top().val()->doubleVal = -this->stack.top().doubleVal();
+				break;
+			}
 			case InstType::AddInt:
 			{
 				int32_t v=this->stack.top().intVal();
@@ -349,6 +374,34 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 				(*this->stack.top().strVal())+=*v.strVal();
 				break;
 			}
+			case InstType::SubInt:
+			{
+				int32_t v=this->stack.top().intVal();
+				this->stack.pop();
+				this->stack.top().val()->intVal-=v;
+				break;
+			}
+			case InstType::SubLong:
+			{
+				int64_t v=this->stack.top().longVal();
+				this->stack.pop();
+				this->stack.top().val()->longVal-=v;
+				break;
+			}
+			case InstType::SubFloat:
+			{
+				float v=this->stack.top().floatVal();
+				this->stack.pop();
+				this->stack.top().val()->floatVal-=v;
+				break;
+			}
+			case InstType::SubDouble:
+			{
+				double v=this->stack.top().doubleVal();
+				this->stack.pop();
+				this->stack.top().val()->doubleVal-=v;
+				break;
+			}
 			case InstType::MulInt:
 			{
 				int32_t v=this->stack.top().intVal();
@@ -375,6 +428,34 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 				double v=this->stack.top().doubleVal();
 				this->stack.pop();
 				this->stack.top().val()->doubleVal*=v;
+				break;
+			}
+			case InstType::DivInt:
+			{
+				int32_t v=this->stack.top().intVal();
+				this->stack.pop();
+				this->stack.top().val()->intVal/=v;
+				break;
+			}
+			case InstType::DivLong:
+			{
+				int64_t v=this->stack.top().longVal();
+				this->stack.pop();
+				this->stack.top().val()->longVal/=v;
+				break;
+			}
+			case InstType::DivFloat:
+			{
+				float v=this->stack.top().floatVal();
+				this->stack.pop();
+				this->stack.top().val()->floatVal/=v;
+				break;
+			}
+			case InstType::DivDouble:
+			{
+				double v=this->stack.top().doubleVal();
+				this->stack.pop();
+				this->stack.top().val()->doubleVal/=v;
 				break;
 			}
 			case InstType::EqualBool:

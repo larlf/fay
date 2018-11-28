@@ -868,7 +868,27 @@ bool fay::FayLangUtils::IsNumberType(ValueType type)
 FayInst* fay::FayLangUtils::OPInst(InstGroupType op, ValueType type)
 {
 	//OPInstStart
-	if (op == InstGroupType::Add && type == ValueType::Void)
+	if (op == InstGroupType::Minus && type == ValueType::Void)
+		return new inst::MinusVoid();
+	else if (op == InstGroupType::Minus && type == ValueType::Bool)
+		return new inst::MinusBool();
+	else if (op == InstGroupType::Minus && type == ValueType::Byte)
+		return new inst::MinusByte();
+	else if (op == InstGroupType::Minus && type == ValueType::Int)
+		return new inst::MinusInt();
+	else if (op == InstGroupType::Minus && type == ValueType::Long)
+		return new inst::MinusLong();
+	else if (op == InstGroupType::Minus && type == ValueType::Float)
+		return new inst::MinusFloat();
+	else if (op == InstGroupType::Minus && type == ValueType::Double)
+		return new inst::MinusDouble();
+	else if (op == InstGroupType::Minus && type == ValueType::String)
+		return new inst::MinusString();
+	else if (op == InstGroupType::Minus && type == ValueType::Object)
+		return new inst::MinusObject();
+	else if (op == InstGroupType::Minus && type == ValueType::Function)
+		return new inst::MinusFunction();
+	else if (op == InstGroupType::Add && type == ValueType::Void)
 		return new inst::AddVoid();
 	else if (op == InstGroupType::Add && type == ValueType::Bool)
 		return new inst::AddBool();

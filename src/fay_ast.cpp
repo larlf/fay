@@ -755,6 +755,15 @@ void fay::AstPreOP::dig3(FayBuilder* builder)
 	if(!FayLangUtils::IsNumberType(leftNode->valueType()))
 		throw BuildException(this->shared_from_this(), "not a number type : " + TypeDict::ToName(leftNode->valueType()));
 
+	//取负值
+	if (this->_text == "-")
+	{
+		auto inst=FayLangUtils::OPInst(InstGroupType::Minus, leftNode->valueType());
+		builder->addInst(inst);
+		this->_classType = leftNode->classType();
+		return;
+	}
+
 	//根据类型生成右值
 	this->_classType = leftNode->classType();
 	PTR(AstFixedNumber) rightNode = MKPTR(AstFixedNumber)(this->_token, this->valueType(), 1);
@@ -790,7 +799,7 @@ void fay::AstPreOP::dig4(FayBuilder* builder)
 
 	//根据上层节点判断是否要把值留在堆栈中一份
 	//如果上层的值是void，说明不会用于计算，那就清除
-	if(this->_parent.lock()->valueType() == ValueType::Void)
+	if(this->_parent.lock()->valueType() == ValueType::Void && !this->_parent.lock()->is<AstAssign>())
 		builder->addInst(new inst::Pop());
 }
 

@@ -99,10 +99,9 @@ class FayInst
 	actionVars: string[] = [];
 	action: string;
 
-	constructor(code: number, data: any)
+	constructor(data: any)
 	{
-		this.code = code;
-		this.name = data.Code1 + (data.Code2 ? data.Code2 : "");
+		this.name = (data.Code1?data.Code1:"") + (data.Code2 ? data.Code2 : "");
 		this.action = data.Action ? data.Action.toString() : "";
 
 		//记录一下最后一条指令
@@ -402,8 +401,7 @@ Cmds.inst = function ()
 	log.debug("Max inst : " + maxValue);
 
 	//用于处理Code到Value的转换
-	let Code1Value: Map<string, number> = new Map();
-	let Code2Value: Map<string, number> = new Map();
+	let Code1Value: Map<string, boolean> = new Map();
 
 	let hText = "";
 	let cppText = "";
@@ -413,23 +411,26 @@ Cmds.inst = function ()
 	for (let i = 0; i < json.length; ++i)
 	{
 		let it: any = json[i];
-		let value = -1;
-
-		if (values[it.Name] === undefined)
-		{
-			maxValue++;
-			value = maxValue;
-			values[it.Name] = maxValue;
-		}
-		else
-		{
-			value = values[it.Name];
-		}
 
 		//只处理需要处理的语句
 		if ((it.Code1 || it.Code2) && !it.Disabled)
 		{
-			let inst = new FayInst(value, it);
+			let inst = new FayInst(it);
+
+			if (values[inst.name] === undefined)
+			{
+				maxValue++;
+				inst.code=maxValue;
+				values[it.name] = maxValue;
+			}
+			else
+			{
+				inst.code = values[it.Name];
+			}
+
+			if(it.Code1)
+				Code1Value.set(it.Code1, true);
+
 			hText += inst.makeHeadCode();
 			cppText += inst.makeCppCode();
 			typeText += (typeText ? "\n" : "") + inst.name + " = " + inst.code + ",";
@@ -450,7 +451,7 @@ Cmds.inst = function ()
 			if (groupText)
 				groupText += "\n";
 
-			groupText += key + " = " + value + ",";
+			groupText += key + ",";
 		}
 	});
 
@@ -487,7 +488,7 @@ Cmds.convert_inst = function ()
 
 	replaceFileBody("src/fay_lang.cpp", "ConvertInst", convertText, "\t");
 
-	let ops = ["Add", "Sub", "Mul", "Div", "Equal", "Greater", "Less"];
+	let ops = ["Minus", "Add", "Sub", "Mul", "Div", "Equal", "Greater", "Less"];
 	let opText = "";
 	ops.forEach(op =>
 	{

@@ -95,6 +95,25 @@ TEST_F(FayLang, TypeTest1)
 	}
 }
 
+//数据计算相关的测试
+TEST_F(FayLang, MathTest)
+{
+	PRINT(project->findSource("MathTest.fay")->astStr());
+	auto type = project->domain()->findClass("fay.dev.test.MathTest");
+
+	{
+		auto funs = type->findFunByName("test1", true);
+
+		utils::StringBuilder sb;
+		funs[0]->toString(&sb);
+		PRINT(sb.toString());
+
+		auto rs = vm->run(funs[0]);
+		ASSERT_EQ(rs.type(), ValueType::Int);
+		ASSERT_EQ(rs.intVal(), -5);
+	}
+}
+
 TEST_F(FayLang, Test1)
 {
 	auto type = project->domain()->findClass("com.larlf.MyTest");
