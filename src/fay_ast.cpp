@@ -980,3 +980,30 @@ void fay::AstBoolNot::dig4(FayBuilder * builder)
 	AstNode::dig4(builder);
 	builder->addInst(new inst::Not());
 }
+
+void fay::AstBitComplement::dig3(FayBuilder * builder)
+{
+	AstNode::dig3(builder);
+
+	this->_classType = this->_nodes[0]->classType();
+	if (!FayLangUtils::IsIntegerNumberType(this->valueType()))
+		throw BuildException(this->shared_from_this(), "err.not_int_number");
+}
+
+void fay::AstBitComplement::dig4(FayBuilder * builder)
+{
+	AstNode::dig4(builder);
+	builder->addInst(FayLangUtils::OPInst(InstGroupType::Complement, this->valueType()));
+}
+
+void fay::AstCast::dig3(FayBuilder * builder)
+{
+	AstNode::dig3(builder);
+	this->_classType = (*builder->domain())[this->_text];
+}
+
+void fay::AstCast::dig4(FayBuilder * builder)
+{
+	AstNode::dig4(builder);
+	builder->addInst(FayLangUtils::ConvertInst(this->_nodes[0]->valueType(), this->valueType()));
+}

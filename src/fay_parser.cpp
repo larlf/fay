@@ -736,9 +736,25 @@ PTR(AstNode) fay::Parser::_ExprMinus(TokenStack * stack)
 	return _ExprBracket(stack);
 }
 
+PTR(AstNode) fay::Parser::_ExprCast(TokenStack * stack)
+{
+	if (stack->now()->is("(") && stack->after(1)->is(TokenType::BasicType) && stack->after(2)->is(")"))
+	{
+		stack->next();
+		auto node = MKPTR(AstCast)(stack->now());
+		stack->next();
+		stack->next();
+		auto subNode= _ExprMinus(stack);
+		node->addChildNode(subNode);
+		return node;
+	}
+
+	return  _ExprMinus(stack);
+}
+
 PTR(AstNode) fay::Parser::_ExprPost(TokenStack* stack)
 {
-	auto node = _ExprMinus(stack);
+	auto node = _ExprCast(stack);
 
 	if(stack->now()->is(TokenType::OP) &&
 		(stack->now()->is("++") || stack->now()->is("--")))
@@ -773,7 +789,11 @@ PTR(AstNode) fay::Parser::_ExprPre(TokenStack* stack)
 		}
 		else if (stack->now()->is("~"))
 		{
-			//TODO
+			auto node = MKPTR(AstBitComplement)(stack->move());
+			LOG_DEBUG(stack->after()->toString());
+			auto rightNode = _ExprPost(stack);
+			node->addChildNode(rightNode);
+			return node;
 		}
 	}
 

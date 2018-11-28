@@ -26,6 +26,7 @@ namespace fay
 		PTR(Token) before();
 		//返回后一个Token
 		PTR(Token) after();
+		PTR(Token) after(size_t index);
 		//移动并返回下一个Token
 		PTR(Token) next();
 		//返回当前Token并移动到下一个

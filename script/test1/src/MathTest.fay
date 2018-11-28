@@ -75,4 +75,18 @@ public class MathTest
 	{
 		return !5;
 	}
+
+	static public fun test12():byte
+	{
+		var a=15;
+		a=~a;
+		return a;
+	}
+
+	static public fun test13():byte
+	{
+		var a=15.336;
+		var b=~(int)a;
+		return b;
+	}
 }

@@ -43,6 +43,7 @@ void fay::TypeDict::Init()
 	TypeDict::TokenTypeName[TokenType::String] = "String";
 	TypeDict::TokenTypeName[TokenType::Char] = "Char";
 	TypeDict::TokenTypeName[TokenType::Bool] = "Bool";
+	TypeDict::TokenTypeName[TokenType::As] = "As";
 	//TokenTypeNameEnd
 
 	//ValueTypeNameStart
@@ -318,6 +319,16 @@ void fay::TypeDict::Init()
 	TypeDict::InstTypeName[InstType::LessEqualString] = "LessEqualString";
 	TypeDict::InstTypeName[InstType::LessEqualObject] = "LessEqualObject";
 	TypeDict::InstTypeName[InstType::LessEqualFunction] = "LessEqualFunction";
+	TypeDict::InstTypeName[InstType::ComplementVoid] = "ComplementVoid";
+	TypeDict::InstTypeName[InstType::ComplementBool] = "ComplementBool";
+	TypeDict::InstTypeName[InstType::ComplementByte] = "ComplementByte";
+	TypeDict::InstTypeName[InstType::ComplementInt] = "ComplementInt";
+	TypeDict::InstTypeName[InstType::ComplementLong] = "ComplementLong";
+	TypeDict::InstTypeName[InstType::ComplementFloat] = "ComplementFloat";
+	TypeDict::InstTypeName[InstType::ComplementDouble] = "ComplementDouble";
+	TypeDict::InstTypeName[InstType::ComplementString] = "ComplementString";
+	TypeDict::InstTypeName[InstType::ComplementObject] = "ComplementObject";
+	TypeDict::InstTypeName[InstType::ComplementFunction] = "ComplementFunction";
 	//InstTypeNameEnd
 }
 

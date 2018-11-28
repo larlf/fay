@@ -1506,4 +1506,64 @@ void fay::inst::LessEqualFunction::buildString(mirror::utils::StringBuilder * sb
 		->endl();
 }
 
+void fay::inst::ComplementVoid::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("ComplementVoid")
+		->endl();
+}
+
+void fay::inst::ComplementBool::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("ComplementBool")
+		->endl();
+}
+
+void fay::inst::ComplementByte::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("ComplementByte")
+		->endl();
+}
+
+void fay::inst::ComplementInt::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("ComplementInt")
+		->endl();
+}
+
+void fay::inst::ComplementLong::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("ComplementLong")
+		->endl();
+}
+
+void fay::inst::ComplementFloat::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("ComplementFloat")
+		->endl();
+}
+
+void fay::inst::ComplementDouble::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("ComplementDouble")
+		->endl();
+}
+
+void fay::inst::ComplementString::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("ComplementString")
+		->endl();
+}
+
+void fay::inst::ComplementObject::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("ComplementObject")
+		->endl();
+}
+
+void fay::inst::ComplementFunction::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("ComplementFunction")
+		->endl();
+}
+
 //InstEnd

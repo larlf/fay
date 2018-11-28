@@ -1,4 +1,5 @@
 ﻿#include <fay_token_stack.h>
+#include <mirror_utils_log.h>
 
 using namespace fay;
 
@@ -23,8 +24,13 @@ PTR(Token) fay::TokenStack::before()
 
 PTR(Token) fay::TokenStack::after()
 {
-	if (this->_pos >= -1 && this->_pos < this->_tokens->size() - 1)
-		return (*this->_tokens)[this->_pos + 1];
+	return TokenStack::after(1);
+}
+
+PTR(Token) fay::TokenStack::after(size_t index)
+{
+	if ((this->_pos >= -1) && (this->_pos < this->_tokens->size() - index))
+		return (*this->_tokens)[this->_pos + index];
 
 	return this->EndToken;
 }

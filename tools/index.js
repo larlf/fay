@@ -344,7 +344,7 @@ Cmds.convert_inst = function () {
         });
     });
     replaceFileBody("src/fay_lang.cpp", "ConvertInst", convertText, "\t");
-    let ops = ["Minus", "Add", "Sub", "Mul", "Div", "Equal", "Greater", "Less"];
+    let ops = ["Minus", "Add", "Sub", "Mul", "Div", "Equal", "Greater", "Less", "Complement"];
     let opText = "";
     ops.forEach(op => {
         json.forEach((it) => {

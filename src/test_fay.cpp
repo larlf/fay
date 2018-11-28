@@ -98,6 +98,7 @@ TEST_F(FayLang, TypeTest1)
 //数据计算相关的测试
 TEST_F(FayLang, MathTest)
 {
+	PRINT(project->findSource("MathTest.fay")->tokensStr());
 	PRINT(project->findSource("MathTest.fay")->astStr());
 	auto type = project->domain()->findClass("fay.dev.test.MathTest");
 
@@ -187,6 +188,23 @@ TEST_F(FayLang, MathTest)
 		auto rs = vm->run(funs[0]);
 		ASSERT_EQ(rs.type(), ValueType::Bool);
 		ASSERT_EQ(rs.boolVal(), false);
+	}
+
+	{
+		std::vector<PTR(FayFun)>funs = type->findFunByName("test12", true);
+		PRINT(funs[0]->toString());
+		auto rs = vm->run(funs[0]);
+		ASSERT_EQ(rs.type(), ValueType::Byte);
+		//LOG_DEBUG((int)rs.byteVal());
+		ASSERT_EQ(rs.byteVal(), (byte)~15);
+	}
+	{
+		std::vector<PTR(FayFun)>funs = type->findFunByName("test13", true);
+		PRINT(funs[0]->toString());
+		auto rs = vm->run(funs[0]);
+		ASSERT_EQ(rs.type(), ValueType::Byte);
+		//LOG_DEBUG((int)rs.byteVal());
+		ASSERT_EQ(rs.byteVal(), (byte)~15);
 	}
 }
 

@@ -817,6 +817,21 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 				this->stack.push(FayValue(v1.doubleVal()<v2.doubleVal()));
 				break;
 			}
+			case InstType::ComplementByte:
+			{
+				this->stack.top().val()->byteVal = ~this->stack.top().val()->byteVal;
+				break;
+			}
+			case InstType::ComplementInt:
+			{
+				this->stack.top().val()->intVal = ~this->stack.top().val()->intVal;
+				break;
+			}
+			case InstType::ComplementLong:
+			{
+				this->stack.top().val()->longVal = ~this->stack.top().val()->longVal;
+				break;
+			}
 			//InstCodeEnd
 			default:
 				LOG_ERROR("Unrealized inst : " + TypeDict::ToName(inst->type()));

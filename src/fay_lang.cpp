@@ -865,6 +865,20 @@ bool fay::FayLangUtils::IsNumberType(ValueType type)
 	return false;
 }
 
+bool fay::FayLangUtils::IsIntegerNumberType(ValueType type)
+{
+	switch (type)
+	{
+	case fay::ValueType::Byte:
+	case fay::ValueType::Int:
+	case fay::ValueType::Long:
+		return true;
+	}
+
+	return false;
+}
+
+
 FayInst* fay::FayLangUtils::OPInst(InstGroupType op, ValueType type)
 {
 	//OPInstStart
@@ -1028,6 +1042,26 @@ FayInst* fay::FayLangUtils::OPInst(InstGroupType op, ValueType type)
 		return new inst::LessObject();
 	else if (op == InstGroupType::Less && type == ValueType::Function)
 		return new inst::LessFunction();
+	else if (op == InstGroupType::Complement && type == ValueType::Void)
+		return new inst::ComplementVoid();
+	else if (op == InstGroupType::Complement && type == ValueType::Bool)
+		return new inst::ComplementBool();
+	else if (op == InstGroupType::Complement && type == ValueType::Byte)
+		return new inst::ComplementByte();
+	else if (op == InstGroupType::Complement && type == ValueType::Int)
+		return new inst::ComplementInt();
+	else if (op == InstGroupType::Complement && type == ValueType::Long)
+		return new inst::ComplementLong();
+	else if (op == InstGroupType::Complement && type == ValueType::Float)
+		return new inst::ComplementFloat();
+	else if (op == InstGroupType::Complement && type == ValueType::Double)
+		return new inst::ComplementDouble();
+	else if (op == InstGroupType::Complement && type == ValueType::String)
+		return new inst::ComplementString();
+	else if (op == InstGroupType::Complement && type == ValueType::Object)
+		return new inst::ComplementObject();
+	else if (op == InstGroupType::Complement && type == ValueType::Function)
+		return new inst::ComplementFunction();
 	//OPInstEnd
 
 	return nullptr;

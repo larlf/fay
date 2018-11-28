@@ -21,7 +21,7 @@
 	"LoadField": 20,
 	"LoadStatic": 21,
 	"CopyLocal": 22,
-	"undefined": 517,
+	"undefined": 687,
 	"VoidToVoid": 24,
 	"VoidToBool": 25,
 	"VoidToByte": 26,

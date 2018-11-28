@@ -1781,6 +1781,76 @@ namespace fay
 			virtual void buildString(mirror::utils::StringBuilder* sb) override;
 		};
 		
+		class ComplementVoid : public fay::FayInst 
+		{ 
+		public:
+			ComplementVoid() : FayInst(InstType::ComplementVoid) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class ComplementBool : public fay::FayInst 
+		{ 
+		public:
+			ComplementBool() : FayInst(InstType::ComplementBool) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class ComplementByte : public fay::FayInst 
+		{ 
+		public:
+			ComplementByte() : FayInst(InstType::ComplementByte) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class ComplementInt : public fay::FayInst 
+		{ 
+		public:
+			ComplementInt() : FayInst(InstType::ComplementInt) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class ComplementLong : public fay::FayInst 
+		{ 
+		public:
+			ComplementLong() : FayInst(InstType::ComplementLong) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class ComplementFloat : public fay::FayInst 
+		{ 
+		public:
+			ComplementFloat() : FayInst(InstType::ComplementFloat) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class ComplementDouble : public fay::FayInst 
+		{ 
+		public:
+			ComplementDouble() : FayInst(InstType::ComplementDouble) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class ComplementString : public fay::FayInst 
+		{ 
+		public:
+			ComplementString() : FayInst(InstType::ComplementString) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class ComplementObject : public fay::FayInst 
+		{ 
+		public:
+			ComplementObject() : FayInst(InstType::ComplementObject) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class ComplementFunction : public fay::FayInst 
+		{ 
+		public:
+			ComplementFunction() : FayInst(InstType::ComplementFunction) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
 		//InstEnd
 	}
 }

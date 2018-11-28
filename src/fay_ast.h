@@ -299,6 +299,22 @@ namespace fay
 		virtual void dig4(FayBuilder* builder) override;
 	};
 
+	class AstBitComplement : public AstNode
+	{
+		using AstNode::AstNode;
+	public:
+		virtual void dig3(FayBuilder* builder) override;
+		virtual void dig4(FayBuilder* builder) override;
+	};
+
+	class AstCast : public AstNode
+	{
+		using AstNode::AstNode;
+	public:
+		virtual void dig3(FayBuilder* builder) override;
+		virtual void dig4(FayBuilder* builder) override;
+	};
+
 	//空语句
 	class AstEmptyStmt : public AstNode
 	{
