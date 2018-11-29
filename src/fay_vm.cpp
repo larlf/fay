@@ -523,9 +523,23 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 				this->stack.top().val()->longVal %= v;
 				break;
 			}
-			case InstType::Not:
+			case InstType::BoolNot:
 			{
 				this->stack.top().val()->boolVal = !this->stack.top().val()->boolVal;
+				break;
+			}
+			case InstType::BoolAnd:
+			{
+				FayValue v=this->stack.top();
+				this->stack.pop();
+				this->stack.top().val()->boolVal = this->stack.top().boolVal() && v.boolVal();
+				break;
+			}
+			case InstType::BoolOr:
+			{
+				FayValue v=this->stack.top();
+				this->stack.pop();
+				this->stack.top().val()->boolVal = this->stack.top().boolVal() || v.boolVal();
 				break;
 			}
 			case InstType::EqualBool:
@@ -861,19 +875,82 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 				this->stack.push(FayValue(v1.doubleVal() <= v2.doubleVal()));
 				break;
 			}
-			case InstType::ComplementByte:
+			case InstType::BitNotByte:
 			{
 				this->stack.top().val()->byteVal = ~this->stack.top().val()->byteVal;
 				break;
 			}
-			case InstType::ComplementInt:
+			case InstType::BitNotInt:
 			{
 				this->stack.top().val()->intVal = ~this->stack.top().val()->intVal;
 				break;
 			}
-			case InstType::ComplementLong:
+			case InstType::BitNotLong:
 			{
 				this->stack.top().val()->longVal = ~this->stack.top().val()->longVal;
+				break;
+			}
+			case InstType::BitAndByte:
+			{
+				FayValue v1=this->stack.top();
+				this->stack.pop();
+				this->stack.top().val()->byteVal &= v1.val()->byteVal;
+				break;
+			}
+			case InstType::BitAndInt:
+			{
+				FayValue v1=this->stack.top();
+				this->stack.pop();
+				this->stack.top().val()->intVal &= v1.val()->intVal;
+				break;
+			}
+			case InstType::BitAndLong:
+			{
+				FayValue v1=this->stack.top();
+				this->stack.pop();
+				this->stack.top().val()->longVal &= v1.val()->longVal;
+				break;
+			}
+			case InstType::BitOrByte:
+			{
+				FayValue v1=this->stack.top();
+				this->stack.pop();
+				this->stack.top().val()->byteVal |= v1.val()->byteVal;
+				break;
+			}
+			case InstType::BitOrInt:
+			{
+				FayValue v1=this->stack.top();
+				this->stack.pop();
+				this->stack.top().val()->intVal |= v1.val()->intVal;
+				break;
+			}
+			case InstType::BitOrLong:
+			{
+				FayValue v1=this->stack.top();
+				this->stack.pop();
+				this->stack.top().val()->longVal |= v1.val()->longVal;
+				break;
+			}
+			case InstType::BitXorByte:
+			{
+				FayValue v1=this->stack.top();
+				this->stack.pop();
+				this->stack.top().val()->byteVal ^= v1.val()->byteVal;
+				break;
+			}
+			case InstType::BitXorInt:
+			{
+				FayValue v1=this->stack.top();
+				this->stack.pop();
+				this->stack.top().val()->intVal ^= v1.val()->intVal;
+				break;
+			}
+			case InstType::BitXorLong:
+			{
+				FayValue v1=this->stack.top();
+				this->stack.pop();
+				this->stack.top().val()->longVal ^= v1.val()->longVal;
 				break;
 			}
 			case InstType::LShiftByte:

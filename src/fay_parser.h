@@ -75,8 +75,10 @@ namespace fay
 
 		//表达式中的各项基本值
 		static PTR(AstNode) _ExprPrimary(TokenStack* stack);
-		//下标
+		//数组下标
 		static PTR(AstNode) _ExprBracket(TokenStack* stack);
+		//括号
+		static PTR(AstNode) _ExprParen(TokenStack* stack);
 		//取负数的操作
 		static PTR(AstNode) _ExprMinus(TokenStack* stack);
 		//强致类型转换操作符
@@ -92,6 +94,10 @@ namespace fay
 		//左移和右移
 		static PTR(AstNode) _ExprLeftRightMove(TokenStack* stack);
 		//逻辑操作符
+		static PTR(AstNode) _ExprEquality(TokenStack* stack);
+		//位操作符
+		static PTR(AstNode) _ExprBit(TokenStack* stack);
+		//布尔操作符
 		static PTR(AstNode) _ExprBool(TokenStack* stack);
 		//赋值运算符
 		static PTR(AstNode) _ExprAssign(TokenStack* stack);

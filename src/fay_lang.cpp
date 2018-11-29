@@ -942,12 +942,30 @@ FayInst* fay::FayLangUtils::OPInst(InstGroupType op, ValueType type)
 		return new inst::LessEqualFloat();
 	else if (op == InstGroupType::LessEqual && type == ValueType::Double)
 		return new inst::LessEqualDouble();
-	else if (op == InstGroupType::Complement && type == ValueType::Byte)
-		return new inst::ComplementByte();
-	else if (op == InstGroupType::Complement && type == ValueType::Int)
-		return new inst::ComplementInt();
-	else if (op == InstGroupType::Complement && type == ValueType::Long)
-		return new inst::ComplementLong();
+	else if (op == InstGroupType::BitNot && type == ValueType::Byte)
+		return new inst::BitNotByte();
+	else if (op == InstGroupType::BitNot && type == ValueType::Int)
+		return new inst::BitNotInt();
+	else if (op == InstGroupType::BitNot && type == ValueType::Long)
+		return new inst::BitNotLong();
+	else if (op == InstGroupType::BitAnd && type == ValueType::Byte)
+		return new inst::BitAndByte();
+	else if (op == InstGroupType::BitAnd && type == ValueType::Int)
+		return new inst::BitAndInt();
+	else if (op == InstGroupType::BitAnd && type == ValueType::Long)
+		return new inst::BitAndLong();
+	else if (op == InstGroupType::BitOr && type == ValueType::Byte)
+		return new inst::BitOrByte();
+	else if (op == InstGroupType::BitOr && type == ValueType::Int)
+		return new inst::BitOrInt();
+	else if (op == InstGroupType::BitOr && type == ValueType::Long)
+		return new inst::BitOrLong();
+	else if (op == InstGroupType::BitXor && type == ValueType::Byte)
+		return new inst::BitXorByte();
+	else if (op == InstGroupType::BitXor && type == ValueType::Int)
+		return new inst::BitXorInt();
+	else if (op == InstGroupType::BitXor && type == ValueType::Long)
+		return new inst::BitXorLong();
 	else if (op == InstGroupType::LShift && type == ValueType::Byte)
 		return new inst::LShiftByte();
 	else if (op == InstGroupType::LShift && type == ValueType::Int)

@@ -1200,9 +1200,21 @@ void fay::inst::ModFunction::buildString(mirror::utils::StringBuilder * sb)
 		->endl();
 }
 
-void fay::inst::Not::buildString(mirror::utils::StringBuilder * sb)
+void fay::inst::BoolNot::buildString(mirror::utils::StringBuilder * sb)
 {
-	sb->add("Not")
+	sb->add("BoolNot")
+		->endl();
+}
+
+void fay::inst::BoolAnd::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("BoolAnd")
+		->endl();
+}
+
+void fay::inst::BoolOr::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("BoolOr")
 		->endl();
 }
 
@@ -1566,63 +1578,243 @@ void fay::inst::LessEqualFunction::buildString(mirror::utils::StringBuilder * sb
 		->endl();
 }
 
-void fay::inst::ComplementVoid::buildString(mirror::utils::StringBuilder * sb)
+void fay::inst::BitNotVoid::buildString(mirror::utils::StringBuilder * sb)
 {
-	sb->add("ComplementVoid")
+	sb->add("BitNotVoid")
 		->endl();
 }
 
-void fay::inst::ComplementBool::buildString(mirror::utils::StringBuilder * sb)
+void fay::inst::BitNotBool::buildString(mirror::utils::StringBuilder * sb)
 {
-	sb->add("ComplementBool")
+	sb->add("BitNotBool")
 		->endl();
 }
 
-void fay::inst::ComplementByte::buildString(mirror::utils::StringBuilder * sb)
+void fay::inst::BitNotByte::buildString(mirror::utils::StringBuilder * sb)
 {
-	sb->add("ComplementByte")
+	sb->add("BitNotByte")
 		->endl();
 }
 
-void fay::inst::ComplementInt::buildString(mirror::utils::StringBuilder * sb)
+void fay::inst::BitNotInt::buildString(mirror::utils::StringBuilder * sb)
 {
-	sb->add("ComplementInt")
+	sb->add("BitNotInt")
 		->endl();
 }
 
-void fay::inst::ComplementLong::buildString(mirror::utils::StringBuilder * sb)
+void fay::inst::BitNotLong::buildString(mirror::utils::StringBuilder * sb)
 {
-	sb->add("ComplementLong")
+	sb->add("BitNotLong")
 		->endl();
 }
 
-void fay::inst::ComplementFloat::buildString(mirror::utils::StringBuilder * sb)
+void fay::inst::BitNotFloat::buildString(mirror::utils::StringBuilder * sb)
 {
-	sb->add("ComplementFloat")
+	sb->add("BitNotFloat")
 		->endl();
 }
 
-void fay::inst::ComplementDouble::buildString(mirror::utils::StringBuilder * sb)
+void fay::inst::BitNotDouble::buildString(mirror::utils::StringBuilder * sb)
 {
-	sb->add("ComplementDouble")
+	sb->add("BitNotDouble")
 		->endl();
 }
 
-void fay::inst::ComplementString::buildString(mirror::utils::StringBuilder * sb)
+void fay::inst::BitNotString::buildString(mirror::utils::StringBuilder * sb)
 {
-	sb->add("ComplementString")
+	sb->add("BitNotString")
 		->endl();
 }
 
-void fay::inst::ComplementObject::buildString(mirror::utils::StringBuilder * sb)
+void fay::inst::BitNotObject::buildString(mirror::utils::StringBuilder * sb)
 {
-	sb->add("ComplementObject")
+	sb->add("BitNotObject")
 		->endl();
 }
 
-void fay::inst::ComplementFunction::buildString(mirror::utils::StringBuilder * sb)
+void fay::inst::BitNotFunction::buildString(mirror::utils::StringBuilder * sb)
 {
-	sb->add("ComplementFunction")
+	sb->add("BitNotFunction")
+		->endl();
+}
+
+void fay::inst::BitAndVoid::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("BitAndVoid")
+		->endl();
+}
+
+void fay::inst::BitAndBool::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("BitAndBool")
+		->endl();
+}
+
+void fay::inst::BitAndByte::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("BitAndByte")
+		->endl();
+}
+
+void fay::inst::BitAndInt::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("BitAndInt")
+		->endl();
+}
+
+void fay::inst::BitAndLong::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("BitAndLong")
+		->endl();
+}
+
+void fay::inst::BitAndFloat::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("BitAndFloat")
+		->endl();
+}
+
+void fay::inst::BitAndDouble::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("BitAndDouble")
+		->endl();
+}
+
+void fay::inst::BitAndString::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("BitAndString")
+		->endl();
+}
+
+void fay::inst::BitAndObject::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("BitAndObject")
+		->endl();
+}
+
+void fay::inst::BitAndFunction::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("BitAndFunction")
+		->endl();
+}
+
+void fay::inst::BitOrVoid::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("BitOrVoid")
+		->endl();
+}
+
+void fay::inst::BitOrBool::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("BitOrBool")
+		->endl();
+}
+
+void fay::inst::BitOrByte::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("BitOrByte")
+		->endl();
+}
+
+void fay::inst::BitOrInt::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("BitOrInt")
+		->endl();
+}
+
+void fay::inst::BitOrLong::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("BitOrLong")
+		->endl();
+}
+
+void fay::inst::BitOrFloat::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("BitOrFloat")
+		->endl();
+}
+
+void fay::inst::BitOrDouble::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("BitOrDouble")
+		->endl();
+}
+
+void fay::inst::BitOrString::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("BitOrString")
+		->endl();
+}
+
+void fay::inst::BitOrObject::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("BitOrObject")
+		->endl();
+}
+
+void fay::inst::BitOrFunction::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("BitOrFunction")
+		->endl();
+}
+
+void fay::inst::BitXorVoid::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("BitXorVoid")
+		->endl();
+}
+
+void fay::inst::BitXorBool::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("BitXorBool")
+		->endl();
+}
+
+void fay::inst::BitXorByte::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("BitXorByte")
+		->endl();
+}
+
+void fay::inst::BitXorInt::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("BitXorInt")
+		->endl();
+}
+
+void fay::inst::BitXorLong::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("BitXorLong")
+		->endl();
+}
+
+void fay::inst::BitXorFloat::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("BitXorFloat")
+		->endl();
+}
+
+void fay::inst::BitXorDouble::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("BitXorDouble")
+		->endl();
+}
+
+void fay::inst::BitXorString::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("BitXorString")
+		->endl();
+}
+
+void fay::inst::BitXorObject::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("BitXorObject")
+		->endl();
+}
+
+void fay::inst::BitXorFunction::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("BitXorFunction")
 		->endl();
 }
 

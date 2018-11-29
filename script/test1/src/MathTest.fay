@@ -130,4 +130,53 @@ public class MathTest
 		var b=15;
 		return a<=b;
 	}
+
+	static public fun test20():int
+	{
+		var a=15;
+		return 61-a*4;
+	}
+
+	static public fun test21():int
+	{
+		var a=15;
+		return (61-a)*4;
+	}
+
+	static public fun test22():int
+	{
+		var a=2;
+		var b=3;
+		var c=4;
+		return 100-(c-(b-a))+1*10;
+	}
+
+	static public fun test23():bool
+	{
+		var a=15.0;
+		var b=15;
+		return a!=b;
+	}
+
+	static public fun test24():long
+	{
+		var a=7788;
+		var b:long=99999999;
+		var c=361;
+		return a&(b|c);
+	}
+
+	static public fun test25():bool
+	{
+		var a=15.0;
+		var b=16;
+		return (a>0)&&(a<b)&&(b>0);
+	}
+
+	static public fun test26():bool
+	{
+		var a=15.0;
+		var b=16;
+		return a<0 || b<0;
+	}
 }

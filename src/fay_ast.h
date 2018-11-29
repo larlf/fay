@@ -234,7 +234,7 @@ namespace fay
 		virtual void dig4(FayBuilder* builder) override;
 	};
 
-	class AstBoolOP : public AstNode
+	class AstEqualityOP : public AstNode
 	{
 		using AstNode::AstNode;
 	private:
@@ -253,12 +253,23 @@ namespace fay
 	class AstLeftRightOP : public AstNode
 	{
 		using AstNode::AstNode;
-	private:
-
 	public:
-		AstLeftRightOP(const PTR(Token) &token, const std::string &text)
-			:AstNode::AstNode(token) { this->_text = text; }
+		virtual void dig3(FayBuilder* builder) override;
+		virtual void dig4(FayBuilder* builder) override;
+	};
 
+	class AstBitOP : public AstNode
+	{
+		using AstNode::AstNode;
+	public:
+		virtual void dig3(FayBuilder* builder) override;
+		virtual void dig4(FayBuilder* builder) override;
+	};
+
+	class AstBoolOP : public AstNode
+	{
+		using AstNode::AstNode;
+	public:
 		virtual void dig3(FayBuilder* builder) override;
 		virtual void dig4(FayBuilder* builder) override;
 	};

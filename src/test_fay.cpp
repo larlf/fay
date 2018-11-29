@@ -252,6 +252,62 @@ TEST_F(FayLang, MathTest)
 		ASSERT_EQ(rs.type(), ValueType::Bool);
 		ASSERT_EQ(rs.boolVal(), true);
 	}
+
+	{
+		std::vector<PTR(FayFun)>funs = type->findFunByName("test20", true);
+		PRINT(funs[0]->toString());
+		auto rs = vm->run(funs[0]);
+		ASSERT_EQ(rs.type(), ValueType::Int);
+		ASSERT_EQ(rs.intVal(), 1);
+	}
+
+	{
+		std::vector<PTR(FayFun)>funs = type->findFunByName("test21", true);
+		PRINT(funs[0]->toString());
+		auto rs = vm->run(funs[0]);
+		ASSERT_EQ(rs.type(), ValueType::Int);
+		ASSERT_EQ(rs.intVal(), 184);
+	}
+
+	{
+		std::vector<PTR(FayFun)>funs = type->findFunByName("test22", true);
+		PRINT(funs[0]->toString());
+		auto rs = vm->run(funs[0]);
+		ASSERT_EQ(rs.type(), ValueType::Int);
+		ASSERT_EQ(rs.intVal(), 107);
+	}
+
+	{
+		std::vector<PTR(FayFun)>funs = type->findFunByName("test23", true);
+		PRINT(funs[0]->toString());
+		auto rs = vm->run(funs[0]);
+		ASSERT_EQ(rs.type(), ValueType::Bool);
+		ASSERT_EQ(rs.boolVal(), false);
+	}
+
+	{
+		std::vector<PTR(FayFun)>funs = type->findFunByName("test24", true);
+		PRINT(funs[0]->toString());
+		auto rs = vm->run(funs[0]);
+		ASSERT_EQ(rs.type(), ValueType::Long);
+		ASSERT_EQ(rs.longVal(), (7788 & (99999999 | 361)));
+	}
+
+	{
+		std::vector<PTR(FayFun)>funs = type->findFunByName("test25", true);
+		PRINT(funs[0]->toString());
+		auto rs = vm->run(funs[0]);
+		ASSERT_EQ(rs.type(), ValueType::Bool);
+		ASSERT_EQ(rs.boolVal(), true);
+	}
+
+	{
+		std::vector<PTR(FayFun)>funs = type->findFunByName("test26", true);
+		PRINT(funs[0]->toString());
+		auto rs = vm->run(funs[0]);
+		ASSERT_EQ(rs.type(), ValueType::Bool);
+		ASSERT_EQ(rs.boolVal(), false);
+	}
 }
 
 TEST_F(FayLang, Test1)

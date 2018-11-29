@@ -1424,10 +1424,24 @@ namespace fay
 			virtual void buildString(mirror::utils::StringBuilder* sb) override;
 		};
 		
-		class Not : public fay::FayInst 
+		class BoolNot : public fay::FayInst 
 		{ 
 		public:
-			Not() : FayInst(InstType::Not) {}
+			BoolNot() : FayInst(InstType::BoolNot) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class BoolAnd : public fay::FayInst 
+		{ 
+		public:
+			BoolAnd() : FayInst(InstType::BoolAnd) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class BoolOr : public fay::FayInst 
+		{ 
+		public:
+			BoolOr() : FayInst(InstType::BoolOr) {}
 			virtual void buildString(mirror::utils::StringBuilder* sb) override;
 		};
 		
@@ -1851,73 +1865,283 @@ namespace fay
 			virtual void buildString(mirror::utils::StringBuilder* sb) override;
 		};
 		
-		class ComplementVoid : public fay::FayInst 
+		class BitNotVoid : public fay::FayInst 
 		{ 
 		public:
-			ComplementVoid() : FayInst(InstType::ComplementVoid) {}
+			BitNotVoid() : FayInst(InstType::BitNotVoid) {}
 			virtual void buildString(mirror::utils::StringBuilder* sb) override;
 		};
 		
-		class ComplementBool : public fay::FayInst 
+		class BitNotBool : public fay::FayInst 
 		{ 
 		public:
-			ComplementBool() : FayInst(InstType::ComplementBool) {}
+			BitNotBool() : FayInst(InstType::BitNotBool) {}
 			virtual void buildString(mirror::utils::StringBuilder* sb) override;
 		};
 		
-		class ComplementByte : public fay::FayInst 
+		class BitNotByte : public fay::FayInst 
 		{ 
 		public:
-			ComplementByte() : FayInst(InstType::ComplementByte) {}
+			BitNotByte() : FayInst(InstType::BitNotByte) {}
 			virtual void buildString(mirror::utils::StringBuilder* sb) override;
 		};
 		
-		class ComplementInt : public fay::FayInst 
+		class BitNotInt : public fay::FayInst 
 		{ 
 		public:
-			ComplementInt() : FayInst(InstType::ComplementInt) {}
+			BitNotInt() : FayInst(InstType::BitNotInt) {}
 			virtual void buildString(mirror::utils::StringBuilder* sb) override;
 		};
 		
-		class ComplementLong : public fay::FayInst 
+		class BitNotLong : public fay::FayInst 
 		{ 
 		public:
-			ComplementLong() : FayInst(InstType::ComplementLong) {}
+			BitNotLong() : FayInst(InstType::BitNotLong) {}
 			virtual void buildString(mirror::utils::StringBuilder* sb) override;
 		};
 		
-		class ComplementFloat : public fay::FayInst 
+		class BitNotFloat : public fay::FayInst 
 		{ 
 		public:
-			ComplementFloat() : FayInst(InstType::ComplementFloat) {}
+			BitNotFloat() : FayInst(InstType::BitNotFloat) {}
 			virtual void buildString(mirror::utils::StringBuilder* sb) override;
 		};
 		
-		class ComplementDouble : public fay::FayInst 
+		class BitNotDouble : public fay::FayInst 
 		{ 
 		public:
-			ComplementDouble() : FayInst(InstType::ComplementDouble) {}
+			BitNotDouble() : FayInst(InstType::BitNotDouble) {}
 			virtual void buildString(mirror::utils::StringBuilder* sb) override;
 		};
 		
-		class ComplementString : public fay::FayInst 
+		class BitNotString : public fay::FayInst 
 		{ 
 		public:
-			ComplementString() : FayInst(InstType::ComplementString) {}
+			BitNotString() : FayInst(InstType::BitNotString) {}
 			virtual void buildString(mirror::utils::StringBuilder* sb) override;
 		};
 		
-		class ComplementObject : public fay::FayInst 
+		class BitNotObject : public fay::FayInst 
 		{ 
 		public:
-			ComplementObject() : FayInst(InstType::ComplementObject) {}
+			BitNotObject() : FayInst(InstType::BitNotObject) {}
 			virtual void buildString(mirror::utils::StringBuilder* sb) override;
 		};
 		
-		class ComplementFunction : public fay::FayInst 
+		class BitNotFunction : public fay::FayInst 
 		{ 
 		public:
-			ComplementFunction() : FayInst(InstType::ComplementFunction) {}
+			BitNotFunction() : FayInst(InstType::BitNotFunction) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class BitAndVoid : public fay::FayInst 
+		{ 
+		public:
+			BitAndVoid() : FayInst(InstType::BitAndVoid) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class BitAndBool : public fay::FayInst 
+		{ 
+		public:
+			BitAndBool() : FayInst(InstType::BitAndBool) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class BitAndByte : public fay::FayInst 
+		{ 
+		public:
+			BitAndByte() : FayInst(InstType::BitAndByte) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class BitAndInt : public fay::FayInst 
+		{ 
+		public:
+			BitAndInt() : FayInst(InstType::BitAndInt) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class BitAndLong : public fay::FayInst 
+		{ 
+		public:
+			BitAndLong() : FayInst(InstType::BitAndLong) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class BitAndFloat : public fay::FayInst 
+		{ 
+		public:
+			BitAndFloat() : FayInst(InstType::BitAndFloat) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class BitAndDouble : public fay::FayInst 
+		{ 
+		public:
+			BitAndDouble() : FayInst(InstType::BitAndDouble) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class BitAndString : public fay::FayInst 
+		{ 
+		public:
+			BitAndString() : FayInst(InstType::BitAndString) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class BitAndObject : public fay::FayInst 
+		{ 
+		public:
+			BitAndObject() : FayInst(InstType::BitAndObject) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class BitAndFunction : public fay::FayInst 
+		{ 
+		public:
+			BitAndFunction() : FayInst(InstType::BitAndFunction) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class BitOrVoid : public fay::FayInst 
+		{ 
+		public:
+			BitOrVoid() : FayInst(InstType::BitOrVoid) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class BitOrBool : public fay::FayInst 
+		{ 
+		public:
+			BitOrBool() : FayInst(InstType::BitOrBool) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class BitOrByte : public fay::FayInst 
+		{ 
+		public:
+			BitOrByte() : FayInst(InstType::BitOrByte) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class BitOrInt : public fay::FayInst 
+		{ 
+		public:
+			BitOrInt() : FayInst(InstType::BitOrInt) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class BitOrLong : public fay::FayInst 
+		{ 
+		public:
+			BitOrLong() : FayInst(InstType::BitOrLong) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class BitOrFloat : public fay::FayInst 
+		{ 
+		public:
+			BitOrFloat() : FayInst(InstType::BitOrFloat) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class BitOrDouble : public fay::FayInst 
+		{ 
+		public:
+			BitOrDouble() : FayInst(InstType::BitOrDouble) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class BitOrString : public fay::FayInst 
+		{ 
+		public:
+			BitOrString() : FayInst(InstType::BitOrString) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class BitOrObject : public fay::FayInst 
+		{ 
+		public:
+			BitOrObject() : FayInst(InstType::BitOrObject) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class BitOrFunction : public fay::FayInst 
+		{ 
+		public:
+			BitOrFunction() : FayInst(InstType::BitOrFunction) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class BitXorVoid : public fay::FayInst 
+		{ 
+		public:
+			BitXorVoid() : FayInst(InstType::BitXorVoid) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class BitXorBool : public fay::FayInst 
+		{ 
+		public:
+			BitXorBool() : FayInst(InstType::BitXorBool) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class BitXorByte : public fay::FayInst 
+		{ 
+		public:
+			BitXorByte() : FayInst(InstType::BitXorByte) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class BitXorInt : public fay::FayInst 
+		{ 
+		public:
+			BitXorInt() : FayInst(InstType::BitXorInt) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class BitXorLong : public fay::FayInst 
+		{ 
+		public:
+			BitXorLong() : FayInst(InstType::BitXorLong) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class BitXorFloat : public fay::FayInst 
+		{ 
+		public:
+			BitXorFloat() : FayInst(InstType::BitXorFloat) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class BitXorDouble : public fay::FayInst 
+		{ 
+		public:
+			BitXorDouble() : FayInst(InstType::BitXorDouble) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class BitXorString : public fay::FayInst 
+		{ 
+		public:
+			BitXorString() : FayInst(InstType::BitXorString) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class BitXorObject : public fay::FayInst 
+		{ 
+		public:
+			BitXorObject() : FayInst(InstType::BitXorObject) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class BitXorFunction : public fay::FayInst 
+		{ 
+		public:
+			BitXorFunction() : FayInst(InstType::BitXorFunction) {}
 			virtual void buildString(mirror::utils::StringBuilder* sb) override;
 		};
 		

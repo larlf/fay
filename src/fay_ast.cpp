@@ -633,7 +633,7 @@ void fay::AstIf::dig4(FayBuilder* builder)
 	builder->fun()->labels()->setPos(this->_endLabel, builder->instsSize());
 }
 
-void fay::AstBoolOP::dig3(FayBuilder* builder)
+void fay::AstEqualityOP::dig3(FayBuilder* builder)
 {
 	this->_classType = (*builder->domain())[ValueType::Bool];
 
@@ -652,7 +652,7 @@ void fay::AstBoolOP::dig3(FayBuilder* builder)
 		this->insertChldNode(1, MKPTR(AstTypeConvert)(this->_token, t2, t3));
 }
 
-void fay::AstBoolOP::dig4(FayBuilder* builder)
+void fay::AstEqualityOP::dig4(FayBuilder* builder)
 {
 	AstNode::dig4(builder);
 
@@ -984,7 +984,7 @@ void fay::AstBoolNot::dig3(FayBuilder * builder)
 void fay::AstBoolNot::dig4(FayBuilder * builder)
 {
 	AstNode::dig4(builder);
-	builder->addInst(new inst::Not());
+	builder->addInst(new inst::BoolNot());
 }
 
 void fay::AstBitComplement::dig3(FayBuilder * builder)
@@ -999,7 +999,7 @@ void fay::AstBitComplement::dig3(FayBuilder * builder)
 void fay::AstBitComplement::dig4(FayBuilder * builder)
 {
 	AstNode::dig4(builder);
-	builder->addInst(FayLangUtils::OPInst(InstGroupType::Complement, this->valueType()));
+	builder->addInst(FayLangUtils::OPInst(InstGroupType::BitNot, this->valueType()));
 }
 
 void fay::AstCast::dig3(FayBuilder * builder)
@@ -1012,4 +1012,80 @@ void fay::AstCast::dig4(FayBuilder * builder)
 {
 	AstNode::dig4(builder);
 	builder->addInst(FayLangUtils::ConvertInst(this->_nodes[0]->valueType(), this->valueType()));
+}
+
+void fay::AstBitOP::dig3(FayBuilder * builder)
+{
+	AstNode::dig3(builder);
+
+	//先算出目标类型
+	auto t1 = this->_nodes[0]->classType();
+	auto t2 = this->_nodes[1]->classType();
+	auto t3 = FayLangUtils::WeightValueType(t1, t2);
+	this->_classType = t3;
+
+	//限定要是整数
+	if (!FayLangUtils::IsIntegerNumberType(t3->valueType()))
+		throw BuildException(this->shared_from_this(), "err.not_integer", t3->fullname());
+
+	//如果和目标类型不一致，就转换一下
+	if (t1 != t3)
+		this->insertChldNode(0, MKPTR(AstTypeConvert)(this->_token, t1, t3));
+	if (t2 != t3)
+		this->insertChldNode(1, MKPTR(AstTypeConvert)(this->_token, t2, t3));
+}
+
+void fay::AstBitOP::dig4(FayBuilder * builder)
+{
+	AstNode::dig4(builder);
+
+	FayInst* inst = nullptr;
+
+	//生成操作代码
+	if (this->_text == "&")
+		inst = FayLangUtils::OPInst(InstGroupType::BitAnd, this->valueType());
+	else if (this->_text == "|")
+		inst = FayLangUtils::OPInst(InstGroupType::BitOr, this->valueType());
+	else if (this->_text == "^")
+		inst = FayLangUtils::OPInst(InstGroupType::BitXor, this->valueType());
+
+	if (inst)
+		builder->addInst(inst);
+	else
+		throw BuildException(this->shared_from_this(), "err.not_support_op", this->_text, this->_classType.lock()->fullname());
+}
+
+void fay::AstBoolOP::dig3(FayBuilder * builder)
+{
+	AstNode::dig3(builder);
+
+	//先算出目标类型
+	auto t1 = this->_nodes[0]->classType();
+	auto t2 = this->_nodes[1]->classType();
+	auto t3 = (*builder->domain())[ValueType::Bool];
+	this->_classType = t3;
+
+	//如果和目标类型不一致，就转换一下
+	if (t1 != t3)
+		this->insertChldNode(0, MKPTR(AstTypeConvert)(this->_token, t1, t3));
+	if (t2 != t3)
+		this->insertChldNode(1, MKPTR(AstTypeConvert)(this->_token, t2, t3));
+}
+
+void fay::AstBoolOP::dig4(FayBuilder * builder)
+{
+	AstNode::dig4(builder);
+
+	FayInst* inst = nullptr;
+
+	//生成操作代码
+	if (this->_text == "&&")
+		inst = new inst::BoolAnd();
+	else if (this->_text == "||")
+		inst = new inst::BoolOr();
+
+	if (inst)
+		builder->addInst(inst);
+	else
+		throw BuildException(this->shared_from_this(), "err.not_support_op", this->_text, this->_classType.lock()->fullname());
 }
