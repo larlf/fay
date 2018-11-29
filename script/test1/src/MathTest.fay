@@ -179,4 +179,20 @@ public class MathTest
 		var b=16;
 		return a<0 || b<0;
 	}
+
+	static public fun test27():int
+	{
+		var a=15;
+		var b=16;
+		if(a<b)
+			return a;
+		return b;
+	}
+
+	static public fun test28():int
+	{
+		var a=15;
+		var b=16;
+		return ?a<b,5,6;
+	}
 }

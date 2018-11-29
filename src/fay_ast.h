@@ -310,7 +310,7 @@ namespace fay
 		virtual void dig4(FayBuilder* builder) override;
 	};
 
-	class AstBitComplement : public AstNode
+	class AstBitNot : public AstNode
 	{
 		using AstNode::AstNode;
 	public:
@@ -319,6 +319,15 @@ namespace fay
 	};
 
 	class AstCast : public AstNode
+	{
+		using AstNode::AstNode;
+	public:
+		virtual void dig3(FayBuilder* builder) override;
+		virtual void dig4(FayBuilder* builder) override;
+	};
+
+	//条件表达式
+	class AstCondExpr : public AstNode
 	{
 		using AstNode::AstNode;
 	public:

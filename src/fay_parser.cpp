@@ -34,7 +34,7 @@ PTR(AstNode) fay::Parser::_MakeLeftRightOPNode(std::function<PTR(AstNode)(TokenS
 PTR(AstNode) fay::Parser::_MakeBoolOPNode(std::function<PTR(AstNode)(TokenStack*)> subExpr, std::vector<std::string> ops, TokenStack* stack)
 {
 	auto leftNode = subExpr(stack);
-	if (leftNode == nullptr)
+	if(leftNode == nullptr)
 		throw ParseException(stack, "err.cannot_find_left_value");
 
 	while(stack->now()->is(TokenType::OP)
@@ -47,7 +47,7 @@ PTR(AstNode) fay::Parser::_MakeBoolOPNode(std::function<PTR(AstNode)(TokenStack*
 		//取右值
 		stack->next();
 		auto rightNode = subExpr(stack);
-		if (rightNode == nullptr)
+		if(rightNode == nullptr)
 			throw ParseException(stack, "err.cannot_find_right_value");
 		node->addChildNode(rightNode);
 
@@ -740,7 +740,7 @@ PTR(AstNode) fay::Parser::_ExprParen(TokenStack* stack)
 		stack->next();
 
 		auto subNode = _Expr(stack);
-		if(subNode==nullptr)
+		if(subNode == nullptr)
 			throw ParseException(stack, "err.bad_expr");
 
 		if(!stack->now()->is(")"))
@@ -819,7 +819,7 @@ PTR(AstNode) fay::Parser::_ExprPre(TokenStack* stack)
 		}
 		else if(stack->now()->is("~"))
 		{
-			auto node = MKPTR(AstBitComplement)(stack->move());
+			auto node = MKPTR(AstBitNot)(stack->move());
 			//LOG_DEBUG(stack->after()->toString());
 			auto rightNode = _ExprPost(stack);
 			node->addChildNode(rightNode);
@@ -850,19 +850,60 @@ PTR(AstNode) fay::Parser::_ExprEquality(TokenStack* stack)
 	return _MakeBoolOPNode(_ExprLeftRightMove, { ">", "<", "==", ">=", "<=", "!=" }, stack);
 }
 
-PTR(AstNode) fay::Parser::_ExprBit(TokenStack * stack)
+PTR(AstNode) fay::Parser::_ExprBit(TokenStack* stack)
 {
 	return _MakeLeftRightOPNode(_ExprEquality, { "&", "^", "|" }, stack, [](PTR(Token) token)->PTR(AstNode) { return MKPTR(AstBitOP)(token); });
 }
 
-PTR(AstNode) fay::Parser::_ExprBool(TokenStack * stack)
+PTR(AstNode) fay::Parser::_ExprBool(TokenStack* stack)
 {
 	return _MakeLeftRightOPNode(_ExprBit, { "&&", "||" }, stack, [](PTR(Token) token)->PTR(AstNode) { return MKPTR(AstBoolOP)(token); });
 }
 
+PTR(AstNode) fay::Parser::_ExprCond(TokenStack* stack)
+{
+	if(stack->now()->is("?"))
+	{
+		stack->next();
+
+		//条件
+		auto expr0 = _Expr(stack);
+		if(expr0 == nullptr)
+			throw ParseException(stack, "err.bad_condition");
+
+		//,
+		if(!stack->now()->is(","))
+			throw ParseException(stack, "err.expect", ",");
+		stack->next();
+
+		//first expr
+		auto expr1 = _Expr(stack);
+		if(expr1 == nullptr)
+			throw ParseException(stack, "err.bad_expr");
+
+		//,
+		if(!stack->now()->is(","))
+			throw ParseException(stack, "err.expect", ",");
+		stack->next();
+
+		//second expr
+		auto expr2 = _Expr(stack);
+		if(expr2 == nullptr)
+			throw ParseException(stack, "err.bad_expr");
+
+		auto node = MKPTR(AstCondExpr)(stack->now());
+		node->addChildNode(expr0);
+		node->addChildNode(expr1);
+		node->addChildNode(expr2);
+		return node;
+	}
+
+	return _ExprBool(stack);
+}
+
 PTR(AstNode) fay::Parser::_ExprAssign(TokenStack* stack)
 {
-	return _MakeLeftRightOPNode(_ExprBool, { "=", "*=", "/=", "+=", "-=", "%=", "<<=", ">>=", "&=", "^=", "|=" }, stack, [](PTR(Token) token)->PTR(AstNode) { return MKPTR(AstAssign)(token); });
+	return _MakeLeftRightOPNode(_ExprCond, { "=", "*=", "/=", "+=", "-=", "%=", "<<=", ">>=", "&=", "^=", "|=" }, stack, [](PTR(Token) token)->PTR(AstNode) { return MKPTR(AstAssign)(token); });
 }
 
 PTR(AstNode) fay::Parser::_Expr(TokenStack* stack)

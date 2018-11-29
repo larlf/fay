@@ -544,7 +544,12 @@ void fay::AstLeftRightOP::dig4(FayBuilder* builder)
 void fay::AstTypeConvert::dig4(FayBuilder* builder)
 {
 	AstNode::dig4(builder);
-	builder->addInst(FayLangUtils::ConvertInst(this->_srcType.lock()->valueType(), this->classType()->valueType()));
+
+	FayInst* inst = FayLangUtils::ConvertInst(this->_srcType.lock()->valueType(), this->classType()->valueType());
+	if (inst == nullptr)
+		throw BuildException(this->shared_from_this(), "err.cannot_convert", this->_srcType.lock()->fullname(), this->classType()->fullname());
+
+	builder->addInst(inst);
 }
 
 void fay::AstBool::dig3(FayBuilder* builder)
@@ -987,7 +992,7 @@ void fay::AstBoolNot::dig4(FayBuilder * builder)
 	builder->addInst(new inst::BoolNot());
 }
 
-void fay::AstBitComplement::dig3(FayBuilder * builder)
+void fay::AstBitNot::dig3(FayBuilder * builder)
 {
 	AstNode::dig3(builder);
 
@@ -996,7 +1001,7 @@ void fay::AstBitComplement::dig3(FayBuilder * builder)
 		throw BuildException(this->shared_from_this(), "err.not_int_number");
 }
 
-void fay::AstBitComplement::dig4(FayBuilder * builder)
+void fay::AstBitNot::dig4(FayBuilder * builder)
 {
 	AstNode::dig4(builder);
 	builder->addInst(FayLangUtils::OPInst(InstGroupType::BitNot, this->valueType()));
@@ -1088,4 +1093,14 @@ void fay::AstBoolOP::dig4(FayBuilder * builder)
 		builder->addInst(inst);
 	else
 		throw BuildException(this->shared_from_this(), "err.not_support_op", this->_text, this->_classType.lock()->fullname());
+}
+
+void fay::AstCondExpr::dig3(FayBuilder* builder)
+{
+	AstNode::dig3(builder);
+}
+
+void fay::AstCondExpr::dig4(FayBuilder* builder)
+{
+	AstNode::dig4(builder);
 }
