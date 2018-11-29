@@ -585,52 +585,6 @@ fay::FayInst* fay::FayLangUtils::ConvertInst(ValueType src, ValueType dest)
 		return new inst::VoidToDouble();
 	else if (src == ValueType::Void && dest == ValueType::String)
 		return new inst::VoidToString();
-	else if (src == ValueType::Void && dest == ValueType::Object)
-		return new inst::VoidToObject();
-	else if (src == ValueType::Void && dest == ValueType::Function)
-		return new inst::VoidToFunction();
-	else if (src == ValueType::Bool && dest == ValueType::Void)
-		return new inst::BoolToVoid();
-	else if (src == ValueType::Bool && dest == ValueType::Bool)
-		return new inst::BoolToBool();
-	else if (src == ValueType::Bool && dest == ValueType::Byte)
-		return new inst::BoolToByte();
-	else if (src == ValueType::Bool && dest == ValueType::Int)
-		return new inst::BoolToInt();
-	else if (src == ValueType::Bool && dest == ValueType::Long)
-		return new inst::BoolToLong();
-	else if (src == ValueType::Bool && dest == ValueType::Float)
-		return new inst::BoolToFloat();
-	else if (src == ValueType::Bool && dest == ValueType::Double)
-		return new inst::BoolToDouble();
-	else if (src == ValueType::Bool && dest == ValueType::String)
-		return new inst::BoolToString();
-	else if (src == ValueType::Bool && dest == ValueType::Object)
-		return new inst::BoolToObject();
-	else if (src == ValueType::Bool && dest == ValueType::Function)
-		return new inst::BoolToFunction();
-	else if (src == ValueType::Byte && dest == ValueType::Void)
-		return new inst::ByteToVoid();
-	else if (src == ValueType::Byte && dest == ValueType::Bool)
-		return new inst::ByteToBool();
-	else if (src == ValueType::Byte && dest == ValueType::Byte)
-		return new inst::ByteToByte();
-	else if (src == ValueType::Byte && dest == ValueType::Int)
-		return new inst::ByteToInt();
-	else if (src == ValueType::Byte && dest == ValueType::Long)
-		return new inst::ByteToLong();
-	else if (src == ValueType::Byte && dest == ValueType::Float)
-		return new inst::ByteToFloat();
-	else if (src == ValueType::Byte && dest == ValueType::Double)
-		return new inst::ByteToDouble();
-	else if (src == ValueType::Byte && dest == ValueType::String)
-		return new inst::ByteToString();
-	else if (src == ValueType::Byte && dest == ValueType::Object)
-		return new inst::ByteToObject();
-	else if (src == ValueType::Byte && dest == ValueType::Function)
-		return new inst::ByteToFunction();
-	else if (src == ValueType::Int && dest == ValueType::Void)
-		return new inst::IntToVoid();
 	else if (src == ValueType::Int && dest == ValueType::Bool)
 		return new inst::IntToBool();
 	else if (src == ValueType::Int && dest == ValueType::Byte)
@@ -645,12 +599,6 @@ fay::FayInst* fay::FayLangUtils::ConvertInst(ValueType src, ValueType dest)
 		return new inst::IntToDouble();
 	else if (src == ValueType::Int && dest == ValueType::String)
 		return new inst::IntToString();
-	else if (src == ValueType::Int && dest == ValueType::Object)
-		return new inst::IntToObject();
-	else if (src == ValueType::Int && dest == ValueType::Function)
-		return new inst::IntToFunction();
-	else if (src == ValueType::Long && dest == ValueType::Void)
-		return new inst::LongToVoid();
 	else if (src == ValueType::Long && dest == ValueType::Bool)
 		return new inst::LongToBool();
 	else if (src == ValueType::Long && dest == ValueType::Byte)
@@ -663,14 +611,6 @@ fay::FayInst* fay::FayLangUtils::ConvertInst(ValueType src, ValueType dest)
 		return new inst::LongToFloat();
 	else if (src == ValueType::Long && dest == ValueType::Double)
 		return new inst::LongToDouble();
-	else if (src == ValueType::Long && dest == ValueType::String)
-		return new inst::LongToString();
-	else if (src == ValueType::Long && dest == ValueType::Object)
-		return new inst::LongToObject();
-	else if (src == ValueType::Long && dest == ValueType::Function)
-		return new inst::LongToFunction();
-	else if (src == ValueType::Float && dest == ValueType::Void)
-		return new inst::FloatToVoid();
 	else if (src == ValueType::Float && dest == ValueType::Bool)
 		return new inst::FloatToBool();
 	else if (src == ValueType::Float && dest == ValueType::Byte)
@@ -683,14 +623,6 @@ fay::FayInst* fay::FayLangUtils::ConvertInst(ValueType src, ValueType dest)
 		return new inst::FloatToFloat();
 	else if (src == ValueType::Float && dest == ValueType::Double)
 		return new inst::FloatToDouble();
-	else if (src == ValueType::Float && dest == ValueType::String)
-		return new inst::FloatToString();
-	else if (src == ValueType::Float && dest == ValueType::Object)
-		return new inst::FloatToObject();
-	else if (src == ValueType::Float && dest == ValueType::Function)
-		return new inst::FloatToFunction();
-	else if (src == ValueType::Double && dest == ValueType::Void)
-		return new inst::DoubleToVoid();
 	else if (src == ValueType::Double && dest == ValueType::Bool)
 		return new inst::DoubleToBool();
 	else if (src == ValueType::Double && dest == ValueType::Byte)
@@ -703,72 +635,6 @@ fay::FayInst* fay::FayLangUtils::ConvertInst(ValueType src, ValueType dest)
 		return new inst::DoubleToFloat();
 	else if (src == ValueType::Double && dest == ValueType::Double)
 		return new inst::DoubleToDouble();
-	else if (src == ValueType::Double && dest == ValueType::String)
-		return new inst::DoubleToString();
-	else if (src == ValueType::Double && dest == ValueType::Object)
-		return new inst::DoubleToObject();
-	else if (src == ValueType::Double && dest == ValueType::Function)
-		return new inst::DoubleToFunction();
-	else if (src == ValueType::String && dest == ValueType::Void)
-		return new inst::StringToVoid();
-	else if (src == ValueType::String && dest == ValueType::Bool)
-		return new inst::StringToBool();
-	else if (src == ValueType::String && dest == ValueType::Byte)
-		return new inst::StringToByte();
-	else if (src == ValueType::String && dest == ValueType::Int)
-		return new inst::StringToInt();
-	else if (src == ValueType::String && dest == ValueType::Long)
-		return new inst::StringToLong();
-	else if (src == ValueType::String && dest == ValueType::Float)
-		return new inst::StringToFloat();
-	else if (src == ValueType::String && dest == ValueType::Double)
-		return new inst::StringToDouble();
-	else if (src == ValueType::String && dest == ValueType::String)
-		return new inst::StringToString();
-	else if (src == ValueType::String && dest == ValueType::Object)
-		return new inst::StringToObject();
-	else if (src == ValueType::String && dest == ValueType::Function)
-		return new inst::StringToFunction();
-	else if (src == ValueType::Object && dest == ValueType::Void)
-		return new inst::ObjectToVoid();
-	else if (src == ValueType::Object && dest == ValueType::Bool)
-		return new inst::ObjectToBool();
-	else if (src == ValueType::Object && dest == ValueType::Byte)
-		return new inst::ObjectToByte();
-	else if (src == ValueType::Object && dest == ValueType::Int)
-		return new inst::ObjectToInt();
-	else if (src == ValueType::Object && dest == ValueType::Long)
-		return new inst::ObjectToLong();
-	else if (src == ValueType::Object && dest == ValueType::Float)
-		return new inst::ObjectToFloat();
-	else if (src == ValueType::Object && dest == ValueType::Double)
-		return new inst::ObjectToDouble();
-	else if (src == ValueType::Object && dest == ValueType::String)
-		return new inst::ObjectToString();
-	else if (src == ValueType::Object && dest == ValueType::Object)
-		return new inst::ObjectToObject();
-	else if (src == ValueType::Object && dest == ValueType::Function)
-		return new inst::ObjectToFunction();
-	else if (src == ValueType::Function && dest == ValueType::Void)
-		return new inst::FunctionToVoid();
-	else if (src == ValueType::Function && dest == ValueType::Bool)
-		return new inst::FunctionToBool();
-	else if (src == ValueType::Function && dest == ValueType::Byte)
-		return new inst::FunctionToByte();
-	else if (src == ValueType::Function && dest == ValueType::Int)
-		return new inst::FunctionToInt();
-	else if (src == ValueType::Function && dest == ValueType::Long)
-		return new inst::FunctionToLong();
-	else if (src == ValueType::Function && dest == ValueType::Float)
-		return new inst::FunctionToFloat();
-	else if (src == ValueType::Function && dest == ValueType::Double)
-		return new inst::FunctionToDouble();
-	else if (src == ValueType::Function && dest == ValueType::String)
-		return new inst::FunctionToString();
-	else if (src == ValueType::Function && dest == ValueType::Object)
-		return new inst::FunctionToObject();
-	else if (src == ValueType::Function && dest == ValueType::Function)
-		return new inst::FunctionToFunction();
 	//ConvertInstEnd
 
 	return nullptr;
@@ -882,10 +748,72 @@ bool fay::FayLangUtils::IsIntegerNumberType(ValueType type)
 FayInst* fay::FayLangUtils::OPInst(InstGroupType op, ValueType type)
 {
 	//OPInstStart
-	if (op == InstGroupType::Minus && type == ValueType::Void)
-		return new inst::MinusVoid();
-	else if (op == InstGroupType::Minus && type == ValueType::Bool)
-		return new inst::MinusBool();
+	if (op == InstGroupType::VoidTo && type == ValueType::Void)
+		return new inst::VoidToVoid();
+	else if (op == InstGroupType::VoidTo && type == ValueType::Bool)
+		return new inst::VoidToBool();
+	else if (op == InstGroupType::VoidTo && type == ValueType::Byte)
+		return new inst::VoidToByte();
+	else if (op == InstGroupType::VoidTo && type == ValueType::Int)
+		return new inst::VoidToInt();
+	else if (op == InstGroupType::VoidTo && type == ValueType::Long)
+		return new inst::VoidToLong();
+	else if (op == InstGroupType::VoidTo && type == ValueType::Float)
+		return new inst::VoidToFloat();
+	else if (op == InstGroupType::VoidTo && type == ValueType::Double)
+		return new inst::VoidToDouble();
+	else if (op == InstGroupType::VoidTo && type == ValueType::String)
+		return new inst::VoidToString();
+	else if (op == InstGroupType::IntTo && type == ValueType::Bool)
+		return new inst::IntToBool();
+	else if (op == InstGroupType::IntTo && type == ValueType::Byte)
+		return new inst::IntToByte();
+	else if (op == InstGroupType::IntTo && type == ValueType::Int)
+		return new inst::IntToInt();
+	else if (op == InstGroupType::IntTo && type == ValueType::Long)
+		return new inst::IntToLong();
+	else if (op == InstGroupType::IntTo && type == ValueType::Float)
+		return new inst::IntToFloat();
+	else if (op == InstGroupType::IntTo && type == ValueType::Double)
+		return new inst::IntToDouble();
+	else if (op == InstGroupType::IntTo && type == ValueType::String)
+		return new inst::IntToString();
+	else if (op == InstGroupType::LongTo && type == ValueType::Bool)
+		return new inst::LongToBool();
+	else if (op == InstGroupType::LongTo && type == ValueType::Byte)
+		return new inst::LongToByte();
+	else if (op == InstGroupType::LongTo && type == ValueType::Int)
+		return new inst::LongToInt();
+	else if (op == InstGroupType::LongTo && type == ValueType::Long)
+		return new inst::LongToLong();
+	else if (op == InstGroupType::LongTo && type == ValueType::Float)
+		return new inst::LongToFloat();
+	else if (op == InstGroupType::LongTo && type == ValueType::Double)
+		return new inst::LongToDouble();
+	else if (op == InstGroupType::FloatTo && type == ValueType::Bool)
+		return new inst::FloatToBool();
+	else if (op == InstGroupType::FloatTo && type == ValueType::Byte)
+		return new inst::FloatToByte();
+	else if (op == InstGroupType::FloatTo && type == ValueType::Int)
+		return new inst::FloatToInt();
+	else if (op == InstGroupType::FloatTo && type == ValueType::Long)
+		return new inst::FloatToLong();
+	else if (op == InstGroupType::FloatTo && type == ValueType::Float)
+		return new inst::FloatToFloat();
+	else if (op == InstGroupType::FloatTo && type == ValueType::Double)
+		return new inst::FloatToDouble();
+	else if (op == InstGroupType::DoubleTo && type == ValueType::Bool)
+		return new inst::DoubleToBool();
+	else if (op == InstGroupType::DoubleTo && type == ValueType::Byte)
+		return new inst::DoubleToByte();
+	else if (op == InstGroupType::DoubleTo && type == ValueType::Int)
+		return new inst::DoubleToInt();
+	else if (op == InstGroupType::DoubleTo && type == ValueType::Long)
+		return new inst::DoubleToLong();
+	else if (op == InstGroupType::DoubleTo && type == ValueType::Float)
+		return new inst::DoubleToFloat();
+	else if (op == InstGroupType::DoubleTo && type == ValueType::Double)
+		return new inst::DoubleToDouble();
 	else if (op == InstGroupType::Minus && type == ValueType::Byte)
 		return new inst::MinusByte();
 	else if (op == InstGroupType::Minus && type == ValueType::Int)
@@ -896,16 +824,6 @@ FayInst* fay::FayLangUtils::OPInst(InstGroupType op, ValueType type)
 		return new inst::MinusFloat();
 	else if (op == InstGroupType::Minus && type == ValueType::Double)
 		return new inst::MinusDouble();
-	else if (op == InstGroupType::Minus && type == ValueType::String)
-		return new inst::MinusString();
-	else if (op == InstGroupType::Minus && type == ValueType::Object)
-		return new inst::MinusObject();
-	else if (op == InstGroupType::Minus && type == ValueType::Function)
-		return new inst::MinusFunction();
-	else if (op == InstGroupType::Add && type == ValueType::Void)
-		return new inst::AddVoid();
-	else if (op == InstGroupType::Add && type == ValueType::Bool)
-		return new inst::AddBool();
 	else if (op == InstGroupType::Add && type == ValueType::Byte)
 		return new inst::AddByte();
 	else if (op == InstGroupType::Add && type == ValueType::Int)
@@ -918,14 +836,6 @@ FayInst* fay::FayLangUtils::OPInst(InstGroupType op, ValueType type)
 		return new inst::AddDouble();
 	else if (op == InstGroupType::Add && type == ValueType::String)
 		return new inst::AddString();
-	else if (op == InstGroupType::Add && type == ValueType::Object)
-		return new inst::AddObject();
-	else if (op == InstGroupType::Add && type == ValueType::Function)
-		return new inst::AddFunction();
-	else if (op == InstGroupType::Sub && type == ValueType::Void)
-		return new inst::SubVoid();
-	else if (op == InstGroupType::Sub && type == ValueType::Bool)
-		return new inst::SubBool();
 	else if (op == InstGroupType::Sub && type == ValueType::Byte)
 		return new inst::SubByte();
 	else if (op == InstGroupType::Sub && type == ValueType::Int)
@@ -936,18 +846,6 @@ FayInst* fay::FayLangUtils::OPInst(InstGroupType op, ValueType type)
 		return new inst::SubFloat();
 	else if (op == InstGroupType::Sub && type == ValueType::Double)
 		return new inst::SubDouble();
-	else if (op == InstGroupType::Sub && type == ValueType::String)
-		return new inst::SubString();
-	else if (op == InstGroupType::Sub && type == ValueType::Object)
-		return new inst::SubObject();
-	else if (op == InstGroupType::Sub && type == ValueType::Function)
-		return new inst::SubFunction();
-	else if (op == InstGroupType::Mul && type == ValueType::Void)
-		return new inst::MulVoid();
-	else if (op == InstGroupType::Mul && type == ValueType::Bool)
-		return new inst::MulBool();
-	else if (op == InstGroupType::Mul && type == ValueType::Byte)
-		return new inst::MulByte();
 	else if (op == InstGroupType::Mul && type == ValueType::Int)
 		return new inst::MulInt();
 	else if (op == InstGroupType::Mul && type == ValueType::Long)
@@ -956,18 +854,6 @@ FayInst* fay::FayLangUtils::OPInst(InstGroupType op, ValueType type)
 		return new inst::MulFloat();
 	else if (op == InstGroupType::Mul && type == ValueType::Double)
 		return new inst::MulDouble();
-	else if (op == InstGroupType::Mul && type == ValueType::String)
-		return new inst::MulString();
-	else if (op == InstGroupType::Mul && type == ValueType::Object)
-		return new inst::MulObject();
-	else if (op == InstGroupType::Mul && type == ValueType::Function)
-		return new inst::MulFunction();
-	else if (op == InstGroupType::Div && type == ValueType::Void)
-		return new inst::DivVoid();
-	else if (op == InstGroupType::Div && type == ValueType::Bool)
-		return new inst::DivBool();
-	else if (op == InstGroupType::Div && type == ValueType::Byte)
-		return new inst::DivByte();
 	else if (op == InstGroupType::Div && type == ValueType::Int)
 		return new inst::DivInt();
 	else if (op == InstGroupType::Div && type == ValueType::Long)
@@ -976,14 +862,12 @@ FayInst* fay::FayLangUtils::OPInst(InstGroupType op, ValueType type)
 		return new inst::DivFloat();
 	else if (op == InstGroupType::Div && type == ValueType::Double)
 		return new inst::DivDouble();
-	else if (op == InstGroupType::Div && type == ValueType::String)
-		return new inst::DivString();
-	else if (op == InstGroupType::Div && type == ValueType::Object)
-		return new inst::DivObject();
-	else if (op == InstGroupType::Div && type == ValueType::Function)
-		return new inst::DivFunction();
-	else if (op == InstGroupType::Equal && type == ValueType::Void)
-		return new inst::EqualVoid();
+	else if (op == InstGroupType::Mod && type == ValueType::Byte)
+		return new inst::ModByte();
+	else if (op == InstGroupType::Mod && type == ValueType::Int)
+		return new inst::ModInt();
+	else if (op == InstGroupType::Mod && type == ValueType::Long)
+		return new inst::ModLong();
 	else if (op == InstGroupType::Equal && type == ValueType::Bool)
 		return new inst::EqualBool();
 	else if (op == InstGroupType::Equal && type == ValueType::Byte)
@@ -998,12 +882,18 @@ FayInst* fay::FayLangUtils::OPInst(InstGroupType op, ValueType type)
 		return new inst::EqualDouble();
 	else if (op == InstGroupType::Equal && type == ValueType::String)
 		return new inst::EqualString();
-	else if (op == InstGroupType::Equal && type == ValueType::Object)
-		return new inst::EqualObject();
-	else if (op == InstGroupType::Equal && type == ValueType::Function)
-		return new inst::EqualFunction();
-	else if (op == InstGroupType::Greater && type == ValueType::Void)
-		return new inst::GreaterVoid();
+	else if (op == InstGroupType::NotEqual && type == ValueType::Bool)
+		return new inst::NotEqualBool();
+	else if (op == InstGroupType::NotEqual && type == ValueType::Byte)
+		return new inst::NotEqualByte();
+	else if (op == InstGroupType::NotEqual && type == ValueType::Int)
+		return new inst::NotEqualInt();
+	else if (op == InstGroupType::NotEqual && type == ValueType::Long)
+		return new inst::NotEqualLong();
+	else if (op == InstGroupType::NotEqual && type == ValueType::Float)
+		return new inst::NotEqualFloat();
+	else if (op == InstGroupType::NotEqual && type == ValueType::Double)
+		return new inst::NotEqualDouble();
 	else if (op == InstGroupType::Greater && type == ValueType::Bool)
 		return new inst::GreaterBool();
 	else if (op == InstGroupType::Greater && type == ValueType::Byte)
@@ -1016,14 +906,18 @@ FayInst* fay::FayLangUtils::OPInst(InstGroupType op, ValueType type)
 		return new inst::GreaterFloat();
 	else if (op == InstGroupType::Greater && type == ValueType::Double)
 		return new inst::GreaterDouble();
-	else if (op == InstGroupType::Greater && type == ValueType::String)
-		return new inst::GreaterString();
-	else if (op == InstGroupType::Greater && type == ValueType::Object)
-		return new inst::GreaterObject();
-	else if (op == InstGroupType::Greater && type == ValueType::Function)
-		return new inst::GreaterFunction();
-	else if (op == InstGroupType::Less && type == ValueType::Void)
-		return new inst::LessVoid();
+	else if (op == InstGroupType::GreaterEqual && type == ValueType::Bool)
+		return new inst::GreaterEqualBool();
+	else if (op == InstGroupType::GreaterEqual && type == ValueType::Byte)
+		return new inst::GreaterEqualByte();
+	else if (op == InstGroupType::GreaterEqual && type == ValueType::Int)
+		return new inst::GreaterEqualInt();
+	else if (op == InstGroupType::GreaterEqual && type == ValueType::Long)
+		return new inst::GreaterEqualLong();
+	else if (op == InstGroupType::GreaterEqual && type == ValueType::Float)
+		return new inst::GreaterEqualFloat();
+	else if (op == InstGroupType::GreaterEqual && type == ValueType::Double)
+		return new inst::GreaterEqualDouble();
 	else if (op == InstGroupType::Less && type == ValueType::Bool)
 		return new inst::LessBool();
 	else if (op == InstGroupType::Less && type == ValueType::Byte)
@@ -1036,32 +930,36 @@ FayInst* fay::FayLangUtils::OPInst(InstGroupType op, ValueType type)
 		return new inst::LessFloat();
 	else if (op == InstGroupType::Less && type == ValueType::Double)
 		return new inst::LessDouble();
-	else if (op == InstGroupType::Less && type == ValueType::String)
-		return new inst::LessString();
-	else if (op == InstGroupType::Less && type == ValueType::Object)
-		return new inst::LessObject();
-	else if (op == InstGroupType::Less && type == ValueType::Function)
-		return new inst::LessFunction();
-	else if (op == InstGroupType::Complement && type == ValueType::Void)
-		return new inst::ComplementVoid();
-	else if (op == InstGroupType::Complement && type == ValueType::Bool)
-		return new inst::ComplementBool();
+	else if (op == InstGroupType::LessEqual && type == ValueType::Bool)
+		return new inst::LessEqualBool();
+	else if (op == InstGroupType::LessEqual && type == ValueType::Byte)
+		return new inst::LessEqualByte();
+	else if (op == InstGroupType::LessEqual && type == ValueType::Int)
+		return new inst::LessEqualInt();
+	else if (op == InstGroupType::LessEqual && type == ValueType::Long)
+		return new inst::LessEqualLong();
+	else if (op == InstGroupType::LessEqual && type == ValueType::Float)
+		return new inst::LessEqualFloat();
+	else if (op == InstGroupType::LessEqual && type == ValueType::Double)
+		return new inst::LessEqualDouble();
 	else if (op == InstGroupType::Complement && type == ValueType::Byte)
 		return new inst::ComplementByte();
 	else if (op == InstGroupType::Complement && type == ValueType::Int)
 		return new inst::ComplementInt();
 	else if (op == InstGroupType::Complement && type == ValueType::Long)
 		return new inst::ComplementLong();
-	else if (op == InstGroupType::Complement && type == ValueType::Float)
-		return new inst::ComplementFloat();
-	else if (op == InstGroupType::Complement && type == ValueType::Double)
-		return new inst::ComplementDouble();
-	else if (op == InstGroupType::Complement && type == ValueType::String)
-		return new inst::ComplementString();
-	else if (op == InstGroupType::Complement && type == ValueType::Object)
-		return new inst::ComplementObject();
-	else if (op == InstGroupType::Complement && type == ValueType::Function)
-		return new inst::ComplementFunction();
+	else if (op == InstGroupType::LShift && type == ValueType::Byte)
+		return new inst::LShiftByte();
+	else if (op == InstGroupType::LShift && type == ValueType::Int)
+		return new inst::LShiftInt();
+	else if (op == InstGroupType::LShift && type == ValueType::Long)
+		return new inst::LShiftLong();
+	else if (op == InstGroupType::RShift && type == ValueType::Byte)
+		return new inst::RShiftByte();
+	else if (op == InstGroupType::RShift && type == ValueType::Int)
+		return new inst::RShiftInt();
+	else if (op == InstGroupType::RShift && type == ValueType::Long)
+		return new inst::RShiftLong();
 	//OPInstEnd
 
 	return nullptr;

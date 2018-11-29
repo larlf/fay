@@ -369,123 +369,158 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 				this->stack.top().val()->doubleVal += (double)((inst::PlusDouble*)inst)->val;
 				break;
 			}
+			case InstType::AddByte:
+			{
+				byte v = this->stack.top().byteVal();
+				this->stack.pop();
+				this->stack.top().val()->byteVal += v;
+				break;
+			}
 			case InstType::AddInt:
 			{
-				int32_t v=this->stack.top().intVal();
+				int32_t v = this->stack.top().intVal();
 				this->stack.pop();
-				this->stack.top().val()->intVal+=v;
+				this->stack.top().val()->intVal += v;
 				break;
 			}
 			case InstType::AddLong:
 			{
-				int64_t v=this->stack.top().longVal();
+				int64_t v = this->stack.top().longVal();
 				this->stack.pop();
-				this->stack.top().val()->longVal+=v;
+				this->stack.top().val()->longVal += v;
 				break;
 			}
 			case InstType::AddFloat:
 			{
-				float v=this->stack.top().floatVal();
+				float v = this->stack.top().floatVal();
 				this->stack.pop();
-				this->stack.top().val()->floatVal+=v;
+				this->stack.top().val()->floatVal += v;
 				break;
 			}
 			case InstType::AddDouble:
 			{
-				double v=this->stack.top().doubleVal();
+				double v = this->stack.top().doubleVal();
 				this->stack.pop();
-				this->stack.top().val()->doubleVal+=v;
+				this->stack.top().val()->doubleVal += v;
 				break;
 			}
 			case InstType::AddString:
 			{
-				FayValue v=this->stack.top();
+				std::string v = *this->stack.top().strVal();
 				this->stack.pop();
-				(*this->stack.top().strVal())+=*v.strVal();
+				(*this->stack.top().val()->strVal) += v;
+				break;
+			}
+			case InstType::SubByte:
+			{
+				byte v=this->stack.top().byteVal();
+				this->stack.pop();
+				this->stack.top().val()->byteVal -= v;
 				break;
 			}
 			case InstType::SubInt:
 			{
 				int32_t v=this->stack.top().intVal();
 				this->stack.pop();
-				this->stack.top().val()->intVal-=v;
+				this->stack.top().val()->intVal -= v;
 				break;
 			}
 			case InstType::SubLong:
 			{
 				int64_t v=this->stack.top().longVal();
 				this->stack.pop();
-				this->stack.top().val()->longVal-=v;
+				this->stack.top().val()->longVal -= v;
 				break;
 			}
 			case InstType::SubFloat:
 			{
 				float v=this->stack.top().floatVal();
 				this->stack.pop();
-				this->stack.top().val()->floatVal-=v;
+				this->stack.top().val()->floatVal -= v;
 				break;
 			}
 			case InstType::SubDouble:
 			{
 				double v=this->stack.top().doubleVal();
 				this->stack.pop();
-				this->stack.top().val()->doubleVal-=v;
+				this->stack.top().val()->doubleVal -= v;
 				break;
 			}
 			case InstType::MulInt:
 			{
 				int32_t v=this->stack.top().intVal();
 				this->stack.pop();
-				this->stack.top().val()->intVal*=v;
+				this->stack.top().val()->intVal *= v;
 				break;
 			}
 			case InstType::MulLong:
 			{
 				int64_t v=this->stack.top().longVal();
 				this->stack.pop();
-				this->stack.top().val()->longVal*=v;
+				this->stack.top().val()->longVal *= v;
 				break;
 			}
 			case InstType::MulFloat:
 			{
 				float v=this->stack.top().floatVal();
 				this->stack.pop();
-				this->stack.top().val()->floatVal*=v;
+				this->stack.top().val()->floatVal *= v;
 				break;
 			}
 			case InstType::MulDouble:
 			{
 				double v=this->stack.top().doubleVal();
 				this->stack.pop();
-				this->stack.top().val()->doubleVal*=v;
+				this->stack.top().val()->doubleVal *= v;
 				break;
 			}
 			case InstType::DivInt:
 			{
 				int32_t v=this->stack.top().intVal();
 				this->stack.pop();
-				this->stack.top().val()->intVal/=v;
+				this->stack.top().val()->intVal /= v;
 				break;
 			}
 			case InstType::DivLong:
 			{
 				int64_t v=this->stack.top().longVal();
 				this->stack.pop();
-				this->stack.top().val()->longVal/=v;
+				this->stack.top().val()->longVal /= v;
 				break;
 			}
 			case InstType::DivFloat:
 			{
 				float v=this->stack.top().floatVal();
 				this->stack.pop();
-				this->stack.top().val()->floatVal/=v;
+				this->stack.top().val()->floatVal /= v;
 				break;
 			}
 			case InstType::DivDouble:
 			{
 				double v=this->stack.top().doubleVal();
 				this->stack.pop();
-				this->stack.top().val()->doubleVal/=v;
+				this->stack.top().val()->doubleVal /= v;
+				break;
+			}
+			case InstType::ModByte:
+			{
+				byte v=this->stack.top().byteVal();
+				this->stack.pop();
+				this->stack.top().val()->byteVal %= v;
+				break;
+			}
+			case InstType::ModInt:
+			{
+				int32_t v=this->stack.top().intVal();
+				this->stack.pop();
+				this->stack.top().val()->intVal %= v;
+				break;
+			}
+			case InstType::ModLong:
+			{
+				int64_t v=this->stack.top().longVal();
+				this->stack.pop();
+				this->stack.top().val()->longVal %= v;
 				break;
 			}
 			case InstType::Not:
@@ -545,6 +580,15 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 				FayValue v1=this->stack.top();
 				this->stack.pop();
 				this->stack.push(FayValue(v1.doubleVal()==v2.doubleVal()));
+				break;
+			}
+			case InstType::EqualString:
+			{
+				FayValue v2=this->stack.top();
+				this->stack.pop();
+				FayValue v1=this->stack.top();
+				this->stack.pop();
+				this->stack.push(FayValue((*v1.strVal())==(*v2.strVal())));
 				break;
 			}
 			case InstType::NotEqualBool:
@@ -661,7 +705,7 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 				this->stack.pop();
 				FayValue v1=this->stack.top();
 				this->stack.pop();
-				this->stack.push(FayValue(v1.boolVal()>=v2.boolVal()));
+				this->stack.push(FayValue(v1.boolVal() >= v2.boolVal()));
 				break;
 			}
 			case InstType::GreaterEqualByte:
@@ -670,7 +714,7 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 				this->stack.pop();
 				FayValue v1=this->stack.top();
 				this->stack.pop();
-				this->stack.push(FayValue(v1.byteVal()>=v2.byteVal()));
+				this->stack.push(FayValue(v1.byteVal() >= v2.byteVal()));
 				break;
 			}
 			case InstType::GreaterEqualInt:
@@ -679,7 +723,7 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 				this->stack.pop();
 				FayValue v1=this->stack.top();
 				this->stack.pop();
-				this->stack.push(FayValue(v1.intVal()>=v2.intVal()));
+				this->stack.push(FayValue(v1.intVal() >= v2.intVal()));
 				break;
 			}
 			case InstType::GreaterEqualLong:
@@ -688,7 +732,7 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 				this->stack.pop();
 				FayValue v1=this->stack.top();
 				this->stack.pop();
-				this->stack.push(FayValue(v1.longVal()>=v2.longVal()));
+				this->stack.push(FayValue(v1.longVal() >= v2.longVal()));
 				break;
 			}
 			case InstType::GreaterEqualFloat:
@@ -697,7 +741,7 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 				this->stack.pop();
 				FayValue v1=this->stack.top();
 				this->stack.pop();
-				this->stack.push(FayValue(v1.floatVal()>=v2.floatVal()));
+				this->stack.push(FayValue(v1.floatVal() >= v2.floatVal()));
 				break;
 			}
 			case InstType::GreaterEqualDouble:
@@ -706,7 +750,7 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 				this->stack.pop();
 				FayValue v1=this->stack.top();
 				this->stack.pop();
-				this->stack.push(FayValue(v1.doubleVal()>=v2.doubleVal()));
+				this->stack.push(FayValue(v1.doubleVal() >= v2.doubleVal()));
 				break;
 			}
 			case InstType::LessBool:
@@ -715,7 +759,7 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 				this->stack.pop();
 				FayValue v1=this->stack.top();
 				this->stack.pop();
-				this->stack.push(FayValue(v1.boolVal()<v2.boolVal()));
+				this->stack.push(FayValue(v1.boolVal() < v2.boolVal()));
 				break;
 			}
 			case InstType::LessByte:
@@ -724,7 +768,7 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 				this->stack.pop();
 				FayValue v1=this->stack.top();
 				this->stack.pop();
-				this->stack.push(FayValue(v1.byteVal()<v2.byteVal()));
+				this->stack.push(FayValue(v1.byteVal() < v2.byteVal()));
 				break;
 			}
 			case InstType::LessInt:
@@ -733,7 +777,7 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 				this->stack.pop();
 				FayValue v1=this->stack.top();
 				this->stack.pop();
-				this->stack.push(FayValue(v1.intVal()<v2.intVal()));
+				this->stack.push(FayValue(v1.intVal() < v2.intVal()));
 				break;
 			}
 			case InstType::LessLong:
@@ -742,7 +786,7 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 				this->stack.pop();
 				FayValue v1=this->stack.top();
 				this->stack.pop();
-				this->stack.push(FayValue(v1.longVal()<v2.longVal()));
+				this->stack.push(FayValue(v1.longVal() < v2.longVal()));
 				break;
 			}
 			case InstType::LessFloat:
@@ -751,7 +795,7 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 				this->stack.pop();
 				FayValue v1=this->stack.top();
 				this->stack.pop();
-				this->stack.push(FayValue(v1.floatVal()<v2.floatVal()));
+				this->stack.push(FayValue(v1.floatVal() < v2.floatVal()));
 				break;
 			}
 			case InstType::LessDouble:
@@ -760,7 +804,7 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 				this->stack.pop();
 				FayValue v1=this->stack.top();
 				this->stack.pop();
-				this->stack.push(FayValue(v1.doubleVal()<v2.doubleVal()));
+				this->stack.push(FayValue(v1.doubleVal() < v2.doubleVal()));
 				break;
 			}
 			case InstType::LessEqualBool:
@@ -769,7 +813,7 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 				this->stack.pop();
 				FayValue v1=this->stack.top();
 				this->stack.pop();
-				this->stack.push(FayValue(v1.boolVal()<v2.boolVal()));
+				this->stack.push(FayValue(v1.boolVal() <= v2.boolVal()));
 				break;
 			}
 			case InstType::LessEqualByte:
@@ -778,7 +822,7 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 				this->stack.pop();
 				FayValue v1=this->stack.top();
 				this->stack.pop();
-				this->stack.push(FayValue(v1.byteVal()<v2.byteVal()));
+				this->stack.push(FayValue(v1.byteVal() <= v2.byteVal()));
 				break;
 			}
 			case InstType::LessEqualInt:
@@ -787,7 +831,7 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 				this->stack.pop();
 				FayValue v1=this->stack.top();
 				this->stack.pop();
-				this->stack.push(FayValue(v1.intVal()<v2.intVal()));
+				this->stack.push(FayValue(v1.intVal() <= v2.intVal()));
 				break;
 			}
 			case InstType::LessEqualLong:
@@ -796,7 +840,7 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 				this->stack.pop();
 				FayValue v1=this->stack.top();
 				this->stack.pop();
-				this->stack.push(FayValue(v1.longVal()<v2.longVal()));
+				this->stack.push(FayValue(v1.longVal() <= v2.longVal()));
 				break;
 			}
 			case InstType::LessEqualFloat:
@@ -805,7 +849,7 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 				this->stack.pop();
 				FayValue v1=this->stack.top();
 				this->stack.pop();
-				this->stack.push(FayValue(v1.floatVal()<v2.floatVal()));
+				this->stack.push(FayValue(v1.floatVal() <= v2.floatVal()));
 				break;
 			}
 			case InstType::LessEqualDouble:
@@ -814,7 +858,7 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 				this->stack.pop();
 				FayValue v1=this->stack.top();
 				this->stack.pop();
-				this->stack.push(FayValue(v1.doubleVal()<v2.doubleVal()));
+				this->stack.push(FayValue(v1.doubleVal() <= v2.doubleVal()));
 				break;
 			}
 			case InstType::ComplementByte:
@@ -830,6 +874,48 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 			case InstType::ComplementLong:
 			{
 				this->stack.top().val()->longVal = ~this->stack.top().val()->longVal;
+				break;
+			}
+			case InstType::LShiftByte:
+			{
+				byte v=this->stack.top().byteVal();
+				this->stack.pop();
+				this->stack.top().val()->byteVal <<= v;
+				break;
+			}
+			case InstType::LShiftInt:
+			{
+				int32_t v=this->stack.top().intVal();
+				this->stack.pop();
+				this->stack.top().val()->intVal <<= v;
+				break;
+			}
+			case InstType::LShiftLong:
+			{
+				int64_t v=this->stack.top().longVal();
+				this->stack.pop();
+				this->stack.top().val()->longVal <<= v;
+				break;
+			}
+			case InstType::RShiftByte:
+			{
+				byte v=this->stack.top().byteVal();
+				this->stack.pop();
+				this->stack.top().val()->byteVal >>= v;
+				break;
+			}
+			case InstType::RShiftInt:
+			{
+				int32_t v=this->stack.top().intVal();
+				this->stack.pop();
+				this->stack.top().val()->intVal >>= v;
+				break;
+			}
+			case InstType::RShiftLong:
+			{
+				int64_t v=this->stack.top().longVal();
+				this->stack.pop();
+				this->stack.top().val()->longVal >>= v;
 				break;
 			}
 			//InstCodeEnd

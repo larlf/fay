@@ -84,11 +84,13 @@ fay::Lexer::Lexer()
 	//不同级别的操作符
 	this->_rules.push_back((ITokenRule*)new WordsTokenRule(LexMode::Program, TokenType::OP,
 	{
-		"(", ")", "[", "]",
+		"*=", "/=", "+=", "-=", "%=", "<<=", ">>=", "&=", "^=", "|=",
 		"++", "--", ">>", "<<",
+		"==", ">=", "<=",
+		"(", ")", "[", "]",
 		"+", "-", "*", "/", "%",
-		"~", "!", ">", "<", "==", ">=", "<=",
-		"=", "*=", "/=", "+=", "-=", "%=", "<<=", ">>=", "&=", "^=", "|="
+		"~", "!", ">", "<",
+		"=",
 	}));
 
 	//字符和字符串
@@ -114,7 +116,7 @@ fay::Lexer::~Lexer()
 
 PTR(std::vector<PTR(Token)>) fay::Lexer::Execute(PTR(FayFile) file)
 {
-		//输入和输出
+	//输入和输出
 	ByteData chars((byte*)file->text().c_str(), file->text().size());
 	PTR(std::vector<PTR(Token)>) r = MKPTR(std::vector<PTR(Token)>)();
 

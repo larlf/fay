@@ -1,8 +1,11 @@
 ﻿#pragma once
 #include <mirror_sys_const.h>
 #include <mirror_utils_log.h>
+#include <mirror_utils_string.h>
 #include <fay_const.h>
 #include <fay_object.h>
+
+using namespace mirror;
 
 //****************************
 //Fay语言中的数据类型
@@ -84,9 +87,9 @@ namespace fay
 		inline int64_t longVal() { return (this->_type == ValueType::Long) ? this->_val.longVal : 0; }
 		inline float floatVal() { return (this->_type == ValueType::Float) ? this->_val.floatVal : 0; }
 		inline double doubleVal() { return (this->_type == ValueType::Double) ? this->_val.doubleVal : 0; }
-		inline std::string* strVal() { return (this->_type == ValueType::String) ? this->_val.strVal : nullptr; }
-		inline void* objectVal() { return (this->_type == ValueType::Object) ? this->_val.ptrValue : nullptr; }
-		inline void* funVal() { return (this->_type == ValueType::Function) ? this->_val.ptrValue : nullptr; }
+		inline const std::string *strVal() { return (this->_type == ValueType::String) ? this->_val.strVal : nullptr; }
+		inline const void* objectVal() { return (this->_type == ValueType::Object) ? this->_val.ptrValue : nullptr; }
+		inline const void* funVal() { return (this->_type == ValueType::Function) ? this->_val.ptrValue : nullptr; }
 		template<class T>
 		inline T* ptrValue() { return (T*)this->_val.ptrValue; }
 

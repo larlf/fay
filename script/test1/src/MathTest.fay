@@ -89,4 +89,45 @@ public class MathTest
 		var b=~(int)a;
 		return b;
 	}
+
+	static public fun test14():int
+	{
+		var a=13;
+		var b=5;
+		return a%b;
+	}
+
+	static public fun test15():int
+	{
+		var a=5;
+		return a<<2;
+	}
+
+	static public fun test16():int
+	{
+		var a=88990011;
+		var b=a>>3;
+		return b;
+	}
+
+	static public fun test17():bool
+	{
+		var a=15.0;
+		var b=15;
+		return a==b;
+	}
+
+	static public fun test18():bool
+	{
+		var a=15.0;
+		var b=15;
+		return a>=b;
+	}
+
+	static public fun test19():bool
+	{
+		var a=15.0;
+		var b=15;
+		return a<=b;
+	}
 }

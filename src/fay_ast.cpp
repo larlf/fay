@@ -520,19 +520,25 @@ void fay::AstLeftRightOP::dig4(FayBuilder* builder)
 	FayInst* inst = nullptr;
 
 	//生成操作代码
-	if(this->_text == "+")
+	if (this->_text == "+")
 		inst = FayLangUtils::OPInst(InstGroupType::Add, this->_classType.lock()->valueType());
-	else if(this->_text == "-")
+	else if (this->_text == "-")
 		inst = FayLangUtils::OPInst(InstGroupType::Sub, this->_classType.lock()->valueType());
-	else if(this->_text == "*")
+	else if (this->_text == "*")
 		inst = FayLangUtils::OPInst(InstGroupType::Mul, this->_classType.lock()->valueType());
-	else if(this->_text == "/")
+	else if (this->_text == "/")
 		inst = FayLangUtils::OPInst(InstGroupType::Div, this->_classType.lock()->valueType());
+	else if (this->_text == "%")
+		inst = FayLangUtils::OPInst(InstGroupType::Mod, this->valueType());
+	else if (this->_text == "<<")
+		inst = FayLangUtils::OPInst(InstGroupType::LShift, this->valueType());
+	else if (this->_text == ">>")
+		inst = FayLangUtils::OPInst(InstGroupType::RShift, this->valueType());
 
-	if(inst)
+	if (inst)
 		builder->addInst(inst);
 	else
-		throw BuildException(this->shared_from_this(), "unknow op inst : " + this->_text + " " + this->_classType.lock()->fullname());
+		throw BuildException(this->shared_from_this(), "err.not_support_op", this->_text, this->_classType.lock()->fullname());
 }
 
 void fay::AstTypeConvert::dig4(FayBuilder* builder)

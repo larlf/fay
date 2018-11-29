@@ -8,6 +8,9 @@ using namespace mirror;
 PTR(AstNode) fay::Parser::_MakeLeftRightOPNode(std::function<PTR(AstNode)(TokenStack*)> subExpr, const std::vector<std::string> &ops, TokenStack* stack, std::function<PTR(AstNode)(PTR(Token))> nodeCreater)
 {
 	auto leftNode = subExpr(stack);
+	if (leftNode == nullptr)
+		throw ParseException(stack, "err.cannot_find_left_value");
+
 	while(stack->now()->is(TokenType::OP)
 		&& (std::find(ops.begin(), ops.end(), stack->now()->text()) != ops.end()))
 	{
@@ -18,6 +21,8 @@ PTR(AstNode) fay::Parser::_MakeLeftRightOPNode(std::function<PTR(AstNode)(TokenS
 		//取右值
 		stack->next();
 		auto rightNode = subExpr(stack);
+		if (rightNode == nullptr)
+			throw ParseException(stack, "err.cannot_find_right_value");
 		node->addChildNode(rightNode);
 
 		//返回新生成的节点
@@ -790,7 +795,7 @@ PTR(AstNode) fay::Parser::_ExprPre(TokenStack* stack)
 		else if (stack->now()->is("~"))
 		{
 			auto node = MKPTR(AstBitComplement)(stack->move());
-			LOG_DEBUG(stack->after()->toString());
+			//LOG_DEBUG(stack->after()->toString());
 			auto rightNode = _ExprPost(stack);
 			node->addChildNode(rightNode);
 			return node;

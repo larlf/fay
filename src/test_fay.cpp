@@ -195,7 +195,6 @@ TEST_F(FayLang, MathTest)
 		PRINT(funs[0]->toString());
 		auto rs = vm->run(funs[0]);
 		ASSERT_EQ(rs.type(), ValueType::Byte);
-		//LOG_DEBUG((int)rs.byteVal());
 		ASSERT_EQ(rs.byteVal(), (byte)~15);
 	}
 	{
@@ -203,8 +202,55 @@ TEST_F(FayLang, MathTest)
 		PRINT(funs[0]->toString());
 		auto rs = vm->run(funs[0]);
 		ASSERT_EQ(rs.type(), ValueType::Byte);
-		//LOG_DEBUG((int)rs.byteVal());
 		ASSERT_EQ(rs.byteVal(), (byte)~15);
+	}
+
+	{
+		std::vector<PTR(FayFun)>funs = type->findFunByName("test14", true);
+		PRINT(funs[0]->toString());
+		auto rs = vm->run(funs[0]);
+		ASSERT_EQ(rs.type(), ValueType::Int);
+		ASSERT_EQ(rs.intVal(), 3);
+	}
+
+	{
+		std::vector<PTR(FayFun)>funs = type->findFunByName("test15", true);
+		PRINT(funs[0]->toString());
+		auto rs = vm->run(funs[0]);
+		ASSERT_EQ(rs.type(), ValueType::Int);
+		ASSERT_EQ(rs.intVal(), 5<<2);
+	}
+
+	{
+		std::vector<PTR(FayFun)>funs = type->findFunByName("test16", true);
+		PRINT(funs[0]->toString());
+		auto rs = vm->run(funs[0]);
+		ASSERT_EQ(rs.type(), ValueType::Int);
+		ASSERT_EQ(rs.intVal(), 88990011>>3);
+	}
+
+	{
+		std::vector<PTR(FayFun)>funs = type->findFunByName("test17", true);
+		PRINT(funs[0]->toString());
+		auto rs = vm->run(funs[0]);
+		ASSERT_EQ(rs.type(), ValueType::Bool);
+		ASSERT_EQ(rs.boolVal(), true);
+	}
+
+	{
+		std::vector<PTR(FayFun)>funs = type->findFunByName("test18", true);
+		PRINT(funs[0]->toString());
+		auto rs = vm->run(funs[0]);
+		ASSERT_EQ(rs.type(), ValueType::Bool);
+		ASSERT_EQ(rs.boolVal(), true);
+	}
+
+	{
+		std::vector<PTR(FayFun)>funs = type->findFunByName("test19", true);
+		PRINT(funs[0]->toString());
+		auto rs = vm->run(funs[0]);
+		ASSERT_EQ(rs.type(), ValueType::Bool);
+		ASSERT_EQ(rs.boolVal(), true);
 	}
 }
 

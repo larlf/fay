@@ -1140,6 +1140,66 @@ void fay::inst::DivFunction::buildString(mirror::utils::StringBuilder * sb)
 		->endl();
 }
 
+void fay::inst::ModVoid::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("ModVoid")
+		->endl();
+}
+
+void fay::inst::ModBool::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("ModBool")
+		->endl();
+}
+
+void fay::inst::ModByte::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("ModByte")
+		->endl();
+}
+
+void fay::inst::ModInt::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("ModInt")
+		->endl();
+}
+
+void fay::inst::ModLong::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("ModLong")
+		->endl();
+}
+
+void fay::inst::ModFloat::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("ModFloat")
+		->endl();
+}
+
+void fay::inst::ModDouble::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("ModDouble")
+		->endl();
+}
+
+void fay::inst::ModString::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("ModString")
+		->endl();
+}
+
+void fay::inst::ModObject::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("ModObject")
+		->endl();
+}
+
+void fay::inst::ModFunction::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("ModFunction")
+		->endl();
+}
+
 void fay::inst::Not::buildString(mirror::utils::StringBuilder * sb)
 {
 	sb->add("Not")
@@ -1563,6 +1623,126 @@ void fay::inst::ComplementObject::buildString(mirror::utils::StringBuilder * sb)
 void fay::inst::ComplementFunction::buildString(mirror::utils::StringBuilder * sb)
 {
 	sb->add("ComplementFunction")
+		->endl();
+}
+
+void fay::inst::LShiftVoid::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("LShiftVoid")
+		->endl();
+}
+
+void fay::inst::LShiftBool::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("LShiftBool")
+		->endl();
+}
+
+void fay::inst::LShiftByte::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("LShiftByte")
+		->endl();
+}
+
+void fay::inst::LShiftInt::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("LShiftInt")
+		->endl();
+}
+
+void fay::inst::LShiftLong::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("LShiftLong")
+		->endl();
+}
+
+void fay::inst::LShiftFloat::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("LShiftFloat")
+		->endl();
+}
+
+void fay::inst::LShiftDouble::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("LShiftDouble")
+		->endl();
+}
+
+void fay::inst::LShiftString::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("LShiftString")
+		->endl();
+}
+
+void fay::inst::LShiftObject::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("LShiftObject")
+		->endl();
+}
+
+void fay::inst::LShiftFunction::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("LShiftFunction")
+		->endl();
+}
+
+void fay::inst::RShiftVoid::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("RShiftVoid")
+		->endl();
+}
+
+void fay::inst::RShiftBool::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("RShiftBool")
+		->endl();
+}
+
+void fay::inst::RShiftByte::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("RShiftByte")
+		->endl();
+}
+
+void fay::inst::RShiftInt::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("RShiftInt")
+		->endl();
+}
+
+void fay::inst::RShiftLong::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("RShiftLong")
+		->endl();
+}
+
+void fay::inst::RShiftFloat::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("RShiftFloat")
+		->endl();
+}
+
+void fay::inst::RShiftDouble::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("RShiftDouble")
+		->endl();
+}
+
+void fay::inst::RShiftString::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("RShiftString")
+		->endl();
+}
+
+void fay::inst::RShiftObject::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("RShiftObject")
+		->endl();
+}
+
+void fay::inst::RShiftFunction::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("RShiftFunction")
 		->endl();
 }
 

@@ -258,6 +258,16 @@ void fay::TypeDict::Init()
 	TypeDict::InstTypeName[InstType::DivString] = "DivString";
 	TypeDict::InstTypeName[InstType::DivObject] = "DivObject";
 	TypeDict::InstTypeName[InstType::DivFunction] = "DivFunction";
+	TypeDict::InstTypeName[InstType::ModVoid] = "ModVoid";
+	TypeDict::InstTypeName[InstType::ModBool] = "ModBool";
+	TypeDict::InstTypeName[InstType::ModByte] = "ModByte";
+	TypeDict::InstTypeName[InstType::ModInt] = "ModInt";
+	TypeDict::InstTypeName[InstType::ModLong] = "ModLong";
+	TypeDict::InstTypeName[InstType::ModFloat] = "ModFloat";
+	TypeDict::InstTypeName[InstType::ModDouble] = "ModDouble";
+	TypeDict::InstTypeName[InstType::ModString] = "ModString";
+	TypeDict::InstTypeName[InstType::ModObject] = "ModObject";
+	TypeDict::InstTypeName[InstType::ModFunction] = "ModFunction";
 	TypeDict::InstTypeName[InstType::Not] = "Not";
 	TypeDict::InstTypeName[InstType::EqualVoid] = "EqualVoid";
 	TypeDict::InstTypeName[InstType::EqualBool] = "EqualBool";
@@ -329,6 +339,26 @@ void fay::TypeDict::Init()
 	TypeDict::InstTypeName[InstType::ComplementString] = "ComplementString";
 	TypeDict::InstTypeName[InstType::ComplementObject] = "ComplementObject";
 	TypeDict::InstTypeName[InstType::ComplementFunction] = "ComplementFunction";
+	TypeDict::InstTypeName[InstType::LShiftVoid] = "LShiftVoid";
+	TypeDict::InstTypeName[InstType::LShiftBool] = "LShiftBool";
+	TypeDict::InstTypeName[InstType::LShiftByte] = "LShiftByte";
+	TypeDict::InstTypeName[InstType::LShiftInt] = "LShiftInt";
+	TypeDict::InstTypeName[InstType::LShiftLong] = "LShiftLong";
+	TypeDict::InstTypeName[InstType::LShiftFloat] = "LShiftFloat";
+	TypeDict::InstTypeName[InstType::LShiftDouble] = "LShiftDouble";
+	TypeDict::InstTypeName[InstType::LShiftString] = "LShiftString";
+	TypeDict::InstTypeName[InstType::LShiftObject] = "LShiftObject";
+	TypeDict::InstTypeName[InstType::LShiftFunction] = "LShiftFunction";
+	TypeDict::InstTypeName[InstType::RShiftVoid] = "RShiftVoid";
+	TypeDict::InstTypeName[InstType::RShiftBool] = "RShiftBool";
+	TypeDict::InstTypeName[InstType::RShiftByte] = "RShiftByte";
+	TypeDict::InstTypeName[InstType::RShiftInt] = "RShiftInt";
+	TypeDict::InstTypeName[InstType::RShiftLong] = "RShiftLong";
+	TypeDict::InstTypeName[InstType::RShiftFloat] = "RShiftFloat";
+	TypeDict::InstTypeName[InstType::RShiftDouble] = "RShiftDouble";
+	TypeDict::InstTypeName[InstType::RShiftString] = "RShiftString";
+	TypeDict::InstTypeName[InstType::RShiftObject] = "RShiftObject";
+	TypeDict::InstTypeName[InstType::RShiftFunction] = "RShiftFunction";
 	//InstTypeNameEnd
 }
 

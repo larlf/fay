@@ -1354,6 +1354,76 @@ namespace fay
 			virtual void buildString(mirror::utils::StringBuilder* sb) override;
 		};
 		
+		class ModVoid : public fay::FayInst 
+		{ 
+		public:
+			ModVoid() : FayInst(InstType::ModVoid) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class ModBool : public fay::FayInst 
+		{ 
+		public:
+			ModBool() : FayInst(InstType::ModBool) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class ModByte : public fay::FayInst 
+		{ 
+		public:
+			ModByte() : FayInst(InstType::ModByte) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class ModInt : public fay::FayInst 
+		{ 
+		public:
+			ModInt() : FayInst(InstType::ModInt) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class ModLong : public fay::FayInst 
+		{ 
+		public:
+			ModLong() : FayInst(InstType::ModLong) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class ModFloat : public fay::FayInst 
+		{ 
+		public:
+			ModFloat() : FayInst(InstType::ModFloat) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class ModDouble : public fay::FayInst 
+		{ 
+		public:
+			ModDouble() : FayInst(InstType::ModDouble) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class ModString : public fay::FayInst 
+		{ 
+		public:
+			ModString() : FayInst(InstType::ModString) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class ModObject : public fay::FayInst 
+		{ 
+		public:
+			ModObject() : FayInst(InstType::ModObject) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class ModFunction : public fay::FayInst 
+		{ 
+		public:
+			ModFunction() : FayInst(InstType::ModFunction) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
 		class Not : public fay::FayInst 
 		{ 
 		public:
@@ -1848,6 +1918,146 @@ namespace fay
 		{ 
 		public:
 			ComplementFunction() : FayInst(InstType::ComplementFunction) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class LShiftVoid : public fay::FayInst 
+		{ 
+		public:
+			LShiftVoid() : FayInst(InstType::LShiftVoid) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class LShiftBool : public fay::FayInst 
+		{ 
+		public:
+			LShiftBool() : FayInst(InstType::LShiftBool) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class LShiftByte : public fay::FayInst 
+		{ 
+		public:
+			LShiftByte() : FayInst(InstType::LShiftByte) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class LShiftInt : public fay::FayInst 
+		{ 
+		public:
+			LShiftInt() : FayInst(InstType::LShiftInt) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class LShiftLong : public fay::FayInst 
+		{ 
+		public:
+			LShiftLong() : FayInst(InstType::LShiftLong) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class LShiftFloat : public fay::FayInst 
+		{ 
+		public:
+			LShiftFloat() : FayInst(InstType::LShiftFloat) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class LShiftDouble : public fay::FayInst 
+		{ 
+		public:
+			LShiftDouble() : FayInst(InstType::LShiftDouble) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class LShiftString : public fay::FayInst 
+		{ 
+		public:
+			LShiftString() : FayInst(InstType::LShiftString) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class LShiftObject : public fay::FayInst 
+		{ 
+		public:
+			LShiftObject() : FayInst(InstType::LShiftObject) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class LShiftFunction : public fay::FayInst 
+		{ 
+		public:
+			LShiftFunction() : FayInst(InstType::LShiftFunction) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class RShiftVoid : public fay::FayInst 
+		{ 
+		public:
+			RShiftVoid() : FayInst(InstType::RShiftVoid) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class RShiftBool : public fay::FayInst 
+		{ 
+		public:
+			RShiftBool() : FayInst(InstType::RShiftBool) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class RShiftByte : public fay::FayInst 
+		{ 
+		public:
+			RShiftByte() : FayInst(InstType::RShiftByte) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class RShiftInt : public fay::FayInst 
+		{ 
+		public:
+			RShiftInt() : FayInst(InstType::RShiftInt) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class RShiftLong : public fay::FayInst 
+		{ 
+		public:
+			RShiftLong() : FayInst(InstType::RShiftLong) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class RShiftFloat : public fay::FayInst 
+		{ 
+		public:
+			RShiftFloat() : FayInst(InstType::RShiftFloat) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class RShiftDouble : public fay::FayInst 
+		{ 
+		public:
+			RShiftDouble() : FayInst(InstType::RShiftDouble) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class RShiftString : public fay::FayInst 
+		{ 
+		public:
+			RShiftString() : FayInst(InstType::RShiftString) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class RShiftObject : public fay::FayInst 
+		{ 
+		public:
+			RShiftObject() : FayInst(InstType::RShiftObject) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class RShiftFunction : public fay::FayInst 
+		{ 
+		public:
+			RShiftFunction() : FayInst(InstType::RShiftFunction) {}
 			virtual void buildString(mirror::utils::StringBuilder* sb) override;
 		};
 		

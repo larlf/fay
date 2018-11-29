@@ -101,7 +101,7 @@ class FayInst
 
 	constructor(data: any)
 	{
-		this.name = (data.Code1?data.Code1:"") + (data.Code2 ? data.Code2 : "");
+		this.name = (data.Code1 ? data.Code1 : "") + (data.Code2 ? data.Code2 : "");
 		this.action = data.Action ? data.Action.toString() : "";
 
 		//记录一下最后一条指令
@@ -420,7 +420,7 @@ Cmds.inst = function ()
 			if (values[inst.name] === undefined)
 			{
 				maxValue++;
-				inst.code=maxValue;
+				inst.code = maxValue;
 				values[it.name] = maxValue;
 			}
 			else
@@ -428,7 +428,7 @@ Cmds.inst = function ()
 				inst.code = values[it.Name];
 			}
 
-			if(it.Code1)
+			if (it.Code1)
 				Code1Value.set(it.Code1, true);
 
 			hText += inst.makeHeadCode();
@@ -471,36 +471,71 @@ Cmds._convert_inst = "生成类型转换的代码";
 Cmds.convert_inst = function ()
 {
 	let file = xlsx.readFile(path.resolve(__dirname, "../doc/FayLang.xlsx"));
-	let json = xlsx.utils.sheet_to_json(file.Sheets['ValueType']);
+	let typeData = xlsx.utils.sheet_to_json(file.Sheets['ValueType']);
+	let typeMap: Map<string, boolean> = new Map();
+	let instData = xlsx.utils.sheet_to_json(file.Sheets['Inst']);
+	let instMap: Map<string, boolean> = new Map();  //用于记录当前有效的语句
 
-	let convertText = "";
-	json.forEach((it1: any) =>
+	typeData.forEach((it: any) =>
 	{
-		json.forEach((it2: any) =>
+		typeMap.set(it.Name, true);
+	});
+
+	//记录所有有效的指令
+	instData.forEach((it: any) =>
+	{
+		if (it.Action && it.Action.trim().length > 0)
+			instMap.set(it.Name, true);
+	});
+
+	//生成类型转换的语句
+	let convertText = "";
+	typeData.forEach((it1: any) =>
+	{
+		typeData.forEach((it2: any) =>
 		{
+			let instName = it1.Name + "To" + it2.Name;
+			if (!instMap.get(instName))
+				return;
+
 			if (convertText)
 				convertText += "\nelse ";
 
 			convertText += "if (src == ValueType::" + it1.Name + " && dest == ValueType::" + it2.Name + ")\n";
-			convertText += "\treturn new inst::" + it1.Name + "To" + it2.Name + "();"
+			convertText += "\treturn new inst::" + instName + "();"
 		});
 	});
 
 	replaceFileBody("src/fay_lang.cpp", "ConvertInst", convertText, "\t");
 
-	let ops = ["Minus", "Add", "Sub", "Mul", "Div", "Equal", "Greater", "Less", "Complement"];
+	//生成按操作类型处理的语句
 	let opText = "";
-	ops.forEach(op =>
+	instData.forEach((it: any) =>
 	{
-		json.forEach((it: any) =>
+		//如果第二部分是一个类型
+		if (typeMap.get(it.Code2) && instMap.get(it.Name) && (!it.Params || it.Params.trim().length <= 0))  
 		{
 			if (opText)
 				opText += "\nelse ";
 
-			opText += larlf.text.format("if (op == InstGroupType::{0} && type == ValueType::{1})", op, it.Name);
-			opText += larlf.text.format("\n\treturn new inst::{0}{1}();", op, it.Name);
-		});
+			opText += larlf.text.format("if (op == InstGroupType::{0} && type == ValueType::{1})", it.Code1, it.Code2);
+			opText += larlf.text.format("\n\treturn new inst::{0}();", it.Name);
+		}
 	});
+
+
+	// let ops = ["Minus", "Add", "Sub", "Mul", "Div", "Equal", "Greater", "Less", "Complement"];
+	// ops.forEach(op =>
+	// {
+	// 	typeData.forEach((it: any) =>
+	// 	{
+	// 		if (opText)
+	// 			opText += "\nelse ";
+
+	// 		opText += larlf.text.format("if (op == InstGroupType::{0} && type == ValueType::{1})", op, it.Name);
+	// 		opText += larlf.text.format("\n\treturn new inst::{0}{1}();", op, it.Name);
+	// 	});
+	// });
 
 	replaceFileBody("src/fay_lang.cpp", "OPInst", opText, "\t");
 }
