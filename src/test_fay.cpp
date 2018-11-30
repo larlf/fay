@@ -334,6 +334,13 @@ TEST_F(FayLang, MathTest)
 	}
 }
 
+TEST_F(FayLang, FlowTest)
+{
+	PRINT(project->findSource("FlowTest.fay")->tokensStr());
+	PRINT(project->findSource("FlowTest.fay")->astStr());
+	auto type = project->domain()->findClass("fay.dev.test.MathTest");
+}
+
 TEST_F(FayLang, FayValue)
 {
 	std::string str = "one";

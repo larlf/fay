@@ -6,6 +6,7 @@ public class FlowTest
 {
 	static public fun test1():int
 	{
+		var a=5, b=6;
 		return 0;
 	}
 }
