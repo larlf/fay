@@ -39,7 +39,12 @@ namespace fay
 		PTR(FayInstFun) fun() { return this->_fun; }
 		std::vector<std::string> &usings() { return this->_usings; }
 
-		std::string makeLabelName();
+		//生成一个新的Label，并放到Fun的LabelTable里
+		std::string makeLabel();
+		//把taget和label绑定起来
+		void useLabel(const std::string& label, int32_t* target);
+		//确定指定的label地址
+		void fixedLabel(const std::string& label);
 
 		void package(const std::string &name);
 

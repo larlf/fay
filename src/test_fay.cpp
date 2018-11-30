@@ -322,7 +322,7 @@ TEST_F(FayLang, MathTest)
 		PRINT(funs[0]->toString());
 		auto rs = vm->run(funs[0]);
 		ASSERT_EQ(rs.type(), ValueType::Int);
-		ASSERT_EQ(rs.intVal(), 15);
+		ASSERT_EQ(rs.intVal(), 1);
 	}
 }
 

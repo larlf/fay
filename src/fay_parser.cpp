@@ -860,50 +860,47 @@ PTR(AstNode) fay::Parser::_ExprBool(TokenStack* stack)
 	return _MakeLeftRightOPNode(_ExprBit, { "&&", "||" }, stack, [](PTR(Token) token)->PTR(AstNode) { return MKPTR(AstBoolOP)(token); });
 }
 
-PTR(AstNode) fay::Parser::_ExprCond(TokenStack* stack)
+PTR(AstNode) fay::Parser::_ExprCondExpr(TokenStack* stack)
 {
-	if(stack->now()->is("?"))
+	//return _MakeLeftRightOPNode(_ExprCondOption, { "?" }, stack, [](PTR(Token) token)->PTR(AstNode) { return MKPTR(AstCondExpr)(token); });
+
+	auto expr = _ExprBool(stack);
+	if (expr == nullptr)
+		throw ParseException(stack, "err.bad_expr");
+
+	if (stack->now()->is(TokenType::OP) && stack->now()->is("?"))
 	{
 		stack->next();
 
-		//条件
-		auto expr0 = _Expr(stack);
-		if(expr0 == nullptr)
-			throw ParseException(stack, "err.bad_condition");
-
-		//,
-		if(!stack->now()->is(","))
-			throw ParseException(stack, "err.expect", ",");
-		stack->next();
-
-		//first expr
-		auto expr1 = _Expr(stack);
-		if(expr1 == nullptr)
+		//取第一个值
+		auto v1 = _Expr(stack);
+		if (v1 == nullptr)
 			throw ParseException(stack, "err.bad_expr");
 
-		//,
-		if(!stack->now()->is(","))
-			throw ParseException(stack, "err.expect", ",");
+		//:
+		if (!stack->now()->is(":"))
+			throw ParseException(stack, "err.expect", ":");
 		stack->next();
 
-		//second expr
-		auto expr2 = _Expr(stack);
-		if(expr2 == nullptr)
+		//取第二个值
+		auto v2 = _Expr(stack);
+		if (v2 == nullptr)
 			throw ParseException(stack, "err.bad_expr");
 
+		//生成节点
 		auto node = MKPTR(AstCondExpr)(stack->now());
-		node->addChildNode(expr0);
-		node->addChildNode(expr1);
-		node->addChildNode(expr2);
+		node->addChildNode(expr);
+		node->addChildNode(v1);
+		node->addChildNode(v2);
 		return node;
 	}
 
-	return _ExprBool(stack);
+	return expr;
 }
 
 PTR(AstNode) fay::Parser::_ExprAssign(TokenStack* stack)
 {
-	return _MakeLeftRightOPNode(_ExprCond, { "=", "*=", "/=", "+=", "-=", "%=", "<<=", ">>=", "&=", "^=", "|=" }, stack, [](PTR(Token) token)->PTR(AstNode) { return MKPTR(AstAssign)(token); });
+	return _MakeLeftRightOPNode(_ExprCondExpr, { "=", "*=", "/=", "+=", "-=", "%=", "<<=", ">>=", "&=", "^=", "|=" }, stack, [](PTR(Token) token)->PTR(AstNode) { return MKPTR(AstAssign)(token); });
 }
 
 PTR(AstNode) fay::Parser::_Expr(TokenStack* stack)

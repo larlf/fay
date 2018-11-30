@@ -26,10 +26,10 @@ namespace fay
 		BuildException(PTR(fay::AstNode) ast, const std::string &key, Params... args)
 			: FayCompileException((I18N::Get(key, args...)))
 		{
-			if (ast)
+			if(ast)
 			{
 				PTR(Token) token = ast->token();
-				if (token)
+				if(token)
 				{
 					this->_file = token->file();
 					this->_line = token->line();
@@ -67,13 +67,13 @@ namespace fay
 		virtual std::string className();
 
 		//用于判断类型
-		template<typename T> bool is() 
-		{ 
-			if (typeid(*this) == typeid(T))
+		template<typename T> bool is()
+		{
+			if(typeid(*this) == typeid(T))
 				return true;
 
 			T* t = dynamic_cast<T*>(this);
-			if (t != nullptr)
+			if(t != nullptr)
 				return true;
 
 			return false;
@@ -330,6 +330,9 @@ namespace fay
 	class AstCondExpr : public AstNode
 	{
 		using AstNode::AstNode;
+	private:
+		std::string _v2Label;  //指向第二个值的标签
+		std::string _endLabel;  //指向语句结束的标签
 	public:
 		virtual void dig3(FayBuilder* builder) override;
 		virtual void dig4(FayBuilder* builder) override;
@@ -478,18 +481,16 @@ namespace fay
 	};
 
 	//类型转换
+	//注意这个节点经常是在dig3()中产生的，所以它的dig3()可能会不执行
+	//有什么判断尽量都写到dig4()里
 	class AstTypeConvert : public AstNode
 	{
 	private:
 		WPTR(FayClass) _srcType;
+		WPTR(FayClass) _destType;
 
 	public:
-		AstTypeConvert(const PTR(Token) &token, PTR(FayClass) srcType, PTR(FayClass) destType)
-			: AstNode(token), _srcType(srcType)
-		{
-			this->_classType = destType;
-		}
-
+		AstTypeConvert(const PTR(Token) &token, PTR(FayClass) srcType, PTR(FayClass) destType);
 		virtual void dig4(FayBuilder* builder) override;
 	};
 

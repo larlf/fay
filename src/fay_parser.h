@@ -100,7 +100,7 @@ namespace fay
 		//布尔操作符
 		static PTR(AstNode) _ExprBool(TokenStack* stack);
 		//条件表达式
-		static PTR(AstNode) _ExprCond(TokenStack* stack);
+		static PTR(AstNode) _ExprCondExpr(TokenStack* stack);
 		//赋值运算符
 		static PTR(AstNode) _ExprAssign(TokenStack* stack);
 		//表达式

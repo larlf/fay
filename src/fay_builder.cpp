@@ -7,19 +7,31 @@ using namespace fay;
 fay::FayBuilder::~FayBuilder()
 {
 	//清除临时的指令
-	if (this->_insts.size() > 0)
+	if(this->_insts.size() > 0)
 	{
 		for each(auto it in this->_insts)
 		{
-			if (it != nullptr)
+			if(it != nullptr)
 				delete it;
 		}
 	}
 }
 
-std::string fay::FayBuilder::makeLabelName()
+std::string fay::FayBuilder::makeLabel()
 {
-	return "__label__" + std::to_string(this->labelIndex++);
+	std::string label = "__label__" + std::to_string(this->labelIndex++);
+	this->_fun->labels()->addLabel(label);
+	return label;
+}
+
+void fay::FayBuilder::useLabel(const std::string & label, int32_t * target)
+{
+	this->_fun->labels()->addTarget(label, target);
+}
+
+void fay::FayBuilder::fixedLabel(const std::string & label)
+{
+	this->_fun->labels()->setPos(label, this->instsSize());
 }
 
 void fay::FayBuilder::package(const std::string &name)
@@ -38,7 +50,7 @@ void fay::FayBuilder::endFile()
 	this->_filename = "";
 }
 
-void fay::FayBuilder::addUsing(const std::string & packageName)
+void fay::FayBuilder::addUsing(const std::string &packageName)
 {
 	this->_usings.push_back(packageName);
 }
@@ -69,7 +81,7 @@ pos_t fay::FayBuilder::addFun(PTR(FayInstFun) fun)
 
 void fay::FayBuilder::bindFun(pos_t index, bool isStatic)
 {
-	if (index < 0)
+	if(index < 0)
 	{
 		LOG_ERROR("Bad fun index : " << index);
 		return;
@@ -78,7 +90,7 @@ void fay::FayBuilder::bindFun(pos_t index, bool isStatic)
 	this->_fun = TOPTR(FayInstFun, this->_class->findFun(index, isStatic));
 
 	//清空指令集
-	if (this->_insts.size() > 0)
+	if(this->_insts.size() > 0)
 		this->_insts.clear();
 }
 
@@ -89,7 +101,7 @@ void fay::FayBuilder::addParamDefine(const std::string &name, const std::string 
 	this->_fun->addParam(def);
 }
 
-void fay::FayBuilder::addInst(FayInst *inst)
+void fay::FayBuilder::addInst(FayInst* inst)
 {
 	this->_insts.push_back(inst);
 }
@@ -101,13 +113,13 @@ void fay::FayBuilder::optimizeInsts()
 	this->_insts.clear();
 }
 
-PTR(FayVarDef) fay::FayBuilder::findVar(const std::string & name)
+PTR(FayVarDef) fay::FayBuilder::findVar(const std::string &name)
 {
 	auto var = this->_fun->findVar(name);
 	return var;
 }
 
-pos_t fay::FayBuilder::findVarIndex(const std::string & name)
+pos_t fay::FayBuilder::findVarIndex(const std::string &name)
 {
 	return this->_fun->getVarIndex(name);
 }
