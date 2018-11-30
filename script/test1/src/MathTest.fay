@@ -195,4 +195,11 @@ public class MathTest
 		var b=16;
 		return a<b?b-a:b+a;
 	}
+
+	static public fun test29():int
+	{
+		var a=15.5;
+		var b=a;
+		return b;
+	}
 }

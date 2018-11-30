@@ -39,7 +39,7 @@ void test::FayLang::SetUpTestCase()
 	vm = MKPTR(FayVM)(project->domain());
 }
 
-TEST_F(FayLang, TypeTest1)
+TEST_F(FayLang, TypeTest)
 {
 	PRINT(project->findSource("TypeTest.fay")->tokensStr());
 	PRINT(project->findSource("TypeTest.fay")->astStr());
@@ -324,26 +324,13 @@ TEST_F(FayLang, MathTest)
 		ASSERT_EQ(rs.type(), ValueType::Int);
 		ASSERT_EQ(rs.intVal(), 1);
 	}
-}
 
-TEST_F(FayLang, Test1)
-{
-	auto type = project->domain()->findClass("com.larlf.MyTest");
-	if (type == nullptr)
 	{
-		LOG_ERROR("Cannot find type : com.larlf.MyTest");
-		return;
-	}
-
-	auto funs = type->findFunByName("fun5", true);
-	if (funs.size() > 0)
-	{
-		//显示函数的内容
-		utils::StringBuilder sb;
-		funs[0]->buildString(&sb);
-		PRINT(sb.toString());
-
-		vm->run(funs[0]);
+		std::vector<PTR(FayFun)>funs = type->findFunByName("test29", true);
+		PRINT(funs[0]->toString());
+		auto rs = vm->run(funs[0]);
+		ASSERT_EQ(rs.type(), ValueType::Int);
+		ASSERT_EQ(rs.intVal(), 15);
 	}
 }
 
@@ -389,87 +376,6 @@ FayValue test::FayLang::makeValue(const std::string &str)
 {
 	FayValue v = FayValue(str.c_str());
 	return v;
-}
-
-
-
-TEST_F(FayLang, Run)
-{
-	try
-	{
-		std::string filename = "../script/test1.fay";
-		std::string text = utils::FileUtils::ReadTextFile(filename);
-		LOG_DEBUG(text);
-		PTR(FayFile) file = MKPTR(FayFile)(filename, text);
-
-		PRINT("----------------------------------------");
-
-		fay::Lexer lexer;
-		auto tokens = lexer.Execute(file);
-
-		for(auto i = 0; i < tokens->size(); ++i)
-			PRINT(i << "\t" << (*tokens)[i]->toString());
-
-		PRINT("----------------------------------------");
-
-		PTR(fay::AstNode) ast = fay::Parser::Parse(tokens, filename);
-		if(ast)
-		{
-			utils::StringBuilder sb;
-			ast->buildString(&sb);
-			PRINT(sb.toString());
-		}
-
-		PRINT("----------------------------------------");
-
-		PTR(fay::FayDomain) domain = MKPTR(fay::FayDomain)();
-		domain->init();
-
-		PTR(fay::FayBuilder) builder = MKPTR(fay::FayBuilder)(domain);
-		builder->beginLib("TestLib");
-
-		ast->dig1(builder.get());
-
-		PRINT("--------------------Dig1--------------------");
-		utils::StringBuilder sb;
-		domain->buildString(&sb);
-		PRINT(sb.toString());
-
-		ast->dig2(builder.get());
-
-		PRINT("--------------------Dig2--------------------");
-		sb.clear();
-		domain->buildString(&sb);
-		PRINT(sb.toString());
-
-		ast->dig3(builder.get());
-		PRINT("--------------------Dig3--------------------");
-		if(ast)
-		{
-			utils::StringBuilder sb;
-			ast->buildString(&sb);
-			PRINT(sb.toString());
-		}
-
-		ast->dig4(builder.get());
-		PRINT("--------------------Dig4--------------------");
-		sb.clear();
-		domain->buildString(&sb);
-		PRINT(sb.toString());
-
-		fay::FayVM vm(domain);
-		auto fun = domain->findFun("com.larlf.MyTest", "fun4()", false);
-
-		PRINT("-------------------Start--------------------");
-		vm.run(fun);
-		PRINT("--------------------End--------------------");
-
-		LOG_DEBUG("Stack Size : " << vm.stackSize());
-	}
-	catch(fay::FayCompileException &e)
-	{
-		LOG_ERROR(e.what());
-	}
 }
 
 TEST_F(FayLang, RTTI)

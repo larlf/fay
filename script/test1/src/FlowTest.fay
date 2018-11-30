@@ -1,0 +1,11 @@
+using fay.system;
+
+package fay.dev.test;
+
+public class FlowTest
+{
+	static public fun test1():int
+	{
+		return 0;
+	}
+}
