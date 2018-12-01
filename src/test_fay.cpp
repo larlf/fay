@@ -354,6 +354,12 @@ TEST_F(FayLang, FlowTest)
 	rs = vm->run(funs[0]);
 	ASSERT_EQ(rs.type(), ValueType::Int);
 	ASSERT_EQ(rs.intVal(), 7);
+
+	funs = type->findFunByName("test3", true);
+	PRINT(funs[0]->toString());
+	rs = vm->run(funs[0]);
+	ASSERT_EQ(rs.type(), ValueType::Int);
+	ASSERT_EQ(rs.intVal(), 55);
 }
 
 TEST_F(FayLang, FayValue)

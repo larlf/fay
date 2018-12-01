@@ -753,6 +753,9 @@ void fay::AstFor::dig4(FayBuilder* builder)
 	if(this->_nodes[2])
 		this->_nodes[2]->dig4(builder);
 
+	//这是个表达式，要把最后的值给pop了
+	builder->addInst(new inst::Pop());
+
 	//跳回到expr2进行判断
 	inst::Jump* inst = new inst::Jump(-1);
 	builder->fun()->labels()->addTarget(this->expr2Label, &inst->target);

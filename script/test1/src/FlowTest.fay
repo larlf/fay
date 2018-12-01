@@ -27,4 +27,14 @@ public class FlowTest
 
 		return d;
 	}
+
+	static public fun test3():int
+	{
+		var count=0;
+		for(var a=1; a<=10; ++a)
+		{
+			count=count+a;
+		}
+		return count;
+	}
 }
