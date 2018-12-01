@@ -418,6 +418,11 @@ namespace fay
 	class AstVar : public AstNode
 	{
 		using AstNode::AstNode;
+	};
+
+	class AstVarItem : public AstNode
+	{
+		using AstNode::AstNode;
 	private:
 		pos_t _index = -1;
 	public:

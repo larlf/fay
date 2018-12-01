@@ -338,7 +338,22 @@ TEST_F(FayLang, FlowTest)
 {
 	PRINT(project->findSource("FlowTest.fay")->tokensStr());
 	PRINT(project->findSource("FlowTest.fay")->astStr());
-	auto type = project->domain()->findClass("fay.dev.test.MathTest");
+	auto type = project->domain()->findClass("fay.dev.test.FlowTest");
+
+	std::vector<PTR(FayFun)> funs;
+	FayValue rs;
+	
+	funs = type->findFunByName("test1", true);
+	PRINT(funs[0]->toString());
+	rs = vm->run(funs[0]);
+	ASSERT_EQ(rs.type(), ValueType::Int);
+	ASSERT_EQ(rs.intVal(), 5);
+
+	funs = type->findFunByName("test2", true);
+	PRINT(funs[0]->toString());
+	rs = vm->run(funs[0]);
+	ASSERT_EQ(rs.type(), ValueType::Int);
+	ASSERT_EQ(rs.intVal(), 7);
 }
 
 TEST_F(FayLang, FayValue)

@@ -6,7 +6,25 @@ public class FlowTest
 {
 	static public fun test1():int
 	{
-		var a=5, b=6;
-		return 0;
+		var a=5, b=6, c=7;
+		if(a>b)
+			return c;
+
+		return a;
+	}
+
+	static public fun test2():int
+	{
+		var a=5, b=6, c=7;
+		var d:int;
+
+		if(a>b)
+			d=a;
+		elseif(b<c)
+			d=c;
+		else
+			d=b;
+
+		return d;
 	}
 }

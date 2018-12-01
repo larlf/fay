@@ -344,7 +344,7 @@ std::vector<PTR(FayClass)> fay::AstParamDefineList::getTypeList(FayBuilder* buil
 	return list;
 }
 
-void fay::AstVar::dig3(FayBuilder* builder)
+void fay::AstVarItem::dig3(FayBuilder* builder)
 {
 	AstNode::dig3(builder);
 
@@ -353,6 +353,7 @@ void fay::AstVar::dig3(FayBuilder* builder)
 	{
 		if(this->_nodes[1] == nullptr)
 			throw BuildException(this->shared_from_this(), "err.unknow_type");
+
 		this->_classType = this->_nodes[1]->classType();
 	}
 	else
@@ -379,7 +380,7 @@ void fay::AstVar::dig3(FayBuilder* builder)
 	}
 }
 
-void fay::AstVar::dig4(FayBuilder* builder)
+void fay::AstVarItem::dig4(FayBuilder* builder)
 {
 	AstNode::dig4(builder);
 

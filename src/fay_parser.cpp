@@ -388,37 +388,55 @@ PTR(AstNode) fay::Parser::_StmtVar(TokenStack* stack)
 {
 	if(!stack->now()->is(TokenType::Var))
 		throw ParseException(stack, "expect var");
+	PTR(AstVar) node = MKPTR(AstVar)(stack->now());
 	stack->next();
 
-	//变量名
-	if(!stack->now()->is(TokenType::ID))
-		throw ParseException(stack, "cannt find var name");
-	auto varName = stack->now();
-	stack->next();
-
-	//数据类型
-	PTR(AstNode) typeNode;
-	if(stack->now()->is(TokenType::Colon))
+	do
 	{
+		//变量名
+		if(!stack->now()->is(TokenType::ID))
+			throw ParseException(stack, "err.bad_var_name");
+		PTR(AstVarItem) item = MKPTR(AstVarItem)(stack->now());
 		stack->next();
-		typeNode = _Type(stack);
+
+		//数据类型
+		if(stack->now()->is(TokenType::Colon))
+		{
+			stack->next();
+			PTR(AstNode) typeNode = _Type(stack);
+			item->addChildNode(typeNode);
+		}
+		else
+			item->addChildNode(nullptr);
+
+		//处理赋值
+		if(stack->now()->is("="))
+		{
+			stack->next();
+			PTR(AstNode) valueNode = _Expr(stack);
+			item->addChildNode(valueNode);
+		}
+		else
+			item->addChildNode(nullptr);
+
+		node->addChildNode(item);
+
+		//是否进行下一项的解析
+		if(stack->now()->is(","))
+			stack->next();
+		else
+		{
+			if(stack->now()->is(";"))
+			{
+				stack->next();
+				break;
+			}
+			else
+				throw ParseException(stack, "err.expect", ";");
+		}
 	}
+	while(true);
 
-	//处理赋值
-	PTR(AstNode) valueNode;
-	if(stack->now()->is("="))
-	{
-		stack->next();
-		valueNode = _Expr(stack);
-	}
-
-	if(!stack->now()->is(TokenType::Semicolon))
-		throw ParseException(stack, "expect ;");
-	stack->next();
-
-	PTR(AstVar) node = MKPTR(AstVar)(varName);
-	node->addChildNode(typeNode);
-	node->addChildNode(valueNode);
 	return node;
 }
 
@@ -865,26 +883,26 @@ PTR(AstNode) fay::Parser::_ExprCondExpr(TokenStack* stack)
 	//return _MakeLeftRightOPNode(_ExprCondOption, { "?" }, stack, [](PTR(Token) token)->PTR(AstNode) { return MKPTR(AstCondExpr)(token); });
 
 	auto expr = _ExprBool(stack);
-	if (expr == nullptr)
+	if(expr == nullptr)
 		throw ParseException(stack, "err.bad_expr");
 
-	if (stack->now()->is(TokenType::OP) && stack->now()->is("?"))
+	if(stack->now()->is(TokenType::OP) && stack->now()->is("?"))
 	{
 		stack->next();
 
 		//取第一个值
 		auto v1 = _Expr(stack);
-		if (v1 == nullptr)
+		if(v1 == nullptr)
 			throw ParseException(stack, "err.bad_expr");
 
 		//:
-		if (!stack->now()->is(":"))
+		if(!stack->now()->is(":"))
 			throw ParseException(stack, "err.expect", ":");
 		stack->next();
 
 		//取第二个值
 		auto v2 = _Expr(stack);
-		if (v2 == nullptr)
+		if(v2 == nullptr)
 			throw ParseException(stack, "err.bad_expr");
 
 		//生成节点
