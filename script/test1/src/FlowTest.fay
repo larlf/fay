@@ -37,4 +37,18 @@ public class FlowTest
 		}
 		return count;
 	}
+
+	static public fun test4():int
+	{
+		var count=0;
+		goto l1;
+		count=count+1;
+		label l1;
+		count=count+2;
+		goto l2;
+		count=count+3;
+		label l2;
+		count=count+4;
+		return count;
+	}
 }

@@ -737,12 +737,12 @@ void fay::AstFor::dig4(FayBuilder* builder)
 		this->_nodes[0]->dig4(builder);
 
 	//再生成expr2的代码，用于对结果进行判断
-	builder->fun()->labels()->setPos(this->expr2Label, builder->instsSize());
+	builder->fixedLabel(this->expr2Label);
 	this->_nodes[1]->dig4(builder);
 
 	//如果不成立，就跳向结束
 	inst::JumpFalse* inst2 = new inst::JumpFalse(-1);
-	builder->fun()->labels()->addTarget(this->endLabel, &inst2->target);
+	builder->useLabel(this->endLabel, &inst2->target);
 	builder->addInst(inst2);
 
 	//循环体
@@ -758,11 +758,11 @@ void fay::AstFor::dig4(FayBuilder* builder)
 
 	//跳回到expr2进行判断
 	inst::Jump* inst = new inst::Jump(-1);
-	builder->fun()->labels()->addTarget(this->expr2Label, &inst->target);
+	builder->useLabel(this->expr2Label, &inst->target);
 	builder->addInst(inst);
 
 	//结束的位置
-	builder->fun()->labels()->setPos(this->endLabel, builder->instsSize());
+	builder->fixedLabel(this->endLabel);
 }
 
 void fay::AstPreOP::dig3(FayBuilder* builder)
