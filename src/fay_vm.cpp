@@ -33,6 +33,13 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 				if(!v.boolVal()) i=((inst::JumpFalse*)inst)->target-1;
 				break;
 			}
+			case InstType::JumpTrue:
+			{
+				FayValue v=this->stack.top();
+				this->stack.pop();
+				if(v.boolVal()) i=((inst::JumpTrue*)inst)->target-1;
+				break;
+			}
 			case InstType::Return:
 			{
 				i=insts->size();

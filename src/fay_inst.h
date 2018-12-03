@@ -50,6 +50,14 @@ namespace fay
 			virtual void buildString(mirror::utils::StringBuilder* sb) override;
 		};
 		
+		class JumpTrue : public fay::FayInst 
+		{ 
+		public:
+			int32_t target;
+			JumpTrue(int32_t target) : FayInst(InstType::JumpTrue),target(target) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
 		class Return : public fay::FayInst 
 		{ 
 		public:

@@ -56,6 +56,8 @@ namespace fay
 		static PTR(AstNode) _StmtAssign(TokenStack* stack);
 		static PTR(AstNode) _StmtIf(TokenStack* stack);
 		static PTR(AstNode) _StmtFor(TokenStack* stack);
+		static PTR(AstNode) _StmtWhile(TokenStack* stack);
+		static PTR(AstNode) _StmtDoWhile(TokenStack* stack);
 		static PTR(AstNode) _StmtReturn(TokenStack* stack);
 
 		//数组

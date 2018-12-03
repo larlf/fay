@@ -287,6 +287,10 @@ PTR(AstNode) fay::Parser::_Stmt(TokenStack* stack)
 		return _StmtIf(stack);
 	else if(stack->now()->is(TokenType::For))
 		return _StmtFor(stack);
+	else if (stack->now()->is(TokenType::While))
+		return _StmtWhile(stack);
+	else if (stack->now()->is(TokenType::Do))
+		return _StmtDoWhile(stack);
 	else if(stack->now()->is(TokenType::Label))
 		return _StmtLabel(stack);
 	else if(stack->now()->is(TokenType::Goto))
@@ -553,6 +557,78 @@ PTR(AstNode) fay::Parser::_StmtFor(TokenStack* stack)
 			throw ParseException(stack, "cannot find statement");
 		node->addChildNode(stmt);
 	}
+
+	return node;
+}
+
+PTR(AstNode) fay::Parser::_StmtWhile(TokenStack * stack)
+{
+	//while
+	if (!stack->now()->is(TokenType::While))
+		throw ParseException(stack, "err.expect", "while");
+	PTR(AstWhile) node = MKPTR(AstWhile)(stack->now());
+	stack->next();
+
+	//(
+	if (!stack->now()->is("("))
+		throw ParseException(stack, "err.expect", "(");
+	stack->next();
+
+	//条件
+	PTR(AstNode) expr = _Expr(stack);
+	if (expr == nullptr)
+		throw ParseException(stack, "err.while_expr");
+	node->addChildNode(expr);
+
+	//(
+	if (!stack->now()->is(")"))
+		throw ParseException(stack, "err.expect", ")");
+	stack->next();
+
+	//执行体
+	PTR(AstNode) block = _Stmt(stack);
+	node->addChildNode(block);
+
+	return node;
+}
+
+PTR(AstNode) fay::Parser::_StmtDoWhile(TokenStack * stack)
+{
+	//do
+	if (!stack->now()->is(TokenType::Do))
+		throw ParseException(stack, "err.expect", "do");
+	PTR(AstDoWhile) node = MKPTR(AstDoWhile)(stack->now());
+	stack->next();
+
+	//执行体
+	PTR(AstNode) block = _Stmt(stack);
+	node->addChildNode(block);
+
+	//while
+	if (!stack->now()->is(TokenType::While))
+		throw ParseException(stack, "err.expect", "while");
+	stack->next();
+
+	//(
+	if (!stack->now()->is("("))
+		throw ParseException(stack, "err.expect", "(");
+	stack->next();
+
+	//条件
+	PTR(AstNode) expr = _Expr(stack);
+	if (expr == nullptr)
+		throw ParseException(stack, "err.while_expr");
+	node->addChildNode(expr);
+
+	//(
+	if (!stack->now()->is(")"))
+		throw ParseException(stack, "err.expect", ")");
+	stack->next();
+
+	//;
+	if (!stack->now()->is(";"))
+		throw ParseException(stack, "err.expect", ";");
+	stack->next();
 
 	return node;
 }

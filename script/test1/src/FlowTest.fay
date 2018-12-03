@@ -51,4 +51,26 @@ public class FlowTest
 		count=count+4;
 		return count;
 	}
+
+	static public fun test5():int
+	{
+		var count=1;
+		while(count<15)
+		{
+			count=count*2;
+		}
+
+		return count;
+	}
+
+	static public fun test6():int
+	{
+		var count=1;
+		do
+		{
+			count=count+5;
+		}while(count<=11);
+
+		return count;
+	}
 }

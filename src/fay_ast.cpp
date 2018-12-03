@@ -1,4 +1,5 @@
 ﻿#include "fay_ast.h"
+#include "fay_ast.h"
 #include <fay_ast.h>
 #include <typeinfo>
 #include <mirror_utils_log.h>
@@ -1154,4 +1155,69 @@ void fay::AstCondExpr::dig4(FayBuilder* builder)
 	this->_nodes[2]->dig4(builder);
 
 	builder->fixedLabel(this->_endLabel);
+}
+
+void fay::AstWhile::dig3(FayBuilder* builder)
+{
+	AstNode::dig3(builder);
+
+	//如果不是Bool，这里进行一下转换
+	auto type = this->_nodes[0]->classType();
+	if (type->valueType() != ValueType::Bool)
+		this->insertChldNode(0, MKPTR(AstTypeConvert)(this->_token, type, (*builder->domain())[ValueType::Bool]));
+
+	//生成开始和结束的标签
+	this->startLabel = builder->makeLabel();
+	this->endLabel = builder->makeLabel();
+}
+
+void fay::AstWhile::dig4(FayBuilder * builder)
+{
+	builder->fixedLabel(this->startLabel);
+
+	this->_nodes[0]->dig4(builder);
+
+	inst::JumpFalse *inst1 = new inst::JumpFalse(-1);
+	builder->useLabel(this->endLabel, &inst1->target);
+	builder->addInst(inst1);
+
+	if (this->_nodes[1] != nullptr)
+	{
+		this->_nodes[1]->dig4(builder);
+	}
+
+	inst::Jump *inst2 = new inst::Jump(-1);
+	builder->useLabel(this->startLabel, &inst2->target);
+	builder->addInst(inst2);
+
+	builder->fixedLabel(this->endLabel);
+}
+
+void fay::AstDoWhile::dig3(FayBuilder * builder)
+{
+	AstNode::dig3(builder);
+
+	//如果不是Bool，这里进行一下转换
+	auto type = this->_nodes[1]->classType();
+	if (type->valueType() != ValueType::Bool)
+		this->insertChldNode(1, MKPTR(AstTypeConvert)(this->_token, type, (*builder->domain())[ValueType::Bool]));
+
+	//生成开始的标签
+	this->startLabel = builder->makeLabel();
+}
+
+void fay::AstDoWhile::dig4(FayBuilder * builder)
+{
+	builder->fixedLabel(this->startLabel);
+
+	if (this->_nodes[0] != nullptr)
+	{
+		this->_nodes[0]->dig4(builder);
+	}
+
+	this->_nodes[1]->dig4(builder);
+
+	inst::JumpTrue *inst1 = new inst::JumpTrue(-1);
+	builder->useLabel(this->startLabel, &inst1->target);
+	builder->addInst(inst1);
 }

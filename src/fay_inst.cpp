@@ -22,6 +22,13 @@ void fay::inst::JumpFalse::buildString(mirror::utils::StringBuilder * sb)
 		->endl();
 }
 
+void fay::inst::JumpTrue::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("JumpTrue")
+		->add(" ")->add(this->target)
+		->endl();
+}
+
 void fay::inst::Return::buildString(mirror::utils::StringBuilder * sb)
 {
 	sb->add("Return")

@@ -218,7 +218,7 @@ TEST_F(FayLang, MathTest)
 		PRINT(funs[0]->toString());
 		auto rs = vm->run(funs[0]);
 		ASSERT_EQ(rs.type(), ValueType::Int);
-		ASSERT_EQ(rs.intVal(), 5<<2);
+		ASSERT_EQ(rs.intVal(), 5 << 2);
 	}
 
 	{
@@ -226,7 +226,7 @@ TEST_F(FayLang, MathTest)
 		PRINT(funs[0]->toString());
 		auto rs = vm->run(funs[0]);
 		ASSERT_EQ(rs.type(), ValueType::Int);
-		ASSERT_EQ(rs.intVal(), 88990011>>3);
+		ASSERT_EQ(rs.intVal(), 88990011 >> 3);
 	}
 
 	{
@@ -342,7 +342,7 @@ TEST_F(FayLang, FlowTest)
 
 	std::vector<PTR(FayFun)> funs;
 	FayValue rs;
-	
+
 	funs = type->findFunByName("test1", true);
 	PRINT(funs[0]->toString());
 	rs = vm->run(funs[0]);
@@ -366,6 +366,18 @@ TEST_F(FayLang, FlowTest)
 	rs = vm->run(funs[0]);
 	ASSERT_EQ(rs.type(), ValueType::Int);
 	ASSERT_EQ(rs.intVal(), 6);
+
+	funs = type->findFunByName("test5", true);
+	PRINT(funs[0]->toString());
+	rs = vm->run(funs[0]);
+	ASSERT_EQ(rs.type(), ValueType::Int);
+	ASSERT_EQ(rs.intVal(), 16);
+
+	funs = type->findFunByName("test6", true);
+	PRINT(funs[0]->toString());
+	rs = vm->run(funs[0]);
+	ASSERT_EQ(rs.type(), ValueType::Int);
+	ASSERT_EQ(rs.intVal(), 16);
 }
 
 TEST_F(FayLang, FayValue)
@@ -382,8 +394,8 @@ TEST_F(FayLang, FayValue)
 		v4 = v3;
 		v3 = v2;
 		v5 = FayValue(v3);
-		 
-		FayValue v6(100); 
+
+		FayValue v6(100);
 		FayValue v7;
 
 		TestValue v11;
@@ -391,7 +403,7 @@ TEST_F(FayLang, FayValue)
 
 		auto t1 = utils::TimeUtils::MSTime();
 
-		for (auto i = 0; i < 100000000; ++i)
+		for(auto i = 0; i < 100000000; ++i)
 			v7 = v6;
 
 		LOG_DEBUG("Value : " << v7.intVal());
@@ -399,7 +411,7 @@ TEST_F(FayLang, FayValue)
 		auto t2 = utils::TimeUtils::MSTime();
 
 		LOG_INFO("Time : " << (t2 - t1));
-		ASSERT_LE((t2 - t1), 1000)<<"赋值性能测试";
+		ASSERT_LE((t2 - t1), 1000) << "赋值性能测试";
 	}
 
 	ASSERT_EQ(*v4.strVal(), "one");

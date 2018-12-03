@@ -397,14 +397,43 @@ namespace fay
 	class AstFor : public AstNode
 	{
 		using AstNode::AstNode;
-
 	private:
 		std::string expr2Label;
 		std::string endLabel;
-
 	public:
 		virtual void dig3(FayBuilder* builder) override;
 		virtual void dig4(FayBuilder* builder) override;
+	};
+
+	class AstForEach : public AstNode
+	{
+		using AstNode::AstNode;
+	};
+
+	class AstWhile : public AstNode
+	{
+		using AstNode::AstNode;
+	private:
+		std::string startLabel;
+		std::string endLabel;
+	public:
+		virtual void dig3(FayBuilder* builder) override;
+		virtual void dig4(FayBuilder* builder) override;
+	};
+
+	class AstDoWhile : public AstNode
+	{
+		using AstNode::AstNode;
+	private:
+		std::string startLabel;
+	public:
+		virtual void dig3(FayBuilder* builder) override;
+		virtual void dig4(FayBuilder* builder) override;
+	};
+
+	class AstSwitch : public AstNode
+	{
+		using AstNode::AstNode;
 	};
 
 	class AstReturn : public AstNode
