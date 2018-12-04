@@ -412,6 +412,10 @@ TEST_F(FayLang, String)
 	rs = vm->run(funs[0]);
 	ASSERT_EQ(rs.type(), ValueType::String);
 	ASSERT_EQ(*rs.strVal(), "15");
+
+	funs = type->findFunByName("test5", true);
+	PRINT(funs[0]->toString());
+	rs = vm->run(funs[0]);
 }
 
 TEST_F(FayLang, FayValue)

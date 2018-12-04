@@ -31,5 +31,11 @@ public class StringTest
 		var c:int=a+b;
 		return c;
 	}
+
+	static public fun test5():void
+	{
+		var a=105.33;
+		IO.Print("Value is : "+a);
+	}
 }
 

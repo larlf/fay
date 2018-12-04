@@ -569,86 +569,143 @@ ValueType fay::FayLangUtils::ClassToValueType(PTR(FayClass) clazz)
 fay::FayInst* fay::FayLangUtils::ConvertInst(ValueType src, ValueType dest)
 {
 	//ConvertInstStart
-	if (src == ValueType::Void && dest == ValueType::Void)
-		return new inst::VoidToVoid();
-	else if (src == ValueType::Void && dest == ValueType::Bool)
-		return new inst::VoidToBool();
-	else if (src == ValueType::Void && dest == ValueType::Byte)
-		return new inst::VoidToByte();
-	else if (src == ValueType::Void && dest == ValueType::Int)
-		return new inst::VoidToInt();
-	else if (src == ValueType::Void && dest == ValueType::Long)
-		return new inst::VoidToLong();
-	else if (src == ValueType::Void && dest == ValueType::Float)
-		return new inst::VoidToFloat();
-	else if (src == ValueType::Void && dest == ValueType::Double)
-		return new inst::VoidToDouble();
-	else if (src == ValueType::Void && dest == ValueType::String)
-		return new inst::VoidToString();
-	else if (src == ValueType::Int && dest == ValueType::Bool)
-		return new inst::IntToBool();
-	else if (src == ValueType::Int && dest == ValueType::Byte)
-		return new inst::IntToByte();
-	else if (src == ValueType::Int && dest == ValueType::Int)
-		return new inst::IntToInt();
-	else if (src == ValueType::Int && dest == ValueType::Long)
-		return new inst::IntToLong();
-	else if (src == ValueType::Int && dest == ValueType::Float)
-		return new inst::IntToFloat();
-	else if (src == ValueType::Int && dest == ValueType::Double)
-		return new inst::IntToDouble();
-	else if (src == ValueType::Int && dest == ValueType::String)
-		return new inst::IntToString();
-	else if (src == ValueType::Long && dest == ValueType::Bool)
-		return new inst::LongToBool();
-	else if (src == ValueType::Long && dest == ValueType::Byte)
-		return new inst::LongToByte();
-	else if (src == ValueType::Long && dest == ValueType::Int)
-		return new inst::LongToInt();
-	else if (src == ValueType::Long && dest == ValueType::Long)
-		return new inst::LongToLong();
-	else if (src == ValueType::Long && dest == ValueType::Float)
-		return new inst::LongToFloat();
-	else if (src == ValueType::Long && dest == ValueType::Double)
-		return new inst::LongToDouble();
-	else if (src == ValueType::Float && dest == ValueType::Bool)
-		return new inst::FloatToBool();
-	else if (src == ValueType::Float && dest == ValueType::Byte)
-		return new inst::FloatToByte();
-	else if (src == ValueType::Float && dest == ValueType::Int)
-		return new inst::FloatToInt();
-	else if (src == ValueType::Float && dest == ValueType::Long)
-		return new inst::FloatToLong();
-	else if (src == ValueType::Float && dest == ValueType::Float)
-		return new inst::FloatToFloat();
-	else if (src == ValueType::Float && dest == ValueType::Double)
-		return new inst::FloatToDouble();
-	else if (src == ValueType::Double && dest == ValueType::Bool)
-		return new inst::DoubleToBool();
-	else if (src == ValueType::Double && dest == ValueType::Byte)
-		return new inst::DoubleToByte();
-	else if (src == ValueType::Double && dest == ValueType::Int)
-		return new inst::DoubleToInt();
-	else if (src == ValueType::Double && dest == ValueType::Long)
-		return new inst::DoubleToLong();
-	else if (src == ValueType::Double && dest == ValueType::Float)
-		return new inst::DoubleToFloat();
-	else if (src == ValueType::Double && dest == ValueType::Double)
-		return new inst::DoubleToDouble();
-	else if (src == ValueType::String && dest == ValueType::Bool)
-		return new inst::StringToBool();
-	else if (src == ValueType::String && dest == ValueType::Byte)
-		return new inst::StringToByte();
-	else if (src == ValueType::String && dest == ValueType::Int)
-		return new inst::StringToInt();
-	else if (src == ValueType::String && dest == ValueType::Long)
-		return new inst::StringToLong();
-	else if (src == ValueType::String && dest == ValueType::Float)
-		return new inst::StringToFloat();
-	else if (src == ValueType::String && dest == ValueType::Double)
-		return new inst::StringToDouble();
-	else if (src == ValueType::String && dest == ValueType::String)
-		return new inst::StringToString();
+	switch(src)
+	{
+	case ValueType::Void:
+		switch(dest)
+		{
+		case ValueType::Void:
+			return new inst::VoidToVoid();
+		case ValueType::Bool:
+			return new inst::VoidToBool();
+		case ValueType::Byte:
+			return new inst::VoidToByte();
+		case ValueType::Int:
+			return new inst::VoidToInt();
+		case ValueType::Long:
+			return new inst::VoidToLong();
+		case ValueType::Float:
+			return new inst::VoidToFloat();
+		case ValueType::Double:
+			return new inst::VoidToDouble();
+		case ValueType::String:
+			return new inst::VoidToString();
+		}
+		break;
+	case ValueType::Bool:
+		switch(dest)
+		{
+		}
+		break;
+	case ValueType::Byte:
+		switch(dest)
+		{
+		case ValueType::String:
+			return new inst::ByteToString();
+		}
+		break;
+	case ValueType::Int:
+		switch(dest)
+		{
+		case ValueType::Bool:
+			return new inst::IntToBool();
+		case ValueType::Byte:
+			return new inst::IntToByte();
+		case ValueType::Int:
+			return new inst::IntToInt();
+		case ValueType::Long:
+			return new inst::IntToLong();
+		case ValueType::Float:
+			return new inst::IntToFloat();
+		case ValueType::Double:
+			return new inst::IntToDouble();
+		case ValueType::String:
+			return new inst::IntToString();
+		}
+		break;
+	case ValueType::Long:
+		switch(dest)
+		{
+		case ValueType::Bool:
+			return new inst::LongToBool();
+		case ValueType::Byte:
+			return new inst::LongToByte();
+		case ValueType::Int:
+			return new inst::LongToInt();
+		case ValueType::Long:
+			return new inst::LongToLong();
+		case ValueType::Float:
+			return new inst::LongToFloat();
+		case ValueType::Double:
+			return new inst::LongToDouble();
+		}
+		break;
+	case ValueType::Float:
+		switch(dest)
+		{
+		case ValueType::Bool:
+			return new inst::FloatToBool();
+		case ValueType::Byte:
+			return new inst::FloatToByte();
+		case ValueType::Int:
+			return new inst::FloatToInt();
+		case ValueType::Long:
+			return new inst::FloatToLong();
+		case ValueType::Float:
+			return new inst::FloatToFloat();
+		case ValueType::Double:
+			return new inst::FloatToDouble();
+		case ValueType::String:
+			return new inst::FloatToString();
+		}
+		break;
+	case ValueType::Double:
+		switch(dest)
+		{
+		case ValueType::Bool:
+			return new inst::DoubleToBool();
+		case ValueType::Byte:
+			return new inst::DoubleToByte();
+		case ValueType::Int:
+			return new inst::DoubleToInt();
+		case ValueType::Long:
+			return new inst::DoubleToLong();
+		case ValueType::Float:
+			return new inst::DoubleToFloat();
+		case ValueType::Double:
+			return new inst::DoubleToDouble();
+		}
+		break;
+	case ValueType::String:
+		switch(dest)
+		{
+		case ValueType::Bool:
+			return new inst::StringToBool();
+		case ValueType::Byte:
+			return new inst::StringToByte();
+		case ValueType::Int:
+			return new inst::StringToInt();
+		case ValueType::Long:
+			return new inst::StringToLong();
+		case ValueType::Float:
+			return new inst::StringToFloat();
+		case ValueType::Double:
+			return new inst::StringToDouble();
+		case ValueType::String:
+			return new inst::StringToString();
+		}
+		break;
+	case ValueType::Object:
+		switch(dest)
+		{
+		}
+		break;
+	case ValueType::Function:
+		switch(dest)
+		{
+		}
+		break;
+	}
 	//ConvertInstEnd
 
 	return nullptr;
@@ -762,250 +819,381 @@ bool fay::FayLangUtils::IsIntegerNumberType(ValueType type)
 FayInst* fay::FayLangUtils::OPInst(InstGroupType op, ValueType type)
 {
 	//OPInstStart
-	if (op == InstGroupType::VoidTo && type == ValueType::Void)
-		return new inst::VoidToVoid();
-	else if (op == InstGroupType::VoidTo && type == ValueType::Bool)
-		return new inst::VoidToBool();
-	else if (op == InstGroupType::VoidTo && type == ValueType::Byte)
-		return new inst::VoidToByte();
-	else if (op == InstGroupType::VoidTo && type == ValueType::Int)
-		return new inst::VoidToInt();
-	else if (op == InstGroupType::VoidTo && type == ValueType::Long)
-		return new inst::VoidToLong();
-	else if (op == InstGroupType::VoidTo && type == ValueType::Float)
-		return new inst::VoidToFloat();
-	else if (op == InstGroupType::VoidTo && type == ValueType::Double)
-		return new inst::VoidToDouble();
-	else if (op == InstGroupType::VoidTo && type == ValueType::String)
-		return new inst::VoidToString();
-	else if (op == InstGroupType::IntTo && type == ValueType::Bool)
-		return new inst::IntToBool();
-	else if (op == InstGroupType::IntTo && type == ValueType::Byte)
-		return new inst::IntToByte();
-	else if (op == InstGroupType::IntTo && type == ValueType::Int)
-		return new inst::IntToInt();
-	else if (op == InstGroupType::IntTo && type == ValueType::Long)
-		return new inst::IntToLong();
-	else if (op == InstGroupType::IntTo && type == ValueType::Float)
-		return new inst::IntToFloat();
-	else if (op == InstGroupType::IntTo && type == ValueType::Double)
-		return new inst::IntToDouble();
-	else if (op == InstGroupType::IntTo && type == ValueType::String)
-		return new inst::IntToString();
-	else if (op == InstGroupType::LongTo && type == ValueType::Bool)
-		return new inst::LongToBool();
-	else if (op == InstGroupType::LongTo && type == ValueType::Byte)
-		return new inst::LongToByte();
-	else if (op == InstGroupType::LongTo && type == ValueType::Int)
-		return new inst::LongToInt();
-	else if (op == InstGroupType::LongTo && type == ValueType::Long)
-		return new inst::LongToLong();
-	else if (op == InstGroupType::LongTo && type == ValueType::Float)
-		return new inst::LongToFloat();
-	else if (op == InstGroupType::LongTo && type == ValueType::Double)
-		return new inst::LongToDouble();
-	else if (op == InstGroupType::FloatTo && type == ValueType::Bool)
-		return new inst::FloatToBool();
-	else if (op == InstGroupType::FloatTo && type == ValueType::Byte)
-		return new inst::FloatToByte();
-	else if (op == InstGroupType::FloatTo && type == ValueType::Int)
-		return new inst::FloatToInt();
-	else if (op == InstGroupType::FloatTo && type == ValueType::Long)
-		return new inst::FloatToLong();
-	else if (op == InstGroupType::FloatTo && type == ValueType::Float)
-		return new inst::FloatToFloat();
-	else if (op == InstGroupType::FloatTo && type == ValueType::Double)
-		return new inst::FloatToDouble();
-	else if (op == InstGroupType::DoubleTo && type == ValueType::Bool)
-		return new inst::DoubleToBool();
-	else if (op == InstGroupType::DoubleTo && type == ValueType::Byte)
-		return new inst::DoubleToByte();
-	else if (op == InstGroupType::DoubleTo && type == ValueType::Int)
-		return new inst::DoubleToInt();
-	else if (op == InstGroupType::DoubleTo && type == ValueType::Long)
-		return new inst::DoubleToLong();
-	else if (op == InstGroupType::DoubleTo && type == ValueType::Float)
-		return new inst::DoubleToFloat();
-	else if (op == InstGroupType::DoubleTo && type == ValueType::Double)
-		return new inst::DoubleToDouble();
-	else if (op == InstGroupType::StringTo && type == ValueType::Bool)
-		return new inst::StringToBool();
-	else if (op == InstGroupType::StringTo && type == ValueType::Byte)
-		return new inst::StringToByte();
-	else if (op == InstGroupType::StringTo && type == ValueType::Int)
-		return new inst::StringToInt();
-	else if (op == InstGroupType::StringTo && type == ValueType::Long)
-		return new inst::StringToLong();
-	else if (op == InstGroupType::StringTo && type == ValueType::Float)
-		return new inst::StringToFloat();
-	else if (op == InstGroupType::StringTo && type == ValueType::Double)
-		return new inst::StringToDouble();
-	else if (op == InstGroupType::StringTo && type == ValueType::String)
-		return new inst::StringToString();
-	else if (op == InstGroupType::Minus && type == ValueType::Byte)
-		return new inst::MinusByte();
-	else if (op == InstGroupType::Minus && type == ValueType::Int)
-		return new inst::MinusInt();
-	else if (op == InstGroupType::Minus && type == ValueType::Long)
-		return new inst::MinusLong();
-	else if (op == InstGroupType::Minus && type == ValueType::Float)
-		return new inst::MinusFloat();
-	else if (op == InstGroupType::Minus && type == ValueType::Double)
-		return new inst::MinusDouble();
-	else if (op == InstGroupType::Add && type == ValueType::Byte)
-		return new inst::AddByte();
-	else if (op == InstGroupType::Add && type == ValueType::Int)
-		return new inst::AddInt();
-	else if (op == InstGroupType::Add && type == ValueType::Long)
-		return new inst::AddLong();
-	else if (op == InstGroupType::Add && type == ValueType::Float)
-		return new inst::AddFloat();
-	else if (op == InstGroupType::Add && type == ValueType::Double)
-		return new inst::AddDouble();
-	else if (op == InstGroupType::Add && type == ValueType::String)
-		return new inst::AddString();
-	else if (op == InstGroupType::Sub && type == ValueType::Byte)
-		return new inst::SubByte();
-	else if (op == InstGroupType::Sub && type == ValueType::Int)
-		return new inst::SubInt();
-	else if (op == InstGroupType::Sub && type == ValueType::Long)
-		return new inst::SubLong();
-	else if (op == InstGroupType::Sub && type == ValueType::Float)
-		return new inst::SubFloat();
-	else if (op == InstGroupType::Sub && type == ValueType::Double)
-		return new inst::SubDouble();
-	else if (op == InstGroupType::Mul && type == ValueType::Int)
-		return new inst::MulInt();
-	else if (op == InstGroupType::Mul && type == ValueType::Long)
-		return new inst::MulLong();
-	else if (op == InstGroupType::Mul && type == ValueType::Float)
-		return new inst::MulFloat();
-	else if (op == InstGroupType::Mul && type == ValueType::Double)
-		return new inst::MulDouble();
-	else if (op == InstGroupType::Div && type == ValueType::Int)
-		return new inst::DivInt();
-	else if (op == InstGroupType::Div && type == ValueType::Long)
-		return new inst::DivLong();
-	else if (op == InstGroupType::Div && type == ValueType::Float)
-		return new inst::DivFloat();
-	else if (op == InstGroupType::Div && type == ValueType::Double)
-		return new inst::DivDouble();
-	else if (op == InstGroupType::Mod && type == ValueType::Byte)
-		return new inst::ModByte();
-	else if (op == InstGroupType::Mod && type == ValueType::Int)
-		return new inst::ModInt();
-	else if (op == InstGroupType::Mod && type == ValueType::Long)
-		return new inst::ModLong();
-	else if (op == InstGroupType::Equal && type == ValueType::Bool)
-		return new inst::EqualBool();
-	else if (op == InstGroupType::Equal && type == ValueType::Byte)
-		return new inst::EqualByte();
-	else if (op == InstGroupType::Equal && type == ValueType::Int)
-		return new inst::EqualInt();
-	else if (op == InstGroupType::Equal && type == ValueType::Long)
-		return new inst::EqualLong();
-	else if (op == InstGroupType::Equal && type == ValueType::Float)
-		return new inst::EqualFloat();
-	else if (op == InstGroupType::Equal && type == ValueType::Double)
-		return new inst::EqualDouble();
-	else if (op == InstGroupType::Equal && type == ValueType::String)
-		return new inst::EqualString();
-	else if (op == InstGroupType::NotEqual && type == ValueType::Bool)
-		return new inst::NotEqualBool();
-	else if (op == InstGroupType::NotEqual && type == ValueType::Byte)
-		return new inst::NotEqualByte();
-	else if (op == InstGroupType::NotEqual && type == ValueType::Int)
-		return new inst::NotEqualInt();
-	else if (op == InstGroupType::NotEqual && type == ValueType::Long)
-		return new inst::NotEqualLong();
-	else if (op == InstGroupType::NotEqual && type == ValueType::Float)
-		return new inst::NotEqualFloat();
-	else if (op == InstGroupType::NotEqual && type == ValueType::Double)
-		return new inst::NotEqualDouble();
-	else if (op == InstGroupType::Greater && type == ValueType::Bool)
-		return new inst::GreaterBool();
-	else if (op == InstGroupType::Greater && type == ValueType::Byte)
-		return new inst::GreaterByte();
-	else if (op == InstGroupType::Greater && type == ValueType::Int)
-		return new inst::GreaterInt();
-	else if (op == InstGroupType::Greater && type == ValueType::Long)
-		return new inst::GreaterLong();
-	else if (op == InstGroupType::Greater && type == ValueType::Float)
-		return new inst::GreaterFloat();
-	else if (op == InstGroupType::Greater && type == ValueType::Double)
-		return new inst::GreaterDouble();
-	else if (op == InstGroupType::GreaterEqual && type == ValueType::Bool)
-		return new inst::GreaterEqualBool();
-	else if (op == InstGroupType::GreaterEqual && type == ValueType::Byte)
-		return new inst::GreaterEqualByte();
-	else if (op == InstGroupType::GreaterEqual && type == ValueType::Int)
-		return new inst::GreaterEqualInt();
-	else if (op == InstGroupType::GreaterEqual && type == ValueType::Long)
-		return new inst::GreaterEqualLong();
-	else if (op == InstGroupType::GreaterEqual && type == ValueType::Float)
-		return new inst::GreaterEqualFloat();
-	else if (op == InstGroupType::GreaterEqual && type == ValueType::Double)
-		return new inst::GreaterEqualDouble();
-	else if (op == InstGroupType::Less && type == ValueType::Bool)
-		return new inst::LessBool();
-	else if (op == InstGroupType::Less && type == ValueType::Byte)
-		return new inst::LessByte();
-	else if (op == InstGroupType::Less && type == ValueType::Int)
-		return new inst::LessInt();
-	else if (op == InstGroupType::Less && type == ValueType::Long)
-		return new inst::LessLong();
-	else if (op == InstGroupType::Less && type == ValueType::Float)
-		return new inst::LessFloat();
-	else if (op == InstGroupType::Less && type == ValueType::Double)
-		return new inst::LessDouble();
-	else if (op == InstGroupType::LessEqual && type == ValueType::Bool)
-		return new inst::LessEqualBool();
-	else if (op == InstGroupType::LessEqual && type == ValueType::Byte)
-		return new inst::LessEqualByte();
-	else if (op == InstGroupType::LessEqual && type == ValueType::Int)
-		return new inst::LessEqualInt();
-	else if (op == InstGroupType::LessEqual && type == ValueType::Long)
-		return new inst::LessEqualLong();
-	else if (op == InstGroupType::LessEqual && type == ValueType::Float)
-		return new inst::LessEqualFloat();
-	else if (op == InstGroupType::LessEqual && type == ValueType::Double)
-		return new inst::LessEqualDouble();
-	else if (op == InstGroupType::BitNot && type == ValueType::Byte)
-		return new inst::BitNotByte();
-	else if (op == InstGroupType::BitNot && type == ValueType::Int)
-		return new inst::BitNotInt();
-	else if (op == InstGroupType::BitNot && type == ValueType::Long)
-		return new inst::BitNotLong();
-	else if (op == InstGroupType::BitAnd && type == ValueType::Byte)
-		return new inst::BitAndByte();
-	else if (op == InstGroupType::BitAnd && type == ValueType::Int)
-		return new inst::BitAndInt();
-	else if (op == InstGroupType::BitAnd && type == ValueType::Long)
-		return new inst::BitAndLong();
-	else if (op == InstGroupType::BitOr && type == ValueType::Byte)
-		return new inst::BitOrByte();
-	else if (op == InstGroupType::BitOr && type == ValueType::Int)
-		return new inst::BitOrInt();
-	else if (op == InstGroupType::BitOr && type == ValueType::Long)
-		return new inst::BitOrLong();
-	else if (op == InstGroupType::BitXor && type == ValueType::Byte)
-		return new inst::BitXorByte();
-	else if (op == InstGroupType::BitXor && type == ValueType::Int)
-		return new inst::BitXorInt();
-	else if (op == InstGroupType::BitXor && type == ValueType::Long)
-		return new inst::BitXorLong();
-	else if (op == InstGroupType::LShift && type == ValueType::Byte)
-		return new inst::LShiftByte();
-	else if (op == InstGroupType::LShift && type == ValueType::Int)
-		return new inst::LShiftInt();
-	else if (op == InstGroupType::LShift && type == ValueType::Long)
-		return new inst::LShiftLong();
-	else if (op == InstGroupType::RShift && type == ValueType::Byte)
-		return new inst::RShiftByte();
-	else if (op == InstGroupType::RShift && type == ValueType::Int)
-		return new inst::RShiftInt();
-	else if (op == InstGroupType::RShift && type == ValueType::Long)
-		return new inst::RShiftLong();
+	switch(op)
+	{
+	case InstGroupType::VoidTo:
+		switch(type)
+		{
+		case ValueType::Void:
+			return new inst::VoidToVoid();
+		case ValueType::Bool:
+			return new inst::VoidToBool();
+		case ValueType::Byte:
+			return new inst::VoidToByte();
+		case ValueType::Int:
+			return new inst::VoidToInt();
+		case ValueType::Long:
+			return new inst::VoidToLong();
+		case ValueType::Float:
+			return new inst::VoidToFloat();
+		case ValueType::Double:
+			return new inst::VoidToDouble();
+		case ValueType::String:
+			return new inst::VoidToString();
+		}
+		break;
+	case InstGroupType::ByteTo:
+		switch(type)
+		{
+		case ValueType::String:
+			return new inst::ByteToString();
+		}
+		break;
+	case InstGroupType::IntTo:
+		switch(type)
+		{
+		case ValueType::Bool:
+			return new inst::IntToBool();
+		case ValueType::Byte:
+			return new inst::IntToByte();
+		case ValueType::Int:
+			return new inst::IntToInt();
+		case ValueType::Long:
+			return new inst::IntToLong();
+		case ValueType::Float:
+			return new inst::IntToFloat();
+		case ValueType::Double:
+			return new inst::IntToDouble();
+		case ValueType::String:
+			return new inst::IntToString();
+		}
+		break;
+	case InstGroupType::LongTo:
+		switch(type)
+		{
+		case ValueType::Bool:
+			return new inst::LongToBool();
+		case ValueType::Byte:
+			return new inst::LongToByte();
+		case ValueType::Int:
+			return new inst::LongToInt();
+		case ValueType::Long:
+			return new inst::LongToLong();
+		case ValueType::Float:
+			return new inst::LongToFloat();
+		case ValueType::Double:
+			return new inst::LongToDouble();
+		}
+		break;
+	case InstGroupType::FloatTo:
+		switch(type)
+		{
+		case ValueType::Bool:
+			return new inst::FloatToBool();
+		case ValueType::Byte:
+			return new inst::FloatToByte();
+		case ValueType::Int:
+			return new inst::FloatToInt();
+		case ValueType::Long:
+			return new inst::FloatToLong();
+		case ValueType::Float:
+			return new inst::FloatToFloat();
+		case ValueType::Double:
+			return new inst::FloatToDouble();
+		case ValueType::String:
+			return new inst::FloatToString();
+		}
+		break;
+	case InstGroupType::DoubleTo:
+		switch(type)
+		{
+		case ValueType::Bool:
+			return new inst::DoubleToBool();
+		case ValueType::Byte:
+			return new inst::DoubleToByte();
+		case ValueType::Int:
+			return new inst::DoubleToInt();
+		case ValueType::Long:
+			return new inst::DoubleToLong();
+		case ValueType::Float:
+			return new inst::DoubleToFloat();
+		case ValueType::Double:
+			return new inst::DoubleToDouble();
+		}
+		break;
+	case InstGroupType::StringTo:
+		switch(type)
+		{
+		case ValueType::Bool:
+			return new inst::StringToBool();
+		case ValueType::Byte:
+			return new inst::StringToByte();
+		case ValueType::Int:
+			return new inst::StringToInt();
+		case ValueType::Long:
+			return new inst::StringToLong();
+		case ValueType::Float:
+			return new inst::StringToFloat();
+		case ValueType::Double:
+			return new inst::StringToDouble();
+		case ValueType::String:
+			return new inst::StringToString();
+		}
+		break;
+	case InstGroupType::Minus:
+		switch(type)
+		{
+		case ValueType::Byte:
+			return new inst::MinusByte();
+		case ValueType::Int:
+			return new inst::MinusInt();
+		case ValueType::Long:
+			return new inst::MinusLong();
+		case ValueType::Float:
+			return new inst::MinusFloat();
+		case ValueType::Double:
+			return new inst::MinusDouble();
+		}
+		break;
+	case InstGroupType::Add:
+		switch(type)
+		{
+		case ValueType::Byte:
+			return new inst::AddByte();
+		case ValueType::Int:
+			return new inst::AddInt();
+		case ValueType::Long:
+			return new inst::AddLong();
+		case ValueType::Float:
+			return new inst::AddFloat();
+		case ValueType::Double:
+			return new inst::AddDouble();
+		case ValueType::String:
+			return new inst::AddString();
+		}
+		break;
+	case InstGroupType::Sub:
+		switch(type)
+		{
+		case ValueType::Byte:
+			return new inst::SubByte();
+		case ValueType::Int:
+			return new inst::SubInt();
+		case ValueType::Long:
+			return new inst::SubLong();
+		case ValueType::Float:
+			return new inst::SubFloat();
+		case ValueType::Double:
+			return new inst::SubDouble();
+		}
+		break;
+	case InstGroupType::Mul:
+		switch(type)
+		{
+		case ValueType::Int:
+			return new inst::MulInt();
+		case ValueType::Long:
+			return new inst::MulLong();
+		case ValueType::Float:
+			return new inst::MulFloat();
+		case ValueType::Double:
+			return new inst::MulDouble();
+		}
+		break;
+	case InstGroupType::Div:
+		switch(type)
+		{
+		case ValueType::Int:
+			return new inst::DivInt();
+		case ValueType::Long:
+			return new inst::DivLong();
+		case ValueType::Float:
+			return new inst::DivFloat();
+		case ValueType::Double:
+			return new inst::DivDouble();
+		}
+		break;
+	case InstGroupType::Mod:
+		switch(type)
+		{
+		case ValueType::Byte:
+			return new inst::ModByte();
+		case ValueType::Int:
+			return new inst::ModInt();
+		case ValueType::Long:
+			return new inst::ModLong();
+		}
+		break;
+	case InstGroupType::Equal:
+		switch(type)
+		{
+		case ValueType::Bool:
+			return new inst::EqualBool();
+		case ValueType::Byte:
+			return new inst::EqualByte();
+		case ValueType::Int:
+			return new inst::EqualInt();
+		case ValueType::Long:
+			return new inst::EqualLong();
+		case ValueType::Float:
+			return new inst::EqualFloat();
+		case ValueType::Double:
+			return new inst::EqualDouble();
+		case ValueType::String:
+			return new inst::EqualString();
+		}
+		break;
+	case InstGroupType::NotEqual:
+		switch(type)
+		{
+		case ValueType::Bool:
+			return new inst::NotEqualBool();
+		case ValueType::Byte:
+			return new inst::NotEqualByte();
+		case ValueType::Int:
+			return new inst::NotEqualInt();
+		case ValueType::Long:
+			return new inst::NotEqualLong();
+		case ValueType::Float:
+			return new inst::NotEqualFloat();
+		case ValueType::Double:
+			return new inst::NotEqualDouble();
+		}
+		break;
+	case InstGroupType::Greater:
+		switch(type)
+		{
+		case ValueType::Bool:
+			return new inst::GreaterBool();
+		case ValueType::Byte:
+			return new inst::GreaterByte();
+		case ValueType::Int:
+			return new inst::GreaterInt();
+		case ValueType::Long:
+			return new inst::GreaterLong();
+		case ValueType::Float:
+			return new inst::GreaterFloat();
+		case ValueType::Double:
+			return new inst::GreaterDouble();
+		}
+		break;
+	case InstGroupType::GreaterEqual:
+		switch(type)
+		{
+		case ValueType::Bool:
+			return new inst::GreaterEqualBool();
+		case ValueType::Byte:
+			return new inst::GreaterEqualByte();
+		case ValueType::Int:
+			return new inst::GreaterEqualInt();
+		case ValueType::Long:
+			return new inst::GreaterEqualLong();
+		case ValueType::Float:
+			return new inst::GreaterEqualFloat();
+		case ValueType::Double:
+			return new inst::GreaterEqualDouble();
+		}
+		break;
+	case InstGroupType::Less:
+		switch(type)
+		{
+		case ValueType::Bool:
+			return new inst::LessBool();
+		case ValueType::Byte:
+			return new inst::LessByte();
+		case ValueType::Int:
+			return new inst::LessInt();
+		case ValueType::Long:
+			return new inst::LessLong();
+		case ValueType::Float:
+			return new inst::LessFloat();
+		case ValueType::Double:
+			return new inst::LessDouble();
+		}
+		break;
+	case InstGroupType::LessEqual:
+		switch(type)
+		{
+		case ValueType::Bool:
+			return new inst::LessEqualBool();
+		case ValueType::Byte:
+			return new inst::LessEqualByte();
+		case ValueType::Int:
+			return new inst::LessEqualInt();
+		case ValueType::Long:
+			return new inst::LessEqualLong();
+		case ValueType::Float:
+			return new inst::LessEqualFloat();
+		case ValueType::Double:
+			return new inst::LessEqualDouble();
+		}
+		break;
+	case InstGroupType::BitNot:
+		switch(type)
+		{
+		case ValueType::Byte:
+			return new inst::BitNotByte();
+		case ValueType::Int:
+			return new inst::BitNotInt();
+		case ValueType::Long:
+			return new inst::BitNotLong();
+		}
+		break;
+	case InstGroupType::BitAnd:
+		switch(type)
+		{
+		case ValueType::Byte:
+			return new inst::BitAndByte();
+		case ValueType::Int:
+			return new inst::BitAndInt();
+		case ValueType::Long:
+			return new inst::BitAndLong();
+		}
+		break;
+	case InstGroupType::BitOr:
+		switch(type)
+		{
+		case ValueType::Byte:
+			return new inst::BitOrByte();
+		case ValueType::Int:
+			return new inst::BitOrInt();
+		case ValueType::Long:
+			return new inst::BitOrLong();
+		}
+		break;
+	case InstGroupType::BitXor:
+		switch(type)
+		{
+		case ValueType::Byte:
+			return new inst::BitXorByte();
+		case ValueType::Int:
+			return new inst::BitXorInt();
+		case ValueType::Long:
+			return new inst::BitXorLong();
+		}
+		break;
+	case InstGroupType::LShift:
+		switch(type)
+		{
+		case ValueType::Byte:
+			return new inst::LShiftByte();
+		case ValueType::Int:
+			return new inst::LShiftInt();
+		case ValueType::Long:
+			return new inst::LShiftLong();
+		}
+		break;
+	case InstGroupType::RShift:
+		switch(type)
+		{
+		case ValueType::Byte:
+			return new inst::RShiftByte();
+		case ValueType::Int:
+			return new inst::RShiftInt();
+		case ValueType::Long:
+			return new inst::RShiftLong();
+		}
+	}
 	//OPInstEnd
 
 	return nullptr;

@@ -983,7 +983,10 @@ void fay::AstExprStmt::dig3(FayBuilder* builder)
 void fay::AstExprStmt::dig4(FayBuilder* builder)
 {
 	AstNode::dig4(builder);
-	builder->addInst(new inst::Pop());
+
+	//如果表达式是有值的，需要把堆栈里的值清一下
+	if(!this->_classType.expired() && this->_classType.lock()->valueType()!=ValueType::Void)
+		builder->addInst(new inst::Pop());
 }
 
 void fay::AstBoolNot::dig3(FayBuilder* builder)

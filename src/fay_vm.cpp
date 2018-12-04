@@ -159,6 +159,13 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 				this->stack.push(FayValue(""));
 				break;
 			}
+			case InstType::ByteToString:
+			{
+				FayValue v=this->stack.top();
+				this->stack.pop();
+				this->stack.push(v.boolVal()?FayValue("true"):FayValue("false"));
+				break;
+			}
 			case InstType::IntToBool:
 			{
 				FayValue v=this->stack.top();
@@ -284,6 +291,13 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 				FayValue v=this->stack.top();
 				this->stack.pop();
 				this->stack.push(FayValue((double)v.floatVal()));
+				break;
+			}
+			case InstType::FloatToString:
+			{
+				FayValue v=this->stack.top();
+				this->stack.pop();
+				this->stack.push(FayValue(std::to_string(v.floatVal())));
 				break;
 			}
 			case InstType::DoubleToBool:
@@ -1080,12 +1094,10 @@ FayValue fay::FayVM::run(PTR(FayFun) fun)
 	this->_run(fun);
 
 	//确定返回值的数量
-	if (fun->returnValue())
+	if(fun->returnValue() && fun->returnValue()->valueType() != ValueType::Void)
 	{
-		if (this->stack.size() !=1)
-		{
+		if(this->stack.size() != 1)
 			LOG_ERROR("Stack size error : " << this->stack.size());
-		}
 		else
 		{
 			values = this->stack.top();
