@@ -1,7 +1,7 @@
 ﻿#include <fay_vm.h>
+#include <fay_internal_fun.h>
 
 using namespace fay;
-
 
 void fay::FayVM::_run(PTR(FayInstFun) fun)
 {
@@ -322,6 +322,41 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 				break;
 			}
 			case InstType::DoubleToDouble:
+			{
+				//DoNothing
+				break;
+			}
+			case InstType::StringToBool:
+			{
+				InternalFun::StringToBool(this->stack);
+				break;
+			}
+			case InstType::StringToByte:
+			{
+				InternalFun::StringToByte(this->stack);
+				break;
+			}
+			case InstType::StringToInt:
+			{
+				InternalFun::StringToInt(this->stack);
+				break;
+			}
+			case InstType::StringToLong:
+			{
+				InternalFun::StringToLong(this->stack);
+				break;
+			}
+			case InstType::StringToFloat:
+			{
+				InternalFun::StringToFloat(this->stack);
+				break;
+			}
+			case InstType::StringToDouble:
+			{
+				InternalFun::StringToDouble(this->stack);
+				break;
+			}
+			case InstType::StringToString:
 			{
 				//DoNothing
 				break;

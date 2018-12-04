@@ -1,0 +1,35 @@
+using fay.system;
+
+package fay.dev.test;
+
+public class StringTest
+{
+	static public fun test1():string
+	{
+		return "abc我是字符串";
+	}
+
+	static public fun test2():string
+	{
+		var a=105;
+		var b:string=a;
+		return b;
+	}
+
+	static public fun test3():string
+	{
+		var a="Hello,";
+		var b="larlf!";
+		var c=a+b;
+		return c;
+	}
+
+	static public fun test4():string
+	{
+		var a="1";
+		var b="5";
+		var c:int=a+b;
+		return c;
+	}
+}
+

@@ -39,7 +39,7 @@ void test::FayLang::SetUpTestCase()
 	vm = MKPTR(FayVM)(project->domain());
 }
 
-TEST_F(FayLang, TypeTest)
+TEST_F(FayLang, Type)
 {
 	PRINT(project->findSource("TypeTest.fay")->tokensStr());
 	PRINT(project->findSource("TypeTest.fay")->astStr());
@@ -96,7 +96,7 @@ TEST_F(FayLang, TypeTest)
 }
 
 //数据计算相关的测试
-TEST_F(FayLang, MathTest)
+TEST_F(FayLang, Math)
 {
 	PRINT(project->findSource("MathTest.fay")->tokensStr());
 	PRINT(project->findSource("MathTest.fay")->astStr());
@@ -334,7 +334,7 @@ TEST_F(FayLang, MathTest)
 	}
 }
 
-TEST_F(FayLang, FlowTest)
+TEST_F(FayLang, Flow)
 {
 	PRINT(project->findSource("FlowTest.fay")->tokensStr());
 	PRINT(project->findSource("FlowTest.fay")->astStr());
@@ -378,6 +378,40 @@ TEST_F(FayLang, FlowTest)
 	rs = vm->run(funs[0]);
 	ASSERT_EQ(rs.type(), ValueType::Int);
 	ASSERT_EQ(rs.intVal(), 16);
+}
+
+TEST_F(FayLang, String)
+{
+	PRINT(project->findSource("StringTest.fay")->tokensStr());
+	PRINT(project->findSource("StringTest.fay")->astStr());
+	auto type = project->domain()->findClass("fay.dev.test.StringTest");
+
+	std::vector<PTR(FayFun)> funs;
+	FayValue rs;
+
+	funs = type->findFunByName("test1", true);
+	PRINT(funs[0]->toString());
+	rs = vm->run(funs[0]);
+	ASSERT_EQ(rs.type(), ValueType::String);
+	ASSERT_EQ(utils::StringUtils::Encoding(*rs.strVal(), "UTF-8", "GBK"), "abc我是字符串");
+
+	funs = type->findFunByName("test2", true);
+	PRINT(funs[0]->toString());
+	rs = vm->run(funs[0]);
+	ASSERT_EQ(rs.type(), ValueType::String);
+	ASSERT_EQ(*rs.strVal(), "105");
+
+	funs = type->findFunByName("test3", true);
+	PRINT(funs[0]->toString());
+	rs = vm->run(funs[0]);
+	ASSERT_EQ(rs.type(), ValueType::String);
+	ASSERT_EQ(*rs.strVal(), "Hello,larlf!");
+
+	funs = type->findFunByName("test4", true);
+	PRINT(funs[0]->toString());
+	rs = vm->run(funs[0]);
+	ASSERT_EQ(rs.type(), ValueType::String);
+	ASSERT_EQ(*rs.strVal(), "15");
 }
 
 TEST_F(FayLang, FayValue)

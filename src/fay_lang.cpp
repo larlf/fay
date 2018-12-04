@@ -635,6 +635,20 @@ fay::FayInst* fay::FayLangUtils::ConvertInst(ValueType src, ValueType dest)
 		return new inst::DoubleToFloat();
 	else if (src == ValueType::Double && dest == ValueType::Double)
 		return new inst::DoubleToDouble();
+	else if (src == ValueType::String && dest == ValueType::Bool)
+		return new inst::StringToBool();
+	else if (src == ValueType::String && dest == ValueType::Byte)
+		return new inst::StringToByte();
+	else if (src == ValueType::String && dest == ValueType::Int)
+		return new inst::StringToInt();
+	else if (src == ValueType::String && dest == ValueType::Long)
+		return new inst::StringToLong();
+	else if (src == ValueType::String && dest == ValueType::Float)
+		return new inst::StringToFloat();
+	else if (src == ValueType::String && dest == ValueType::Double)
+		return new inst::StringToDouble();
+	else if (src == ValueType::String && dest == ValueType::String)
+		return new inst::StringToString();
 	//ConvertInstEnd
 
 	return nullptr;
@@ -814,6 +828,20 @@ FayInst* fay::FayLangUtils::OPInst(InstGroupType op, ValueType type)
 		return new inst::DoubleToFloat();
 	else if (op == InstGroupType::DoubleTo && type == ValueType::Double)
 		return new inst::DoubleToDouble();
+	else if (op == InstGroupType::StringTo && type == ValueType::Bool)
+		return new inst::StringToBool();
+	else if (op == InstGroupType::StringTo && type == ValueType::Byte)
+		return new inst::StringToByte();
+	else if (op == InstGroupType::StringTo && type == ValueType::Int)
+		return new inst::StringToInt();
+	else if (op == InstGroupType::StringTo && type == ValueType::Long)
+		return new inst::StringToLong();
+	else if (op == InstGroupType::StringTo && type == ValueType::Float)
+		return new inst::StringToFloat();
+	else if (op == InstGroupType::StringTo && type == ValueType::Double)
+		return new inst::StringToDouble();
+	else if (op == InstGroupType::StringTo && type == ValueType::String)
+		return new inst::StringToString();
 	else if (op == InstGroupType::Minus && type == ValueType::Byte)
 		return new inst::MinusByte();
 	else if (op == InstGroupType::Minus && type == ValueType::Int)

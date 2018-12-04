@@ -15,6 +15,105 @@ void fay::InternalFun::MSTime(std::stack<FayValue> &stack)
 	stack.push(FayValue(ms));
 }
 
+void fay::InternalFun::StringToBool(std::stack<FayValue>& stack)
+{
+	FayValue v = stack.top();
+	stack.pop();
+
+	try
+	{
+		if ((*v.strVal()).empty())
+			stack.push(FayValue(false));
+		else
+			stack.push(FayValue(true));
+	}
+	catch (std::exception &ex)
+	{
+		LOG_ERROR("Convert string to bool error : " << *v.strVal());
+		stack.push(FayValue(false));
+	}
+}
+
+void fay::InternalFun::StringToByte(std::stack<FayValue>& stack)
+{
+	FayValue v = stack.top();
+	stack.pop();
+
+	try
+	{
+		stack.push(FayValue((byte)std::stoi(*v.strVal())));
+	}
+	catch (std::exception &ex)
+	{
+		LOG_ERROR("Convert string to byte error : " << *v.strVal());
+		stack.push(FayValue((byte)0));
+	}
+}
+
+void fay::InternalFun::StringToInt(std::stack<FayValue> &stack)
+{
+	FayValue v = stack.top();
+	stack.pop();
+
+	try
+	{
+		stack.push(FayValue(std::stoi(*v.strVal())));
+	}
+	catch(std::exception &ex)
+	{
+		LOG_ERROR("Convert string to int error : " << *v.strVal());
+		stack.push(FayValue((int32_t)0));
+	}
+}
+
+void fay::InternalFun::StringToLong(std::stack<FayValue>& stack)
+{
+	FayValue v = stack.top();
+	stack.pop();
+
+	try
+	{
+		stack.push(FayValue((int64_t)std::stol(*v.strVal())));
+	}
+	catch (std::exception &ex)
+	{
+		LOG_ERROR("Convert string to long error : " << *v.strVal());
+		stack.push(FayValue((int64_t)0));
+	}
+}
+
+void fay::InternalFun::StringToFloat(std::stack<FayValue>& stack)
+{
+	FayValue v = stack.top();
+	stack.pop();
+
+	try
+	{
+		stack.push(FayValue((float)std::stof(*v.strVal())));
+	}
+	catch (std::exception &ex)
+	{
+		LOG_ERROR("Convert string to float error : " << *v.strVal());
+		stack.push(FayValue((float)0));
+	}
+}
+
+void fay::InternalFun::StringToDouble(std::stack<FayValue>& stack)
+{
+	FayValue v = stack.top();
+	stack.pop();
+
+	try
+	{
+		stack.push(FayValue((double)std::stod(*v.strVal())));
+	}
+	catch (std::exception &ex)
+	{
+		LOG_ERROR("Convert string to double error : " << *v.strVal());
+		stack.push(FayValue((double)0));
+	}
+}
+
 void fay::InternalFun::Print_Int(std::stack<FayValue> &stack)
 {
 	std::cout << stack.top().intVal() << std::endl;

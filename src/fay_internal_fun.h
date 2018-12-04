@@ -16,6 +16,12 @@ namespace fay
 		static void Print_Double(std::stack<FayValue> &stack);
 		static void Print_String(std::stack<FayValue> &stack);
 		static void MSTime(std::stack<FayValue> &stack);
+		static void StringToBool(std::stack<FayValue> &stack);
+		static void StringToByte(std::stack<FayValue> &stack);
+		static void StringToInt(std::stack<FayValue> &stack);
+		static void StringToLong(std::stack<FayValue> &stack);
+		static void StringToFloat(std::stack<FayValue> &stack);
+		static void StringToDouble(std::stack<FayValue> &stack);
 	};
 }
 
