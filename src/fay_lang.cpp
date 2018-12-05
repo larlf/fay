@@ -284,7 +284,7 @@ void fay::FayFun::addParam(std::vector<PTR(FayParamDef)> defs)
 
 void fay::FayFun::returnValue(PTR(FayClass) type)
 {
-	if (!this->_returnValue.expired())
+	if(!this->_returnValue.expired())
 		LOG_ERROR("Reset return value");
 
 	this->_returnValue = type;
@@ -571,140 +571,144 @@ fay::FayInst* fay::FayLangUtils::ConvertInst(ValueType src, ValueType dest)
 	//ConvertInstStart
 	switch(src)
 	{
-	case ValueType::Void:
-		switch(dest)
-		{
 		case ValueType::Void:
-			return new inst::VoidToVoid();
+			switch(dest)
+			{
+				case ValueType::Void:
+					return new inst::VoidToVoid();
+				case ValueType::Bool:
+					return new inst::VoidToBool();
+				case ValueType::Byte:
+					return new inst::VoidToByte();
+				case ValueType::Int:
+					return new inst::VoidToInt();
+				case ValueType::Long:
+					return new inst::VoidToLong();
+				case ValueType::Float:
+					return new inst::VoidToFloat();
+				case ValueType::Double:
+					return new inst::VoidToDouble();
+				case ValueType::String:
+					return new inst::VoidToString();
+			}
+			break;
 		case ValueType::Bool:
-			return new inst::VoidToBool();
+			switch(dest)
+			{
+			}
+			break;
 		case ValueType::Byte:
-			return new inst::VoidToByte();
+			switch(dest)
+			{
+				case ValueType::String:
+					return new inst::ByteToString();
+			}
+			break;
 		case ValueType::Int:
-			return new inst::VoidToInt();
+			switch(dest)
+			{
+				case ValueType::Bool:
+					return new inst::IntToBool();
+				case ValueType::Byte:
+					return new inst::IntToByte();
+				case ValueType::Int:
+					return new inst::IntToInt();
+				case ValueType::Long:
+					return new inst::IntToLong();
+				case ValueType::Float:
+					return new inst::IntToFloat();
+				case ValueType::Double:
+					return new inst::IntToDouble();
+				case ValueType::String:
+					return new inst::IntToString();
+			}
+			break;
 		case ValueType::Long:
-			return new inst::VoidToLong();
+			switch(dest)
+			{
+				case ValueType::Bool:
+					return new inst::LongToBool();
+				case ValueType::Byte:
+					return new inst::LongToByte();
+				case ValueType::Int:
+					return new inst::LongToInt();
+				case ValueType::Long:
+					return new inst::LongToLong();
+				case ValueType::Float:
+					return new inst::LongToFloat();
+				case ValueType::Double:
+					return new inst::LongToDouble();
+				case ValueType::String:
+					return new inst::LongToString();
+			}
+			break;
 		case ValueType::Float:
-			return new inst::VoidToFloat();
+			switch(dest)
+			{
+				case ValueType::Bool:
+					return new inst::FloatToBool();
+				case ValueType::Byte:
+					return new inst::FloatToByte();
+				case ValueType::Int:
+					return new inst::FloatToInt();
+				case ValueType::Long:
+					return new inst::FloatToLong();
+				case ValueType::Float:
+					return new inst::FloatToFloat();
+				case ValueType::Double:
+					return new inst::FloatToDouble();
+				case ValueType::String:
+					return new inst::FloatToString();
+			}
+			break;
 		case ValueType::Double:
-			return new inst::VoidToDouble();
+			switch(dest)
+			{
+				case ValueType::Bool:
+					return new inst::DoubleToBool();
+				case ValueType::Byte:
+					return new inst::DoubleToByte();
+				case ValueType::Int:
+					return new inst::DoubleToInt();
+				case ValueType::Long:
+					return new inst::DoubleToLong();
+				case ValueType::Float:
+					return new inst::DoubleToFloat();
+				case ValueType::Double:
+					return new inst::DoubleToDouble();
+				case ValueType::String:
+					return new inst::DoubleToString();
+			}
+			break;
 		case ValueType::String:
-			return new inst::VoidToString();
-		}
-		break;
-	case ValueType::Bool:
-		switch(dest)
-		{
-		}
-		break;
-	case ValueType::Byte:
-		switch(dest)
-		{
-		case ValueType::String:
-			return new inst::ByteToString();
-		}
-		break;
-	case ValueType::Int:
-		switch(dest)
-		{
-		case ValueType::Bool:
-			return new inst::IntToBool();
-		case ValueType::Byte:
-			return new inst::IntToByte();
-		case ValueType::Int:
-			return new inst::IntToInt();
-		case ValueType::Long:
-			return new inst::IntToLong();
-		case ValueType::Float:
-			return new inst::IntToFloat();
-		case ValueType::Double:
-			return new inst::IntToDouble();
-		case ValueType::String:
-			return new inst::IntToString();
-		}
-		break;
-	case ValueType::Long:
-		switch(dest)
-		{
-		case ValueType::Bool:
-			return new inst::LongToBool();
-		case ValueType::Byte:
-			return new inst::LongToByte();
-		case ValueType::Int:
-			return new inst::LongToInt();
-		case ValueType::Long:
-			return new inst::LongToLong();
-		case ValueType::Float:
-			return new inst::LongToFloat();
-		case ValueType::Double:
-			return new inst::LongToDouble();
-		}
-		break;
-	case ValueType::Float:
-		switch(dest)
-		{
-		case ValueType::Bool:
-			return new inst::FloatToBool();
-		case ValueType::Byte:
-			return new inst::FloatToByte();
-		case ValueType::Int:
-			return new inst::FloatToInt();
-		case ValueType::Long:
-			return new inst::FloatToLong();
-		case ValueType::Float:
-			return new inst::FloatToFloat();
-		case ValueType::Double:
-			return new inst::FloatToDouble();
-		case ValueType::String:
-			return new inst::FloatToString();
-		}
-		break;
-	case ValueType::Double:
-		switch(dest)
-		{
-		case ValueType::Bool:
-			return new inst::DoubleToBool();
-		case ValueType::Byte:
-			return new inst::DoubleToByte();
-		case ValueType::Int:
-			return new inst::DoubleToInt();
-		case ValueType::Long:
-			return new inst::DoubleToLong();
-		case ValueType::Float:
-			return new inst::DoubleToFloat();
-		case ValueType::Double:
-			return new inst::DoubleToDouble();
-		}
-		break;
-	case ValueType::String:
-		switch(dest)
-		{
-		case ValueType::Bool:
-			return new inst::StringToBool();
-		case ValueType::Byte:
-			return new inst::StringToByte();
-		case ValueType::Int:
-			return new inst::StringToInt();
-		case ValueType::Long:
-			return new inst::StringToLong();
-		case ValueType::Float:
-			return new inst::StringToFloat();
-		case ValueType::Double:
-			return new inst::StringToDouble();
-		case ValueType::String:
-			return new inst::StringToString();
-		}
-		break;
-	case ValueType::Object:
-		switch(dest)
-		{
-		}
-		break;
-	case ValueType::Function:
-		switch(dest)
-		{
-		}
-		break;
+			switch(dest)
+			{
+				case ValueType::Bool:
+					return new inst::StringToBool();
+				case ValueType::Byte:
+					return new inst::StringToByte();
+				case ValueType::Int:
+					return new inst::StringToInt();
+				case ValueType::Long:
+					return new inst::StringToLong();
+				case ValueType::Float:
+					return new inst::StringToFloat();
+				case ValueType::Double:
+					return new inst::StringToDouble();
+				case ValueType::String:
+					return new inst::StringToString();
+			}
+			break;
+		case ValueType::Object:
+			switch(dest)
+			{
+			}
+			break;
+		case ValueType::Function:
+			switch(dest)
+			{
+			}
+			break;
 	}
 	//ConvertInstEnd
 
@@ -804,12 +808,12 @@ bool fay::FayLangUtils::IsNumberType(ValueType type)
 
 bool fay::FayLangUtils::IsIntegerNumberType(ValueType type)
 {
-	switch (type)
+	switch(type)
 	{
-	case fay::ValueType::Byte:
-	case fay::ValueType::Int:
-	case fay::ValueType::Long:
-		return true;
+		case fay::ValueType::Byte:
+		case fay::ValueType::Int:
+		case fay::ValueType::Long:
+			return true;
 	}
 
 	return false;
@@ -821,378 +825,382 @@ FayInst* fay::FayLangUtils::OPInst(InstGroupType op, ValueType type)
 	//OPInstStart
 	switch(op)
 	{
-	case InstGroupType::VoidTo:
-		switch(type)
-		{
-		case ValueType::Void:
-			return new inst::VoidToVoid();
-		case ValueType::Bool:
-			return new inst::VoidToBool();
-		case ValueType::Byte:
-			return new inst::VoidToByte();
-		case ValueType::Int:
-			return new inst::VoidToInt();
-		case ValueType::Long:
-			return new inst::VoidToLong();
-		case ValueType::Float:
-			return new inst::VoidToFloat();
-		case ValueType::Double:
-			return new inst::VoidToDouble();
-		case ValueType::String:
-			return new inst::VoidToString();
-		}
-		break;
-	case InstGroupType::ByteTo:
-		switch(type)
-		{
-		case ValueType::String:
-			return new inst::ByteToString();
-		}
-		break;
-	case InstGroupType::IntTo:
-		switch(type)
-		{
-		case ValueType::Bool:
-			return new inst::IntToBool();
-		case ValueType::Byte:
-			return new inst::IntToByte();
-		case ValueType::Int:
-			return new inst::IntToInt();
-		case ValueType::Long:
-			return new inst::IntToLong();
-		case ValueType::Float:
-			return new inst::IntToFloat();
-		case ValueType::Double:
-			return new inst::IntToDouble();
-		case ValueType::String:
-			return new inst::IntToString();
-		}
-		break;
-	case InstGroupType::LongTo:
-		switch(type)
-		{
-		case ValueType::Bool:
-			return new inst::LongToBool();
-		case ValueType::Byte:
-			return new inst::LongToByte();
-		case ValueType::Int:
-			return new inst::LongToInt();
-		case ValueType::Long:
-			return new inst::LongToLong();
-		case ValueType::Float:
-			return new inst::LongToFloat();
-		case ValueType::Double:
-			return new inst::LongToDouble();
-		}
-		break;
-	case InstGroupType::FloatTo:
-		switch(type)
-		{
-		case ValueType::Bool:
-			return new inst::FloatToBool();
-		case ValueType::Byte:
-			return new inst::FloatToByte();
-		case ValueType::Int:
-			return new inst::FloatToInt();
-		case ValueType::Long:
-			return new inst::FloatToLong();
-		case ValueType::Float:
-			return new inst::FloatToFloat();
-		case ValueType::Double:
-			return new inst::FloatToDouble();
-		case ValueType::String:
-			return new inst::FloatToString();
-		}
-		break;
-	case InstGroupType::DoubleTo:
-		switch(type)
-		{
-		case ValueType::Bool:
-			return new inst::DoubleToBool();
-		case ValueType::Byte:
-			return new inst::DoubleToByte();
-		case ValueType::Int:
-			return new inst::DoubleToInt();
-		case ValueType::Long:
-			return new inst::DoubleToLong();
-		case ValueType::Float:
-			return new inst::DoubleToFloat();
-		case ValueType::Double:
-			return new inst::DoubleToDouble();
-		}
-		break;
-	case InstGroupType::StringTo:
-		switch(type)
-		{
-		case ValueType::Bool:
-			return new inst::StringToBool();
-		case ValueType::Byte:
-			return new inst::StringToByte();
-		case ValueType::Int:
-			return new inst::StringToInt();
-		case ValueType::Long:
-			return new inst::StringToLong();
-		case ValueType::Float:
-			return new inst::StringToFloat();
-		case ValueType::Double:
-			return new inst::StringToDouble();
-		case ValueType::String:
-			return new inst::StringToString();
-		}
-		break;
-	case InstGroupType::Minus:
-		switch(type)
-		{
-		case ValueType::Byte:
-			return new inst::MinusByte();
-		case ValueType::Int:
-			return new inst::MinusInt();
-		case ValueType::Long:
-			return new inst::MinusLong();
-		case ValueType::Float:
-			return new inst::MinusFloat();
-		case ValueType::Double:
-			return new inst::MinusDouble();
-		}
-		break;
-	case InstGroupType::Add:
-		switch(type)
-		{
-		case ValueType::Byte:
-			return new inst::AddByte();
-		case ValueType::Int:
-			return new inst::AddInt();
-		case ValueType::Long:
-			return new inst::AddLong();
-		case ValueType::Float:
-			return new inst::AddFloat();
-		case ValueType::Double:
-			return new inst::AddDouble();
-		case ValueType::String:
-			return new inst::AddString();
-		}
-		break;
-	case InstGroupType::Sub:
-		switch(type)
-		{
-		case ValueType::Byte:
-			return new inst::SubByte();
-		case ValueType::Int:
-			return new inst::SubInt();
-		case ValueType::Long:
-			return new inst::SubLong();
-		case ValueType::Float:
-			return new inst::SubFloat();
-		case ValueType::Double:
-			return new inst::SubDouble();
-		}
-		break;
-	case InstGroupType::Mul:
-		switch(type)
-		{
-		case ValueType::Int:
-			return new inst::MulInt();
-		case ValueType::Long:
-			return new inst::MulLong();
-		case ValueType::Float:
-			return new inst::MulFloat();
-		case ValueType::Double:
-			return new inst::MulDouble();
-		}
-		break;
-	case InstGroupType::Div:
-		switch(type)
-		{
-		case ValueType::Int:
-			return new inst::DivInt();
-		case ValueType::Long:
-			return new inst::DivLong();
-		case ValueType::Float:
-			return new inst::DivFloat();
-		case ValueType::Double:
-			return new inst::DivDouble();
-		}
-		break;
-	case InstGroupType::Mod:
-		switch(type)
-		{
-		case ValueType::Byte:
-			return new inst::ModByte();
-		case ValueType::Int:
-			return new inst::ModInt();
-		case ValueType::Long:
-			return new inst::ModLong();
-		}
-		break;
-	case InstGroupType::Equal:
-		switch(type)
-		{
-		case ValueType::Bool:
-			return new inst::EqualBool();
-		case ValueType::Byte:
-			return new inst::EqualByte();
-		case ValueType::Int:
-			return new inst::EqualInt();
-		case ValueType::Long:
-			return new inst::EqualLong();
-		case ValueType::Float:
-			return new inst::EqualFloat();
-		case ValueType::Double:
-			return new inst::EqualDouble();
-		case ValueType::String:
-			return new inst::EqualString();
-		}
-		break;
-	case InstGroupType::NotEqual:
-		switch(type)
-		{
-		case ValueType::Bool:
-			return new inst::NotEqualBool();
-		case ValueType::Byte:
-			return new inst::NotEqualByte();
-		case ValueType::Int:
-			return new inst::NotEqualInt();
-		case ValueType::Long:
-			return new inst::NotEqualLong();
-		case ValueType::Float:
-			return new inst::NotEqualFloat();
-		case ValueType::Double:
-			return new inst::NotEqualDouble();
-		}
-		break;
-	case InstGroupType::Greater:
-		switch(type)
-		{
-		case ValueType::Bool:
-			return new inst::GreaterBool();
-		case ValueType::Byte:
-			return new inst::GreaterByte();
-		case ValueType::Int:
-			return new inst::GreaterInt();
-		case ValueType::Long:
-			return new inst::GreaterLong();
-		case ValueType::Float:
-			return new inst::GreaterFloat();
-		case ValueType::Double:
-			return new inst::GreaterDouble();
-		}
-		break;
-	case InstGroupType::GreaterEqual:
-		switch(type)
-		{
-		case ValueType::Bool:
-			return new inst::GreaterEqualBool();
-		case ValueType::Byte:
-			return new inst::GreaterEqualByte();
-		case ValueType::Int:
-			return new inst::GreaterEqualInt();
-		case ValueType::Long:
-			return new inst::GreaterEqualLong();
-		case ValueType::Float:
-			return new inst::GreaterEqualFloat();
-		case ValueType::Double:
-			return new inst::GreaterEqualDouble();
-		}
-		break;
-	case InstGroupType::Less:
-		switch(type)
-		{
-		case ValueType::Bool:
-			return new inst::LessBool();
-		case ValueType::Byte:
-			return new inst::LessByte();
-		case ValueType::Int:
-			return new inst::LessInt();
-		case ValueType::Long:
-			return new inst::LessLong();
-		case ValueType::Float:
-			return new inst::LessFloat();
-		case ValueType::Double:
-			return new inst::LessDouble();
-		}
-		break;
-	case InstGroupType::LessEqual:
-		switch(type)
-		{
-		case ValueType::Bool:
-			return new inst::LessEqualBool();
-		case ValueType::Byte:
-			return new inst::LessEqualByte();
-		case ValueType::Int:
-			return new inst::LessEqualInt();
-		case ValueType::Long:
-			return new inst::LessEqualLong();
-		case ValueType::Float:
-			return new inst::LessEqualFloat();
-		case ValueType::Double:
-			return new inst::LessEqualDouble();
-		}
-		break;
-	case InstGroupType::BitNot:
-		switch(type)
-		{
-		case ValueType::Byte:
-			return new inst::BitNotByte();
-		case ValueType::Int:
-			return new inst::BitNotInt();
-		case ValueType::Long:
-			return new inst::BitNotLong();
-		}
-		break;
-	case InstGroupType::BitAnd:
-		switch(type)
-		{
-		case ValueType::Byte:
-			return new inst::BitAndByte();
-		case ValueType::Int:
-			return new inst::BitAndInt();
-		case ValueType::Long:
-			return new inst::BitAndLong();
-		}
-		break;
-	case InstGroupType::BitOr:
-		switch(type)
-		{
-		case ValueType::Byte:
-			return new inst::BitOrByte();
-		case ValueType::Int:
-			return new inst::BitOrInt();
-		case ValueType::Long:
-			return new inst::BitOrLong();
-		}
-		break;
-	case InstGroupType::BitXor:
-		switch(type)
-		{
-		case ValueType::Byte:
-			return new inst::BitXorByte();
-		case ValueType::Int:
-			return new inst::BitXorInt();
-		case ValueType::Long:
-			return new inst::BitXorLong();
-		}
-		break;
-	case InstGroupType::LShift:
-		switch(type)
-		{
-		case ValueType::Byte:
-			return new inst::LShiftByte();
-		case ValueType::Int:
-			return new inst::LShiftInt();
-		case ValueType::Long:
-			return new inst::LShiftLong();
-		}
-		break;
-	case InstGroupType::RShift:
-		switch(type)
-		{
-		case ValueType::Byte:
-			return new inst::RShiftByte();
-		case ValueType::Int:
-			return new inst::RShiftInt();
-		case ValueType::Long:
-			return new inst::RShiftLong();
-		}
+		case InstGroupType::VoidTo:
+			switch(type)
+			{
+				case ValueType::Void:
+					return new inst::VoidToVoid();
+				case ValueType::Bool:
+					return new inst::VoidToBool();
+				case ValueType::Byte:
+					return new inst::VoidToByte();
+				case ValueType::Int:
+					return new inst::VoidToInt();
+				case ValueType::Long:
+					return new inst::VoidToLong();
+				case ValueType::Float:
+					return new inst::VoidToFloat();
+				case ValueType::Double:
+					return new inst::VoidToDouble();
+				case ValueType::String:
+					return new inst::VoidToString();
+			}
+			break;
+		case InstGroupType::ByteTo:
+			switch(type)
+			{
+				case ValueType::String:
+					return new inst::ByteToString();
+			}
+			break;
+		case InstGroupType::IntTo:
+			switch(type)
+			{
+				case ValueType::Bool:
+					return new inst::IntToBool();
+				case ValueType::Byte:
+					return new inst::IntToByte();
+				case ValueType::Int:
+					return new inst::IntToInt();
+				case ValueType::Long:
+					return new inst::IntToLong();
+				case ValueType::Float:
+					return new inst::IntToFloat();
+				case ValueType::Double:
+					return new inst::IntToDouble();
+				case ValueType::String:
+					return new inst::IntToString();
+			}
+			break;
+		case InstGroupType::LongTo:
+			switch(type)
+			{
+				case ValueType::Bool:
+					return new inst::LongToBool();
+				case ValueType::Byte:
+					return new inst::LongToByte();
+				case ValueType::Int:
+					return new inst::LongToInt();
+				case ValueType::Long:
+					return new inst::LongToLong();
+				case ValueType::Float:
+					return new inst::LongToFloat();
+				case ValueType::Double:
+					return new inst::LongToDouble();
+				case ValueType::String:
+					return new inst::LongToString();
+			}
+			break;
+		case InstGroupType::FloatTo:
+			switch(type)
+			{
+				case ValueType::Bool:
+					return new inst::FloatToBool();
+				case ValueType::Byte:
+					return new inst::FloatToByte();
+				case ValueType::Int:
+					return new inst::FloatToInt();
+				case ValueType::Long:
+					return new inst::FloatToLong();
+				case ValueType::Float:
+					return new inst::FloatToFloat();
+				case ValueType::Double:
+					return new inst::FloatToDouble();
+				case ValueType::String:
+					return new inst::FloatToString();
+			}
+			break;
+		case InstGroupType::DoubleTo:
+			switch(type)
+			{
+				case ValueType::Bool:
+					return new inst::DoubleToBool();
+				case ValueType::Byte:
+					return new inst::DoubleToByte();
+				case ValueType::Int:
+					return new inst::DoubleToInt();
+				case ValueType::Long:
+					return new inst::DoubleToLong();
+				case ValueType::Float:
+					return new inst::DoubleToFloat();
+				case ValueType::Double:
+					return new inst::DoubleToDouble();
+				case ValueType::String:
+					return new inst::DoubleToString();
+			}
+			break;
+		case InstGroupType::StringTo:
+			switch(type)
+			{
+				case ValueType::Bool:
+					return new inst::StringToBool();
+				case ValueType::Byte:
+					return new inst::StringToByte();
+				case ValueType::Int:
+					return new inst::StringToInt();
+				case ValueType::Long:
+					return new inst::StringToLong();
+				case ValueType::Float:
+					return new inst::StringToFloat();
+				case ValueType::Double:
+					return new inst::StringToDouble();
+				case ValueType::String:
+					return new inst::StringToString();
+			}
+			break;
+		case InstGroupType::Minus:
+			switch(type)
+			{
+				case ValueType::Byte:
+					return new inst::MinusByte();
+				case ValueType::Int:
+					return new inst::MinusInt();
+				case ValueType::Long:
+					return new inst::MinusLong();
+				case ValueType::Float:
+					return new inst::MinusFloat();
+				case ValueType::Double:
+					return new inst::MinusDouble();
+			}
+			break;
+		case InstGroupType::Add:
+			switch(type)
+			{
+				case ValueType::Byte:
+					return new inst::AddByte();
+				case ValueType::Int:
+					return new inst::AddInt();
+				case ValueType::Long:
+					return new inst::AddLong();
+				case ValueType::Float:
+					return new inst::AddFloat();
+				case ValueType::Double:
+					return new inst::AddDouble();
+				case ValueType::String:
+					return new inst::AddString();
+			}
+			break;
+		case InstGroupType::Sub:
+			switch(type)
+			{
+				case ValueType::Byte:
+					return new inst::SubByte();
+				case ValueType::Int:
+					return new inst::SubInt();
+				case ValueType::Long:
+					return new inst::SubLong();
+				case ValueType::Float:
+					return new inst::SubFloat();
+				case ValueType::Double:
+					return new inst::SubDouble();
+			}
+			break;
+		case InstGroupType::Mul:
+			switch(type)
+			{
+				case ValueType::Int:
+					return new inst::MulInt();
+				case ValueType::Long:
+					return new inst::MulLong();
+				case ValueType::Float:
+					return new inst::MulFloat();
+				case ValueType::Double:
+					return new inst::MulDouble();
+			}
+			break;
+		case InstGroupType::Div:
+			switch(type)
+			{
+				case ValueType::Int:
+					return new inst::DivInt();
+				case ValueType::Long:
+					return new inst::DivLong();
+				case ValueType::Float:
+					return new inst::DivFloat();
+				case ValueType::Double:
+					return new inst::DivDouble();
+			}
+			break;
+		case InstGroupType::Mod:
+			switch(type)
+			{
+				case ValueType::Byte:
+					return new inst::ModByte();
+				case ValueType::Int:
+					return new inst::ModInt();
+				case ValueType::Long:
+					return new inst::ModLong();
+			}
+			break;
+		case InstGroupType::Equal:
+			switch(type)
+			{
+				case ValueType::Bool:
+					return new inst::EqualBool();
+				case ValueType::Byte:
+					return new inst::EqualByte();
+				case ValueType::Int:
+					return new inst::EqualInt();
+				case ValueType::Long:
+					return new inst::EqualLong();
+				case ValueType::Float:
+					return new inst::EqualFloat();
+				case ValueType::Double:
+					return new inst::EqualDouble();
+				case ValueType::String:
+					return new inst::EqualString();
+			}
+			break;
+		case InstGroupType::NotEqual:
+			switch(type)
+			{
+				case ValueType::Bool:
+					return new inst::NotEqualBool();
+				case ValueType::Byte:
+					return new inst::NotEqualByte();
+				case ValueType::Int:
+					return new inst::NotEqualInt();
+				case ValueType::Long:
+					return new inst::NotEqualLong();
+				case ValueType::Float:
+					return new inst::NotEqualFloat();
+				case ValueType::Double:
+					return new inst::NotEqualDouble();
+			}
+			break;
+		case InstGroupType::Greater:
+			switch(type)
+			{
+				case ValueType::Bool:
+					return new inst::GreaterBool();
+				case ValueType::Byte:
+					return new inst::GreaterByte();
+				case ValueType::Int:
+					return new inst::GreaterInt();
+				case ValueType::Long:
+					return new inst::GreaterLong();
+				case ValueType::Float:
+					return new inst::GreaterFloat();
+				case ValueType::Double:
+					return new inst::GreaterDouble();
+			}
+			break;
+		case InstGroupType::GreaterEqual:
+			switch(type)
+			{
+				case ValueType::Bool:
+					return new inst::GreaterEqualBool();
+				case ValueType::Byte:
+					return new inst::GreaterEqualByte();
+				case ValueType::Int:
+					return new inst::GreaterEqualInt();
+				case ValueType::Long:
+					return new inst::GreaterEqualLong();
+				case ValueType::Float:
+					return new inst::GreaterEqualFloat();
+				case ValueType::Double:
+					return new inst::GreaterEqualDouble();
+			}
+			break;
+		case InstGroupType::Less:
+			switch(type)
+			{
+				case ValueType::Bool:
+					return new inst::LessBool();
+				case ValueType::Byte:
+					return new inst::LessByte();
+				case ValueType::Int:
+					return new inst::LessInt();
+				case ValueType::Long:
+					return new inst::LessLong();
+				case ValueType::Float:
+					return new inst::LessFloat();
+				case ValueType::Double:
+					return new inst::LessDouble();
+			}
+			break;
+		case InstGroupType::LessEqual:
+			switch(type)
+			{
+				case ValueType::Bool:
+					return new inst::LessEqualBool();
+				case ValueType::Byte:
+					return new inst::LessEqualByte();
+				case ValueType::Int:
+					return new inst::LessEqualInt();
+				case ValueType::Long:
+					return new inst::LessEqualLong();
+				case ValueType::Float:
+					return new inst::LessEqualFloat();
+				case ValueType::Double:
+					return new inst::LessEqualDouble();
+			}
+			break;
+		case InstGroupType::BitNot:
+			switch(type)
+			{
+				case ValueType::Byte:
+					return new inst::BitNotByte();
+				case ValueType::Int:
+					return new inst::BitNotInt();
+				case ValueType::Long:
+					return new inst::BitNotLong();
+			}
+			break;
+		case InstGroupType::BitAnd:
+			switch(type)
+			{
+				case ValueType::Byte:
+					return new inst::BitAndByte();
+				case ValueType::Int:
+					return new inst::BitAndInt();
+				case ValueType::Long:
+					return new inst::BitAndLong();
+			}
+			break;
+		case InstGroupType::BitOr:
+			switch(type)
+			{
+				case ValueType::Byte:
+					return new inst::BitOrByte();
+				case ValueType::Int:
+					return new inst::BitOrInt();
+				case ValueType::Long:
+					return new inst::BitOrLong();
+			}
+			break;
+		case InstGroupType::BitXor:
+			switch(type)
+			{
+				case ValueType::Byte:
+					return new inst::BitXorByte();
+				case ValueType::Int:
+					return new inst::BitXorInt();
+				case ValueType::Long:
+					return new inst::BitXorLong();
+			}
+			break;
+		case InstGroupType::LShift:
+			switch(type)
+			{
+				case ValueType::Byte:
+					return new inst::LShiftByte();
+				case ValueType::Int:
+					return new inst::LShiftInt();
+				case ValueType::Long:
+					return new inst::LShiftLong();
+			}
+			break;
+		case InstGroupType::RShift:
+			switch(type)
+			{
+				case ValueType::Byte:
+					return new inst::RShiftByte();
+				case ValueType::Int:
+					return new inst::RShiftInt();
+				case ValueType::Long:
+					return new inst::RShiftLong();
+			}
 	}
 	//OPInstEnd
 

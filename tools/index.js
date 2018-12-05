@@ -348,16 +348,16 @@ Cmds.convert_inst = function () {
     //生成类型转换的语句
     let convertText = "switch(src)\n{";
     typeData.forEach((it1) => {
-        convertText += "\ncase ValueType::" + it1.Name + ":";
-        convertText += "\n\tswitch(dest)\n\t{";
+        convertText += "\n\tcase ValueType::" + it1.Name + ":";
+        convertText += "\n\t\tswitch(dest)\n\t\t{";
         typeData.forEach((it2) => {
             let instName = it1.Name + "To" + it2.Name;
             if (!instMap.get(instName))
                 return;
-            convertText += "\n\tcase ValueType::" + it2.Name + ":";
-            convertText += "\n\t\treturn new inst::" + instName + "();";
+            convertText += "\n\t\t\tcase ValueType::" + it2.Name + ":";
+            convertText += "\n\t\t\t\treturn new inst::" + instName + "();";
         });
-        convertText += "\n\t}\n\tbreak;";
+        convertText += "\n\t\t}\n\t\tbreak;";
     });
     convertText += "\n}";
     replaceFileBody("src/fay_lang.cpp", "ConvertInst", convertText, "\t");
@@ -370,19 +370,19 @@ Cmds.convert_inst = function () {
             if (nowCode1 != it.Code1) {
                 //如果之前有值，需要结束
                 if (nowCode1)
-                    opText += "\n\t}\n\tbreak;";
+                    opText += "\n\t\t}\n\t\tbreak;";
                 nowCode1 = it.Code1;
-                opText += "\ncase InstGroupType::" + it.Code1 + ":";
-                opText += "\n\tswitch(type)\n\t{";
+                opText += "\n\tcase InstGroupType::" + it.Code1 + ":";
+                opText += "\n\t\tswitch(type)\n\t\t{";
             }
-            opText += "\n\tcase ValueType::" + it.Code2 + ":";
-            opText += "\n\t\treturn new inst::" + it.Name + "();";
+            opText += "\n\t\t\tcase ValueType::" + it.Code2 + ":";
+            opText += "\n\t\t\t\treturn new inst::" + it.Name + "();";
             //opText += larlf.text.format("if (op == InstGroupType::{0} && type == ValueType::{1})", it.Code1, it.Code2);
             //opText += larlf.text.format("\n\treturn new inst::{0}();", it.Name);
         }
     });
     if (nowCode1)
-        opText += "\n\t}";
+        opText += "\n\t\t}";
     opText += "\n}";
     // let ops = ["Minus", "Add", "Sub", "Mul", "Div", "Equal", "Greater", "Less", "Complement"];
     // ops.forEach(op =>

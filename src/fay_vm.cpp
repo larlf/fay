@@ -253,6 +253,13 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 				this->stack.push(FayValue((double)v.longVal()));
 				break;
 			}
+			case InstType::LongToString:
+			{
+				FayValue v=this->stack.top();
+				this->stack.pop();
+				this->stack.push(FayValue(std::to_string(v.longVal())));
+				break;
+			}
 			case InstType::FloatToBool:
 			{
 				FayValue v=this->stack.top();
@@ -338,6 +345,13 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 			case InstType::DoubleToDouble:
 			{
 				//DoNothing
+				break;
+			}
+			case InstType::DoubleToString:
+			{
+				FayValue v=this->stack.top();
+				this->stack.pop();
+				this->stack.push(FayValue(std::to_string(v.doubleVal())));
 				break;
 			}
 			case InstType::StringToBool:
