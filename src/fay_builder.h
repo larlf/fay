@@ -47,6 +47,7 @@ namespace fay
 		void fixedLabel(const std::string& label);
 
 		void package(const std::string &name);
+		const std::string &package() { return this->_package; }
 
 		void beginFile(const std::string &filename);
 		void endFile();

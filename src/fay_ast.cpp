@@ -96,6 +96,13 @@ void fay::AstNode::dig4(FayBuilder* builder)
 void fay::AstClass::dig1(FayBuilder* builder)
 {
 	this->typeIndex = builder->addClass(this->_text);
+
+	PTR(FayInstClass) clazz = MKPTR(FayInstClass)(builder->domain(), builder->package(), this->_text);
+	std::string fullname = clazz->fullname();
+
+	//检查是否重复
+
+
 	AstNode::dig1(builder);
 }
 

@@ -418,6 +418,14 @@ TEST_F(FayLang, String)
 	rs = vm->run(funs[0]);
 }
 
+TEST_F(FayLang, OOP)
+{
+	PRINT(project->findSource("OOPTest.fay")->tokensStr());
+	PRINT(project->findSource("OOPTest.fay")->astStr());
+	auto type = project->domain()->findClass("fay.dev.test.OOPTest");
+
+}
+
 TEST_F(FayLang, FayValue)
 {
 	std::string str = "one";
