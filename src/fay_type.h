@@ -41,6 +41,12 @@ namespace fay
 				case ValueType::String:
 					left._val.strVal = new std::string(*right._val.strVal);
 					break;
+				case ValueType::Object:
+					if (right._val.ptrValue == nullptr)
+						left._val.ptrValue = nullptr;
+					else
+						left._val.ptrValue = new PTR(void)(*(PTR(void)*)right._val.ptrValue);
+					break;
 				default:
 					left._val = right._val;
 					break;
@@ -50,7 +56,7 @@ namespace fay
 		}
 
 	public:
-		FayValue() : _type(ValueType::Void) {  }
+		FayValue() : _type(ValueType::Void) { }
 		FayValue(bool val) : _type(ValueType::Bool) {  _val.boolVal = val; }
 		FayValue(unsigned char val) : _type(ValueType::Byte) { _val.byteVal = val; }
 		FayValue(int32_t val) : _type(ValueType::Int) {  _val.intVal = val; }
@@ -59,6 +65,10 @@ namespace fay
 		FayValue(double val) : _type(ValueType::Double) { _val.doubleVal = val; }
 		FayValue(const char* str) : _type(ValueType::String) { _val.strVal = new std::string(str); }
 		FayValue(const std::string &str) : _type(ValueType::String) { _val.strVal = new std::string(str); }
+		template<class T>  FayValue(PTR(T) obj) : _type(ValueType::Object) 
+		{ 
+			_val.ptrValue = new PTR(T)(obj);
+		}
 
 		inline FayValue(const FayValue &v)
 		{
@@ -74,6 +84,13 @@ namespace fay
 				case ValueType::String:
 					delete this->_val.strVal;
 					break;
+				case ValueType::Object:
+					if (this->_val.ptrValue != nullptr)
+					{
+						delete this->_val.ptrValue;
+						this->_val.ptrValue = nullptr;
+					}
+					break;
 			}
 
 			this->_type = ValueType::Void;
@@ -87,11 +104,17 @@ namespace fay
 		inline int64_t longVal() { return (this->_type == ValueType::Long) ? this->_val.longVal : 0; }
 		inline float floatVal() { return (this->_type == ValueType::Float) ? this->_val.floatVal : 0; }
 		inline double doubleVal() { return (this->_type == ValueType::Double) ? this->_val.doubleVal : 0; }
-		inline const std::string *strVal() { return (this->_type == ValueType::String) ? this->_val.strVal : nullptr; }
+		inline const std::string* strVal() { return (this->_type == ValueType::String) ? this->_val.strVal : nullptr; }
 		inline const void* objectVal() { return (this->_type == ValueType::Object) ? this->_val.ptrValue : nullptr; }
 		inline const void* funVal() { return (this->_type == ValueType::Function) ? this->_val.ptrValue : nullptr; }
-		template<class T>
-		inline T* ptrValue() { return (T*)this->_val.ptrValue; }
+		template<class T> inline T* ptrValue() { return (T*)this->_val.ptrValue; }
+		template<class T> inline PTR(T) objValue()
+		{
+			if (this->_type == ValueType::Object && this->_val.ptrValue != nullptr)
+				return *(PTR(T)*)this->_val.ptrValue;
+
+			return nullptr;
+		}
 
 		void operator =(const FayValue &value)
 		{

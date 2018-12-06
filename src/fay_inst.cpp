@@ -1945,4 +1945,11 @@ void fay::inst::RShiftFunction::buildString(mirror::utils::StringBuilder * sb)
 		->endl();
 }
 
+void fay::inst::New::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("New")
+		->add(" ")->add(this->className)
+		->endl();
+}
+
 //InstEnd

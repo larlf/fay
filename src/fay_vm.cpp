@@ -1065,6 +1065,12 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 				this->stack.top().val()->longVal >>= v;
 				break;
 			}
+			case InstType::New:
+			{
+				PTR(fay::FayInstance) obj = MKPTR(fay::FayInstance)(this->_domain->findClass(((inst::New*)inst)->classIndex));
+				this->stack.push(FayValue(obj));
+				break;
+			}
 			//InstCodeEnd
 			default:
 				LOG_ERROR("Unrealized inst : " + TypeDict::ToName(inst->type()));

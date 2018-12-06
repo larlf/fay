@@ -1280,5 +1280,6 @@ void fay::AstNew::dig4(FayBuilder* builder)
 {
 	AstNode::dig4(builder);
 
-
+	inst::New *inst = new inst::New(this->_classType.lock()->fullname());
+	builder->addInst(inst);
 }

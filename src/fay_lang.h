@@ -259,7 +259,7 @@ namespace fay
 		inline void clazz(PTR(FayClass) v) { this->_class = v; }
 		inline const PTR(FayClass) clazz() { return this->_class.lock(); }
 		inline const size_t paramsCount() { return this->_params.size(); }
-		inline const std::vector<PTR(FayParamDef)> params(){ return this->_params; }
+		inline const std::vector<PTR(FayParamDef)> params() { return this->_params; }
 		inline const PTR(FayClass) returnValue() { return this->_returnValue.lock(); }
 		void returnValue(PTR(FayClass) type);
 		inline const PTR(FayLabelTable) labels() { return this->_labels; }
@@ -397,7 +397,7 @@ namespace fay
 		//返回类型在Domain里的序号
 		pos_t addType(PTR(FayClass) t);
 		//查找类型在Domain中的位置
-		pos_t getTypeIndex(PTR(FayClass) t);
+		pos_t getClassIndex(PTR(FayClass) t);
 		//根据类型的全称查找类型定义
 		PTR(FayClass) findClass(const std::string &typeFullname);
 		PTR(FayClass) operator[](const std::string &typeFullname) { return this->findClass(typeFullname); }
@@ -433,5 +433,13 @@ namespace fay
 		PTR(FayClass) clazz() { return this->_class; }
 	};
 
+	/////////////////////////////////////////////////
+
+	//语言抛出的异常
+	class FayLangException : std::exception
+	{
+	public:
+		FayLangException(const std::string &msg) : std::exception(msg.c_str()) {}
+	};
 }
 

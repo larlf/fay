@@ -2293,6 +2293,15 @@ namespace fay
 			virtual void buildString(mirror::utils::StringBuilder* sb) override;
 		};
 		
+		class New : public fay::FayInst 
+		{ 
+		public:
+			std::string className;
+			int32_t classIndex;
+			New(const std::string &className) : FayInst(InstType::New),className(className) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
 		//InstEnd
 	}
 }

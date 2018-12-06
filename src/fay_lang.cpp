@@ -164,20 +164,31 @@ void fay::FayInstFun::prepareInsts()
 			case InstType::CallStatic:
 			{
 				//取出调用方法的索引值
-				inst::CallStatic* i = static_cast<inst::CallStatic*>(inst);
-				PTR(OutsideFun) fun = this->clazz()->lib()->findOutsideFun(i->outsideFunIndex);
+				inst::CallStatic* inst1 = static_cast<inst::CallStatic*>(inst);
+				PTR(OutsideFun) fun = this->clazz()->lib()->findOutsideFun(inst1->outsideFunIndex);
 				if(fun)
 				{
-					i->typeIndex = fun->classIndex();
-					i->funIndex = fun->funIndex();
+					inst1->typeIndex = fun->classIndex();
+					inst1->funIndex = fun->funIndex();
 				}
 				else
 				{
-					i->typeIndex = -1;
-					i->funIndex = -1;
+					inst1->typeIndex = -1;
+					inst1->funIndex = -1;
 				}
 				break;
 			}
+			case InstType::New:
+			{
+				inst::New* inst1 = static_cast<inst::New*>(inst);
+				auto clazz = this->domain()->findClass(inst1->className);
+				if(clazz == NULL)
+					throw FayLangException("Cannot find class : " + inst1->className);
+
+				inst1->classIndex = this->domain()->getClassIndex(clazz);
+				break;
+			}
+
 		}
 	}
 }
@@ -379,7 +390,7 @@ pos_t fay::FayDomain::addType(PTR(FayClass) t)
 	return this->_types.add(fullname, t);
 }
 
-pos_t fay::FayDomain::getTypeIndex(PTR(FayClass) t)
+pos_t fay::FayDomain::getClassIndex(PTR(FayClass) t)
 {
 	return this->_types.findIndex(t->fullname());
 }
@@ -1295,11 +1306,11 @@ std::vector<PTR(FayFun)> fay::FunTable::findFunByName(const std::string &name)
 	return list;
 }
 
-void fay::FunTable::findFunByName(const std::string & name, std::vector<PTR(FayFun)>& list)
+void fay::FunTable::findFunByName(const std::string &name, std::vector<PTR(FayFun)> &list)
 {
-	for (auto fun : this->_funs)
+	for(auto fun : this->_funs)
 	{
-		if (fun->name() == name)
+		if(fun->name() == name)
 			list.push_back(fun);
 	}
 }
