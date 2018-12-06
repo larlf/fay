@@ -83,7 +83,10 @@ namespace fay
 		std::vector<PTR(FayFun)> matchFun(const std::string &funName, const std::vector<PTR(FayClass)> &paramsType);
 		pos_t getFunIndex(const std::string &fullname);
 		PTR(FayFun) findFun(const std::string &fullname);
+
+		//根据名字查找
 		std::vector<PTR(FayFun)> findFunByName(const std::string &name);
+		void findFunByName(const std::string &name, std::vector<PTR(FayFun)> &list);
 
 		virtual void buildString(mirror::utils::StringBuilder* sb) override;
 	};
@@ -163,7 +166,7 @@ namespace fay
 		//根据Index取得函数
 		PTR(FayFun) findFun(pos_t index, bool isStatic);
 		PTR(FayFun) findFun(const std::string &fullname, bool isStatic);
-		std::vector<PTR(FayFun)> findFunByName(const std::string &name, bool isStatic);
+		std::vector<PTR(FayFun)> findFunByName(const std::string &name);
 		pos_t getFunIndex(const std::string &fullname, bool isStatic);
 
 		virtual ValueType valueType() { return ValueType::Void; }

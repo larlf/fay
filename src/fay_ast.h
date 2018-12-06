@@ -139,6 +139,9 @@ namespace fay
 		using AstNode::AstNode;
 	public:
 		virtual void dig1(FayBuilder* builder) override;
+		virtual void dig2(FayBuilder* builder) override;
+		virtual void dig3(FayBuilder* builder) override;
+		virtual void dig4(FayBuilder* builder) override;
 
 	};
 
@@ -156,7 +159,7 @@ namespace fay
 	{
 	private:
 		std::vector<std::string> _descWords;
-		pos_t typeIndex = -1;  //用于记录在domain中的位置
+		pos_t classIndex = -1;  //用于记录在domain中的位置
 	public:
 		AstClass(const PTR(fay::Token) &token, std::vector<std::string> &descWords)
 			: AstNode(token), _descWords(descWords) {}
@@ -367,6 +370,14 @@ namespace fay
 	private:
 		WPTR(FayFun) _fun;
 
+	public:
+		virtual void dig3(FayBuilder* builder) override;
+		virtual void dig4(FayBuilder* builder) override;
+	};
+
+	class AstNew : public AstNode
+	{
+		using AstNode::AstNode;
 	public:
 		virtual void dig3(FayBuilder* builder) override;
 		virtual void dig4(FayBuilder* builder) override;

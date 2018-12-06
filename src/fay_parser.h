@@ -73,6 +73,8 @@ namespace fay
 		static PTR(AstNode) _ParamList(TokenStack* stack);
 		//调用语句
 		static PTR(AstNode) _Call(TokenStack* stack);
+		//创建对象语句
+		static PTR(AstNode) _New(TokenStack* stack);
 
 
 		//表达式中的各项基本值

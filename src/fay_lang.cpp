@@ -43,12 +43,12 @@ PTR(FayFun) fay::FayClass::findFun(const std::string &fullname, bool isStatic)
 		return this->_vft.findFun(fullname);
 }
 
-std::vector<PTR(FayFun)> fay::FayClass::findFunByName(const std::string &name, bool isStatic)
+std::vector<PTR(FayFun)> fay::FayClass::findFunByName(const std::string &name)
 {
-	if(isStatic)
-		return this->_sft.findFunByName(name);
-	else
-		return this->_vft.findFunByName(name);
+	std::vector<PTR(FayFun)> r;
+	this->_sft.findFunByName(name, r);
+	this->_vft.findFunByName(name, r);
+	return r;
 }
 
 pos_t fay::FayClass::getFunIndex(const std::string &fullname, bool isStatic)
@@ -1291,14 +1291,17 @@ PTR(FayFun) fay::FunTable::findFun(const std::string &fullname)
 std::vector<PTR(FayFun)> fay::FunTable::findFunByName(const std::string &name)
 {
 	std::vector<PTR(FayFun)> list;
+	this->findFunByName(name, list);
+	return list;
+}
 
-	for(auto fun : this->_funs)
+void fay::FunTable::findFunByName(const std::string & name, std::vector<PTR(FayFun)>& list)
+{
+	for (auto fun : this->_funs)
 	{
-		if(fun->name() == name)
+		if (fun->name() == name)
 			list.push_back(fun);
 	}
-
-	return list;
 }
 
 void fay::FunTable::buildString(mirror::utils::StringBuilder* sb)

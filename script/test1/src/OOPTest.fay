@@ -4,9 +4,28 @@ package fay.dev.test;
 
 public class OOPTest
 {
+	static public fun test1():int
+	{
+		return TestClassA.fun1();
+	}
+
+	static public fun test2():int
+	{
+		var a:TestClassA=new TestClassA();
+		return 0;
+	}
 }
 
-public class OOPTest
+public class TestClassA
 {
+	static public fun fun1():int
+	{
+		return 10001;
+	}
+
+	public fun fun2():int
+	{
+		return 10002;
+	}
 }
 

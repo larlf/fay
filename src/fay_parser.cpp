@@ -257,20 +257,44 @@ PTR(AstNode) fay::Parser::_Call(TokenStack* stack)
 		PTR(AstCall) node = MKPTR(AstCall)(stack->now());
 		stack->next();
 
-		if(!stack->now()->is("("))
-			throw ParseException(stack, "expect ( with call");
+		if (!stack->now()->is("("))
+			throw ParseException(stack, "err.expect", "(");
 		stack->next();
 
 		node->addChildNode(_ParamList((stack)));
 
-		if(!stack->now()->is(")"))
-			throw ParseException(stack, "expect ) with call");
+		if (!stack->now()->is(")"))
+			throw ParseException(stack, "err.expect", ")");
 		stack->next();
 
 		return node;
 	}
 
 	return nullptr;
+}
+
+PTR(AstNode) fay::Parser::_New(TokenStack * stack)
+{
+	if (!stack->now()->is(TokenType::New))
+		throw ParseException(stack, "err.expect", "new");
+	stack->next();
+
+	if (!stack->now()->is(TokenType::ID))
+		throw ParseException(stack, "err.not_class_name");
+	PTR(AstNew) node = MKPTR(AstNew)(stack->now());
+	stack->next();
+
+	if (!stack->now()->is("("))
+		throw ParseException(stack, "err.expect", "(");
+	stack->next();
+
+	node->addChildNode(_ParamList((stack)));
+
+	if (!stack->now()->is(")"))
+		throw ParseException(stack, "err.expect", ")");
+	stack->next();
+
+	return node;
 }
 
 PTR(AstNode) fay::Parser::_Stmt(TokenStack* stack)
@@ -772,14 +796,16 @@ PTR(AstNode) fay::Parser::_ParamList(TokenStack* stack)
 
 PTR(AstNode) fay::Parser::_ExprPrimary(TokenStack* stack)
 {
-	if(stack->now()->is(TokenType::Number))
+	if (stack->now()->is(TokenType::Number))
 		return MKPTR(AstNumber)(stack->move());
-	else if(stack->now()->is(TokenType::String))
+	else if (stack->now()->is(TokenType::String))
 		return MKPTR(AstString)(stack->move());
-	else if(stack->now()->is(TokenType::Char))
+	else if (stack->now()->is(TokenType::Char))
 		return MKPTR(AstByte)(stack->move());
-	else if(stack->now()->is(TokenType::Bool))
+	else if (stack->now()->is(TokenType::Bool))
 		return MKPTR(AstBool)(stack->move());
+	else if (stack->now()->is(TokenType::New))
+		return _New(stack);
 	else if(stack->now()->is(TokenType::ID))
 	{
 		//如果下面是括号，应该是个调用

@@ -17,6 +17,10 @@ fay::FayBuilder::~FayBuilder()
 	}
 }
 
+void fay::FayBuilder::log(BuildLogLevel level, int line, int col, const std::string & msg)
+{
+}
+
 std::string fay::FayBuilder::makeLabel()
 {
 	std::string label = "__label__" + std::to_string(this->labelIndex++);
@@ -32,11 +36,6 @@ void fay::FayBuilder::useLabel(const std::string & label, int32_t * target)
 void fay::FayBuilder::fixedLabel(const std::string & label)
 {
 	this->_fun->labels()->setPos(label, this->instsSize());
-}
-
-void fay::FayBuilder::package(const std::string &name)
-{
-	this->_package = name;
 }
 
 void fay::FayBuilder::beginFile(const std::string &filename)
@@ -61,9 +60,8 @@ void fay::FayBuilder::beginLib(const std::string &name)
 	this->_domain->addLib(this->_lib);
 }
 
-pos_t fay::FayBuilder::addClass(const std::string &name)
+pos_t fay::FayBuilder::addClass(PTR(FayInstClass) clazz)
 {
-	PTR(FayInstClass) clazz = MKPTR(FayInstClass)(this->_domain, this->_package, name);
 	this->_class = clazz;
 	return this->_lib->addClass(clazz);
 }
@@ -71,6 +69,11 @@ pos_t fay::FayBuilder::addClass(const std::string &name)
 void fay::FayBuilder::bindClass(pos_t index)
 {
 	this->_class = TOPTR(FayInstClass, this->_domain->findClass(index));
+}
+
+std::vector<PTR(FayClass)> fay::FayBuilder::findClass(const std::string & name)
+{
+	return this->_domain->findClass(this->_usings, name);
 }
 
 pos_t fay::FayBuilder::addFun(PTR(FayInstFun) fun)
