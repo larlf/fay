@@ -199,6 +199,7 @@ PTR(AstNode) fay::Parser::_Field(TokenStack* stack)
 
 	if(!stack->now()->is(";"))
 		throw ParseException(stack, "expert ;");
+	stack->next();
 
 	return node;
 }

@@ -12,12 +12,14 @@ public class OOPTest
 	static public fun test2():int
 	{
 		var a:TestClassA=new TestClassA();
-		return 0;
+		return TestClassA.value1;
 	}
 }
 
 public class TestClassA
 {
+	static public var value1=99;
+
 	static public fun fun1():int
 	{
 		return 10001;

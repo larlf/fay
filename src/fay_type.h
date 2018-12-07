@@ -79,6 +79,7 @@ namespace fay
 		{
 			//LOG_DEBUG("Destory " << this);
 
+
 			switch(this->_type)
 			{
 				case ValueType::String:
