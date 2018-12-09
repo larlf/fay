@@ -119,6 +119,20 @@ void fay::FayBuilder::optimizeInsts()
 PTR(FayVarDef) fay::FayBuilder::findVar(const std::string &name)
 {
 	auto var = this->_fun->findVar(name);
+
+	if (var) return var;
+
+	//如果中有.，就应该是成员变量
+	auto pos = name.find_last_of(".");
+	if (pos != std::string::npos)
+	{
+		std::string className = name.substr(0, pos);
+		std::string varName = name.substr(pos + 1);
+
+		auto classes= this->domain()->findClass(this->usings(), className);
+		
+	}
+
 	return var;
 }
 
