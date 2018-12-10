@@ -232,6 +232,10 @@ namespace fay
 	class AstID : public AstNode
 	{
 		using AstNode::AstNode;
+	private:
+		VarType _type = VarType::Local;  //变量类型
+		pos_t classIndex = -1;
+		pos_t varIndex = -1;
 	public:
 		virtual void dig3(FayBuilder* builder) override;
 		virtual void dig4(FayBuilder* builder) override;

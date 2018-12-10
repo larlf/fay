@@ -92,7 +92,7 @@ namespace fay
 	};
 
 	//变量定义
-	class FayVarDef : public FayLangObject
+	class FayVarDef : public FayLangObject, public IndexMapItem<FayVarDef>
 	{
 	private:
 		std::string _name;  //名称
@@ -100,14 +100,17 @@ namespace fay
 		WPTR(FayClass) _type;  //类型
 
 	public:
-		FayVarDef(PTR(FayDomain) domain, const std::string &name, PTR(FayClass) clazz)
-			: FayLangObject(domain), _name(name), _type(clazz) {}
+		FayVarDef(PTR(FayDomain) domain, const std::string &name, PTR(FayClass) clazz);
+		
 
 		inline const std::string &name() { return  this->_name; }
 		PTR(FayClass) type() { return this->_type.lock(); }
 
-		virtual const std::string &fullname() override;
+		virtual const std::string &fullname() override { return this->_fullname; }
 		virtual void buildString(mirror::utils::StringBuilder* sb) override;
+
+		// Inherited via IndexMapItem
+		virtual const std::string &key() override { return this->_name; }
 	};
 
 	//字段定义
@@ -122,7 +125,7 @@ namespace fay
 	};
 
 	//数据类型
-	class FayClass : public FayLangObject, public std::enable_shared_from_this<FayClass>
+	class FayClass : public FayLangObject, public std::enable_shared_from_this<FayClass>, public IndexMapItem<FayClass>
 	{
 	private:
 		std::string _fullname;
@@ -172,6 +175,9 @@ namespace fay
 		virtual ValueType valueType() { return ValueType::Void; }
 		virtual const std::string &fullname() override;
 		virtual void buildString(mirror::utils::StringBuilder* sb) override;
+
+		// Inherited via IndexMapItem
+		virtual const std::string &key() override { return this->fullname(); }
 
 	};
 
@@ -289,7 +295,7 @@ namespace fay
 		//除此所有地方不存对指令的引用，以防止出非法引用
 		std::vector<FayInst*> _insts;
 		//内部变量表
-		IndexMap<PTR(FayVarDef)> _vars;
+		IndexMap<FayVarDef> _vars;
 		//是否已经进行过预处理
 		bool isPrepared = false;
 		//对代码运行前做一些预处理
@@ -333,7 +339,7 @@ namespace fay
 	//外部函数信息
 	//在lib的内部，会创建所有的调用方法的快速索引
 	//这个索引在call的时候，用于对方法进行快速的定位
-	class OutsideFun : public FayObject
+	class OutsideFun : public FayObject, public IndexMapItem<OutsideFun>
 	{
 	private:
 		//std::string _fullname;
@@ -342,15 +348,22 @@ namespace fay
 		std::string _funFullname;
 		int32_t _funIndex;
 		bool _resolved = false;  //是否已经确定是函数的位置
+		std::string _key;
 
 	public:
-		OutsideFun(const std::string &typeFullname, int32_t typeIndex, const std::string &funName, int32_t funIndex)
-			: _resolved(true), _classFullname(typeFullname), _classIndex(typeIndex), _funFullname(funName), _funIndex(funIndex) {}
+		OutsideFun(const std::string &className, int32_t typeIndex, const std::string &funName, int32_t funIndex)
+			: _resolved(true), _classFullname(className), _classIndex(typeIndex), _funFullname(funName), _funIndex(funIndex)
+		{
+			this->_key = className + "." + funName;
+		}
 
 		int32_t classIndex() { return this->_classIndex; }
 		int32_t funIndex() { return this->_funIndex; }
 
 		virtual void buildString(mirror::utils::StringBuilder* sb) override;
+
+		// Inherited via IndexMapItem
+		virtual const std::string &key() override { return this->_key; }
 	};
 
 	//库
@@ -362,7 +375,7 @@ namespace fay
 
 		//外部函数的列表
 		//这个表的主要用处，是把本Lib中的函数调用转换成索引值
-		IndexMap<PTR(OutsideFun)> _outsideFuns;
+		IndexMap<OutsideFun> _outsideFuns;
 
 	public:
 		std::string name;
@@ -385,7 +398,7 @@ namespace fay
 	{
 	private:
 		std::vector<PTR(FayLib)> _libs;
-		IndexMap<PTR(FayClass)> _types;
+		IndexMap<FayClass> _types;
 
 	public:
 		FayDomain();

@@ -428,12 +428,14 @@ TEST_F(FayLang, OOP)
 	FayValue rs;
 
 	funs = type->findFunByName("test1");
+	ASSERT_GT(funs.size(), 0);
 	PRINT(funs[0]->toString());
 	rs = vm->run(funs[0]);
 	ASSERT_EQ(rs.type(), ValueType::Int);
 	ASSERT_EQ(rs.intVal(), 10001);
 
 	funs = type->findFunByName("test2");
+	ASSERT_GT(funs.size(), 0);
 	PRINT(funs[0]->toString());
 	rs = vm->run(funs[0]);
 	ASSERT_EQ(rs.type(), ValueType::Int);

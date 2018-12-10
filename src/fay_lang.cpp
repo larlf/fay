@@ -129,7 +129,7 @@ pos_t fay::FayLib::findOutsideFun(PTR(FayFun) fun)
 	PTR(OutsideFun) ofun = MKPTR(OutsideFun)(
 			fun->clazz()->fullname(), classIndex,
 			fun->fullname(), funIndex);
-	return this->_outsideFuns.add(fullname, ofun);
+	return this->_outsideFuns.add(ofun);
 }
 
 void fay::FayLib::buildString(mirror::utils::StringBuilder* sb)
@@ -228,7 +228,7 @@ pos_t fay::FayInstFun::addVar(const std::string &name, PTR(FayClass) type)
 
 	//创建并加入变量定义
 	PTR(FayVarDef) def = MKPTR(FayVarDef)(this->domain(), name, type);
-	return this->_vars.add(name, def);
+	return this->_vars.add(def);
 }
 
 PTR(FayVarDef) fay::FayInstFun::findVar(const std::string &name)
@@ -360,7 +360,7 @@ void fay::FayDomain::addLib(PTR(FayLib) lib)
 
 	//然后对Lib里的东西进行一下排序
 	for each(auto it in lib->classes)
-		this->_types.add(it->fullname(), it);
+		this->_types.add(it);
 }
 
 void fay::FayDomain::buildString(mirror::utils::StringBuilder* sb)
@@ -387,7 +387,7 @@ pos_t fay::FayDomain::addType(PTR(FayClass) t)
 	if(index >= 0)
 		return index;
 
-	return this->_types.add(fullname, t);
+	return this->_types.add(t);
 }
 
 pos_t fay::FayDomain::getClassIndex(PTR(FayClass) t)
@@ -482,10 +482,10 @@ bool fay::FayDomain::getFunIndex(const std::string &typeFullname, const std::str
 		return false;
 	}
 
-	funIndex = this->_types[typeIndex]->getFunIndex(funFullname, funIndex);
+	funIndex = this->_types.find(typeIndex)->getFunIndex(funFullname, funIndex);
 	if(funIndex < 0)
 	{
-		LOG_ERROR("Cannot find fun : " << funIndex << " in " << this->_types[typeIndex]->fullname());
+		LOG_ERROR("Cannot find fun : " << funIndex << " in " << this->_types.find(typeIndex)->fullname());
 		return false;
 	}
 
@@ -1324,12 +1324,10 @@ void fay::FunTable::buildString(mirror::utils::StringBuilder* sb)
 	}
 }
 
-const std::string &fay::FayVarDef::fullname()
+fay::FayVarDef::FayVarDef(PTR(FayDomain) domain, const std::string & name, PTR(FayClass) clazz)
+	: FayLangObject(domain), _name(name), _type(clazz)
 {
-	if(!this->_fullname.size())
-		this->_fullname = this->_name + ":" + this->_type.lock()->fullname();
-
-	return this->_fullname;
+	this->_fullname = name + ":" + clazz->fullname();
 }
 
 void fay::FayVarDef::buildString(mirror::utils::StringBuilder* sb)

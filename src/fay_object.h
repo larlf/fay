@@ -1,6 +1,6 @@
 ﻿#pragma once
-#include <mirror_utils_string.h>
 #include <mirror_sys_const.h>
+#include <mirror_utils_string.h>
 #include <fay_const.h>
 #include <string>
 #include <exception>
@@ -9,6 +9,8 @@
 
 namespace fay
 {
+	template<class T> class IndexMap;
+
 	//所有对象的基类
 	class FayObject
 	{
@@ -60,32 +62,46 @@ namespace fay
 		int col() { return this->_col; }
 	};
 
-	//有索引的Mpa结构
+
+
+	//放向IndexMap的元素
+	template<class T>
+	class IndexMapItem
+	{
+	private:
+		pos_t _index = -1;
+	public:
+		virtual pos_t index() { return this->_index; }
+		virtual const std::string &key() = 0;
+		friend class IndexMap<T>;
+	};
+
+	//有索引的Map结构
 	template<class T>
 	class IndexMap
 	{
 	private:
-		T _null;
-		std::vector<T> _list;
+		std::vector<PTR(T)> _list;
 		MAP<std::string, pos_t> _map;
 
 	public:
-		IndexMap() : _null(nullptr) {}
+		IndexMap() {}
 
 		//数据长度
 		pos_t size() { return this->_list.size(); }
 		//返回Vector对象
-		const std::vector<T> &list() { return this->_list; }
+		const std::vector<PTR(T)> &list() { return this->_list; }
 
-		pos_t add(const std::string &key, T obj)
+		pos_t add(PTR(T) obj)
 		{
 			//如果没有此对象，添加进来
-			auto r = this->_map.find(key);
-			if (r == this->_map.end())
+			auto r = this->_map.find(obj->key());
+			if(r == this->_map.end())
 			{
 				pos_t index = this->_list.size();
 				this->_list.push_back(obj);
-				this->_map[key] = index;
+				this->_map[obj->key()] = index;
+				obj->_index = index;
 				return index;
 			}
 			else
@@ -95,32 +111,34 @@ namespace fay
 		inline pos_t findIndex(const std::string &key)
 		{
 			auto r = this->_map.find(key);
-			if (r != this->_map.end())
+			if(r != this->_map.end())
 				return r->second;
 
 			return -1;
 		}
 
-		inline T &find(pos_t index)
+		inline PTR(T) find(pos_t index)
 		{
-			if (index >= 0 && index < this->_list.size())
+			if(index >= 0 && index < this->_list.size())
 				return this->_list[index];
 
-			return this->_null;
+			return nullptr;
 		}
 
-		inline T &find(const std::string &key)
+		inline PTR(T) find(const std::string &key)
 		{
 			pos_t index = findIndex(key);
-			if (index >= 0)
+			if(index >= 0)
 				return this->_list[index];
 
-			return this->_null;
+			return nullptr;
 		}
 
-		inline T &operator[](pos_t index)
+		inline PTR(T) operator[](pos_t index)
 		{
 			return this->find(index);
 		}
 	};
+
+
 }
