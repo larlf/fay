@@ -92,7 +92,7 @@ namespace fay
 		void fixedLabel(const std::string &label);
 
 		//查找变量
-		PTR(FayVarDef) findVar(const std::string &name);
+		PTR(FayVar) findVar(const std::string &name);
 		pos_t findVarIndex(const std::string &name);
 	};
 }

@@ -227,11 +227,11 @@ pos_t fay::FayInstFun::addVar(const std::string &name, PTR(FayClass) type)
 	}
 
 	//创建并加入变量定义
-	PTR(FayVarDef) def = MKPTR(FayVarDef)(this->domain(), name, type);
+	PTR(FayVar) def = MKPTR(FayVar)(this->domain(), name, type);
 	return this->_vars.add(def);
 }
 
-PTR(FayVarDef) fay::FayInstFun::findVar(const std::string &name)
+PTR(FayVar) fay::FayInstFun::findVar(const std::string &name)
 {
 	return this->_vars.find(name);
 }
@@ -1324,13 +1324,13 @@ void fay::FunTable::buildString(mirror::utils::StringBuilder* sb)
 	}
 }
 
-fay::FayVarDef::FayVarDef(PTR(FayDomain) domain, const std::string & name, PTR(FayClass) clazz)
+fay::FayVar::FayVar(PTR(FayDomain) domain, const std::string & name, PTR(FayClass) clazz)
 	: FayLangObject(domain), _name(name), _type(clazz)
 {
 	this->_fullname = name + ":" + clazz->fullname();
 }
 
-void fay::FayVarDef::buildString(mirror::utils::StringBuilder* sb)
+void fay::FayVar::buildString(mirror::utils::StringBuilder* sb)
 {
 	sb->add(this->fullname());
 }
