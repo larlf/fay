@@ -19,6 +19,17 @@ bool fay::FayClass::match(PTR(FayClass) type)
 	return false;
 }
 
+pos_t fay::FayClass::addStaticVar(const std::string & name, PTR(FayClass) classType)
+{
+	PTR(FayStaticVar) var = MKPTR(FayStaticVar)(this->domain(), name, classType);
+	return this->_staticVars.add(var);
+}
+
+PTR(FayStaticVar) fay::FayClass::findStaticVar(const std::string & name)
+{
+	return this->_staticVars.find(name);
+}
+
 std::vector<PTR(FayFun)> fay::FayClass::matchFun(const std::string &funName, const std::vector<PTR(FayClass)> &paramsType, bool isStatic)
 {
 	if(isStatic)
@@ -217,9 +228,9 @@ pos_t fay::FayInstFun::addVar(const std::string &name, PTR(FayClass) type)
 	auto it = this->_vars.find(name);
 	if(it)
 	{
-		if(it->type() != type)
+		if(it->classType() != type)
 		{
-			LOG_ERROR("Same var name, diff type : " << it->type() << ", " << type);
+			LOG_ERROR("Same var name, diff type : " << it->classType() << ", " << type);
 			return -1;
 		}
 
@@ -1325,7 +1336,7 @@ void fay::FunTable::buildString(mirror::utils::StringBuilder* sb)
 }
 
 fay::FayVar::FayVar(PTR(FayDomain) domain, const std::string & name, PTR(FayClass) clazz)
-	: FayLangObject(domain), _name(name), _type(clazz)
+	: FayLangObject(domain), _name(name), _class(clazz)
 {
 	this->_fullname = name + ":" + clazz->fullname();
 }

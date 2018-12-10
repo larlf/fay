@@ -521,10 +521,31 @@ std::vector<PTR(FayClass)> fay::AstParams::paramsType(FayBuilder* builder)
 void fay::AstID::dig3(FayBuilder* builder)
 {
 	auto var = builder->findVar(this->_text);
-	if(!var)
-		throw BuildException(this->shared_from_this(), "connt find var : " + this->text());
+	if (var)
+	{
+		this->_classType = var->classType();
+	}
+	else
+	{
+		//如果中有.，就应该是成员变量
+		auto pos = this->_text.find_last_of(".");
+		if (pos != std::string::npos)
+		{
+			std::string className = this->_text.substr(0, pos);
+			std::string varName = this->_text.substr(pos + 1);
 
-	this->_classType = var->type();
+			auto classes = builder->domain()->findClass(builder->usings(), className);
+			if (classes.size() < 1)
+				throw BuildException(this->shared_from_this(), "err.cannot_find_class", className);
+			if (classes.size() > 1)
+				throw BuildException(this->shared_from_this(), "err.mutil_class", className);
+
+			auto var = classes[0]->findStaticVar(varName);
+			if (var == nullptr)
+				throw BuildException(this->shared_from_this(), "err.unknow_static_var", className, varName);
+			this->_classType = var->classType();
+		}
+	}
 }
 
 void fay::AstID::dig4(FayBuilder* builder)

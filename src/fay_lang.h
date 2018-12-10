@@ -97,13 +97,13 @@ namespace fay
 	private:
 		std::string _name;  //名称
 		std::string _fullname;  //全名
-		WPTR(FayClass) _type;  //类型
+		WPTR(FayClass) _class;  //类型
 
 	public:
 		FayVar(PTR(FayDomain) domain, const std::string &name, PTR(FayClass) clazz);
 
 		inline const std::string &name() { return  this->_name; }
-		PTR(FayClass) type() { return this->_type.lock(); }
+		PTR(FayClass) classType() { return this->_class.lock(); }
 
 		virtual const std::string &fullname() override { return this->_fullname; }
 		virtual void buildString(mirror::utils::StringBuilder* sb) override;
@@ -121,7 +121,7 @@ namespace fay
 	//静态变量
 	class FayStaticVar : public FayVar
 	{
-
+		using FayVar::FayVar;
 	};
 
 	//字段变量
@@ -161,8 +161,8 @@ namespace fay
 		WPTR(FayClass) _parent;  //父类
 		FunTable _sft;  //静态函数表
 		FunTable _vft;  //虚函数表
-		IndexMap<FayVar> _staticVars;  //静态变量表
-		IndexMap<FayVar> _vars;  //变量表
+		IndexMap<FayStaticVar> _staticVars;  //静态变量表
+		IndexMap<FayVarDef> _vars;  //变量表
 
 	public:
 		FayClass(PTR(FayDomain) domain, const std::string &package, const std::string &name)
@@ -186,6 +186,10 @@ namespace fay
 		//是否匹配
 		//当传入的类型和自己一样或是此类型的子类的时候为True
 		virtual bool match(PTR(FayClass) type);
+
+		//静态变量
+		pos_t addStaticVar(const std::string &name, PTR(FayClass) classType);
+		PTR(FayStaticVar) findStaticVar(const std::string &name);
 
 		//添加函数
 		pos_t addFun(PTR(FayFun) fun);
