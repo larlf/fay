@@ -71,8 +71,8 @@ namespace fay
 	private:
 		pos_t _index = -1;
 	public:
-		virtual pos_t index() { return this->_index; }
-		virtual const std::string &key() = 0;
+		virtual pos_t indexValue() { return this->_index; }
+		virtual const std::string &indexKey() = 0;
 		friend class IndexMap<T>;
 	};
 
@@ -95,12 +95,12 @@ namespace fay
 		pos_t add(PTR(T) obj)
 		{
 			//如果没有此对象，添加进来
-			auto r = this->_map.find(obj->key());
+			auto r = this->_map.find(obj->indexKey());
 			if(r == this->_map.end())
 			{
 				pos_t index = this->_list.size();
 				this->_list.push_back(obj);
-				this->_map[obj->key()] = index;
+				this->_map[obj->indexKey()] = index;
 				obj->_index = index;
 				return index;
 			}

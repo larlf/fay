@@ -173,6 +173,13 @@ namespace fay
 	class AstField : public AstNode
 	{
 		using AstNode::AstNode;
+	private:
+		pos_t varIndex = -1;
+	public:
+		MAP<std::string, bool> descWords;
+		bool isStatic() { return this->descWords["static"]; }
+		virtual void dig2(FayBuilder* builder) override;
+		virtual void dig4(FayBuilder* builder) override;
 	};
 
 	//函数
@@ -234,8 +241,8 @@ namespace fay
 		using AstNode::AstNode;
 	private:
 		VarType _type = VarType::Local;  //变量类型
-		pos_t classIndex = -1;
-		pos_t varIndex = -1;
+		pos_t _classIndex = -1;
+		pos_t _varIndex = -1;
 	public:
 		virtual void dig3(FayBuilder* builder) override;
 		virtual void dig4(FayBuilder* builder) override;

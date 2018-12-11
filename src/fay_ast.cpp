@@ -1,5 +1,6 @@
 ﻿#include "fay_ast.h"
 #include "fay_ast.h"
+#include "fay_ast.h"
 #include <fay_ast.h>
 #include <typeinfo>
 #include <mirror_utils_log.h>
@@ -50,7 +51,7 @@ ValueType fay::AstNode::valueType()
 
 void fay::AstNode::buildString(mirror::utils::StringBuilder* sb)
 {
-	sb->add("["+this->className()+"]")
+	sb->add("[" + this->className() + "]")
 	->add(" \"")->add(this->_text)->add("\"");
 
 	auto type = this->valueType();
@@ -131,7 +132,35 @@ void fay::AstClass::dig3(FayBuilder* builder)
 void fay::AstClass::dig4(FayBuilder* builder)
 {
 	builder->bindClass(this->classIndex);
-	AstNode::dig4(builder);
+
+	//生成初始化方法
+	PTR(FayInstFun) fun = MKPTR(FayInstFun)(builder->domain(), ".init", false, FunAccessType::Private);
+	builder->addFun(fun);
+
+	//先处理静态字段
+	for each(auto it in this->_nodes)
+		if (it && it->is<AstField>() && TOPTR(AstField, it)->isStatic())
+			it->dig4(builder);
+
+	//生成用于初始化静态内容的代码
+	builder->optimizeInsts();
+
+	//生成默认构造方法
+	fun = MKPTR(FayInstFun)(builder->domain(), ".create", false, FunAccessType::Private);
+	builder->addFun(fun);
+
+	//处理非静态字段
+	for each(auto it in this->_nodes)
+		if (it && it->is<AstField>() && !TOPTR(AstField, it)->isStatic())
+			it->dig4(builder);
+
+	//生成用于初始化非静态内容的代码
+	builder->optimizeInsts();
+
+	//再处理其它的内容
+	for each(auto it in this->_nodes)
+		if (it && !it->is<AstField>())
+			it->dig4(builder);
 }
 
 void fay::AstFun::dig2(FayBuilder* builder)
@@ -520,45 +549,63 @@ std::vector<PTR(FayClass)> fay::AstParams::paramsType(FayBuilder* builder)
 
 void fay::AstID::dig3(FayBuilder* builder)
 {
-	auto var = builder->findVar(this->_text);
-	if (var)
+	//先在函数中找
+	if (builder->fun())
 	{
-		this->_classType = var->classType();
-	}
-	else
-	{
-		//如果中有.，就应该是成员变量
-		auto pos = this->_text.find_last_of(".");
-		if (pos != std::string::npos)
+		auto var = builder->fun()->findVar(this->_text);
+		if (var)
 		{
-			std::string className = this->_text.substr(0, pos);
-			std::string varName = this->_text.substr(pos + 1);
-
-			auto classes = builder->domain()->findClass(builder->usings(), className);
-			if (classes.size() < 1)
-				throw BuildException(this->shared_from_this(), "err.cannot_find_class", className);
-			if (classes.size() > 1)
-				throw BuildException(this->shared_from_this(), "err.mutil_class", className);
-
-			auto var = classes[0]->findStaticVar(varName);
-			if (var == nullptr)
-				throw BuildException(this->shared_from_this(), "err.unknow_static_var", className, varName);
+			this->_type = VarType::Local;
+			this->_varIndex = var->indexValue();
 			this->_classType = var->classType();
+			return;
 		}
+	}
+
+	//如果中有.，就应该是成员变量
+	auto pos = this->_text.find_last_of(".");
+	if(pos != std::string::npos)
+	{
+		std::string className = this->_text.substr(0, pos);
+		std::string varName = this->_text.substr(pos + 1);
+
+		auto classes = builder->domain()->findClass(builder->usings(), className);
+		if(classes.size() < 1)
+			throw BuildException(this->shared_from_this(), "err.cannot_find_class", className);
+		if(classes.size() > 1)
+			throw BuildException(this->shared_from_this(), "err.mutil_class", className);
+
+		auto var = classes[0]->findStaticVar(varName);
+		if(var == nullptr)
+			throw BuildException(this->shared_from_this(), "err.unknow_static_var", className, varName);
+
+		this->_type = VarType::Static;
+		this->_classIndex = classes[0]->indexValue();
+		this->_varIndex = var->indexValue();
+		this->_classType = var->classType();
 	}
 }
 
 void fay::AstID::dig4(FayBuilder* builder)
 {
-	auto index = builder->findVarIndex(this->_text);
-	if(index < 0)
-		throw BuildException(this->shared_from_this(), "connt find var : " + this->text());
-
 	//不同模式下的操作不一样
 	if(builder->exprMode == BuildExprMode::LeftValue)
-		builder->addInst(new inst::CopyLocal(index));
+		builder->addInst(new inst::CopyLocal(this->_varIndex));
 	else
-		builder->addInst(new inst::LoadLocal(index));
+	{
+		switch (this->_type)
+		{
+		case VarType::Static:
+			builder->addInst(new inst::LoadStatic(this->_classIndex, this->_varIndex));
+			break;
+		case VarType::Local:
+			builder->addInst(new inst::LoadLocal(this->_varIndex));
+			break;
+		default:
+			throw BuildException(this->shared_from_this(), "err.bad_id_type", TypeDict::ToName(this->_type));
+			break;
+		}
+	}
 }
 
 void fay::AstLeftRightOP::dig3(FayBuilder* builder)
@@ -1301,6 +1348,38 @@ void fay::AstNew::dig4(FayBuilder* builder)
 {
 	AstNode::dig4(builder);
 
-	inst::New *inst = new inst::New(this->_classType.lock()->fullname());
+	inst::New* inst = new inst::New(this->_classType.lock()->fullname());
 	builder->addInst(inst);
 }
+
+void fay::AstField::dig2(FayBuilder * builder)
+{
+	AstNode::dig2(builder);
+
+	if (!this->_nodes[0])
+		throw BuildException(this->shared_from_this(), "err.no_type");
+
+	PTR(FayClass) type = this->_nodes[0]->classType();
+	if (!type)
+		throw BuildException(this->shared_from_this(), "err.bad_type");
+
+	if (this->isStatic())
+		this->varIndex = builder->clazz()->addStaticVar(this->_text, type);
+	else
+		this->varIndex = builder->clazz()->addFieldDef(this->_text, type);
+
+}
+
+void fay::AstField::dig4(FayBuilder * builder)
+{
+	//如果不需要初始化直接返回
+	if (this->_nodes[1] == nullptr)
+		return;
+
+	this->_nodes[1]->dig4(builder);
+	if (this->isStatic())
+		builder->addInst(new inst::SetStatic(builder->clazz()->indexValue(), this->varIndex));
+	else
+		builder->addInst(new inst::SetField(this->varIndex));
+}
+

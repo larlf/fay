@@ -493,8 +493,9 @@ namespace fay
 		static const std::string &ToName(TokenType value);
 		static const std::string &ToName(ValueType value);
 		static const std::string &ToName(InstType value);
+		static const std::string ToName(VarType value);
 		//根据名称查找ValueType
-		static const ValueType ToValueType(const std::string& name);
+		static const ValueType ToValueType(const std::string &name);
 	};
 }
 

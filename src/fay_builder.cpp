@@ -116,7 +116,7 @@ void fay::FayBuilder::optimizeInsts()
 	this->_insts.clear();
 }
 
-PTR(FayVar) fay::FayBuilder::findVar(const std::string &name)
+PTR(FayVarDef) fay::FayBuilder::findVar(const std::string &name)
 {
 	auto var = this->_fun->findVar(name);
 

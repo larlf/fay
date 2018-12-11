@@ -92,7 +92,7 @@ namespace fay
 	};
 
 	//变量
-	class FayVar : public FayLangObject, public IndexMapItem<FayVar>
+	class FayVarDef : public FayLangObject, public IndexMapItem<FayVarDef>
 	{
 	private:
 		std::string _name;  //名称
@@ -100,7 +100,7 @@ namespace fay
 		WPTR(FayClass) _class;  //类型
 
 	public:
-		FayVar(PTR(FayDomain) domain, const std::string &name, PTR(FayClass) clazz);
+		FayVarDef(PTR(FayDomain) domain, const std::string &name, PTR(FayClass) clazz);
 
 		inline const std::string &name() { return  this->_name; }
 		PTR(FayClass) classType() { return this->_class.lock(); }
@@ -109,42 +109,7 @@ namespace fay
 		virtual void buildString(mirror::utils::StringBuilder* sb) override;
 
 		// Inherited via IndexMapItem
-		virtual const std::string &key() override { return this->_name; }
-	};
-
-	//变量定义
-	class FayVarDef : public FayVar
-	{
-
-	};
-
-	//静态变量
-	class FayStaticVar : public FayVar
-	{
-		using FayVar::FayVar;
-	};
-
-	//字段变量
-	class FayFieldVar : public FayVar
-	{
-
-	};
-
-	//函数变量
-	class FayFunVar : public FayVar
-	{
-
-	};
-
-	//字段定义
-	class FayFieldDef : public FayLangObject
-	{
-	private:
-		WPTR(FayClass) _class;  //所属的类
-		bool _isStatic = false;  //是否是静态字段
-		std::string _name;  //名称
-		std::string _fullname;  //全名
-		WPTR(FayClass) _type;  //类型
+		virtual const std::string &indexKey() override { return this->_name; }
 	};
 
 	//数据类型
@@ -161,8 +126,9 @@ namespace fay
 		WPTR(FayClass) _parent;  //父类
 		FunTable _sft;  //静态函数表
 		FunTable _vft;  //虚函数表
-		IndexMap<FayStaticVar> _staticVars;  //静态变量表
-		IndexMap<FayVarDef> _vars;  //变量表
+		IndexMap<FayVarDef> _staticFieldDefs;  //静态变量表
+		std::vector<FayValue> _staticFields;  //静态变量
+		IndexMap<FayVarDef> _fieldDefs;  //变量表
 
 	public:
 		FayClass(PTR(FayDomain) domain, const std::string &package, const std::string &name)
@@ -189,7 +155,10 @@ namespace fay
 
 		//静态变量
 		pos_t addStaticVar(const std::string &name, PTR(FayClass) classType);
-		PTR(FayStaticVar) findStaticVar(const std::string &name);
+		PTR(FayVarDef) findStaticVar(const std::string &name);
+
+		//字段变量
+		pos_t addFieldDef(const std::string &name, PTR(FayClass) type);
 
 		//添加函数
 		pos_t addFun(PTR(FayFun) fun);
@@ -206,7 +175,7 @@ namespace fay
 		virtual void buildString(mirror::utils::StringBuilder* sb) override;
 
 		// Inherited via IndexMapItem
-		virtual const std::string &key() override { return this->fullname(); }
+		virtual const std::string &indexKey() override { return this->fullname(); }
 
 	};
 
@@ -324,7 +293,7 @@ namespace fay
 		//除此所有地方不存对指令的引用，以防止出非法引用
 		std::vector<FayInst*> _insts;
 		//内部变量表
-		IndexMap<FayVar> _vars;
+		IndexMap<FayVarDef> _vars;
 		//是否已经进行过预处理
 		bool isPrepared = false;
 		//对代码运行前做一些预处理
@@ -336,13 +305,14 @@ namespace fay
 		virtual ~FayInstFun();
 
 		//添加指令集
+		inline std::vector<FayInst*> insts() { return this->_insts; }
 		inline void insts(std::vector<FayInst*> v) { this->_insts = v; }
 		//取得预处理后的指令集
 		std::vector<FayInst*>* getPreparedInsts();
 
 		//添加变量
 		pos_t addVar(const std::string &name, PTR(FayClass) type);
-		PTR(FayVar) findVar(const std::string &name);
+		PTR(FayVarDef) findVar(const std::string &name);
 		pos_t getVarIndex(const std::string &name);
 		size_t varsSize() { return this->_vars.size(); }
 
@@ -392,7 +362,7 @@ namespace fay
 		virtual void buildString(mirror::utils::StringBuilder* sb) override;
 
 		// Inherited via IndexMapItem
-		virtual const std::string &key() override { return this->_key; }
+		virtual const std::string &indexKey() override { return this->_key; }
 	};
 
 	//库

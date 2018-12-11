@@ -412,6 +412,25 @@ const std::string & fay::TypeDict::ToName(InstType value)
 	return TypeDict::InstTypeName[value];
 }
 
+const std::string  fay::TypeDict::ToName(VarType value)
+{
+	switch (value)
+	{
+	case fay::VarType::Static:
+		return "Static";
+		break;
+	case fay::VarType::Field:
+		return "Field";
+		break;
+	case fay::VarType::Local:
+		return "Local";
+		break;
+	default:
+		return "Unknow";
+		break;
+	}
+}
+
 const ValueType fay::TypeDict::ToValueType(const std::string & name)
 {
 	auto it = TypeDict::ValueTypeMap.find(name);

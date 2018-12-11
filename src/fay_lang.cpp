@@ -21,13 +21,24 @@ bool fay::FayClass::match(PTR(FayClass) type)
 
 pos_t fay::FayClass::addStaticVar(const std::string & name, PTR(FayClass) classType)
 {
-	PTR(FayStaticVar) var = MKPTR(FayStaticVar)(this->domain(), name, classType);
-	return this->_staticVars.add(var);
+	PTR(FayVarDef) var = MKPTR(FayVarDef)(this->domain(), name, classType);
+	return this->_staticFieldDefs.add(var);
 }
 
-PTR(FayStaticVar) fay::FayClass::findStaticVar(const std::string & name)
+PTR(FayVarDef) fay::FayClass::findStaticVar(const std::string & name)
 {
-	return this->_staticVars.find(name);
+	for (auto it : this->_staticFieldDefs.list())
+	{
+		LOG_DEBUG("Name : " << it->name());
+	}
+
+	return this->_staticFieldDefs.find(name);
+}
+
+pos_t fay::FayClass::addFieldDef(const std::string & name, PTR(FayClass) type)
+{
+	PTR(FayVarDef) field = MKPTR(FayVarDef)(this->domain(), name, type);
+	return this->_fieldDefs.add(field);
 }
 
 std::vector<PTR(FayFun)> fay::FayClass::matchFun(const std::string &funName, const std::vector<PTR(FayClass)> &paramsType, bool isStatic)
@@ -238,11 +249,11 @@ pos_t fay::FayInstFun::addVar(const std::string &name, PTR(FayClass) type)
 	}
 
 	//创建并加入变量定义
-	PTR(FayVar) def = MKPTR(FayVar)(this->domain(), name, type);
+	PTR(FayVarDef) def = MKPTR(FayVarDef)(this->domain(), name, type);
 	return this->_vars.add(def);
 }
 
-PTR(FayVar) fay::FayInstFun::findVar(const std::string &name)
+PTR(FayVarDef) fay::FayInstFun::findVar(const std::string &name)
 {
 	return this->_vars.find(name);
 }
@@ -1335,13 +1346,13 @@ void fay::FunTable::buildString(mirror::utils::StringBuilder* sb)
 	}
 }
 
-fay::FayVar::FayVar(PTR(FayDomain) domain, const std::string & name, PTR(FayClass) clazz)
+fay::FayVarDef::FayVarDef(PTR(FayDomain) domain, const std::string & name, PTR(FayClass) clazz)
 	: FayLangObject(domain), _name(name), _class(clazz)
 {
 	this->_fullname = name + ":" + clazz->fullname();
 }
 
-void fay::FayVar::buildString(mirror::utils::StringBuilder* sb)
+void fay::FayVarDef::buildString(mirror::utils::StringBuilder* sb)
 {
 	sb->add(this->fullname());
 }

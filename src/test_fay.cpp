@@ -427,6 +427,14 @@ TEST_F(FayLang, OOP)
 	std::vector<PTR(FayFun)> funs;
 	FayValue rs;
 
+	funs = type->findFunByName(".init");
+	ASSERT_GT(funs.size(), 0);
+	PRINT(funs[0]->toString());
+
+	funs = type->findFunByName(".create");
+	ASSERT_GT(funs.size(), 0);
+	PRINT(funs[0]->toString());
+
 	funs = type->findFunByName("test1");
 	ASSERT_GT(funs.size(), 0);
 	PRINT(funs[0]->toString());

@@ -167,9 +167,13 @@ PTR(AstNode) fay::Parser::_Class(TokenStack* stack)
 
 PTR(AstNode) fay::Parser::_Field(TokenStack* stack)
 {
-	std::vector<std::string> descWords;
-	while(stack->now()->is(TokenType::DescSymbol))
-		descWords.push_back(stack->move()->text());
+	std::vector<std::string> words;
+	while (stack->now()->is(TokenType::DescSymbol))
+	{
+		//node->descWords[stack->now()->text()] = true;
+		words.push_back(stack->now()->text());
+		stack->next();
+	}
 
 	if(!stack->now()->is(TokenType::Var))
 		throw ParseException(stack, "unknow desc symbol");
@@ -178,6 +182,8 @@ PTR(AstNode) fay::Parser::_Field(TokenStack* stack)
 	if(!stack->now()->is(TokenType::ID))
 		throw ParseException(stack, "connot find var name");
 	PTR(AstField) node = MKPTR(AstField)(stack->now());
+	for (auto it : words)
+		node->descWords[it] = true;
 	stack->next();
 
 	//处理类型，也可能没有，这样的话需要由数据进行推断

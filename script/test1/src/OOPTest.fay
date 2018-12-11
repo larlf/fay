@@ -4,6 +4,9 @@ package fay.dev.test;
 
 public class OOPTest
 {
+	static public var value1:int=99;
+	public var value2:int=15;
+
 	static public fun test1():int
 	{
 		return TestClassA.fun1();
@@ -12,14 +15,12 @@ public class OOPTest
 	static public fun test2():int
 	{
 		var a:TestClassA=new TestClassA();
-		return TestClassA.value1;
+		return OOPTest.value1;
 	}
 }
 
 public class TestClassA
 {
-	static public var value1=99;
-
 	static public fun fun1():int
 	{
 		return 10001;
