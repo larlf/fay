@@ -335,6 +335,11 @@ namespace fay
 
 	//////////////////////////////////////////////////////////////////////
 
+	class OutsideStaticVar : public IndexMapItem<OutsideStaticVar>
+	{
+
+	};
+
 	//外部函数信息
 	//在lib的内部，会创建所有的调用方法的快速索引
 	//这个索引在call的时候，用于对方法进行快速的定位
