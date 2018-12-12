@@ -259,7 +259,7 @@ void fay::AstString::dig3(FayBuilder* builder)
 		this->_value.push_back(c);
 	}
 
-	this->_classType = (*builder->domain())[ValueType::String];
+	this->_classType = builder->domain()->findClass(ValueType::String);
 }
 
 void fay::AstString::dig4(FayBuilder* builder)
@@ -533,7 +533,7 @@ fay::AstNumber::AstNumber(const PTR(Token)& token, const std::string &text)
 
 void fay::AstNumber::dig3(FayBuilder* builder)
 {
-	this->_classType = (*builder->domain())[this->_val.type()];
+	this->_classType = builder->domain()->findClass(this->_val.type());
 
 	AstNode::dig3(builder);
 }
@@ -685,7 +685,7 @@ void fay::AstBool::dig3(FayBuilder* builder)
 	else
 		this->_value = false;
 
-	this->_classType = (*builder->domain())[ValueType::Bool];
+	this->_classType = builder->domain()->findClass(ValueType::Bool);
 }
 
 void fay::AstBool::dig4(FayBuilder* builder)
@@ -761,7 +761,7 @@ void fay::AstIf::dig4(FayBuilder* builder)
 
 void fay::AstEqualityOP::dig3(FayBuilder* builder)
 {
-	this->_classType = (*builder->domain())[ValueType::Bool];
+	this->_classType = builder->domain()->findClass(ValueType::Bool);
 
 	AstNode::dig3(builder);
 
@@ -817,7 +817,7 @@ void fay::AstCondition::dig3(FayBuilder* builder)
 		//如果不是Bool，这里进行一下转换
 		auto type = this->_nodes[0]->classType();
 		if(type->valueType() != ValueType::Bool)
-			this->insertChldNode(0, MKPTR(AstTypeConvert)(this->_token, type, (*builder->domain())[ValueType::Bool]));
+			this->insertChldNode(0, MKPTR(AstTypeConvert)(this->_token, type, builder->domain()->findClass(ValueType::Bool)));
 	}
 
 }
@@ -838,7 +838,7 @@ void fay::AstFor::dig3(FayBuilder* builder)
 	//如果expr2不是Bool，这里进行一下转换
 	auto type = this->_nodes[1]->classType();
 	if(type->valueType() != ValueType::Bool)
-		this->insertChldNode(1, MKPTR(AstTypeConvert)(this->_token, type, (*builder->domain())[ValueType::Bool]));
+		this->insertChldNode(1, MKPTR(AstTypeConvert)(this->_token, type, builder->domain()->findClass(ValueType::Bool)));
 }
 
 void fay::AstFor::dig4(FayBuilder* builder)
@@ -924,7 +924,7 @@ void fay::AstPreOP::dig4(FayBuilder* builder)
 
 void fay::AstFixedNumber::dig3(FayBuilder* builder)
 {
-	this->_classType = (*builder->domain())[this->_type];
+	this->_classType = builder->domain()->findClass(this->_type);
 
 	AstNode::dig3(builder);
 }
@@ -1103,7 +1103,7 @@ void fay::AstBoolNot::dig3(FayBuilder* builder)
 {
 	AstNode::dig3(builder);
 
-	auto boolType = (*builder->domain())[ValueType::Bool];
+	auto boolType = builder->domain()->findClass(ValueType::Bool);
 	this->_classType = boolType;
 
 	auto subType = this->_nodes[0]->classType();
@@ -1135,7 +1135,7 @@ void fay::AstBitNot::dig4(FayBuilder* builder)
 void fay::AstCast::dig3(FayBuilder* builder)
 {
 	AstNode::dig3(builder);
-	this->_classType = (*builder->domain())[this->_text];
+	this->_classType = builder->domain()->findClass(this->_text);
 }
 
 void fay::AstCast::dig4(FayBuilder* builder)
@@ -1192,7 +1192,7 @@ void fay::AstBoolOP::dig3(FayBuilder* builder)
 	//先算出目标类型
 	auto t1 = this->_nodes[0]->classType();
 	auto t2 = this->_nodes[1]->classType();
-	auto t3 = (*builder->domain())[ValueType::Bool];
+	auto t3 = builder->domain()->findClass(ValueType::Bool);
 	this->_classType = t3;
 
 	//如果和目标类型不一致，就转换一下
@@ -1227,7 +1227,7 @@ void fay::AstCondExpr::dig3(FayBuilder* builder)
 	//如果判断表达式不是Bool类型的，要转换成Boole类型
 	auto cond = this->_nodes[0];
 	if(cond->valueType() != ValueType::Bool)
-		this->insertChldNode(1, MKPTR(AstTypeConvert)(cond->token(), cond->classType(), (*builder->domain())[ValueType::Bool]));
+		this->insertChldNode(1, MKPTR(AstTypeConvert)(cond->token(), cond->classType(), builder->domain()->findClass(ValueType::Bool)));
 
 	//如果后面的两个项目返回的类型不一致，需要统一下
 	auto t1 = this->_nodes[1]->classType();
@@ -1277,7 +1277,7 @@ void fay::AstWhile::dig3(FayBuilder* builder)
 	//如果不是Bool，这里进行一下转换
 	auto type = this->_nodes[0]->classType();
 	if(type->valueType() != ValueType::Bool)
-		this->insertChldNode(0, MKPTR(AstTypeConvert)(this->_token, type, (*builder->domain())[ValueType::Bool]));
+		this->insertChldNode(0, MKPTR(AstTypeConvert)(this->_token, type, builder->domain()->findClass(ValueType::Bool)));
 
 	//生成开始和结束的标签
 	this->startLabel = builder->makeLabel();
@@ -1311,7 +1311,7 @@ void fay::AstDoWhile::dig3(FayBuilder* builder)
 	//如果不是Bool，这里进行一下转换
 	auto type = this->_nodes[1]->classType();
 	if(type->valueType() != ValueType::Bool)
-		this->insertChldNode(1, MKPTR(AstTypeConvert)(this->_token, type, (*builder->domain())[ValueType::Bool]));
+		this->insertChldNode(1, MKPTR(AstTypeConvert)(this->_token, type, builder->domain()->findClass(ValueType::Bool)));
 
 	//生成开始的标签
 	this->startLabel = builder->makeLabel();

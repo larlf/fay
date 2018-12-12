@@ -335,15 +335,25 @@ namespace fay
 
 	//////////////////////////////////////////////////////////////////////
 
-	class OutsideStaticVar : public IndexMapItem<OutsideStaticVar>
+	//对静态变量的引用
+	class StaticVarRef : public FayObject, public IndexMapItem<StaticVarRef>
 	{
+	private:
+		std::string _className;
+		std::string _varName;
+		pos_t _classIndex;
+		pos_t _varIndex;
+		std::string _fullname;
 
+	public:
+		StaticVarRef(PTR(FayClass) clazz, PTR(FayVarDef) var);
+		virtual const std::string &indexKey() override { return this->_fullname; }
 	};
 
 	//外部函数信息
 	//在lib的内部，会创建所有的调用方法的快速索引
 	//这个索引在call的时候，用于对方法进行快速的定位
-	class OutsideFun : public FayObject, public IndexMapItem<OutsideFun>
+	class StaticFunRef : public FayObject, public IndexMapItem<StaticFunRef>
 	{
 	private:
 		//std::string _fullname;
@@ -355,7 +365,7 @@ namespace fay
 		std::string _key;
 
 	public:
-		OutsideFun(const std::string &className, int32_t typeIndex, const std::string &funName, int32_t funIndex)
+		StaticFunRef(const std::string &className, int32_t typeIndex, const std::string &funName, int32_t funIndex)
 			: _resolved(true), _classFullname(className), _classIndex(typeIndex), _funFullname(funName), _funIndex(funIndex)
 		{
 			this->_key = className + "." + funName;
@@ -379,7 +389,7 @@ namespace fay
 
 		//外部函数的列表
 		//这个表的主要用处，是把本Lib中的函数调用转换成索引值
-		IndexMap<OutsideFun> _outsideFuns;
+		IndexMap<StaticFunRef> _outsideFuns;
 
 	public:
 		std::string name;
@@ -392,7 +402,7 @@ namespace fay
 		pos_t addClass(PTR(FayClass) clazz);
 		//返回调用方法在外部函数表中的索引
 		pos_t findOutsideFun(PTR(FayFun) fun);
-		PTR(OutsideFun) findOutsideFun(pos_t index) { return this->_outsideFuns.find(index); }
+		PTR(StaticFunRef) findOutsideFun(pos_t index) { return this->_outsideFuns.find(index); }
 
 		virtual void buildString(mirror::utils::StringBuilder* sb) override;
 	};
@@ -402,10 +412,13 @@ namespace fay
 	{
 	private:
 		std::vector<PTR(FayLib)> _libs;
-		IndexMap<FayClass> _types;
+		IndexMap<FayClass> _classes;
 
 	public:
 		FayDomain();
+
+		IndexMap<FayClass> &classes() { return this->_classes; }
+
 		//初始化系统库
 		PTR(FayDomain) init();
 		//添加Lib
@@ -417,9 +430,9 @@ namespace fay
 		pos_t getClassIndex(PTR(FayClass) t);
 		//根据类型的全称查找类型定义
 		PTR(FayClass) findClass(const std::string &typeFullname);
-		PTR(FayClass) operator[](const std::string &typeFullname) { return this->findClass(typeFullname); }
+		//PTR(FayClass) operator[](const std::string &typeFullname) { return this->findClass(typeFullname); }
 		PTR(FayClass) findClass(ValueType type);
-		PTR(FayClass) operator[](ValueType type) { return this->findClass(type); }
+		//PTR(FayClass) operator[](ValueType type) { return this->findClass(type); }
 		PTR(FayClass) findClass(pos_t index);
 		//根据引用和类型名，查找类型的定义
 		std::vector<PTR(FayClass)> findClass(std::vector<std::string> &imports, const std::string &typeName);

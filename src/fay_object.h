@@ -136,7 +136,12 @@ namespace fay
 
 		inline PTR(T) operator[](pos_t index)
 		{
-			return this->find(index);
+			return this->_list[index];
+		}
+
+		inline PTR(T) operator[](const std::string &key)
+		{
+			return this->_map[key];
 		}
 	};
 
