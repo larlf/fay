@@ -179,7 +179,7 @@ void fay::FayInstFun::prepareInsts()
 			{
 				//取出调用方法的索引值
 				inst::CallStatic* inst1 = static_cast<inst::CallStatic*>(inst);
-				PTR(StaticFunRef) fun = this->clazz()->lib()->getStaticFunRef(inst1->funRefIndex);
+				PTR(StaticFunRef) fun = this->clazz()->lib()->findStaticFunRef(inst1->funRefIndex);
 				if(fun)
 				{
 					inst1->classIndex = fun->classIndex;
@@ -187,8 +187,26 @@ void fay::FayInstFun::prepareInsts()
 				}
 				else
 				{
+					LOG_ERROR("Cannot find static fun : " << inst1->funRefIndex);
 					inst1->classIndex = -1;
 					inst1->funIndex = -1;
+				}
+				break;
+			}
+			case InstType::SetStatic:
+			{
+				inst::SetStatic* inst1 = static_cast<inst::SetStatic*>(inst);
+				auto ref=this->clazz()->lib()->findStaticVarRef(inst1->varRefIndex);
+				if (ref)
+				{
+					inst1->classIndex = ref->classIndex();
+					inst1->varIndex = ref->varIndex();
+				}
+				else
+				{
+					LOG_ERROR("Cannot find static var : " << inst1->varRefIndex);
+					inst1->classIndex = -1;
+					inst1->varIndex = -1;
 				}
 				break;
 			}

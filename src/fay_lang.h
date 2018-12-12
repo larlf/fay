@@ -316,6 +316,8 @@ namespace fay
 
 	public:
 		StaticVarRef(const std::string &fullname, PTR(FayClass) clazz, PTR(FayVarDef) var);
+		pos_t classIndex() { return this->_classIndex; }
+		pos_t varIndex() { return this->_varIndex; }
 		virtual const std::string &indexKey() override { return this->_fullname; }
 	};
 
@@ -363,9 +365,10 @@ namespace fay
 
 		//返回调用方法在外部函数表中的索引
 		pos_t registerStaticFun(PTR(FayFun) fun);
-		PTR(StaticFunRef) getStaticFunRef(pos_t index) { return this->_staticFuns.find(index); }
+		PTR(StaticFunRef) findStaticFunRef(pos_t index) { return this->_staticFuns.find(index); }
 
 		pos_t registerStaticVar(PTR(FayClass) clazz, PTR(FayVarDef) var);
+		PTR(StaticVarRef) findStaticVarRef(pos_t index) { return this->_staticVars.find(index); }
 
 		virtual void buildString(mirror::utils::StringBuilder* sb) override;
 	};
