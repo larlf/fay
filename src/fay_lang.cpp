@@ -1,9 +1,18 @@
 ﻿#include <fay_lang.h>
 #include <mirror_utils_log.h>
+#include <mirror_utils_file.h>
 #include <fay_internal_fun.h>
 #include <fay_internal_object.h>
+#include <fay_i18n.h>
 
 using namespace fay;
+using namespace mirror;
+
+fay::FayClass::FayClass( const std::string & package, const std::string & name)
+	: _package(package), _name(name)
+{
+	this->_fullname = (package.size() > 0 ? package + "." : "") + name;
+}
 
 bool fay::FayClass::match(PTR(FayClass) type)
 {
@@ -21,23 +30,28 @@ bool fay::FayClass::match(PTR(FayClass) type)
 
 pos_t fay::FayClass::addStaticVar(const std::string & name, PTR(FayClass) classType)
 {
-	PTR(FayVarDef) var = MKPTR(FayVarDef)(this->domain(), name, classType);
-	return this->_staticFieldDefs.add(var);
+	PTR(FayVarDef) var = MKPTR(FayVarDef)( name, classType);
+	return this->_staticVarDefs.add(var);
 }
 
 PTR(FayVarDef) fay::FayClass::findStaticVar(const std::string & name)
 {
-	for (auto it : this->_staticFieldDefs.list())
+	for (auto it : this->_staticVarDefs.list())
 	{
 		LOG_DEBUG("Name : " << it->name());
 	}
 
-	return this->_staticFieldDefs.find(name);
+	return this->_staticVarDefs.find(name);
+}
+
+PTR(FayVarDef) fay::FayClass::findStaticVar(pos_t index)
+{
+	return this->_staticVarDefs[index];
 }
 
 pos_t fay::FayClass::addFieldDef(const std::string & name, PTR(FayClass) type)
 {
-	PTR(FayVarDef) field = MKPTR(FayVarDef)(this->domain(), name, type);
+	PTR(FayVarDef) field = MKPTR(FayVarDef)( name, type);
 	return this->_fieldDefs.add(field);
 }
 
@@ -81,11 +95,6 @@ pos_t fay::FayClass::getFunIndex(const std::string &fullname, bool isStatic)
 		return this->_vft.getFunIndex(fullname);
 }
 
-const std::string &fay::FayClass::fullname()
-{
-	return this->_fullname;
-}
-
 void fay::FayClass::buildString(mirror::utils::StringBuilder* sb)
 {
 	sb->add(this->fullname());
@@ -109,49 +118,32 @@ pos_t fay::FayLib::addClass(PTR(FayClass) clazz)
 	clazz->lib(this->shared_from_this());
 	this->classes.push_back(clazz);
 
-	auto domain = this->domain();
-	if(domain)
-		return domain->addType(clazz);
-
-	return -1;
+	return FayLang::Domain.addType(clazz);
 }
 
-pos_t fay::FayLib::findOutsideFun(PTR(FayFun) fun)
+pos_t fay::FayLib::registerStaticFun(PTR(FayFun) fun)
 {
-	//查找当前是否已经有了
 	std::string fullname = fun->clazz()->fullname() + "." + fun->fullname();
-	pos_t index = this->_outsideFuns.findIndex(fullname);
+
+	//查找当前是否已经有了
+	pos_t index = this->_staticFuns.findIndex(fullname);
 	if(index >= 0) return index;
 
-	//检查domain是否正常
-	auto domain = this->domain();
-	if(!domain)
-	{
-		LOG_ERROR("Cannot find domain");
-		return -1;
-	}
-
-	pos_t classIndex;
-	pos_t funIndex;
-	domain->getFunIndex(fun, classIndex, funIndex);
-
-	if(classIndex < 0)
-	{
-		LOG_ERROR("Cannot find class index : " << fullname);
-		return -1;
-	}
-
-	if(funIndex < 0)
-	{
-		LOG_ERROR("Cannot find fun index : " << fullname);
-		return -1;
-	}
-
 	//添加外部函数
-	PTR(StaticFunRef) ofun = MKPTR(StaticFunRef)(
-			fun->clazz()->fullname(), classIndex,
-			fun->fullname(), funIndex);
-	return this->_outsideFuns.add(ofun);
+	PTR(StaticFunRef) ofun = MKPTR(StaticFunRef)(fullname, fun);
+	return this->_staticFuns.add(ofun);
+}
+
+pos_t fay::FayLib::registerStaticVar(PTR(FayClass) clazz, PTR(FayVarDef) var)
+{
+	std::string fullname = clazz->fullname() + "." + var->name();
+	pos_t index = this->_staticVars.findIndex(fullname);
+	if (index >= 0)
+		return index;
+
+	//如果没有就创建
+	PTR(StaticVarRef) ref = MKPTR(StaticVarRef)(fullname, clazz, var);
+	return this->_staticVars.add(ref);
 }
 
 void fay::FayLib::buildString(mirror::utils::StringBuilder* sb)
@@ -161,10 +153,10 @@ void fay::FayLib::buildString(mirror::utils::StringBuilder* sb)
 	//显示外部函数
 	sb->add("[OutSideFun]")->endl();
 	sb->increaseIndent();
-	for(auto i = 0; i < this->_outsideFuns.list().size(); ++i)
+	for(auto i = 0; i < this->_staticFuns.list().size(); ++i)
 	{
 		sb->add(i)->add(" : ");
-		this->_outsideFuns.list()[i]->buildString(sb);
+		this->_staticFuns.list()[i]->buildString(sb);
 	}
 	sb->decreaseIndent();
 	//显示Class的内容
@@ -187,15 +179,15 @@ void fay::FayInstFun::prepareInsts()
 			{
 				//取出调用方法的索引值
 				inst::CallStatic* inst1 = static_cast<inst::CallStatic*>(inst);
-				PTR(StaticFunRef) fun = this->clazz()->lib()->findOutsideFun(inst1->outsideFunIndex);
+				PTR(StaticFunRef) fun = this->clazz()->lib()->getStaticFunRef(inst1->funRefIndex);
 				if(fun)
 				{
-					inst1->typeIndex = fun->classIndex();
-					inst1->funIndex = fun->funIndex();
+					inst1->classIndex = fun->classIndex;
+					inst1->funIndex = fun->funIndex;
 				}
 				else
 				{
-					inst1->typeIndex = -1;
+					inst1->classIndex = -1;
 					inst1->funIndex = -1;
 				}
 				break;
@@ -203,11 +195,11 @@ void fay::FayInstFun::prepareInsts()
 			case InstType::New:
 			{
 				inst::New* inst1 = static_cast<inst::New*>(inst);
-				auto clazz = this->domain()->findClass(inst1->className);
+				auto clazz = FayLang::Domain.findClass(inst1->className);
 				if(clazz == NULL)
 					throw FayLangException("Cannot find class : " + inst1->className);
 
-				inst1->classIndex = this->domain()->getClassIndex(clazz);
+				inst1->classIndex = FayLang::Domain.getClassIndex(clazz);
 				break;
 			}
 
@@ -249,7 +241,7 @@ pos_t fay::FayInstFun::addVar(const std::string &name, PTR(FayClass) type)
 	}
 
 	//创建并加入变量定义
-	PTR(FayVarDef) def = MKPTR(FayVarDef)(this->domain(), name, type);
+	PTR(FayVarDef) def = MKPTR(FayVarDef)( name, type);
 	return this->_vars.add(def);
 }
 
@@ -285,34 +277,19 @@ void fay::FayInstFun::buildString(mirror::utils::StringBuilder* sb)
 	sb->decreaseIndent();
 }
 
-const std::string &fay::FayFun::fullname()
+fay::FayFun::FayFun(const std::string & name, FunType type, bool isStatic, FunAccessType accessType, std::vector<PTR(FayParamDef)>& params)
+	: _name(name), _type(type), _isStatic(isStatic), _accessType(accessType), _params(params)
 {
-	if(this->_fullname.size() <= 0)
+	std::string str;
+	for each(auto it in this->_params)
 	{
-		std::string str;
-		for each(auto it in this->_params)
-		{
-			if(str.size() > 0)
-				str += ",";
-			str += it->fullname();
-		}
-
-		this->_fullname += this->_name;
-		this->_fullname += "(" + str + ")";
+		if (str.size() > 0)
+			str += ",";
+		str += it->fullname();
 	}
 
-	return this->_fullname;
-}
-
-void fay::FayFun::addParam(PTR(FayParamDef) def)
-{
-	this->_params.push_back(def);
-}
-
-void fay::FayFun::addParam(std::vector<PTR(FayParamDef)> defs)
-{
-	for(auto it : defs)
-		this->addParam(it);
+	_fullname += this->_name;
+	_fullname += "(" + str + ")";
 }
 
 void fay::FayFun::returnValue(PTR(FayClass) type)
@@ -364,15 +341,13 @@ fay::FayDomain::FayDomain()
 {
 }
 
-PTR(FayDomain) fay::FayDomain::init()
+void fay::FayDomain::init()
 {
 	//添加系统库。因为存在循环依赖的问题，要分两次进行初始化
-	PTR(SystemLib) lib = MKPTR(SystemLib)(this->shared_from_this(), "system", 1, 1);
+	PTR(SystemLib) lib = MKPTR(SystemLib)("system", 1, 1);
 	lib->preInit();
 	this->addLib(lib);
 	lib->postInit();
-
-	return this->shared_from_this();
 }
 
 void fay::FayDomain::addLib(PTR(FayLib) lib)
@@ -542,16 +517,12 @@ bool fay::FayDomain::getFunIndex(PTR(FayFun) fun, pos_t &typeIndex, pos_t &funIn
 	return true;
 }
 
-const std::string &fay::FayParamDef::fullname()
+fay::FayParamDef::FayParamDef(const std::string & name, PTR(FayClass) type)
+	:  _name(name), _class(type)
 {
-	if(this->_fullname.size() <= 0)
-	{
-		this->_fullname += this->_name;
-		this->_fullname += ":";
-		this->_fullname += this->_class.expired() ? "?" : this->_class.lock()->fullname();
-	}
-
-	return this->_fullname;
+	this->_fullname = this->_name;
+	this->_fullname += ":";
+	this->_fullname += this->_class.expired() ? "?" : this->_class.lock()->fullname();
 }
 
 void fay::FayParamDef::buildString(mirror::utils::StringBuilder* sb)
@@ -589,7 +560,7 @@ fay::ValueType fay::FayLangUtils::WeightValueType(ValueType t1, ValueType t2)
 PTR(FayClass) fay::FayLangUtils::WeightValueType(PTR(FayClass) t1, PTR(FayClass) t2)
 {
 	if(t1->valueType() >= ValueType::String || t2->valueType() >= ValueType::String)
-		return t1->domain()->findClass(ValueType::String);
+		return FayLang::Domain.findClass(ValueType::String);
 
 	return (t1->valueType() >= t2->valueType()) ? t1 : t2;
 }
@@ -1245,10 +1216,16 @@ std::string fay::FayLangUtils::Fullname(const std::string &className, const std:
 	return className + "." + FayLangUtils::Fullname(funName, params);
 }
 
+fay::StaticFunRef::StaticFunRef(const std::string & fullname, PTR(FayFun) fun)
+	: _fullname(fullname)
+{
+	this->classIndex = fun->clazz()->indexValue();
+	this->funIndex = fun->clazz()->getFunIndex(fun->fullname(), true);
+}
+
 void fay::StaticFunRef::buildString(mirror::utils::StringBuilder* sb)
 {
-	sb->add(this->_classFullname)->add(":")->add(this->_classIndex)->add(" ");
-	sb->add(this->_funFullname)->add(":")->add(this->_funIndex)->endl();
+	sb->add(this->_fullname)->add(" @ ")->add(this->classIndex)->add(",")->add(this->funIndex)->endl();
 }
 
 pos_t fay::FunTable::addFun(PTR(FayFun) fun)
@@ -1346,8 +1323,8 @@ void fay::FunTable::buildString(mirror::utils::StringBuilder* sb)
 	}
 }
 
-fay::FayVarDef::FayVarDef(PTR(FayDomain) domain, const std::string & name, PTR(FayClass) clazz)
-	: FayLangObject(domain), _name(name), _class(clazz)
+fay::FayVarDef::FayVarDef(const std::string & name, PTR(FayClass) clazz)
+	: _name(name), _classType(clazz)
 {
 	this->_fullname = name + ":" + clazz->fullname();
 }
@@ -1404,7 +1381,8 @@ fay::ValueType fay::FayInstClass::valueType()
 	return ValueType::Object;
 }
 
-fay::StaticVarRef::StaticVarRef(PTR(FayClass) clazz, PTR(FayVarDef) var)
+fay::StaticVarRef::StaticVarRef(const std::string &fullname, PTR(FayClass) clazz, PTR(FayVarDef) var)
+	: _fullname(fullname)
 {
 	this->_className = clazz->fullname();
 	this->_classIndex = clazz->indexValue();
@@ -1412,3 +1390,7 @@ fay::StaticVarRef::StaticVarRef(PTR(FayClass) clazz, PTR(FayVarDef) var)
 	this->_varIndex = var->indexValue();
 	this->_fullname = this->_className + "." + this->_varName;
 }
+
+
+fay::FayDomain fay::FayLang::Domain;
+

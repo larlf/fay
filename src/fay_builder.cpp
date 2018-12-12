@@ -56,8 +56,8 @@ void fay::FayBuilder::addUsing(const std::string &packageName)
 
 void fay::FayBuilder::beginLib(const std::string &name)
 {
-	this->_lib = MKPTR(FayLib)(this->_domain, name, 0, 0);
-	this->_domain->addLib(this->_lib);
+	this->_lib = MKPTR(FayLib)(name, 0, 0);
+	FayLang::Domain.addLib(this->_lib);
 }
 
 pos_t fay::FayBuilder::addClass(PTR(FayInstClass) clazz)
@@ -68,12 +68,12 @@ pos_t fay::FayBuilder::addClass(PTR(FayInstClass) clazz)
 
 void fay::FayBuilder::bindClass(pos_t index)
 {
-	this->_class = TOPTR(FayInstClass, this->_domain->findClass(index));
+	this->_class = TOPTR(FayInstClass, FayLang::Domain.findClass(index));
 }
 
 std::vector<PTR(FayClass)> fay::FayBuilder::findClass(const std::string & name)
 {
-	return this->_domain->findClass(this->_usings, name);
+	return FayLang::Domain.findClass(this->_usings, name);
 }
 
 pos_t fay::FayBuilder::addFun(PTR(FayInstFun) fun)
@@ -95,13 +95,6 @@ void fay::FayBuilder::bindFun(pos_t index, bool isStatic)
 	//清空指令集
 	if(this->_insts.size() > 0)
 		this->_insts.clear();
-}
-
-void fay::FayBuilder::addParamDefine(const std::string &name, const std::string &type)
-{
-	PTR(FayClass) t = this->_domain->findClass(type);
-	PTR(FayParamDef) def = MKPTR(FayParamDef)(this->_domain, name, t);
-	this->_fun->addParam(def);
 }
 
 void fay::FayBuilder::addInst(FayInst* inst)

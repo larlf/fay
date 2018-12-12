@@ -92,7 +92,7 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 			}
 			case InstType::CallStatic:
 			{
-				PTR(FayFun) fun=this->_domain->findFun(((inst::CallStatic*)inst)->typeIndex,((inst::CallStatic*)inst)->funIndex,true);
+				PTR(FayFun) fun=FayLang::Domain.findFun(((inst::CallStatic*)inst)->classIndex,((inst::CallStatic*)inst)->funIndex,true);
 				this->_run(fun);
 				break;
 			}
@@ -1067,7 +1067,7 @@ void fay::FayVM::_run(PTR(FayInstFun) fun)
 			}
 			case InstType::New:
 			{
-				PTR(fay::FayInstance) obj = MKPTR(fay::FayInstance)(this->_domain->findClass(((inst::New*)inst)->classIndex));
+				PTR(fay::FayInstance) obj = MKPTR(fay::FayInstance)(FayLang::Domain.findClass(((inst::New*)inst)->classIndex));
 				this->stack.push(FayValue(obj));
 				break;
 			}

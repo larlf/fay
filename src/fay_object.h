@@ -62,8 +62,6 @@ namespace fay
 		int col() { return this->_col; }
 	};
 
-
-
 	//放向IndexMap的元素
 	template<class T>
 	class IndexMapItem

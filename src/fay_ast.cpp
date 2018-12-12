@@ -104,11 +104,11 @@ void fay::AstNode::dig4(FayBuilder* builder)
 
 void fay::AstClass::dig1(FayBuilder* builder)
 {
-	PTR(FayInstClass) clazz = MKPTR(FayInstClass)(builder->domain(), builder->package(), this->_text);
+	PTR(FayInstClass) clazz = MKPTR(FayInstClass)(builder->package(), this->_text);
 
 	//检查是否重复
 	std::string fullname = clazz->fullname();
-	if(builder->domain()->findClass(fullname) != nullptr)
+	if(FayLang::Domain.findClass(fullname) != nullptr)
 		throw BuildException(this->shared_from_this(), "err.repeated_class", fullname);
 
 	//添加到domain
@@ -134,24 +134,24 @@ void fay::AstClass::dig4(FayBuilder* builder)
 	builder->bindClass(this->classIndex);
 
 	//生成初始化方法
-	PTR(FayInstFun) fun = MKPTR(FayInstFun)(builder->domain(), ".init", false, FunAccessType::Private);
+	PTR(FayInstFun) fun = MKPTR(FayInstFun)(".init", false, FunAccessType::Private);
 	builder->addFun(fun);
 
 	//先处理静态字段
 	for each(auto it in this->_nodes)
-		if (it && it->is<AstField>() && TOPTR(AstField, it)->isStatic())
+		if(it && it->is<AstField>() && TOPTR(AstField, it)->isStatic())
 			it->dig4(builder);
 
 	//生成用于初始化静态内容的代码
 	builder->optimizeInsts();
 
 	//生成默认构造方法
-	fun = MKPTR(FayInstFun)(builder->domain(), ".create", false, FunAccessType::Private);
+	fun = MKPTR(FayInstFun)(".create", false, FunAccessType::Private);
 	builder->addFun(fun);
 
 	//处理非静态字段
 	for each(auto it in this->_nodes)
-		if (it && it->is<AstField>() && !TOPTR(AstField, it)->isStatic())
+		if(it && it->is<AstField>() && !TOPTR(AstField, it)->isStatic())
 			it->dig4(builder);
 
 	//生成用于初始化非静态内容的代码
@@ -159,12 +159,14 @@ void fay::AstClass::dig4(FayBuilder* builder)
 
 	//再处理其它的内容
 	for each(auto it in this->_nodes)
-		if (it && !it->is<AstField>())
+		if(it && !it->is<AstField>())
 			it->dig4(builder);
 }
 
 void fay::AstFun::dig2(FayBuilder* builder)
 {
+	builder->params.clear();
+
 	AstNode::dig2(builder);
 
 	FunAccessType _accessType = FunAccessType::Public;
@@ -179,7 +181,7 @@ void fay::AstFun::dig2(FayBuilder* builder)
 	}
 
 	//创建这个函数定义
-	PTR(FayInstFun) fun = MKPTR(FayInstFun)(builder->domain(), this->_text, this->isStatic, _accessType);
+	PTR(FayInstFun) fun = MKPTR(FayInstFun)(this->_text, this->isStatic, _accessType, builder->params);
 
 	//处理参数
 	if(this->_nodes[1])
@@ -259,7 +261,7 @@ void fay::AstString::dig3(FayBuilder* builder)
 		this->_value.push_back(c);
 	}
 
-	this->_classType = builder->domain()->findClass(ValueType::String);
+	this->_classType = FayLang::Domain.findClass(ValueType::String);
 }
 
 void fay::AstString::dig4(FayBuilder* builder)
@@ -281,7 +283,13 @@ PTR(FayClass) fay::AstParamDefine::getType(FayBuilder* builder)
 
 void fay::AstParamDefine::dig2(FayBuilder* builder)
 {
-	builder->addParamDefine(this->text(), this->_nodes[0]->text());
+	PTR(FayClass) t = FayLang::Domain.findClass(this->_nodes[0]->text());
+	if(!t)
+		throw BuildException(this->shared_from_this(), "err.unknow_type", this->_nodes[0]->text());
+
+	PTR(FayParamDef) def = MKPTR(FayParamDef)(this->text(), t);
+	builder->params.push_back(def);
+
 	AstNode::dig2(builder);
 }
 
@@ -337,7 +345,7 @@ void fay::AstCall::dig3(FayBuilder* builder)
 
 	if(className.size() > 0)
 	{
-		auto classes = builder->domain()->findClass(builder->usings(), className);
+		auto classes = FayLang::Domain.findClass(builder->usings(), className);
 		if(classes.size() < 1)
 			throw BuildException(this->shared_from_this(), "err.no_class", className);
 		else if(classes.size() > 1)
@@ -370,7 +378,7 @@ void fay::AstCall::dig4(FayBuilder* builder)
 	if(!fun)
 		throw BuildException(this->shared_from_this(), "err.unknow_fun", this->_text);
 
-	pos_t index = builder->lib()->findOutsideFun(fun);
+	pos_t index = builder->lib()->registerStaticFun(fun);
 	if(fun->isStatic())
 		builder->addInst(new inst::CallStatic(index, fun->paramsCount()));
 	//TODO : 处理非静态方法
@@ -495,7 +503,7 @@ void fay::AstNumber::dig4(FayBuilder* builder)
 
 //PTR(FayClass) fay::AstNumber::classType(FayBuilder * builder)
 //{
-//	return (*builder->domain())[this->_val.type()];
+//	return (*FayLang::Domain)[this->_val.type()];
 //}
 
 fay::AstNumber::AstNumber(const PTR(Token)& token, const std::string &text)
@@ -533,7 +541,7 @@ fay::AstNumber::AstNumber(const PTR(Token)& token, const std::string &text)
 
 void fay::AstNumber::dig3(FayBuilder* builder)
 {
-	this->_classType = builder->domain()->findClass(this->_val.type());
+	this->_classType = FayLang::Domain.findClass(this->_val.type());
 
 	AstNode::dig3(builder);
 }
@@ -550,10 +558,10 @@ std::vector<PTR(FayClass)> fay::AstParams::paramsType(FayBuilder* builder)
 void fay::AstID::dig3(FayBuilder* builder)
 {
 	//先在函数中找
-	if (builder->fun())
+	if(builder->fun())
 	{
 		auto var = builder->fun()->findVar(this->_text);
-		if (var)
+		if(var)
 		{
 			this->_type = VarType::Local;
 			this->_varIndex = var->indexValue();
@@ -569,7 +577,7 @@ void fay::AstID::dig3(FayBuilder* builder)
 		std::string className = this->_text.substr(0, pos);
 		std::string varName = this->_text.substr(pos + 1);
 
-		auto classes = builder->domain()->findClass(builder->usings(), className);
+		auto classes = FayLang::Domain.findClass(builder->usings(), className);
 		if(classes.size() < 1)
 			throw BuildException(this->shared_from_this(), "err.cannot_find_class", className);
 		if(classes.size() > 1)
@@ -593,17 +601,22 @@ void fay::AstID::dig4(FayBuilder* builder)
 		builder->addInst(new inst::CopyLocal(this->_varIndex));
 	else
 	{
-		switch (this->_type)
+		switch(this->_type)
 		{
-		case VarType::Static:
-			builder->addInst(new inst::LoadStatic(this->_classIndex, this->_varIndex));
-			break;
-		case VarType::Local:
-			builder->addInst(new inst::LoadLocal(this->_varIndex));
-			break;
-		default:
-			throw BuildException(this->shared_from_this(), "err.bad_id_type", TypeDict::ToName(this->_type));
-			break;
+			case VarType::Static:
+			{
+				PTR(FayClass) clazz = FayLang::Domain.findClass(this->_classIndex);
+				PTR(FayVarDef) var = clazz->findStaticVar(this->_varIndex);
+				pos_t refIndex = builder->lib()->registerStaticVar(clazz, var);
+				builder->addInst(new inst::LoadStatic(refIndex));
+				break;
+			}
+			case VarType::Local:
+				builder->addInst(new inst::LoadLocal(this->_varIndex));
+				break;
+			default:
+				throw BuildException(this->shared_from_this(), "err.bad_id_type", TypeDict::ToName(this->_type));
+				break;
 		}
 	}
 }
@@ -685,7 +698,7 @@ void fay::AstBool::dig3(FayBuilder* builder)
 	else
 		this->_value = false;
 
-	this->_classType = builder->domain()->findClass(ValueType::Bool);
+	this->_classType = FayLang::Domain.findClass(ValueType::Bool);
 }
 
 void fay::AstBool::dig4(FayBuilder* builder)
@@ -761,7 +774,7 @@ void fay::AstIf::dig4(FayBuilder* builder)
 
 void fay::AstEqualityOP::dig3(FayBuilder* builder)
 {
-	this->_classType = builder->domain()->findClass(ValueType::Bool);
+	this->_classType = FayLang::Domain.findClass(ValueType::Bool);
 
 	AstNode::dig3(builder);
 
@@ -817,7 +830,7 @@ void fay::AstCondition::dig3(FayBuilder* builder)
 		//如果不是Bool，这里进行一下转换
 		auto type = this->_nodes[0]->classType();
 		if(type->valueType() != ValueType::Bool)
-			this->insertChldNode(0, MKPTR(AstTypeConvert)(this->_token, type, builder->domain()->findClass(ValueType::Bool)));
+			this->insertChldNode(0, MKPTR(AstTypeConvert)(this->_token, type, FayLang::Domain.findClass(ValueType::Bool)));
 	}
 
 }
@@ -838,7 +851,7 @@ void fay::AstFor::dig3(FayBuilder* builder)
 	//如果expr2不是Bool，这里进行一下转换
 	auto type = this->_nodes[1]->classType();
 	if(type->valueType() != ValueType::Bool)
-		this->insertChldNode(1, MKPTR(AstTypeConvert)(this->_token, type, builder->domain()->findClass(ValueType::Bool)));
+		this->insertChldNode(1, MKPTR(AstTypeConvert)(this->_token, type, FayLang::Domain.findClass(ValueType::Bool)));
 }
 
 void fay::AstFor::dig4(FayBuilder* builder)
@@ -924,7 +937,7 @@ void fay::AstPreOP::dig4(FayBuilder* builder)
 
 void fay::AstFixedNumber::dig3(FayBuilder* builder)
 {
-	this->_classType = builder->domain()->findClass(this->_type);
+	this->_classType = FayLang::Domain.findClass(this->_type);
 
 	AstNode::dig3(builder);
 }
@@ -984,7 +997,7 @@ void fay::AstType::dig2(FayBuilder* builder)
 {
 	AstNode::dig2(builder);
 
-	auto classes = builder->domain()->findClass(builder->usings(), this->_text);
+	auto classes = FayLang::Domain.findClass(builder->usings(), this->_text);
 	if(classes.size() <= 0)
 		throw BuildException(this->shared_from_this(), "err.cannot_find_class", this->_text);
 	else if(classes.size() > 1)
@@ -1103,7 +1116,7 @@ void fay::AstBoolNot::dig3(FayBuilder* builder)
 {
 	AstNode::dig3(builder);
 
-	auto boolType = builder->domain()->findClass(ValueType::Bool);
+	auto boolType = FayLang::Domain.findClass(ValueType::Bool);
 	this->_classType = boolType;
 
 	auto subType = this->_nodes[0]->classType();
@@ -1135,7 +1148,7 @@ void fay::AstBitNot::dig4(FayBuilder* builder)
 void fay::AstCast::dig3(FayBuilder* builder)
 {
 	AstNode::dig3(builder);
-	this->_classType = builder->domain()->findClass(this->_text);
+	this->_classType = FayLang::Domain.findClass(this->_text);
 }
 
 void fay::AstCast::dig4(FayBuilder* builder)
@@ -1192,7 +1205,7 @@ void fay::AstBoolOP::dig3(FayBuilder* builder)
 	//先算出目标类型
 	auto t1 = this->_nodes[0]->classType();
 	auto t2 = this->_nodes[1]->classType();
-	auto t3 = builder->domain()->findClass(ValueType::Bool);
+	auto t3 = FayLang::Domain.findClass(ValueType::Bool);
 	this->_classType = t3;
 
 	//如果和目标类型不一致，就转换一下
@@ -1227,7 +1240,7 @@ void fay::AstCondExpr::dig3(FayBuilder* builder)
 	//如果判断表达式不是Bool类型的，要转换成Boole类型
 	auto cond = this->_nodes[0];
 	if(cond->valueType() != ValueType::Bool)
-		this->insertChldNode(1, MKPTR(AstTypeConvert)(cond->token(), cond->classType(), builder->domain()->findClass(ValueType::Bool)));
+		this->insertChldNode(1, MKPTR(AstTypeConvert)(cond->token(), cond->classType(), FayLang::Domain.findClass(ValueType::Bool)));
 
 	//如果后面的两个项目返回的类型不一致，需要统一下
 	auto t1 = this->_nodes[1]->classType();
@@ -1277,7 +1290,7 @@ void fay::AstWhile::dig3(FayBuilder* builder)
 	//如果不是Bool，这里进行一下转换
 	auto type = this->_nodes[0]->classType();
 	if(type->valueType() != ValueType::Bool)
-		this->insertChldNode(0, MKPTR(AstTypeConvert)(this->_token, type, builder->domain()->findClass(ValueType::Bool)));
+		this->insertChldNode(0, MKPTR(AstTypeConvert)(this->_token, type, FayLang::Domain.findClass(ValueType::Bool)));
 
 	//生成开始和结束的标签
 	this->startLabel = builder->makeLabel();
@@ -1311,7 +1324,7 @@ void fay::AstDoWhile::dig3(FayBuilder* builder)
 	//如果不是Bool，这里进行一下转换
 	auto type = this->_nodes[1]->classType();
 	if(type->valueType() != ValueType::Bool)
-		this->insertChldNode(1, MKPTR(AstTypeConvert)(this->_token, type, builder->domain()->findClass(ValueType::Bool)));
+		this->insertChldNode(1, MKPTR(AstTypeConvert)(this->_token, type, FayLang::Domain.findClass(ValueType::Bool)));
 
 	//生成开始的标签
 	this->startLabel = builder->makeLabel();
@@ -1352,33 +1365,37 @@ void fay::AstNew::dig4(FayBuilder* builder)
 	builder->addInst(inst);
 }
 
-void fay::AstField::dig2(FayBuilder * builder)
+void fay::AstField::dig2(FayBuilder* builder)
 {
 	AstNode::dig2(builder);
 
-	if (!this->_nodes[0])
+	if(!this->_nodes[0])
 		throw BuildException(this->shared_from_this(), "err.no_type");
 
 	PTR(FayClass) type = this->_nodes[0]->classType();
-	if (!type)
+	if(!type)
 		throw BuildException(this->shared_from_this(), "err.bad_type");
 
-	if (this->isStatic())
+	if(this->isStatic())
 		this->varIndex = builder->clazz()->addStaticVar(this->_text, type);
 	else
 		this->varIndex = builder->clazz()->addFieldDef(this->_text, type);
 
 }
 
-void fay::AstField::dig4(FayBuilder * builder)
+void fay::AstField::dig4(FayBuilder* builder)
 {
 	//如果不需要初始化直接返回
-	if (this->_nodes[1] == nullptr)
+	if(this->_nodes[1] == nullptr)
 		return;
 
 	this->_nodes[1]->dig4(builder);
-	if (this->isStatic())
-		builder->addInst(new inst::SetStatic(builder->clazz()->indexValue(), this->varIndex));
+	if(this->isStatic())
+	{
+		auto def = builder->clazz()->findStaticVar(this->varIndex);
+		pos_t refIndex = builder->lib()->registerStaticVar(builder->clazz(), def);
+		builder->addInst(new inst::SetStatic(refIndex));
+	}
 	else
 		builder->addInst(new inst::SetField(this->varIndex));
 }

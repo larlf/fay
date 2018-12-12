@@ -15,10 +15,10 @@ using namespace mirror;
 using namespace fay;
 using namespace test;
 
-PTR(FayProject) test::FayLang::project;
-PTR(FayVM) test::FayLang::vm;
+PTR(FayProject) test::FayLangTest::project;
+PTR(FayVM) test::FayLangTest::vm;
 
-void test::FayLang::SetUpTestCase()
+void test::FayLangTest::SetUpTestCase()
 {
 	//初始化字典数据
 	fay::TypeDict::Init();
@@ -26,6 +26,8 @@ void test::FayLang::SetUpTestCase()
 	//初始化国际化信息
 	std::string i18nText = utils::FileUtils::ReadTextFile("../doc/i18n.cn.json");
 	fay::I18N::Init(i18nText);
+
+	FayLang::Domain.init();
 
 	//取得所有的代码文件
 	std::string projectPath = "../script/test1";
@@ -36,15 +38,15 @@ void test::FayLang::SetUpTestCase()
 	project->parse();
 	project->build();
 
-	vm = MKPTR(FayVM)(project->domain());
+	vm = MKPTR(FayVM)();
 }
 
-TEST_F(FayLang, Type)
+TEST_F(FayLangTest, Type)
 {
 	PRINT(project->findSource("TypeTest.fay")->tokensStr());
 	PRINT(project->findSource("TypeTest.fay")->astStr());
 
-	auto type = project->domain()->findClass("fay.dev.test.TypeTest");
+	auto type = FayLang::Domain.findClass("fay.dev.test.TypeTest");
 
 	{
 		auto funs = type->findFunByName("test1");
@@ -96,11 +98,11 @@ TEST_F(FayLang, Type)
 }
 
 //数据计算相关的测试
-TEST_F(FayLang, Math)
+TEST_F(FayLangTest, Math)
 {
 	PRINT(project->findSource("MathTest.fay")->tokensStr());
 	PRINT(project->findSource("MathTest.fay")->astStr());
-	auto type = project->domain()->findClass("fay.dev.test.MathTest");
+	auto type = FayLang::Domain.findClass("fay.dev.test.MathTest");
 
 	{
 		std::vector<PTR(FayFun)>funs = type->findFunByName("test1");
@@ -334,11 +336,11 @@ TEST_F(FayLang, Math)
 	}
 }
 
-TEST_F(FayLang, Flow)
+TEST_F(FayLangTest, Flow)
 {
 	PRINT(project->findSource("FlowTest.fay")->tokensStr());
 	PRINT(project->findSource("FlowTest.fay")->astStr());
-	auto type = project->domain()->findClass("fay.dev.test.FlowTest");
+	auto type = FayLang::Domain.findClass("fay.dev.test.FlowTest");
 
 	std::vector<PTR(FayFun)> funs;
 	FayValue rs;
@@ -380,11 +382,11 @@ TEST_F(FayLang, Flow)
 	ASSERT_EQ(rs.intVal(), 16);
 }
 
-TEST_F(FayLang, String)
+TEST_F(FayLangTest, String)
 {
 	PRINT(project->findSource("StringTest.fay")->tokensStr());
 	PRINT(project->findSource("StringTest.fay")->astStr());
-	auto type = project->domain()->findClass("fay.dev.test.StringTest");
+	auto type = FayLang::Domain.findClass("fay.dev.test.StringTest");
 
 	std::vector<PTR(FayFun)> funs;
 	FayValue rs;
@@ -418,11 +420,11 @@ TEST_F(FayLang, String)
 	rs = vm->run(funs[0]);
 }
 
-TEST_F(FayLang, OOP)
+TEST_F(FayLangTest, OOP)
 {
 	PRINT(project->findSource("OOPTest.fay")->tokensStr());
 	PRINT(project->findSource("OOPTest.fay")->astStr());
-	auto type = project->domain()->findClass("fay.dev.test.OOPTest");
+	auto type = FayLang::Domain.findClass("fay.dev.test.OOPTest");
 
 	std::vector<PTR(FayFun)> funs;
 	FayValue rs;
@@ -450,7 +452,7 @@ TEST_F(FayLang, OOP)
 	//ASSERT_EQ(rs.intVal(), 10002);
 }
 
-TEST_F(FayLang, FayValue)
+TEST_F(FayLangTest, FayValue)
 {
 	std::string str = "one";
 	FayValue v4;
@@ -460,7 +462,7 @@ TEST_F(FayLang, FayValue)
 		FayValue v1(str);
 		FayValue v2("two");
 
-		FayValue v3 = FayLang::makeValue(*v1.strVal());
+		FayValue v3 = FayLangTest::makeValue(*v1.strVal());
 		v4 = v3;
 		v3 = v2;
 		v5 = FayValue(v3);
@@ -488,17 +490,17 @@ TEST_F(FayLang, FayValue)
 	ASSERT_EQ(*v5.strVal(), "two");
 }
 
-FayValue test::FayLang::makeValue(const std::string &str)
+FayValue test::FayLangTest::makeValue(const std::string &str)
 {
 	FayValue v = FayValue(str.c_str());
 	return v;
 }
 
-TEST_F(FayLang, RTTI)
+TEST_F(FayLangTest, RTTI)
 {
 	PTR(AstNode) ast1 = MKPTR(AstFor)(nullptr);
 	ASSERT_EQ(ast1->is<AstFor>(), true);
 	ASSERT_EQ(ast1->is<AstNode>(), true);
-	ASSERT_EQ(ast1->is<test::FayLang>(), false);
+	ASSERT_EQ(ast1->is<test::FayLangTest>(), false);
 }
 

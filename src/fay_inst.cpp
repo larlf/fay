@@ -106,7 +106,7 @@ void fay::inst::PopTo::buildString(mirror::utils::StringBuilder * sb)
 void fay::inst::CallStatic::buildString(mirror::utils::StringBuilder * sb)
 {
 	sb->add("CallStatic")
-		->add(" ")->add(this->outsideFunIndex)
+		->add(" ")->add(this->funRefIndex)
 		->add(" ")->add(this->paramCount)
 		->endl();
 }
@@ -114,7 +114,7 @@ void fay::inst::CallStatic::buildString(mirror::utils::StringBuilder * sb)
 void fay::inst::CallVirtual::buildString(mirror::utils::StringBuilder * sb)
 {
 	sb->add("CallVirtual")
-		->add(" ")->add(this->outsideFunIndex)
+		->add(" ")->add(this->funRefIndex)
 		->add(" ")->add(this->paramCount)
 		->endl();
 }
@@ -136,8 +136,7 @@ void fay::inst::SetField::buildString(mirror::utils::StringBuilder * sb)
 void fay::inst::SetStatic::buildString(mirror::utils::StringBuilder * sb)
 {
 	sb->add("SetStatic")
-		->add(" ")->add(this->typeIndex)
-		->add(" ")->add(this->fieldIndex)
+		->add(" ")->add(this->varRefIndex)
 		->endl();
 }
 
@@ -158,8 +157,7 @@ void fay::inst::LoadField::buildString(mirror::utils::StringBuilder * sb)
 void fay::inst::LoadStatic::buildString(mirror::utils::StringBuilder * sb)
 {
 	sb->add("LoadStatic")
-		->add(" ")->add(this->typeIndex)
-		->add(" ")->add(this->fieldIndex)
+		->add(" ")->add(this->varRefIndex)
 		->endl();
 }
 

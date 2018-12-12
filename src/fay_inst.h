@@ -146,22 +146,22 @@ namespace fay
 		class CallStatic : public fay::FayInst 
 		{ 
 		public:
-			int32_t outsideFunIndex;
+			int32_t funRefIndex;
 			int32_t paramCount;
-			int32_t typeIndex;
+			int32_t classIndex;
 			int32_t funIndex;
-			CallStatic(int32_t outsideFunIndex,int32_t paramCount) : FayInst(InstType::CallStatic),outsideFunIndex(outsideFunIndex),paramCount(paramCount) {}
+			CallStatic(int32_t funRefIndex,int32_t paramCount) : FayInst(InstType::CallStatic),funRefIndex(funRefIndex),paramCount(paramCount) {}
 			virtual void buildString(mirror::utils::StringBuilder* sb) override;
 		};
 		
 		class CallVirtual : public fay::FayInst 
 		{ 
 		public:
-			int32_t outsideFunIndex;
+			int32_t funRefIndex;
 			int32_t paramCount;
-			int32_t typeIndex;
+			int32_t classIndex;
 			int32_t funIndex;
-			CallVirtual(int32_t outsideFunIndex,int32_t paramCount) : FayInst(InstType::CallVirtual),outsideFunIndex(outsideFunIndex),paramCount(paramCount) {}
+			CallVirtual(int32_t funRefIndex,int32_t paramCount) : FayInst(InstType::CallVirtual),funRefIndex(funRefIndex),paramCount(paramCount) {}
 			virtual void buildString(mirror::utils::StringBuilder* sb) override;
 		};
 		
@@ -184,9 +184,10 @@ namespace fay
 		class SetStatic : public fay::FayInst 
 		{ 
 		public:
-			int32_t typeIndex;
-			int32_t fieldIndex;
-			SetStatic(int32_t typeIndex,int32_t fieldIndex) : FayInst(InstType::SetStatic),typeIndex(typeIndex),fieldIndex(fieldIndex) {}
+			int32_t varRefIndex;
+			int32_t classIndex;
+			int32_t varIndex;
+			SetStatic(int32_t varRefIndex) : FayInst(InstType::SetStatic),varRefIndex(varRefIndex) {}
 			virtual void buildString(mirror::utils::StringBuilder* sb) override;
 		};
 		
@@ -209,9 +210,10 @@ namespace fay
 		class LoadStatic : public fay::FayInst 
 		{ 
 		public:
-			int32_t typeIndex;
-			int32_t fieldIndex;
-			LoadStatic(int32_t typeIndex,int32_t fieldIndex) : FayInst(InstType::LoadStatic),typeIndex(typeIndex),fieldIndex(fieldIndex) {}
+			int32_t varRefIndex;
+			int32_t classIndex;
+			int32_t varIndex;
+			LoadStatic(int32_t varRefIndex) : FayInst(InstType::LoadStatic),varRefIndex(varRefIndex) {}
 			virtual void buildString(mirror::utils::StringBuilder* sb) override;
 		};
 		

@@ -20,66 +20,98 @@ namespace fay
 
 	class VoidClass : public ObjectClass
 	{
-		using ObjectClass::ObjectClass;
 	public:
+		VoidClass(const std::string &package, const std::string &name)
+			: ObjectClass(package, name)
+		{
+			this->_fullname = TypeDict::ToName(ValueType::Void);
+		}
+
 		virtual ValueType valueType() override { return ValueType::Void; }
-		virtual const std::string & fullname() override { return TypeDict::ToName(ValueType::Void); }
 	};
 
 	class BoolClass : public ObjectClass
 	{
-		using ObjectClass::ObjectClass;
 	public:
+		BoolClass(const std::string &package, const std::string &name)
+			: ObjectClass(package, name)
+		{
+			this->_fullname = TypeDict::ToName(ValueType::Bool);
+		}
+
 		virtual ValueType valueType() override { return ValueType::Bool; }
-		virtual const std::string & fullname() override { return TypeDict::ToName(ValueType::Bool); }
 	};
 
 	class ByteClass : public ObjectClass
 	{
-		using ObjectClass::ObjectClass;
 	public:
+		ByteClass(const std::string &package, const std::string &name)
+			: ObjectClass(package, name)
+		{
+			this->_fullname = TypeDict::ToName(ValueType::Byte);
+		}
+
 		virtual ValueType valueType() override { return ValueType::Byte; }
-		virtual const std::string & fullname() override { return TypeDict::ToName(ValueType::Byte); }
 	};
 
 	class IntClass : public ObjectClass
 	{
-		using ObjectClass::ObjectClass;
 	public:
+		IntClass(const std::string &package, const std::string &name)
+			: ObjectClass(package, name)
+		{
+			this->_fullname = TypeDict::ToName(ValueType::Int);
+		}
+
 		virtual ValueType valueType() override { return ValueType::Int; }
-		virtual const std::string & fullname() override { return TypeDict::ToName(ValueType::Int); }
 	};
 
 	class LongClass : public ObjectClass
 	{
-		using ObjectClass::ObjectClass;
 	public:
+		LongClass(const std::string &package, const std::string &name)
+			: ObjectClass(package, name)
+		{
+			this->_fullname = TypeDict::ToName(ValueType::Long);
+		}
+
 		virtual ValueType valueType() override { return ValueType::Long; }
-		virtual const std::string & fullname() override { return TypeDict::ToName(ValueType::Long); }
 	};
 
 	class FloatClass : public ObjectClass
 	{
-		using ObjectClass::ObjectClass;
 	public:
+		FloatClass(const std::string &package, const std::string &name)
+			: ObjectClass(package, name)
+		{
+			this->_fullname = TypeDict::ToName(ValueType::Float);
+		}
+
 		virtual ValueType valueType() override { return ValueType::Float; }
-		virtual const std::string & fullname() override { return TypeDict::ToName(ValueType::Float); }
 	};
 
 	class DoubleClass : public ObjectClass
 	{
-		using ObjectClass::ObjectClass;
 	public:
+		DoubleClass(const std::string &package, const std::string &name)
+			: ObjectClass(package, name)
+		{
+			this->_fullname = TypeDict::ToName(ValueType::Double);
+		}
+
 		virtual ValueType valueType() override { return ValueType::Double; }
-		virtual const std::string & fullname() override { return TypeDict::ToName(ValueType::Double); }
 	};
 
 	class StringClass : public ObjectClass
 	{
-		using ObjectClass::ObjectClass;
 	public:
+		StringClass(const std::string &package, const std::string &name)
+			: ObjectClass(package, name)
+		{
+			this->_fullname = TypeDict::ToName(ValueType::String);
+		}
+
 		virtual ValueType valueType() override { return ValueType::String; }
-		virtual const std::string & fullname() override { return TypeDict::ToName(ValueType::String); }
 	};
 
 	class IOClass : public ObjectClass

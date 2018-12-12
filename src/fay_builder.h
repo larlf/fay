@@ -27,7 +27,6 @@ namespace fay
 	private:
 		std::string _package;
 		std::string _filename;
-		PTR(FayDomain) _domain;
 		PTR(FayLib) _lib;
 		PTR(FayInstClass) _class;
 		PTR(FayInstFun) _fun;
@@ -38,15 +37,15 @@ namespace fay
 	public:
 		//用于控制表达式中的模式，在赋值运算符左边和右边的处理不一样
 		BuildExprMode exprMode = BuildExprMode::RightValue;
+		//用于构造函数的参数
+		std::vector<PTR(FayParamDef)> params;
 
-		FayBuilder(PTR(FayDomain) domain)
-			: _domain(domain) {}
+		FayBuilder() {}
 		~FayBuilder();
 
 		//log记录
 		void log(BuildLogLevel level, int line, int col, const std::string &msg);
 
-		PTR(FayDomain) domain() { return this->_domain; }
 		PTR(FayLib) lib() { return this->_lib; }
 		PTR(FayInstClass) clazz() { return this->_class; }
 		PTR(FayInstFun) fun() { return this->_fun; }
@@ -74,7 +73,6 @@ namespace fay
 		//函数定义相关的处理
 		pos_t addFun(PTR(FayInstFun) fun);
 		void bindFun(pos_t index, bool isStatic);
-		void addParamDefine(const std::string &name, const std::string &type);
 
 		//以下是代码生成相关的内容
 

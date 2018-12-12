@@ -38,13 +38,10 @@ namespace fay
 		int _minjor;
 
 		MAP<std::string, PTR(FaySource)> _files;
-		PTR(FayDomain) _domain;
 		PTR(FayBuilder) _builder;
 
 	public:
 		FayProject(const std::string &name, int marjor, int minjor);
-
-		PTR(FayDomain) domain() { return this->_domain; }
 
 		void addFiles(std::vector<std::string> &files);
 		void parse();

@@ -15,6 +15,12 @@ namespace mirror
 			{
 				return sizeof(array) / sizeof(array[0]);
 			}
+
+			template<class T, typename... Params>
+			static std::vector<T> Vector(Params... args)
+			{
+				std::vector<T> defs{ args... };
+			}
 		};
 	}
 }
