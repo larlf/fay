@@ -127,6 +127,7 @@ namespace fay
 		inline const std::string &fullname() { return this->_fullname; }
 		inline const bool isInited() { return this->_isInited; }
 
+		//第一次使用的时候要对类进行一下初始化
 		void initClass();
 
 		//Get or set
@@ -157,7 +158,7 @@ namespace fay
 		//根据Index取得函数
 		PTR(FayFun) findFun(pos_t index, bool isStatic);
 		PTR(FayFun) findFun(const std::string &fullname, bool isStatic);
-		std::vector<PTR(FayFun)> findFunByName(const std::string &name);
+		std::vector<PTR(FayFun)> findFunByName(const std::string &name, bool isStatic);
 		pos_t getFunIndex(const std::string &fullname, bool isStatic);
 
 		virtual ValueType valueType() { return ValueType::Void; }
@@ -398,32 +399,23 @@ namespace fay
 		static IndexMap<FayClass> &classes() { return FayDomain::_classes; }
 
 		//初始化系统库
-		static void init();
+		static void InitSysLib();
 		//添加Lib
-		static void addLib(PTR(FayLib) lib);
+		static void AddLib(PTR(FayLib) lib);
 		//添加新的类型
 		//返回类型在Domain里的序号
-		static pos_t addType(PTR(FayClass) t);
-		//查找类型在Domain中的位置
-		static pos_t getClassIndex(PTR(FayClass) t);
+		static pos_t AddClass(PTR(FayClass) t);
 		//根据类型的全称查找类型定义
-		static PTR(FayClass) findClass(const std::string &typeFullname);
+		static PTR(FayClass) FindClass(const std::string &fullname);
 		//static PTR(FayClass) operator[](const std::string &typeFullname) { return FayDomain::findClass(typeFullname); }
-		static PTR(FayClass) findClass(ValueType type);
+		static PTR(FayClass) FindClass(ValueType type);
 		//static PTR(FayClass) operator[](ValueType type) { return FayDomain::findClass(type); }
-		static PTR(FayClass) findClass(pos_t index);
+		static PTR(FayClass) FindClass(pos_t index);
 		//根据引用和类型名，查找类型的定义
-		static std::vector<PTR(FayClass)> findClass(std::vector<std::string> &imports, const std::string &typeName);
+		static std::vector<PTR(FayClass)> FindClass(std::vector<std::string> &imports, const std::string &typeName);
 
 		//使用Class，在VM里用这个方法，会检查是否已经初始化
-		static PTR(FayClass) useClass(pos_t index);
-
-		//下面是用各种方式来查找函数
-		//std::vector<PTR(FayFun)> findFun(const std::string &className, const std::string &funName, const std::vector<PTR(FayType)> &paramsType);
-		//PTR(FayFun) findFun(const std::string &typeFullname, const std::string &funFullname, bool isStatic);
-		//PTR(FayFun) findFun(pos_t typeIndex, pos_t funIndex, bool isStatic);
-		//static bool getFunIndex(const std::string &typeFullname, const std::string &funFullname, bool isStatic, pos_t &typeIndex, pos_t &funIndex);
-		//static bool getFunIndex(PTR(FayFun) fun, pos_t &typeIndex, pos_t &funIndex);
+		static PTR(FayClass) UseClass(pos_t index);
 
 		static void buildString(mirror::utils::StringBuilder* sb);
 	};

@@ -27,6 +27,6 @@ namespace fay
 	public:
 
 		//对外部提供的运行接口，会把堆栈里的值返回
-		static FayValue run(PTR(FayFun) fun);
+		static FayValue Run(PTR(FayFun) fun);
 	};
 }

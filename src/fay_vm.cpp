@@ -94,7 +94,7 @@ void fay::FayVM::_run(PTR(std::stack<FayValue>) stack, PTR(FayInstFun) fun)
 			}
 			case InstType::CallStatic:
 			{
-				PTR(FayClass) clazz = FayDomain::useClass(((inst::CallStatic*)inst)->classIndex);
+				PTR(FayClass) clazz = FayDomain::UseClass(((inst::CallStatic*)inst)->classIndex);
 				PTR(FayFun) fun = clazz->findFun(((inst::CallStatic*)inst)->funIndex, true);
 				FayVM::_run(stack, fun);
 				break;
@@ -1070,7 +1070,7 @@ void fay::FayVM::_run(PTR(std::stack<FayValue>) stack, PTR(FayInstFun) fun)
 			}
 			case InstType::New:
 			{
-				PTR(fay::FayInstance) obj = MKPTR(fay::FayInstance)(FayDomain::findClass(((inst::New*)inst)->classIndex));
+				PTR(fay::FayInstance) obj = MKPTR(fay::FayInstance)(FayDomain::FindClass(((inst::New*)inst)->classIndex));
 				stack->push(FayValue(obj));
 				break;
 			}
@@ -1104,7 +1104,7 @@ void fay::FayVM::_run(PTR(std::stack<FayValue>) stack, PTR(FayFun) fun)
 	}
 }
 
-FayValue fay::FayVM::run(PTR(FayFun) fun)
+FayValue fay::FayVM::Run(PTR(FayFun) fun)
 {
 	FayValue values;
 	PTR(std::stack<FayValue>) stack = MKPTR(std::stack<FayValue>)();

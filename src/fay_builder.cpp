@@ -57,7 +57,7 @@ void fay::FayBuilder::addUsing(const std::string &packageName)
 void fay::FayBuilder::beginLib(const std::string &name)
 {
 	this->_lib = MKPTR(FayLib)(name, 0, 0);
-	FayDomain::addLib(this->_lib);
+	FayDomain::AddLib(this->_lib);
 }
 
 pos_t fay::FayBuilder::addClass(PTR(FayInstClass) clazz)
@@ -68,12 +68,12 @@ pos_t fay::FayBuilder::addClass(PTR(FayInstClass) clazz)
 
 void fay::FayBuilder::bindClass(pos_t index)
 {
-	this->_class = TOPTR(FayInstClass, FayDomain::findClass(index));
+	this->_class = TOPTR(FayInstClass, FayDomain::FindClass(index));
 }
 
 std::vector<PTR(FayClass)> fay::FayBuilder::findClass(const std::string & name)
 {
-	return FayDomain::findClass(this->_usings, name);
+	return FayDomain::FindClass(this->_usings, name);
 }
 
 pos_t fay::FayBuilder::addFun(PTR(FayInstFun) fun)

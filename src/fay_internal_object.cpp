@@ -10,7 +10,7 @@ PTR(FayClass) fay::internal::ObjectClass::initInternalFun()
 {
 	PTR(FayInternalFun) fun;
 	fun = MKPTR(FayInternalFun)( "toString", false, fay::internal::InternalFun::ToString);
-	fun->returnValue(FayDomain::findClass(ValueType::String));
+	fun->returnValue(FayDomain::FindClass(ValueType::String));
 	this->addFun(fun);
 
 	return this->shared_from_this();
@@ -42,31 +42,31 @@ PTR(FayClass) fay::internal::IOClass::initInternalFun()
 	PTR(FayInternalFun) fun;
 	std::vector<PTR(FayParamDef)> params;
 
-	params = { MKPTR(FayParamDef)("value", FayDomain::findClass(ValueType::Bool)) };
+	params = { MKPTR(FayParamDef)("value", FayDomain::FindClass(ValueType::Bool)) };
 	fun = MKPTR(FayInternalFun)("Print", true, params, fay::internal::InternalFun::Print_Bool);
 	this->addFun(fun);
 
-	params = { MKPTR(FayParamDef)("value", FayDomain::findClass(ValueType::Byte)) };
+	params = { MKPTR(FayParamDef)("value", FayDomain::FindClass(ValueType::Byte)) };
 	fun = MKPTR(FayInternalFun)( "Print", true, params, fay::internal::InternalFun::Print_Byte);
 	this->addFun(fun);
 
-	params = { MKPTR(FayParamDef)("value", FayDomain::findClass(ValueType::Int)) };
+	params = { MKPTR(FayParamDef)("value", FayDomain::FindClass(ValueType::Int)) };
 	fun = MKPTR(FayInternalFun)( "Print", true, params, fay::internal::InternalFun::Print_Int);
 	this->addFun(fun);
 
-	params = { MKPTR(FayParamDef)("value", FayDomain::findClass(ValueType::Long)) };
+	params = { MKPTR(FayParamDef)("value", FayDomain::FindClass(ValueType::Long)) };
 	fun = MKPTR(FayInternalFun)( "Print", true, params, fay::internal::InternalFun::Print_Long);
 	this->addFun(fun);
 
-	params = { MKPTR(FayParamDef)("value", FayDomain::findClass(ValueType::Float)) };
+	params = { MKPTR(FayParamDef)("value", FayDomain::FindClass(ValueType::Float)) };
 	fun = MKPTR(FayInternalFun)( "Print", true, params, fay::internal::InternalFun::Print_Float);
 	this->addFun(fun);
 
-	params = { MKPTR(FayParamDef)("value", FayDomain::findClass(ValueType::Double)) };
+	params = { MKPTR(FayParamDef)("value", FayDomain::FindClass(ValueType::Double)) };
 	fun = MKPTR(FayInternalFun)( "Print", true, params, fay::internal::InternalFun::Print_Double);
 	this->addFun(fun);
 
-	params = { MKPTR(FayParamDef)("value", FayDomain::findClass(ValueType::String)) };
+	params = { MKPTR(FayParamDef)("value", FayDomain::FindClass(ValueType::String)) };
 	fun = MKPTR(FayInternalFun)( "Print", true, params, fay::internal::InternalFun::Print_String);
 	this->addFun(fun);
 
@@ -83,7 +83,7 @@ PTR(FayClass) fay::internal::DateClass::initInternalFun()
 {
 	PTR(FayInternalFun) fun;
 	fun = MKPTR(FayInternalFun)( "Now", true, DateClass::Now);
-	fun->returnValue(FayDomain::findClass(ValueType::Long));
+	fun->returnValue(FayDomain::FindClass(ValueType::Long));
 	this->addFun(fun);
 
 	return this->shared_from_this();
