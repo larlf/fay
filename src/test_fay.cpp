@@ -16,7 +16,6 @@ using namespace fay;
 using namespace test;
 
 PTR(FayProject) test::FayLangTest::project;
-PTR(FayVM) test::FayLangTest::vm;
 
 void test::FayLangTest::SetUpTestCase()
 {
@@ -27,7 +26,7 @@ void test::FayLangTest::SetUpTestCase()
 	std::string i18nText = utils::FileUtils::ReadTextFile("../doc/i18n.cn.json");
 	fay::I18N::Init(i18nText);
 
-	FayLang::Domain.init();
+	FayDomain::init();
 
 	//取得所有的代码文件
 	std::string projectPath = "../script/test1";
@@ -38,7 +37,7 @@ void test::FayLangTest::SetUpTestCase()
 	project->parse();
 	project->build();
 
-	vm = MKPTR(FayVM)();
+
 }
 
 TEST_F(FayLangTest, Type)
@@ -46,7 +45,7 @@ TEST_F(FayLangTest, Type)
 	PRINT(project->findSource("TypeTest.fay")->tokensStr());
 	PRINT(project->findSource("TypeTest.fay")->astStr());
 
-	auto type = FayLang::Domain.findClass("fay.dev.test.TypeTest");
+	auto type = FayDomain::findClass("fay.dev.test.TypeTest");
 
 	{
 		auto funs = type->findFunByName("test1");
@@ -55,7 +54,7 @@ TEST_F(FayLangTest, Type)
 		funs[0]->buildString(&sb);
 		PRINT(sb.toString());
 
-		auto rs = vm->run(funs[0]);
+		auto rs = FayVM::run(funs[0]);
 		ASSERT_EQ(rs.type(), ValueType::Int);
 		ASSERT_EQ(rs.intVal(), 11);
 	}
@@ -67,7 +66,7 @@ TEST_F(FayLangTest, Type)
 		funs[0]->buildString(&sb);
 		PRINT(sb.toString());
 
-		auto rs = vm->run(funs[0]);
+		auto rs = FayVM::run(funs[0]);
 		ASSERT_EQ(rs.type(), ValueType::Long);
 		ASSERT_EQ(rs.longVal(), 14);
 	}
@@ -79,7 +78,7 @@ TEST_F(FayLangTest, Type)
 		funs[0]->buildString(&sb);
 		PRINT(sb.toString());
 
-		auto rs = vm->run(funs[0]);
+		auto rs = FayVM::run(funs[0]);
 		ASSERT_EQ(rs.type(), ValueType::Long);
 		ASSERT_EQ(rs.longVal(), 101);
 	}
@@ -91,7 +90,7 @@ TEST_F(FayLangTest, Type)
 		funs[0]->buildString(&sb);
 		PRINT(sb.toString());
 
-		auto rs = vm->run(funs[0]);
+		auto rs = FayVM::run(funs[0]);
 		ASSERT_EQ(rs.type(), ValueType::String);
 		ASSERT_EQ(*rs.strVal(), "23");
 	}
@@ -102,12 +101,12 @@ TEST_F(FayLangTest, Math)
 {
 	PRINT(project->findSource("MathTest.fay")->tokensStr());
 	PRINT(project->findSource("MathTest.fay")->astStr());
-	auto type = FayLang::Domain.findClass("fay.dev.test.MathTest");
+	auto type = FayDomain::findClass("fay.dev.test.MathTest");
 
 	{
 		std::vector<PTR(FayFun)>funs = type->findFunByName("test1");
 		PRINT(funs[0]->toString());
-		auto rs = vm->run(funs[0]);
+		auto rs = FayVM::run(funs[0]);
 		ASSERT_EQ(rs.type(), ValueType::Int);
 		ASSERT_EQ(rs.intVal(), -5);
 	}
@@ -115,7 +114,7 @@ TEST_F(FayLangTest, Math)
 	{
 		std::vector<PTR(FayFun)>funs = type->findFunByName("test2");
 		PRINT(funs[0]->toString());
-		auto rs = vm->run(funs[0]);
+		auto rs = FayVM::run(funs[0]);
 		ASSERT_EQ(rs.type(), ValueType::Int);
 		ASSERT_EQ(rs.intVal(), 6);
 	}
@@ -123,7 +122,7 @@ TEST_F(FayLangTest, Math)
 	{
 		std::vector<PTR(FayFun)>funs = type->findFunByName("test3");
 		PRINT(funs[0]->toString());
-		auto rs = vm->run(funs[0]);
+		auto rs = FayVM::run(funs[0]);
 		ASSERT_EQ(rs.type(), ValueType::Int);
 		ASSERT_EQ(rs.intVal(), 4);
 	}
@@ -131,7 +130,7 @@ TEST_F(FayLangTest, Math)
 	{
 		std::vector<PTR(FayFun)>funs = type->findFunByName("test4");
 		PRINT(funs[0]->toString());
-		auto rs = vm->run(funs[0]);
+		auto rs = FayVM::run(funs[0]);
 		ASSERT_EQ(rs.type(), ValueType::Int);
 		ASSERT_EQ(rs.intVal(), 6);
 	}
@@ -139,7 +138,7 @@ TEST_F(FayLangTest, Math)
 	{
 		std::vector<PTR(FayFun)>funs = type->findFunByName("test5");
 		PRINT(funs[0]->toString());
-		auto rs = vm->run(funs[0]);
+		auto rs = FayVM::run(funs[0]);
 		ASSERT_EQ(rs.type(), ValueType::Int);
 		ASSERT_EQ(rs.intVal(), 5);
 	}
@@ -147,7 +146,7 @@ TEST_F(FayLangTest, Math)
 	{
 		std::vector<PTR(FayFun)>funs = type->findFunByName("test6");
 		PRINT(funs[0]->toString());
-		auto rs = vm->run(funs[0]);
+		auto rs = FayVM::run(funs[0]);
 		ASSERT_EQ(rs.type(), ValueType::Int);
 		ASSERT_EQ(rs.intVal(), 11);
 	}
@@ -155,7 +154,7 @@ TEST_F(FayLangTest, Math)
 	{
 		std::vector<PTR(FayFun)>funs = type->findFunByName("test7");
 		PRINT(funs[0]->toString());
-		auto rs = vm->run(funs[0]);
+		auto rs = FayVM::run(funs[0]);
 		ASSERT_EQ(rs.type(), ValueType::Long);
 		ASSERT_EQ(rs.longVal(), 101);
 	}
@@ -163,7 +162,7 @@ TEST_F(FayLangTest, Math)
 	{
 		std::vector<PTR(FayFun)>funs = type->findFunByName("test8");
 		PRINT(funs[0]->toString());
-		auto rs = vm->run(funs[0]);
+		auto rs = FayVM::run(funs[0]);
 		ASSERT_EQ(rs.type(), ValueType::Double);
 		ASSERT_EQ(rs.doubleVal(), 101);
 	}
@@ -171,7 +170,7 @@ TEST_F(FayLangTest, Math)
 	{
 		std::vector<PTR(FayFun)>funs = type->findFunByName("test9");
 		PRINT(funs[0]->toString());
-		auto rs = vm->run(funs[0]);
+		auto rs = FayVM::run(funs[0]);
 		ASSERT_EQ(rs.type(), ValueType::Bool);
 		ASSERT_EQ(rs.boolVal(), true);
 	}
@@ -179,7 +178,7 @@ TEST_F(FayLangTest, Math)
 	{
 		std::vector<PTR(FayFun)>funs = type->findFunByName("test10");
 		PRINT(funs[0]->toString());
-		auto rs = vm->run(funs[0]);
+		auto rs = FayVM::run(funs[0]);
 		ASSERT_EQ(rs.type(), ValueType::Bool);
 		ASSERT_EQ(rs.boolVal(), false);
 	}
@@ -187,7 +186,7 @@ TEST_F(FayLangTest, Math)
 	{
 		std::vector<PTR(FayFun)>funs = type->findFunByName("test11");
 		PRINT(funs[0]->toString());
-		auto rs = vm->run(funs[0]);
+		auto rs = FayVM::run(funs[0]);
 		ASSERT_EQ(rs.type(), ValueType::Bool);
 		ASSERT_EQ(rs.boolVal(), false);
 	}
@@ -195,14 +194,14 @@ TEST_F(FayLangTest, Math)
 	{
 		std::vector<PTR(FayFun)>funs = type->findFunByName("test12");
 		PRINT(funs[0]->toString());
-		auto rs = vm->run(funs[0]);
+		auto rs = FayVM::run(funs[0]);
 		ASSERT_EQ(rs.type(), ValueType::Byte);
 		ASSERT_EQ(rs.byteVal(), (byte)~15);
 	}
 	{
 		std::vector<PTR(FayFun)>funs = type->findFunByName("test13");
 		PRINT(funs[0]->toString());
-		auto rs = vm->run(funs[0]);
+		auto rs = FayVM::run(funs[0]);
 		ASSERT_EQ(rs.type(), ValueType::Byte);
 		ASSERT_EQ(rs.byteVal(), (byte)~15);
 	}
@@ -210,7 +209,7 @@ TEST_F(FayLangTest, Math)
 	{
 		std::vector<PTR(FayFun)>funs = type->findFunByName("test14");
 		PRINT(funs[0]->toString());
-		auto rs = vm->run(funs[0]);
+		auto rs = FayVM::run(funs[0]);
 		ASSERT_EQ(rs.type(), ValueType::Int);
 		ASSERT_EQ(rs.intVal(), 3);
 	}
@@ -218,7 +217,7 @@ TEST_F(FayLangTest, Math)
 	{
 		std::vector<PTR(FayFun)>funs = type->findFunByName("test15");
 		PRINT(funs[0]->toString());
-		auto rs = vm->run(funs[0]);
+		auto rs = FayVM::run(funs[0]);
 		ASSERT_EQ(rs.type(), ValueType::Int);
 		ASSERT_EQ(rs.intVal(), 5 << 2);
 	}
@@ -226,7 +225,7 @@ TEST_F(FayLangTest, Math)
 	{
 		std::vector<PTR(FayFun)>funs = type->findFunByName("test16");
 		PRINT(funs[0]->toString());
-		auto rs = vm->run(funs[0]);
+		auto rs = FayVM::run(funs[0]);
 		ASSERT_EQ(rs.type(), ValueType::Int);
 		ASSERT_EQ(rs.intVal(), 88990011 >> 3);
 	}
@@ -234,7 +233,7 @@ TEST_F(FayLangTest, Math)
 	{
 		std::vector<PTR(FayFun)>funs = type->findFunByName("test17");
 		PRINT(funs[0]->toString());
-		auto rs = vm->run(funs[0]);
+		auto rs = FayVM::run(funs[0]);
 		ASSERT_EQ(rs.type(), ValueType::Bool);
 		ASSERT_EQ(rs.boolVal(), true);
 	}
@@ -242,7 +241,7 @@ TEST_F(FayLangTest, Math)
 	{
 		std::vector<PTR(FayFun)>funs = type->findFunByName("test18");
 		PRINT(funs[0]->toString());
-		auto rs = vm->run(funs[0]);
+		auto rs = FayVM::run(funs[0]);
 		ASSERT_EQ(rs.type(), ValueType::Bool);
 		ASSERT_EQ(rs.boolVal(), true);
 	}
@@ -250,7 +249,7 @@ TEST_F(FayLangTest, Math)
 	{
 		std::vector<PTR(FayFun)>funs = type->findFunByName("test19");
 		PRINT(funs[0]->toString());
-		auto rs = vm->run(funs[0]);
+		auto rs = FayVM::run(funs[0]);
 		ASSERT_EQ(rs.type(), ValueType::Bool);
 		ASSERT_EQ(rs.boolVal(), true);
 	}
@@ -258,7 +257,7 @@ TEST_F(FayLangTest, Math)
 	{
 		std::vector<PTR(FayFun)>funs = type->findFunByName("test20");
 		PRINT(funs[0]->toString());
-		auto rs = vm->run(funs[0]);
+		auto rs = FayVM::run(funs[0]);
 		ASSERT_EQ(rs.type(), ValueType::Int);
 		ASSERT_EQ(rs.intVal(), 1);
 	}
@@ -266,7 +265,7 @@ TEST_F(FayLangTest, Math)
 	{
 		std::vector<PTR(FayFun)>funs = type->findFunByName("test21");
 		PRINT(funs[0]->toString());
-		auto rs = vm->run(funs[0]);
+		auto rs = FayVM::run(funs[0]);
 		ASSERT_EQ(rs.type(), ValueType::Int);
 		ASSERT_EQ(rs.intVal(), 184);
 	}
@@ -274,7 +273,7 @@ TEST_F(FayLangTest, Math)
 	{
 		std::vector<PTR(FayFun)>funs = type->findFunByName("test22");
 		PRINT(funs[0]->toString());
-		auto rs = vm->run(funs[0]);
+		auto rs = FayVM::run(funs[0]);
 		ASSERT_EQ(rs.type(), ValueType::Int);
 		ASSERT_EQ(rs.intVal(), 107);
 	}
@@ -282,7 +281,7 @@ TEST_F(FayLangTest, Math)
 	{
 		std::vector<PTR(FayFun)>funs = type->findFunByName("test23");
 		PRINT(funs[0]->toString());
-		auto rs = vm->run(funs[0]);
+		auto rs = FayVM::run(funs[0]);
 		ASSERT_EQ(rs.type(), ValueType::Bool);
 		ASSERT_EQ(rs.boolVal(), false);
 	}
@@ -290,7 +289,7 @@ TEST_F(FayLangTest, Math)
 	{
 		std::vector<PTR(FayFun)>funs = type->findFunByName("test24");
 		PRINT(funs[0]->toString());
-		auto rs = vm->run(funs[0]);
+		auto rs = FayVM::run(funs[0]);
 		ASSERT_EQ(rs.type(), ValueType::Long);
 		ASSERT_EQ(rs.longVal(), (7788 & (99999999 | 361)));
 	}
@@ -298,7 +297,7 @@ TEST_F(FayLangTest, Math)
 	{
 		std::vector<PTR(FayFun)>funs = type->findFunByName("test25");
 		PRINT(funs[0]->toString());
-		auto rs = vm->run(funs[0]);
+		auto rs = FayVM::run(funs[0]);
 		ASSERT_EQ(rs.type(), ValueType::Bool);
 		ASSERT_EQ(rs.boolVal(), true);
 	}
@@ -306,7 +305,7 @@ TEST_F(FayLangTest, Math)
 	{
 		std::vector<PTR(FayFun)>funs = type->findFunByName("test26");
 		PRINT(funs[0]->toString());
-		auto rs = vm->run(funs[0]);
+		auto rs = FayVM::run(funs[0]);
 		ASSERT_EQ(rs.type(), ValueType::Bool);
 		ASSERT_EQ(rs.boolVal(), false);
 	}
@@ -314,7 +313,7 @@ TEST_F(FayLangTest, Math)
 	{
 		std::vector<PTR(FayFun)>funs = type->findFunByName("test27");
 		PRINT(funs[0]->toString());
-		auto rs = vm->run(funs[0]);
+		auto rs = FayVM::run(funs[0]);
 		ASSERT_EQ(rs.type(), ValueType::Int);
 		ASSERT_EQ(rs.intVal(), 15);
 	}
@@ -322,7 +321,7 @@ TEST_F(FayLangTest, Math)
 	{
 		std::vector<PTR(FayFun)>funs = type->findFunByName("test28");
 		PRINT(funs[0]->toString());
-		auto rs = vm->run(funs[0]);
+		auto rs = FayVM::run(funs[0]);
 		ASSERT_EQ(rs.type(), ValueType::Int);
 		ASSERT_EQ(rs.intVal(), 1);
 	}
@@ -330,7 +329,7 @@ TEST_F(FayLangTest, Math)
 	{
 		std::vector<PTR(FayFun)>funs = type->findFunByName("test29");
 		PRINT(funs[0]->toString());
-		auto rs = vm->run(funs[0]);
+		auto rs = FayVM::run(funs[0]);
 		ASSERT_EQ(rs.type(), ValueType::Int);
 		ASSERT_EQ(rs.intVal(), 15);
 	}
@@ -340,44 +339,44 @@ TEST_F(FayLangTest, Flow)
 {
 	PRINT(project->findSource("FlowTest.fay")->tokensStr());
 	PRINT(project->findSource("FlowTest.fay")->astStr());
-	auto type = FayLang::Domain.findClass("fay.dev.test.FlowTest");
+	auto type = FayDomain::findClass("fay.dev.test.FlowTest");
 
 	std::vector<PTR(FayFun)> funs;
 	FayValue rs;
 
 	funs = type->findFunByName("test1");
 	PRINT(funs[0]->toString());
-	rs = vm->run(funs[0]);
+	rs = FayVM::run(funs[0]);
 	ASSERT_EQ(rs.type(), ValueType::Int);
 	ASSERT_EQ(rs.intVal(), 5);
 
 	funs = type->findFunByName("test2");
 	PRINT(funs[0]->toString());
-	rs = vm->run(funs[0]);
+	rs = FayVM::run(funs[0]);
 	ASSERT_EQ(rs.type(), ValueType::Int);
 	ASSERT_EQ(rs.intVal(), 7);
 
 	funs = type->findFunByName("test3");
 	PRINT(funs[0]->toString());
-	rs = vm->run(funs[0]);
+	rs = FayVM::run(funs[0]);
 	ASSERT_EQ(rs.type(), ValueType::Int);
 	ASSERT_EQ(rs.intVal(), 55);
 
 	funs = type->findFunByName("test4");
 	PRINT(funs[0]->toString());
-	rs = vm->run(funs[0]);
+	rs = FayVM::run(funs[0]);
 	ASSERT_EQ(rs.type(), ValueType::Int);
 	ASSERT_EQ(rs.intVal(), 6);
 
 	funs = type->findFunByName("test5");
 	PRINT(funs[0]->toString());
-	rs = vm->run(funs[0]);
+	rs = FayVM::run(funs[0]);
 	ASSERT_EQ(rs.type(), ValueType::Int);
 	ASSERT_EQ(rs.intVal(), 16);
 
 	funs = type->findFunByName("test6");
 	PRINT(funs[0]->toString());
-	rs = vm->run(funs[0]);
+	rs = FayVM::run(funs[0]);
 	ASSERT_EQ(rs.type(), ValueType::Int);
 	ASSERT_EQ(rs.intVal(), 16);
 }
@@ -386,45 +385,45 @@ TEST_F(FayLangTest, String)
 {
 	PRINT(project->findSource("StringTest.fay")->tokensStr());
 	PRINT(project->findSource("StringTest.fay")->astStr());
-	auto type = FayLang::Domain.findClass("fay.dev.test.StringTest");
+	auto type = FayDomain::findClass("fay.dev.test.StringTest");
 
 	std::vector<PTR(FayFun)> funs;
 	FayValue rs;
 
 	funs = type->findFunByName("test1");
 	PRINT(funs[0]->toString());
-	rs = vm->run(funs[0]);
+	rs = FayVM::run(funs[0]);
 	ASSERT_EQ(rs.type(), ValueType::String);
 	ASSERT_EQ(utils::StringUtils::Encoding(*rs.strVal(), "UTF-8", "GBK"), "abc我是字符串");
 
 	funs = type->findFunByName("test2");
 	PRINT(funs[0]->toString());
-	rs = vm->run(funs[0]);
+	rs = FayVM::run(funs[0]);
 	ASSERT_EQ(rs.type(), ValueType::String);
 	ASSERT_EQ(*rs.strVal(), "105");
 
 	funs = type->findFunByName("test3");
 	PRINT(funs[0]->toString());
-	rs = vm->run(funs[0]);
+	rs = FayVM::run(funs[0]);
 	ASSERT_EQ(rs.type(), ValueType::String);
 	ASSERT_EQ(*rs.strVal(), "Hello,larlf!");
 
 	funs = type->findFunByName("test4");
 	PRINT(funs[0]->toString());
-	rs = vm->run(funs[0]);
+	rs = FayVM::run(funs[0]);
 	ASSERT_EQ(rs.type(), ValueType::String);
 	ASSERT_EQ(*rs.strVal(), "15");
 
 	funs = type->findFunByName("test5");
 	PRINT(funs[0]->toString());
-	rs = vm->run(funs[0]);
+	rs = FayVM::run(funs[0]);
 }
 
 TEST_F(FayLangTest, OOP)
 {
 	PRINT(project->findSource("OOPTest.fay")->tokensStr());
 	PRINT(project->findSource("OOPTest.fay")->astStr());
-	auto type = FayLang::Domain.findClass("fay.dev.test.OOPTest");
+	auto type = FayDomain::findClass("fay.dev.test.OOPTest");
 
 	std::vector<PTR(FayFun)> funs;
 	FayValue rs;
@@ -440,14 +439,14 @@ TEST_F(FayLangTest, OOP)
 	funs = type->findFunByName("test1");
 	ASSERT_GT(funs.size(), 0);
 	PRINT(funs[0]->toString());
-	rs = vm->run(funs[0]);
+	rs = FayVM::run(funs[0]);
 	ASSERT_EQ(rs.type(), ValueType::Int);
 	ASSERT_EQ(rs.intVal(), 10001);
 
 	funs = type->findFunByName("test2");
 	ASSERT_GT(funs.size(), 0);
 	PRINT(funs[0]->toString());
-	rs = vm->run(funs[0]);
+	rs = FayVM::run(funs[0]);
 	ASSERT_EQ(rs.type(), ValueType::Int);
 	//ASSERT_EQ(rs.intVal(), 10002);
 }

@@ -19,7 +19,6 @@ namespace test
 	{
 	public:
 		static PTR(FayProject) project;
-		static PTR(FayVM) vm;
 
 		static void SetUpTestCase();
 		static fay::FayValue makeValue(const std::string &str);

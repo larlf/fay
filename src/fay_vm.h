@@ -11,20 +11,22 @@ namespace fay
 		FayRuntimeException(const std::string &msg) : std::exception(msg.c_str()) {}
 	};
 
+	class FayThread
+	{
+
+	};
+
 	class FayVM
 	{
 	private:
-		std::stack<FayValue> stack;
 
-		void _run(PTR(FayInstFun) fun);
-		void _run(PTR(FayFun) fun);
+
+		static void _run(PTR(std::stack<FayValue>) stack, PTR(FayInstFun) fun);
+		static void _run(PTR(std::stack<FayValue>) stack, PTR(FayFun) fun);
 
 	public:
-		FayVM() {}
-
-		size_t stackSize() { return this->stack.size(); }
 
 		//对外部提供的运行接口，会把堆栈里的值返回
-		FayValue run(PTR(FayFun) fun);
+		static FayValue run(PTR(FayFun) fun);
 	};
 }

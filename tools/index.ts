@@ -256,7 +256,11 @@ class FayInst
 			}
 		}
 
-		str = str.replace(/\#s/g, "this->stack");
+		str = str.replace(/\#s\./g, "stack->");
+		str = str.replace(/\#s/g, "stack");
+		str = str.replace(/\#domain\./g, "FayDomain::");
+		str = str.replace(/this\-\>/g, "FayVM::");
+		str = str.replace(/this\./g, "FayVM::");
 		str = str.replace(/\#val/g, "FayValue");
 		str = str.replace(/\#new/g, "FayValue");
 		str = str.replace(/\n/g, "\n\t");  //缩进
