@@ -105,9 +105,21 @@ void fay::FayVM::_run(PTR(std::stack<FayValue>) stack, PTR(FayInstFun) fun)
 				stack->pop();
 				break;
 			}
+			case InstType::SetStatic:
+			{
+				FayDomain::UseClass(((inst::SetStatic*)inst)->classIndex)->staticVar(((inst::SetStatic*)inst)->varIndex)=stack->top();
+				stack->pop();
+				break;
+			}
 			case InstType::LoadLocal:
 			{
 				stack->push(localVars[((inst::LoadLocal*)inst)->varIndex]);
+				break;
+			}
+			case InstType::LoadStatic:
+			{
+				FayValue v=FayDomain::UseClass(((inst::LoadStatic*)inst)->classIndex)->staticVar(((inst::LoadStatic*)inst)->varIndex);
+				stack->push(v);
 				break;
 			}
 			case InstType::CopyLocal:
@@ -1068,9 +1080,15 @@ void fay::FayVM::_run(PTR(std::stack<FayValue>) stack, PTR(FayInstFun) fun)
 				stack->top().val()->longVal >>= v;
 				break;
 			}
-			case InstType::New:
+			case InstType::NewObject:
 			{
-				PTR(fay::FayInstance) obj = MKPTR(fay::FayInstance)(FayDomain::FindClass(((inst::New*)inst)->classIndex));
+				PTR(fay::FayInstance) obj = MKPTR(fay::FayInstance)(FayDomain::UseClass(((inst::NewObject*)inst)->classIndex));
+				stack->push(FayValue(obj));
+				break;
+			}
+			case InstType::NullObject:
+			{
+				PTR(fay::FayInstance) obj;
 				stack->push(FayValue(obj));
 				break;
 			}

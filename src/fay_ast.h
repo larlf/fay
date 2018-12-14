@@ -379,8 +379,8 @@ namespace fay
 	{
 		using AstNode::AstNode;
 	private:
+		pos_t varIndex = -1;
 		WPTR(FayFun) _fun;
-
 	public:
 		virtual void dig3(FayBuilder* builder) override;
 		virtual void dig4(FayBuilder* builder) override;

@@ -106,16 +106,16 @@ void fay::inst::PopTo::buildString(mirror::utils::StringBuilder * sb)
 void fay::inst::CallStatic::buildString(mirror::utils::StringBuilder * sb)
 {
 	sb->add("CallStatic")
-		->add(" ")->add(this->funRefIndex)
-		->add(" ")->add(this->paramCount)
+		->add(" ")->add(this->className)
+		->add(" ")->add(this->funName)
 		->endl();
 }
 
 void fay::inst::CallVirtual::buildString(mirror::utils::StringBuilder * sb)
 {
 	sb->add("CallVirtual")
-		->add(" ")->add(this->funRefIndex)
-		->add(" ")->add(this->paramCount)
+		->add(" ")->add(this->className)
+		->add(" ")->add(this->funName)
 		->endl();
 }
 
@@ -136,7 +136,8 @@ void fay::inst::SetField::buildString(mirror::utils::StringBuilder * sb)
 void fay::inst::SetStatic::buildString(mirror::utils::StringBuilder * sb)
 {
 	sb->add("SetStatic")
-		->add(" ")->add(this->varRefIndex)
+		->add(" ")->add(this->className)
+		->add(" ")->add(this->varName)
 		->endl();
 }
 
@@ -157,7 +158,8 @@ void fay::inst::LoadField::buildString(mirror::utils::StringBuilder * sb)
 void fay::inst::LoadStatic::buildString(mirror::utils::StringBuilder * sb)
 {
 	sb->add("LoadStatic")
-		->add(" ")->add(this->varRefIndex)
+		->add(" ")->add(this->className)
+		->add(" ")->add(this->varName)
 		->endl();
 }
 
@@ -1943,9 +1945,16 @@ void fay::inst::RShiftFunction::buildString(mirror::utils::StringBuilder * sb)
 		->endl();
 }
 
-void fay::inst::New::buildString(mirror::utils::StringBuilder * sb)
+void fay::inst::NewObject::buildString(mirror::utils::StringBuilder * sb)
 {
-	sb->add("New")
+	sb->add("NewObject")
+		->add(" ")->add(this->className)
+		->endl();
+}
+
+void fay::inst::NullObject::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("NullObject")
 		->add(" ")->add(this->className)
 		->endl();
 }

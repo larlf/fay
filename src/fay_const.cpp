@@ -393,7 +393,8 @@ void fay::TypeDict::Init()
 	TypeDict::InstTypeName[InstType::RShiftString] = "RShiftString";
 	TypeDict::InstTypeName[InstType::RShiftObject] = "RShiftObject";
 	TypeDict::InstTypeName[InstType::RShiftFunction] = "RShiftFunction";
-	TypeDict::InstTypeName[InstType::New] = "New";
+	TypeDict::InstTypeName[InstType::NewObject] = "NewObject";
+	TypeDict::InstTypeName[InstType::NullObject] = "NullObject";
 	//InstTypeNameEnd
 }
 

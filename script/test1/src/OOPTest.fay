@@ -9,6 +9,8 @@ public class OOPTest
 
 	static public fun test1():int
 	{
+		var v=TestClassA.fun1();
+		IO.Print(v);
 		return TestClassA.fun1();
 	}
 
@@ -16,6 +18,12 @@ public class OOPTest
 	{
 		var a:TestClassA=new TestClassA();
 		return OOPTest.value1;
+	}
+
+	static public fun test3():int
+	{
+		var obj=new TestClassA();
+		return obj.fun2();
 	}
 }
 

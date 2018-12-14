@@ -345,19 +345,39 @@ void fay::AstCall::dig3(FayBuilder* builder)
 
 	if(className.size() > 0)
 	{
-		auto classes = FayDomain::FindClass(builder->usings(), className);
-		if(classes.size() < 1)
-			throw BuildException(this->shared_from_this(), "err.no_class", className);
-		else if(classes.size() > 1)
-			throw BuildException(this->shared_from_this(), "err.too_many_class", className);
+		PTR(FayFun) fun;
+		auto varDef=builder->fun()->findVar(className);
+		if (varDef)
+		{
+			this->varIndex = varDef->indexValue();
 
-		auto funs = classes[0]->matchFun(funName, paramsType, true);
-		if(funs.size() < 1)
-			throw BuildException(this->shared_from_this(), "err.no_fun", className, funName);
-		else if(funs.size() > 1)
-			throw BuildException(this->shared_from_this(), "err.too_many_fun", className, funName);
+			auto clazz = varDef->classType();
+			if(!clazz)
+				throw BuildException(this->shared_from_this(), "err.unknow_type", className);
 
-		PTR(FayFun) fun = funs[0];
+			auto funs = clazz->findFun(funName, paramsType, false);
+			if(funs.size()<1)
+				throw BuildException(this->shared_from_this(), "err.no_fun", className, funName);
+
+			fun = funs[0];
+		}
+		else
+		{
+			auto classes = FayDomain::FindClass(builder->usings(), className);
+			if (classes.size() < 1)
+				throw BuildException(this->shared_from_this(), "err.no_class", className);
+			else if (classes.size() > 1)
+				throw BuildException(this->shared_from_this(), "err.too_many_class", className);
+
+			auto funs = classes[0]->findFun(funName, paramsType, true);
+			if (funs.size() < 1)
+				throw BuildException(this->shared_from_this(), "err.no_fun", className, funName);
+			else if (funs.size() > 1)
+				throw BuildException(this->shared_from_this(), "err.too_many_fun", className, funName);
+
+			fun = funs[0];
+		}
+
 		this->_fun = fun;
 
 		//以第一个参数的返回值为准
@@ -378,10 +398,13 @@ void fay::AstCall::dig4(FayBuilder* builder)
 	if(!fun)
 		throw BuildException(this->shared_from_this(), "err.unknow_fun", this->_text);
 
-	pos_t index = builder->lib()->registerStaticFun(fun);
-	if(fun->isStatic())
-		builder->addInst(new inst::CallStatic(index, fun->paramsCount()));
-	//TODO : 处理非静态方法
+	if (fun->isStatic())
+		builder->addInst(new inst::CallStatic(fun->clazz()->fullname(), fun->fullname()));
+	else
+	{
+		builder->addInst(new inst::LoadLocal(this->varIndex));
+		builder->addInst(new inst::CallVirtual(fun->clazz()->fullname(), fun->fullname()));
+	}
 }
 
 //PTR(FayClass) fay::AstCall::classType(FayBuilder * builder)
@@ -466,7 +489,7 @@ void fay::AstVarItem::dig4(FayBuilder* builder)
 		//添加默认值
 		if(this->_nodes[1] == nullptr)
 		{
-			FayInst* inst = FayLangUtils::PushDefault(this->_nodes[0]->valueType());
+			FayInst* inst = FayLangUtils::PushDefault(this->_nodes[0]->classType());
 			if(inst == nullptr)
 				throw BuildException(this->shared_from_this(), "err.no_default_value", this->_nodes[0]->classType()->fullname());
 			builder->addInst(inst);
@@ -606,9 +629,8 @@ void fay::AstID::dig4(FayBuilder* builder)
 			case VarType::Static:
 			{
 				PTR(FayClass) clazz = FayDomain::FindClass(this->_classIndex);
-				PTR(FayVarDef) var = clazz->findStaticVar(this->_varIndex);
-				pos_t refIndex = builder->lib()->registerStaticVar(clazz, var);
-				builder->addInst(new inst::LoadStatic(refIndex));
+				PTR(FayStaticVarDef) var = clazz->findStaticVar(this->_varIndex);
+				builder->addInst(new inst::LoadStatic(clazz->fullname(), var->name()));
 				break;
 			}
 			case VarType::Local:
@@ -1361,7 +1383,7 @@ void fay::AstNew::dig4(FayBuilder* builder)
 {
 	AstNode::dig4(builder);
 
-	inst::New* inst = new inst::New(this->_classType.lock()->fullname());
+	inst::NewObject* inst = new inst::NewObject(this->_classType.lock()->fullname());
 	builder->addInst(inst);
 }
 
@@ -1393,8 +1415,7 @@ void fay::AstField::dig4(FayBuilder* builder)
 	if(this->isStatic())
 	{
 		auto def = builder->clazz()->findStaticVar(this->varIndex);
-		pos_t refIndex = builder->lib()->registerStaticVar(builder->clazz(), def);
-		builder->addInst(new inst::SetStatic(refIndex));
+		builder->addInst(new inst::SetStatic(builder->clazz()->fullname(), this->_text));
 	}
 	else
 		builder->addInst(new inst::SetField(this->varIndex));

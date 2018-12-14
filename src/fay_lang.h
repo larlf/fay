@@ -34,7 +34,7 @@ namespace fay
 		//生成用于数据转换的代码
 		static FayInst* ConvertInst(ValueType src, ValueType dest);
 		//生成压入默认值的代码
-		static FayInst* PushDefault(ValueType type);
+		static FayInst* PushDefault(PTR(FayClass) type);
 		//生成压入数字的代码
 		static FayInst* PushNumber(ValueType type, int32_t value);
 		//根据类型转换为对应的数字
@@ -116,7 +116,7 @@ namespace fay
 		WPTR(FayClass) _parent;  //父类
 		FunTable _sft;  //静态函数表
 		FunTable _vft;  //虚函数表
-		IndexMap<FayVarDef> _staticVarDefs;  //静态变量表
+		IndexMap<FayStaticVarDef> _staticVarDefs;  //静态变量表
 		IndexMap<FayVarDef> _fieldDefs;  //变量表
 		bool _isInited = false;  //是否已经初始化过
 
@@ -145,21 +145,21 @@ namespace fay
 
 		//静态变量
 		pos_t addStaticVar(const std::string &name, PTR(FayClass) classType);
-		PTR(FayVarDef) findStaticVar(const std::string &name);
-		PTR(FayVarDef) findStaticVar(pos_t index);
+		PTR(FayStaticVarDef) findStaticVar(const std::string &name);
+		PTR(FayStaticVarDef) findStaticVar(pos_t index);
+		FayValue &staticVar(pos_t index);
 
 		//字段变量
 		pos_t addFieldDef(const std::string &name, PTR(FayClass) type);
 
 		//添加函数
 		pos_t addFun(PTR(FayFun) fun);
+
 		//匹配符合要求的函数
-		std::vector<PTR(FayFun)> matchFun(const std::string &funName, const std::vector<PTR(FayClass)> &paramsType, bool isStatic);
-		//根据Index取得函数
+		std::vector<PTR(FayFun)> findFun(const std::string &funName, const std::vector<PTR(FayClass)> &paramsType, bool isStatic);
 		PTR(FayFun) findFun(pos_t index, bool isStatic);
 		PTR(FayFun) findFun(const std::string &fullname, bool isStatic);
 		std::vector<PTR(FayFun)> findFunByName(const std::string &name, bool isStatic);
-		pos_t getFunIndex(const std::string &fullname, bool isStatic);
 
 		virtual ValueType valueType() { return ValueType::Void; }
 		virtual void buildString(mirror::utils::StringBuilder* sb) override;
@@ -239,6 +239,7 @@ namespace fay
 		std::vector<PTR(FayParamDef)> _params;  //参数定义
 		WPTR(FayClass) _returnValue;  //返回值的类型，支持多返回值
 		PTR(FayLabelTable) _labels = MKPTR(FayLabelTable)();  //标签表，以后可以判断下，运行期不用创建此对象
+		pos_t _indexValue = -1;
 
 	public:
 		FayFun(const std::string &name, FunType type, bool isStatic, FunAccessType accessType, std::vector<PTR(FayParamDef)> &params);
@@ -257,11 +258,14 @@ namespace fay
 		inline const PTR(FayClass) returnValue() { return this->_returnValue.lock(); }
 		void returnValue(PTR(FayClass) type);
 		inline const PTR(FayLabelTable) labels() { return this->_labels; }
+		inline pos_t indexValue() { return this->_indexValue; }
 
 		//检查参数是否匹配
 		bool match(const std::vector<PTR(FayClass)> &paramsType);
 
 		virtual void buildString(mirror::utils::StringBuilder* sb) override;
+
+		friend class FunTable;
 	};
 
 	//指令函数
@@ -329,7 +333,7 @@ namespace fay
 		std::string _fullname;
 
 	public:
-		StaticVarRef(const std::string &fullname, PTR(FayClass) clazz, PTR(FayVarDef) var);
+		StaticVarRef(const std::string &fullname, PTR(FayClass) clazz, PTR(FayStaticVarDef) var);
 		pos_t classIndex() { return this->_classIndex; }
 		pos_t varIndex() { return this->_varIndex; }
 		virtual const std::string &indexKey() override { return this->_fullname; }
@@ -362,11 +366,6 @@ namespace fay
 		int _marjor = 0;
 		int _minjor = 0;
 
-		//外部函数的列表
-		//这个表的主要用处，是把本Lib中的函数调用转换成索引值
-		IndexMap<StaticFunRef> _staticFuns;
-		IndexMap<StaticVarRef> _staticVars;
-
 	public:
 		std::string name;
 		std::vector<PTR(FayClass)> classes;
@@ -376,13 +375,6 @@ namespace fay
 		~FayLib() {}
 
 		pos_t addClass(PTR(FayClass) clazz);
-
-		//返回调用方法在外部函数表中的索引
-		pos_t registerStaticFun(PTR(FayFun) fun);
-		PTR(StaticFunRef) findStaticFunRef(pos_t index) { return this->_staticFuns.find(index); }
-
-		pos_t registerStaticVar(PTR(FayClass) clazz, PTR(FayVarDef) var);
-		PTR(StaticVarRef) findStaticVarRef(pos_t index) { return this->_staticVars.find(index); }
 
 		virtual void buildString(mirror::utils::StringBuilder* sb) override;
 	};
