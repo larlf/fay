@@ -12,11 +12,11 @@ namespace fay
 	template<class T> class IndexMap;
 
 	//所有对象的基类
-	class FayObject
+	class BaseObject
 	{
 	public:
-		FayObject() {}
-		virtual ~FayObject() {}
+		BaseObject() {}
+		virtual ~BaseObject() {}
 
 		//生成字符串的方法
 		std::string toString();
@@ -24,7 +24,7 @@ namespace fay
 	};
 
 	//文件对象
-	class FayFile : public FayObject
+	class FayFile : public BaseObject
 	{
 	private:
 		std::string _filename;

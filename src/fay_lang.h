@@ -47,7 +47,7 @@ namespace fay
 	////////////////////////////////////////////////////////////////
 
 	//函数表
-	class FunTable : public FayObject
+	class FunTable : public BaseObject
 	{
 	private:
 		std::vector<PTR(FayFun)> _funs;  //所有的函数列表
@@ -72,7 +72,7 @@ namespace fay
 	};
 
 	//变量
-	class FayVar : public FayObject
+	class FayVar : public BaseObject
 	{
 	protected:
 		std::string _name;  //名称
@@ -106,7 +106,7 @@ namespace fay
 	};
 
 	//数据类型
-	class FayClass : public FayObject, public std::enable_shared_from_this<FayClass>, public IndexMapItem<FayClass>
+	class FayClass : public BaseObject, public std::enable_shared_from_this<FayClass>, public IndexMapItem<FayClass>
 	{
 	protected:
 		std::string _package;
@@ -181,7 +181,7 @@ namespace fay
 	//////////////////////////////////////////////////////////////////
 
 	//函数的参数定义
-	class FayParamDef : public FayObject, public std::enable_shared_from_this<FayParamDef>
+	class FayParamDef : public BaseObject, public std::enable_shared_from_this<FayParamDef>
 	{
 	private:
 		std::string _name;  //参数名
@@ -213,7 +213,7 @@ namespace fay
 	};
 
 	//标签表
-	class FayLabelTable : public FayObject
+	class FayLabelTable : public BaseObject
 	{
 	private:
 		MAP<std::string, PTR(FayLabel)> _labels;
@@ -227,7 +227,7 @@ namespace fay
 
 	//函数
 	//包括函数、内部函数、匿名函数等
-	class FayFun : public FayObject, public std::enable_shared_from_this<FayFun>
+	class FayFun : public BaseObject, public std::enable_shared_from_this<FayFun>
 	{
 	protected:
 		FunType _type;  //函数的类型
@@ -323,7 +323,7 @@ namespace fay
 	//////////////////////////////////////////////////////////////////////
 
 	//对静态变量的引用
-	class StaticVarRef : public FayObject, public IndexMapItem<StaticVarRef>
+	class StaticVarRef : public BaseObject, public IndexMapItem<StaticVarRef>
 	{
 	private:
 		std::string _className;
@@ -342,7 +342,7 @@ namespace fay
 	//外部函数信息
 	//在lib的内部，会创建所有的调用方法的快速索引
 	//这个索引在call的时候，用于对方法进行快速的定位
-	class StaticFunRef : public FayObject, public IndexMapItem<StaticFunRef>
+	class StaticFunRef : public BaseObject, public IndexMapItem<StaticFunRef>
 	{
 	private:
 		std::string _fullname;
@@ -360,7 +360,7 @@ namespace fay
 	};
 
 	//库
-	class FayLib : public FayObject, public std::enable_shared_from_this<FayLib>
+	class FayLib : public BaseObject, public std::enable_shared_from_this<FayLib>
 	{
 	private:
 		int _marjor = 0;
@@ -415,16 +415,17 @@ namespace fay
 	/////////////////////////////////////////////////
 
 	//类型的实例
-	class FayInstance : public FayObject, public std::enable_shared_from_this<FayInstance>
+	class FayObject : public BaseObject, public std::enable_shared_from_this<FayObject>
 	{
 	private:
 		PTR(FayClass) _class;  //所属的类型
 		std::list<FayValue> _fields;  //字段
 
 	public:
-		FayInstance(PTR(FayClass) clazz) : _class(clazz), _fields(5) {}
+		FayObject(PTR(FayClass) clazz) : _class(clazz), _fields(5) {}
 
 		PTR(FayClass) clazz() { return this->_class; }
+		void init();
 	};
 
 	/////////////////////////////////////////////////

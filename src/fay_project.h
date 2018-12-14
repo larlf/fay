@@ -6,7 +6,7 @@
 namespace fay
 {
 	//源代码
-	class FaySource : FayObject
+	class FaySource : BaseObject
 	{
 	private:
 		PTR(FayFile) _file;
@@ -30,7 +30,7 @@ namespace fay
 	};
 
 	//项目
-	class FayProject : FayObject
+	class FayProject : BaseObject
 	{
 	private:
 		std::string _name;

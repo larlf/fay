@@ -25,6 +25,11 @@ public class OOPTest
 		var obj=new TestClassA();
 		return obj.fun2();
 	}
+
+	static public fun test4():int
+	{
+		return TestClassA.add(5, 6);
+	}
 }
 
 public class TestClassA
@@ -37,6 +42,12 @@ public class TestClassA
 	public fun fun2():int
 	{
 		return 10002;
+	}
+
+	static public fun add(a:int, b:int):int
+	{
+		return a+b;
+		//return 1;
 	}
 }
 

@@ -6,7 +6,7 @@
 namespace fay
 {
 	//指令
-	class FayInst : public fay::FayObject
+	class FayInst : public fay::BaseObject
 	{
 	private:
 		InstType _class;

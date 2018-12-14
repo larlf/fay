@@ -75,7 +75,7 @@ const std::string fay::FayFile::line(int index)
 	return line;
 }
 
-std::string fay::FayObject::toString()
+std::string fay::BaseObject::toString()
 {
 	utils::StringBuilder sb;
 	this->buildString(&sb);

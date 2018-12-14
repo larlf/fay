@@ -173,6 +173,28 @@ void fay::FayInstFun::prepareInsts()
 				cmd->funIndex = fun->indexValue();
 				break;
 			}
+			case InstType::CallVirtual:
+			{
+				//取出调用方法的索引值
+				inst::CallVirtual* cmd = static_cast<inst::CallVirtual*>(inst);
+				auto clazz = FayDomain::FindClass(cmd->className);
+				if (!clazz)
+				{
+					LOG_ERROR("Cannot find class : " << cmd->className);
+					break;
+				}
+
+				auto fun = clazz->findFun(cmd->funName, false);
+				if (!fun)
+				{
+					LOG_ERROR("Cannot find static fun : " << cmd->className << "." << cmd->funName);
+					break;
+				}
+
+				cmd->classIndex = clazz->indexValue();
+				cmd->funIndex = fun->indexValue();
+				break;
+			}
 			case InstType::SetStatic:
 			{
 				inst::SetStatic* cmd = static_cast<inst::SetStatic*>(inst);
@@ -1347,6 +1369,14 @@ fay::StaticVarRef::StaticVarRef(const std::string &fullname, PTR(FayClass) clazz
 
 
 fay::FayStaticVarDef::FayStaticVarDef(const std::string &name, PTR(FayClass) clazz)
-	: FayVar(name, clazz), value(MKPTR(FayInstance)(clazz))
+	: FayVar(name, clazz), value(MKPTR(FayObject)(clazz))
 {
+}
+
+void fay::FayObject::init()
+{
+	//调用构造方法
+	auto funs=this->_class->findFunByName(".create", false);
+	for (auto fun : funs)
+		FayVM::Run(fun, FayValue(this->shared_from_this()));
 }

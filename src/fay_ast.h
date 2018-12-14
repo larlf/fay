@@ -39,7 +39,7 @@ namespace fay
 		}
 	};
 
-	class AstNode : public FayObject, public std::enable_shared_from_this<AstNode>
+	class AstNode : public BaseObject, public std::enable_shared_from_this<AstNode>
 	{
 	protected:
 		std::string _text;

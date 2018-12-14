@@ -7,6 +7,14 @@ using namespace fay::internal;
 
 void fay::FayVM::_run(PTR(std::stack<FayValue>) stack, PTR(FayInstFun) fun)
 {
+	//处理this
+	FayValue self;
+	if(!fun->isStatic())
+	{
+		self = stack->top();
+		stack->pop();
+	}
+
 	std::vector<FayValue> localVars(fun->varsSize());
 	std::vector<FayInst*>* insts = fun->getPreparedInsts();
 	FayInst* inst;
@@ -96,6 +104,13 @@ void fay::FayVM::_run(PTR(std::stack<FayValue>) stack, PTR(FayInstFun) fun)
 			{
 				PTR(FayClass) clazz = FayDomain::UseClass(((inst::CallStatic*)inst)->classIndex);
 				PTR(FayFun) fun = clazz->findFun(((inst::CallStatic*)inst)->funIndex, true);
+				FayVM::_run(stack, fun);
+				break;
+			}
+			case InstType::CallVirtual:
+			{
+				PTR(FayClass) clazz = FayDomain::UseClass(((inst::CallVirtual*)inst)->classIndex);
+				PTR(FayFun) fun = clazz->findFun(((inst::CallVirtual*)inst)->funIndex, false);
 				FayVM::_run(stack, fun);
 				break;
 			}
@@ -1082,13 +1097,14 @@ void fay::FayVM::_run(PTR(std::stack<FayValue>) stack, PTR(FayInstFun) fun)
 			}
 			case InstType::NewObject:
 			{
-				PTR(fay::FayInstance) obj = MKPTR(fay::FayInstance)(FayDomain::UseClass(((inst::NewObject*)inst)->classIndex));
+				PTR(fay::FayObject) obj = MKPTR(fay::FayObject)(FayDomain::UseClass(((inst::NewObject*)inst)->classIndex));
+				obj->init();
 				stack->push(FayValue(obj));
 				break;
 			}
 			case InstType::NullObject:
 			{
-				PTR(fay::FayInstance) obj;
+				PTR(fay::FayObject) obj;
 				stack->push(FayValue(obj));
 				break;
 			}
@@ -1122,7 +1138,7 @@ void fay::FayVM::_run(PTR(std::stack<FayValue>) stack, PTR(FayFun) fun)
 	}
 }
 
-FayValue fay::FayVM::Run(PTR(FayFun) fun)
+FayValue fay::FayVM::Run(PTR(FayFun) fun, FayValue &self, std::vector<FayValue> &params)
 {
 	FayValue values;
 	PTR(std::stack<FayValue>) stack = MKPTR(std::stack<FayValue>)();
@@ -1132,6 +1148,12 @@ FayValue fay::FayVM::Run(PTR(FayFun) fun)
 		LOG_ERROR("Fun is null");
 		return values;
 	}
+
+	if (self.type() != ValueType::Void)
+		stack->push(self);
+
+	for (auto it : params)
+		stack->push(it);
 
 	FayVM::_run(stack, fun);
 

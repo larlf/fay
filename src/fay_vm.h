@@ -19,14 +19,13 @@ namespace fay
 	class FayVM
 	{
 	private:
-
-
 		static void _run(PTR(std::stack<FayValue>) stack, PTR(FayInstFun) fun);
 		static void _run(PTR(std::stack<FayValue>) stack, PTR(FayFun) fun);
 
 	public:
-
 		//对外部提供的运行接口，会把堆栈里的值返回
-		static FayValue Run(PTR(FayFun) fun);
+		static FayValue Run(PTR(FayFun) fun, FayValue &self, std::vector<FayValue> &params);
+		static FayValue Run(PTR(FayFun) fun) { return FayVM::Run(fun, FayValue(), std::vector<FayValue>()); }
+		static FayValue Run(PTR(FayFun) fun, FayValue &self) { return FayVM::Run(fun, self, std::vector<FayValue>()); }
 	};
 }
