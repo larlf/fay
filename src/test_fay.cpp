@@ -456,6 +456,13 @@ TEST_F(FayLangTest, OOP)
 	rs = FayVM::Run(funs[0]);
 	ASSERT_EQ(rs.type(), ValueType::Int);
 	ASSERT_EQ(rs.intVal(), 10002);
+
+	funs = type->findFunByName("test4", true);
+	ASSERT_GT(funs.size(), 0);
+	PRINT(funs[0]->toString());
+	rs = FayVM::Run(funs[0]);
+	ASSERT_EQ(rs.type(), ValueType::Int);
+	ASSERT_EQ(rs.intVal(), 11);
 }
 
 TEST_F(FayLangTest, FayValue)

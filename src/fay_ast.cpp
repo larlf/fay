@@ -183,6 +183,15 @@ void fay::AstFun::dig2(FayBuilder* builder)
 	//创建这个函数定义
 	PTR(FayInstFun) fun = MKPTR(FayInstFun)(this->_text, this->isStatic, _accessType, builder->params);
 
+	//添加初始化的变量
+	if (!this->isStatic)
+		fun->addVar("this", builder->clazz());
+
+	for (auto param : builder->params)
+	{
+		fun->addVar(param->name(), param->type());
+	}
+
 	//处理参数
 	if(this->_nodes[1])
 	{
@@ -283,11 +292,11 @@ PTR(FayClass) fay::AstParamDefine::getType(FayBuilder* builder)
 
 void fay::AstParamDefine::dig2(FayBuilder* builder)
 {
-	PTR(FayClass) t = FayDomain::FindClass(this->_nodes[0]->text());
-	if(!t)
+	this->_classType = FayDomain::FindClass(this->_nodes[0]->text());
+	if(this->_classType.expired())
 		throw BuildException(this->shared_from_this(), "err.unknow_type", this->_nodes[0]->text());
 
-	PTR(FayParamDef) def = MKPTR(FayParamDef)(this->text(), t);
+	PTR(FayParamDef) def = MKPTR(FayParamDef)(this->text(), this->_classType.lock());
 	builder->params.push_back(def);
 
 	AstNode::dig2(builder);

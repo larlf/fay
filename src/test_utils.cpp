@@ -50,5 +50,11 @@ TEST(Utils, Files)
 	}
 }
 
+TEST(Utils, Tuple)
+{
+	std::tuple<std::string, int, int> v = std::make_tuple("abc", 5, 6);
+	LOG_DEBUG(std::get<0>(v));
+}
+
 
 
