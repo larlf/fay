@@ -7,15 +7,15 @@ using namespace fay::internal;
 
 void fay::FayVM::_run(PTR(std::stack<FayValue>) stack, PTR(FayInstFun) fun)
 {
-	//处理this
-	FayValue self;
-	if(!fun->isStatic())
+	std::vector<FayValue> localVars(fun->varsSize()+1);
+	size_t paramCount = fun->isStatic() ? 0 : 1;
+	paramCount += fun->paramsCount();
+	for (size_t i=0; i<paramCount; ++i)
 	{
-		self = stack->top();
+		localVars[paramCount-i-1] = stack->top();
 		stack->pop();
 	}
 
-	std::vector<FayValue> localVars(fun->varsSize());
 	std::vector<FayInst*>* insts = fun->getPreparedInsts();
 	FayInst* inst;
 

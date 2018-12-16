@@ -401,17 +401,19 @@ void fay::AstCall::dig3(FayBuilder* builder)
 
 void fay::AstCall::dig4(FayBuilder* builder)
 {
-	AstNode::dig4(builder);
-
 	PTR(FayFun) fun = this->_fun.lock();
 	if(!fun)
 		throw BuildException(this->shared_from_this(), "err.unknow_fun", this->_text);
 
 	if (fun->isStatic())
+	{
+		AstNode::dig4(builder);
 		builder->addInst(new inst::CallStatic(fun->clazz()->fullname(), fun->fullname()));
+	}
 	else
 	{
 		builder->addInst(new inst::LoadLocal(this->varIndex));
+		AstNode::dig4(builder);
 		builder->addInst(new inst::CallVirtual(fun->clazz()->fullname(), fun->fullname()));
 	}
 }
