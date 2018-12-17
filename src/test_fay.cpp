@@ -10,15 +10,20 @@
 #include <fay_project.h>
 #include <stack>
 #include <gtest/gtest.h>
+#include <filesystem>
 
 using namespace mirror;
 using namespace fay;
 using namespace test;
+namespace fs = std::experimental::filesystem;
 
 PTR(FayProject) test::FayLangTest::project;
 
 void test::FayLangTest::SetUpTestCase()
 {
+	LOG_DEBUG("Path : " << fs::current_path());
+	LOG_DEBUG("Path : " << fs::temp_directory_path());
+
 	//初始化字典数据
 	fay::TypeDict::Init();
 
@@ -36,8 +41,6 @@ void test::FayLangTest::SetUpTestCase()
 	project->addFiles(files);
 	project->parse();
 	project->build();
-
-
 }
 
 TEST_F(FayLangTest, Type)
