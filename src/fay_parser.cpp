@@ -113,6 +113,17 @@ PTR(AstNode) fay::Parser::_Class(TokenStack* stack)
 	PTR(AstClass) node = MKPTR(AstClass)(stack->now(), descWords);
 	stack->next();
 
+	//处理父类
+	if (stack->now()->is(":"))
+	{
+		stack->next();
+
+		if (!stack->now()->is(TokenType::ID))
+			throw ParseException(stack, "err.bad_class_name");
+		node->superClassText = stack->now()->text();
+		stack->next();
+	}
+
 	//开始的括号
 	if(!stack->now()->is("{"))
 		throw ParseException(stack, "cannot find start brace for class");

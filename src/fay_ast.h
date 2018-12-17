@@ -161,6 +161,9 @@ namespace fay
 		std::vector<std::string> _descWords;
 		pos_t classIndex = -1;  //用于记录在domain中的位置
 	public:
+		std::string superClassText;
+		std::vector<std::string> interfaceText;
+
 		AstClass(const PTR(fay::Token) &token, std::vector<std::string> &descWords)
 			: AstNode(token), _descWords(descWords) {}
 
