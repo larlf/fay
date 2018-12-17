@@ -15,7 +15,7 @@ namespace test
 		fay::FayValueUnion val;
 	};
 
-	class FayLangTest : public testing::Test
+	class TestFay : public testing::Test
 	{
 	public:
 		static PTR(FayProject) project;

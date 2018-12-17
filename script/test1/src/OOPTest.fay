@@ -63,3 +63,12 @@ public class TestClassA
 	}
 }
 
+public class BaseA
+{
+
+}
+
+public class SubA : BaseA
+{
+
+}

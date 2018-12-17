@@ -17,9 +17,9 @@ using namespace fay;
 using namespace test;
 namespace fs = std::experimental::filesystem;
 
-PTR(FayProject) test::FayLangTest::project;
+PTR(FayProject) test::TestFay::project;
 
-void test::FayLangTest::SetUpTestCase()
+void test::TestFay::SetUpTestCase()
 {
 	LOG_DEBUG("Path : " << fs::current_path());
 	LOG_DEBUG("Path : " << fs::temp_directory_path());
@@ -43,7 +43,7 @@ void test::FayLangTest::SetUpTestCase()
 	project->build();
 }
 
-TEST_F(FayLangTest, Type)
+TEST_F(TestFay, Type)
 {
 	PRINT(project->findSource("TypeTest.fay")->tokensStr());
 	PRINT(project->findSource("TypeTest.fay")->astStr());
@@ -100,7 +100,7 @@ TEST_F(FayLangTest, Type)
 }
 
 //数据计算相关的测试
-TEST_F(FayLangTest, Math)
+TEST_F(TestFay, Math)
 {
 	PRINT(project->findSource("MathTest.fay")->tokensStr());
 	PRINT(project->findSource("MathTest.fay")->astStr());
@@ -338,7 +338,7 @@ TEST_F(FayLangTest, Math)
 	}
 }
 
-TEST_F(FayLangTest, Flow)
+TEST_F(TestFay, Flow)
 {
 	PRINT(project->findSource("FlowTest.fay")->tokensStr());
 	PRINT(project->findSource("FlowTest.fay")->astStr());
@@ -384,7 +384,7 @@ TEST_F(FayLangTest, Flow)
 	ASSERT_EQ(rs.intVal(), 16);
 }
 
-TEST_F(FayLangTest, String)
+TEST_F(TestFay, String)
 {
 	PRINT(project->findSource("StringTest.fay")->tokensStr());
 	PRINT(project->findSource("StringTest.fay")->astStr());
@@ -422,7 +422,7 @@ TEST_F(FayLangTest, String)
 	rs = FayVM::Run(funs[0]);
 }
 
-TEST_F(FayLangTest, OOP)
+TEST_F(TestFay, OOP)
 {
 	PRINT(project->findSource("OOPTest.fay")->tokensStr());
 	PRINT(project->findSource("OOPTest.fay")->astStr());
@@ -475,7 +475,7 @@ TEST_F(FayLangTest, OOP)
 	ASSERT_EQ(rs.intVal(), 24);
 }
 
-TEST_F(FayLangTest, FayValue)
+TEST_F(TestFay, FayValue)
 {
 	std::string str = "one";
 	FayValue v4;
@@ -485,7 +485,7 @@ TEST_F(FayLangTest, FayValue)
 		FayValue v1(str);
 		FayValue v2("two");
 
-		FayValue v3 = FayLangTest::makeValue(*v1.strVal());
+		FayValue v3 = TestFay::makeValue(*v1.strVal());
 		v4 = v3;
 		v3 = v2;
 		v5 = FayValue(v3);
@@ -513,17 +513,17 @@ TEST_F(FayLangTest, FayValue)
 	ASSERT_EQ(*v5.strVal(), "two");
 }
 
-FayValue test::FayLangTest::makeValue(const std::string &str)
+FayValue test::TestFay::makeValue(const std::string &str)
 {
 	FayValue v = FayValue(str.c_str());
 	return v;
 }
 
-TEST_F(FayLangTest, RTTI)
+TEST_F(TestFay, RTTI)
 {
 	PTR(AstNode) ast1 = MKPTR(AstFor)(nullptr);
 	ASSERT_EQ(ast1->is<AstFor>(), true);
 	ASSERT_EQ(ast1->is<AstNode>(), true);
-	ASSERT_EQ(ast1->is<test::FayLangTest>(), false);
+	ASSERT_EQ(ast1->is<test::TestFay>(), false);
 }
 

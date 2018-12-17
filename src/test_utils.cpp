@@ -4,22 +4,23 @@
 #include <vector>
 #include <filesystem>
 #include <regex>
+#include <mirror_sys_const.h>
 
 using namespace mirror;
 namespace fs = std::experimental::filesystem;
 
-void test::Utils::findFiles(std::vector<std::string> &list, const fs::path &path)
+void test::TestUtils::findFiles(std::vector<std::string> &list, const fs::path &path)
 {
 	for(auto &fe : fs::directory_iterator(path))
 	{
 		if(fs::is_directory(fe.path()))
-			test::Utils::findFiles(list, fe.path());
+			test::TestUtils::findFiles(list, fe.path());
 		else
 			list.push_back(fe.path().string());
 	}
 }
 
-TEST(Utils, Log)
+TEST(TestUtils, Log)
 {
 	std::string str = mirror::utils::TimeUtils::MSTimeString();
 	std::cout << str << std::endl;
@@ -31,30 +32,63 @@ TEST(Utils, Log)
 	LOG_ERROR("This is error");
 }
 
-TEST(Utils, Trace)
+TEST(TestUtils, Trace)
 {
 	LOG_INFO("Test Trace");
 	std::string stackMsg = mirror::log::SysTrace::TraceInfo();
 	LOG_DEBUG(stackMsg);
 }
 
-TEST(Utils, Files)
+TEST(TestUtils, Files)
 {
 	fs::path path("../project1");
 	std::vector<std::string> list;
-	test::Utils::findFiles(list, path);
+	test::TestUtils::findFiles(list, path);
 
-	for (auto &it : list)
-	{
+	for(auto &it : list)
 		LOG_DEBUG(it);
-	}
 }
 
-TEST(Utils, Tuple)
+TEST(TestUtils, Tuple)
 {
 	std::tuple<std::string, int, int> v = std::make_tuple("abc", 5, 6);
 	LOG_DEBUG(std::get<0>(v));
 }
 
+
+TEST(TestUtils, Hash)
+{
+	std::vector<std::string> v1
+	{
+		"oneoneoneoneoneoneoneoneoneoneoneoneone",
+		"twotwotwotwotwotwotwotwotwotwotwotwotwotwotwo",
+		"threethreethreethreethreethreethreethreethreethreethreethreethreethree",
+		"fourfourfourfourfourfourfourfourfourfour",
+		"fivefivefivefivefivefivefivefivefivefive",
+		"sixsixsixsixsixsixsixsixsixsixsix"
+	};
+
+	MAP<std::string, std::vector<int>> v2;
+	for (std::string str : v1)
+		v2[str] = std::vector<int>{};
+
+	std::vector<int> r1;
+	auto t1 = utils::TimeUtils::MSTime();
+
+	for(auto i = 0; i < 10000; ++i)
+	{
+		//for(std::string str : v1)
+		//{
+		//	if(str == "sixsixsixsixsixsixsixsixsixsixsix")
+		//		break;
+		//}
+
+		r1 = v2["sixsixsixsixsixsixsixsixsixsixsix1"];
+	}
+
+	auto t2 = utils::TimeUtils::MSTime();
+	LOG_DEBUG(r1.size());
+	LOG_DEBUG("Time : " << (t2 - t1));
+}
 
 
