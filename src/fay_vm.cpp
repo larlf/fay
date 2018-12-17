@@ -7,7 +7,8 @@ using namespace fay::internal;
 
 void fay::FayVM::_run(PTR(std::stack<FayValue>) stack, PTR(FayInstFun) fun)
 {
-	std::vector<FayValue> localVars(fun->varsSize()+1);
+	LOG_DEBUG("Fun : " << fun->name() << ", " << fun->varsSize());
+	std::vector<FayValue> localVars(fun->varsSize());
 	size_t paramCount = fun->isStatic() ? 0 : 1;
 	paramCount += fun->paramsCount();
 	for (size_t i=0; i<paramCount; ++i)
@@ -120,6 +121,15 @@ void fay::FayVM::_run(PTR(std::stack<FayValue>) stack, PTR(FayInstFun) fun)
 				stack->pop();
 				break;
 			}
+			case InstType::SetField:
+			{
+				FayValue obj=stack->top();
+				stack->pop();
+				FayValue val=stack->top();
+				stack->pop();
+				obj.objVal<FayObject>()->vars()[((inst::SetField*)inst)->fieldIndex]=val;
+				break;
+			}
 			case InstType::SetStatic:
 			{
 				FayDomain::UseClass(((inst::SetStatic*)inst)->classIndex)->staticVar(((inst::SetStatic*)inst)->varIndex)=stack->top();
@@ -129,6 +139,13 @@ void fay::FayVM::_run(PTR(std::stack<FayValue>) stack, PTR(FayInstFun) fun)
 			case InstType::LoadLocal:
 			{
 				stack->push(localVars[((inst::LoadLocal*)inst)->varIndex]);
+				break;
+			}
+			case InstType::LoadField:
+			{
+				FayValue obj=stack->top();
+				stack->pop();
+				stack->push(obj.objVal<FayObject>()->vars()[((inst::LoadField*)inst)->varIndex]);
 				break;
 			}
 			case InstType::LoadStatic:

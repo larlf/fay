@@ -106,10 +106,9 @@ namespace fay
 		inline float floatVal() { return (this->_type == ValueType::Float) ? this->_val.floatVal : 0; }
 		inline double doubleVal() { return (this->_type == ValueType::Double) ? this->_val.doubleVal : 0; }
 		inline const std::string* strVal() { return (this->_type == ValueType::String) ? this->_val.strVal : nullptr; }
-		inline const void* objectVal() { return (this->_type == ValueType::Object) ? this->_val.ptrValue : nullptr; }
 		inline const void* funVal() { return (this->_type == ValueType::Function) ? this->_val.ptrValue : nullptr; }
-		template<class T> inline T* ptrValue() { return (T*)this->_val.ptrValue; }
-		template<class T> inline PTR(T) objValue()
+		template<class T> inline T* ptrVal() { return (T*)this->_val.ptrValue; }
+		template<class T> inline PTR(T) objVal()
 		{
 			if (this->_type == ValueType::Object && this->_val.ptrValue != nullptr)
 				return *(PTR(T)*)this->_val.ptrValue;

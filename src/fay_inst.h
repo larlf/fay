@@ -203,8 +203,8 @@ namespace fay
 		class LoadField : public fay::FayInst 
 		{ 
 		public:
-			int32_t fieldIndex;
-			LoadField(int32_t fieldIndex) : FayInst(InstType::LoadField),fieldIndex(fieldIndex) {}
+			int32_t varIndex;
+			LoadField(int32_t varIndex) : FayInst(InstType::LoadField),varIndex(varIndex) {}
 			virtual void buildString(mirror::utils::StringBuilder* sb) override;
 		};
 		

@@ -24,7 +24,7 @@ void fay::FayClass::initClass()
 		this->_isInited = true;
 
 		//执行初始化方法
-		auto funs = this->findFunByName(".init", true);
+		auto funs = this->findFunByName(FUN_STATIC_INIT, true);
 		for(auto fun : funs)
 			FayVM::Run(fun);
 	}
@@ -65,10 +65,20 @@ FayValue &fay::FayClass::staticVar(pos_t index)
 	return this->_staticVarDefs[index]->value;
 }
 
-pos_t fay::FayClass::addFieldDef(const std::string &name, PTR(FayClass) type)
+pos_t fay::FayClass::addVar(const std::string &name, PTR(FayClass) type)
 {
 	PTR(FayVarDef) field = MKPTR(FayVarDef)(name, type);
-	return this->_fieldDefs.add(field);
+	return this->_varDefs.add(field);
+}
+
+PTR(FayVarDef) fay::FayClass::findVar(const std::string & name)
+{
+	return this->_varDefs.find(name);
+}
+
+PTR(FayVarDef) fay::FayClass::findVar(pos_t index)
+{
+	return this->_varDefs[index];
 }
 
 std::vector<PTR(FayFun)> fay::FayClass::findFun(const std::string &funName, const std::vector<PTR(FayClass)> &paramsType, bool isStatic)
@@ -156,14 +166,14 @@ void fay::FayInstFun::prepareInsts()
 				//取出调用方法的索引值
 				inst::CallStatic* cmd = static_cast<inst::CallStatic*>(inst);
 				auto clazz = FayDomain::FindClass(cmd->className);
-				if (!clazz)
+				if(!clazz)
 				{
 					LOG_ERROR("Cannot find class : " << cmd->className);
 					break;
 				}
 
-				auto fun=clazz->findFun(cmd->funName, true);
-				if (!fun)
+				auto fun = clazz->findFun(cmd->funName, true);
+				if(!fun)
 				{
 					LOG_ERROR("Cannot find static fun : " << cmd->className << "." << cmd->funName);
 					break;
@@ -178,14 +188,14 @@ void fay::FayInstFun::prepareInsts()
 				//取出调用方法的索引值
 				inst::CallVirtual* cmd = static_cast<inst::CallVirtual*>(inst);
 				auto clazz = FayDomain::FindClass(cmd->className);
-				if (!clazz)
+				if(!clazz)
 				{
 					LOG_ERROR("Cannot find class : " << cmd->className);
 					break;
 				}
 
 				auto fun = clazz->findFun(cmd->funName, false);
-				if (!fun)
+				if(!fun)
 				{
 					LOG_ERROR("Cannot find static fun : " << cmd->className << "." << cmd->funName);
 					break;
@@ -306,18 +316,30 @@ void fay::FayInstFun::buildString(mirror::utils::StringBuilder* sb)
 
 	sb->increaseIndent();
 
+	sb->add("[Vars] ")->endl();
+	sb->increaseIndent();
+	for(auto i = 0; i < this->_vars.list().size(); ++i)
+	{
+		auto it = this->_vars.list()[i];
+		sb->add(i)->add("> ")->add(it->name())->add(":")->add(it->classType()->fullname())->endl();
+	}
+	sb->decreaseIndent();
+
 	for each(auto it in this->_params)
 		it->buildString(sb);
 
+	sb->add("[Inst] ")->endl();
+	sb->increaseIndent();
 	for(auto i = 0; i < this->_insts.size(); ++i)
 	{
 		auto it = this->_insts[i];
-		sb->add(i)->add(" : ");
+		sb->add(i)->add("> ");
 		if(it)
 			it->buildString(sb);
 		else
 			sb->add("<nullptr>");
 	}
+	sb->decreaseIndent();
 
 	sb->decreaseIndent();
 }
@@ -1376,7 +1398,7 @@ fay::FayStaticVarDef::FayStaticVarDef(const std::string &name, PTR(FayClass) cla
 void fay::FayObject::init()
 {
 	//调用构造方法
-	auto funs=this->_class->findFunByName(".create", false);
-	for (auto fun : funs)
+	auto funs = this->_class->findFunByName(FUN_CREATE, false);
+	for(auto fun : funs)
 		FayVM::Run(fun, FayValue(this->shared_from_this()));
 }

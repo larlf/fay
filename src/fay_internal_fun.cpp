@@ -144,7 +144,7 @@ void fay::internal::InternalFun::ToString(PTR(std::stack<FayValue>) stack)
 	switch(stack->top().type())
 	{
 		case fay::ValueType::Void:
-			str = "void<" + std::to_string((int64_t)stack->top().ptrValue<void>()) + ">";
+			str = "void<" + std::to_string((int64_t)stack->top().ptrVal<void>()) + ">";
 			break;
 		case fay::ValueType::Bool:
 			str = std::to_string(stack->top().boolVal());
@@ -168,10 +168,10 @@ void fay::internal::InternalFun::ToString(PTR(std::stack<FayValue>) stack)
 			str = *stack->top().strVal();
 			break;
 		case fay::ValueType::Object:
-			str = "object<" + std::to_string((int64_t)stack->top().ptrValue<void>()) + ">";
+			str = "object<" + std::to_string((int64_t)stack->top().ptrVal<void>()) + ">";
 			break;
 		case fay::ValueType::Function:
-			str = "fun<" + std::to_string((int64_t)stack->top().ptrValue<void>()) + ">";
+			str = "fun<" + std::to_string((int64_t)stack->top().ptrVal<void>()) + ">";
 			break;
 		default:
 			break;

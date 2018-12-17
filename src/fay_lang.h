@@ -117,7 +117,7 @@ namespace fay
 		FunTable _sft;  //静态函数表
 		FunTable _vft;  //虚函数表
 		IndexMap<FayStaticVarDef> _staticVarDefs;  //静态变量表
-		IndexMap<FayVarDef> _fieldDefs;  //变量表
+		IndexMap<FayVarDef> _varDefs;  //变量表
 		bool _isInited = false;  //是否已经初始化过
 
 	public:
@@ -150,7 +150,10 @@ namespace fay
 		FayValue &staticVar(pos_t index);
 
 		//字段变量
-		pos_t addFieldDef(const std::string &name, PTR(FayClass) type);
+		pos_t addVar(const std::string &name, PTR(FayClass) type);
+		PTR(FayVarDef) findVar(const std::string &name);
+		PTR(FayVarDef) findVar(pos_t index);
+		size_t varCount() { return this->_varDefs.size(); }
 
 		//添加函数
 		pos_t addFun(PTR(FayFun) fun);
@@ -419,13 +422,15 @@ namespace fay
 	{
 	private:
 		PTR(FayClass) _class;  //所属的类型
-		std::list<FayValue> _fields;  //字段
+		std::vector<FayValue> _vars;  //字段
 
 	public:
-		FayObject(PTR(FayClass) clazz) : _class(clazz), _fields(5) {}
+		FayObject(PTR(FayClass) clazz) : _class(clazz), _vars(clazz->varCount()) {}
 
 		PTR(FayClass) clazz() { return this->_class; }
 		void init();
+
+		std::vector<FayValue> &vars() { return this->_vars; }
 	};
 
 	/////////////////////////////////////////////////

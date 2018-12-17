@@ -428,11 +428,11 @@ TEST_F(FayLangTest, OOP)
 	std::vector<PTR(FayFun)> funs;
 	FayValue rs;
 
-	funs = type->findFunByName(".init", true);
+	funs = type->findFunByName(FUN_STATIC_INIT, true);
 	ASSERT_GT(funs.size(), 0);
 	PRINT(funs[0]->toString());
 
-	funs = type->findFunByName(".create", false);
+	funs = type->findFunByName(FUN_CREATE, false);
 	ASSERT_GT(funs.size(), 0);
 	PRINT(funs[0]->toString());
 
@@ -463,6 +463,13 @@ TEST_F(FayLangTest, OOP)
 	rs = FayVM::Run(funs[0]);
 	ASSERT_EQ(rs.type(), ValueType::Int);
 	ASSERT_EQ(rs.intVal(), 11);
+
+	funs = type->findFunByName("test5", true);
+	ASSERT_GT(funs.size(), 0);
+	PRINT(funs[0]->toString());
+	rs = FayVM::Run(funs[0]);
+	ASSERT_EQ(rs.type(), ValueType::Int);
+	ASSERT_EQ(rs.intVal(), 24);
 }
 
 TEST_F(FayLangTest, FayValue)

@@ -151,7 +151,7 @@ void fay::inst::LoadLocal::buildString(mirror::utils::StringBuilder * sb)
 void fay::inst::LoadField::buildString(mirror::utils::StringBuilder * sb)
 {
 	sb->add("LoadField")
-		->add(" ")->add(this->fieldIndex)
+		->add(" ")->add(this->varIndex)
 		->endl();
 }
 

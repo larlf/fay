@@ -134,7 +134,7 @@ void fay::AstClass::dig4(FayBuilder* builder)
 	builder->bindClass(this->classIndex);
 
 	//生成初始化方法
-	PTR(FayInstFun) fun = MKPTR(FayInstFun)(".init", true, FunAccessType::Private);
+	PTR(FayInstFun) fun = MKPTR(FayInstFun)(FUN_STATIC_INIT, true, FunAccessType::Private);
 	builder->addFun(fun);
 
 	//先处理静态字段
@@ -146,7 +146,8 @@ void fay::AstClass::dig4(FayBuilder* builder)
 	builder->optimizeInsts();
 
 	//生成默认构造方法
-	fun = MKPTR(FayInstFun)(".create", false, FunAccessType::Private);
+	fun = MKPTR(FayInstFun)(FUN_CREATE, false, FunAccessType::Private);
+	fun->addVar("this", builder->clazz());
 	builder->addFun(fun);
 
 	//处理非静态字段
@@ -184,13 +185,12 @@ void fay::AstFun::dig2(FayBuilder* builder)
 	PTR(FayInstFun) fun = MKPTR(FayInstFun)(this->_text, this->isStatic, _accessType, builder->params);
 
 	//添加初始化的变量
-	if (!this->isStatic)
+	if(!this->isStatic)
 		fun->addVar("this", builder->clazz());
 
-	for (auto param : builder->params)
-	{
+	//添加参数变量
+	for(auto param : builder->params)
 		fun->addVar(param->name(), param->type());
-	}
 
 	//处理参数
 	if(this->_nodes[1])
@@ -355,8 +355,8 @@ void fay::AstCall::dig3(FayBuilder* builder)
 	if(className.size() > 0)
 	{
 		PTR(FayFun) fun;
-		auto varDef=builder->fun()->findVar(className);
-		if (varDef)
+		auto varDef = builder->fun()->findVar(className);
+		if(varDef)
 		{
 			this->varIndex = varDef->indexValue();
 
@@ -365,7 +365,7 @@ void fay::AstCall::dig3(FayBuilder* builder)
 				throw BuildException(this->shared_from_this(), "err.unknow_type", className);
 
 			auto funs = clazz->findFun(funName, paramsType, false);
-			if(funs.size()<1)
+			if(funs.size() < 1)
 				throw BuildException(this->shared_from_this(), "err.no_fun", className, funName);
 
 			fun = funs[0];
@@ -373,15 +373,15 @@ void fay::AstCall::dig3(FayBuilder* builder)
 		else
 		{
 			auto classes = FayDomain::FindClass(builder->usings(), className);
-			if (classes.size() < 1)
+			if(classes.size() < 1)
 				throw BuildException(this->shared_from_this(), "err.no_class", className);
-			else if (classes.size() > 1)
+			else if(classes.size() > 1)
 				throw BuildException(this->shared_from_this(), "err.too_many_class", className);
 
 			auto funs = classes[0]->findFun(funName, paramsType, true);
-			if (funs.size() < 1)
+			if(funs.size() < 1)
 				throw BuildException(this->shared_from_this(), "err.no_fun", className, funName);
-			else if (funs.size() > 1)
+			else if(funs.size() > 1)
 				throw BuildException(this->shared_from_this(), "err.too_many_fun", className, funName);
 
 			fun = funs[0];
@@ -405,7 +405,7 @@ void fay::AstCall::dig4(FayBuilder* builder)
 	if(!fun)
 		throw BuildException(this->shared_from_this(), "err.unknow_fun", this->_text);
 
-	if (fun->isStatic())
+	if(fun->isStatic())
 	{
 		AstNode::dig4(builder);
 		builder->addInst(new inst::CallStatic(fun->clazz()->fullname(), fun->fullname()));
@@ -611,30 +611,48 @@ void fay::AstID::dig3(FayBuilder* builder)
 		std::string className = this->_text.substr(0, pos);
 		std::string varName = this->_text.substr(pos + 1);
 
-		auto classes = FayDomain::FindClass(builder->usings(), className);
-		if(classes.size() < 1)
-			throw BuildException(this->shared_from_this(), "err.cannot_find_class", className);
-		if(classes.size() > 1)
-			throw BuildException(this->shared_from_this(), "err.mutil_class", className);
+		auto localVar = builder->fun()->findVar(className);
+		if (localVar)
+		{
+			auto varDef=localVar->classType()->findVar(varName);
+			if (!varDef)
+				throw new BuildException(this->shared_from_this(), "err.unknow_var", className, varName);
 
-		auto var = classes[0]->findStaticVar(varName);
-		if(var == nullptr)
-			throw BuildException(this->shared_from_this(), "err.unknow_static_var", className, varName);
+			this->_type = VarType::Field;
+			this->_classIndex = localVar->indexValue();
+			this->_varIndex = varDef->indexValue();
+			this->_classType = varDef->classType();
+		}
+		else
+		{
+			auto classes = FayDomain::FindClass(builder->usings(), className);
+			if (classes.size() < 1)
+				throw BuildException(this->shared_from_this(), "err.cannot_find_class", className);
+			if (classes.size() > 1)
+				throw BuildException(this->shared_from_this(), "err.mutil_class", className);
 
-		this->_type = VarType::Static;
-		this->_classIndex = classes[0]->indexValue();
-		this->_varIndex = var->indexValue();
-		this->_classType = var->classType();
+			auto var = classes[0]->findStaticVar(varName);
+			if (var == nullptr)
+				throw BuildException(this->shared_from_this(), "err.unknow_static_var", className, varName);
+
+			this->_type = VarType::Static;
+			this->_classIndex = classes[0]->indexValue();
+			this->_varIndex = var->indexValue();
+			this->_classType = var->classType();
+		}
 	}
 }
 
 void fay::AstID::dig4(FayBuilder* builder)
 {
 	//不同模式下的操作不一样
-	if(builder->exprMode == BuildExprMode::LeftValue)
+	if (builder->exprMode == BuildExprMode::LeftValue)
+	{
 		builder->addInst(new inst::CopyLocal(this->_varIndex));
+	}
 	else
 	{
+
 		switch(this->_type)
 		{
 			case VarType::Static:
@@ -642,6 +660,12 @@ void fay::AstID::dig4(FayBuilder* builder)
 				PTR(FayClass) clazz = FayDomain::FindClass(this->_classIndex);
 				PTR(FayStaticVarDef) var = clazz->findStaticVar(this->_varIndex);
 				builder->addInst(new inst::LoadStatic(clazz->fullname(), var->name()));
+				break;
+			}
+			case VarType::Field:
+			{
+				builder->addInst(new inst::LoadLocal(this->_classIndex));
+				builder->addInst(new inst::LoadField(this->_varIndex));
 				break;
 			}
 			case VarType::Local:
@@ -1412,7 +1436,7 @@ void fay::AstField::dig2(FayBuilder* builder)
 	if(this->isStatic())
 		this->varIndex = builder->clazz()->addStaticVar(this->_text, type);
 	else
-		this->varIndex = builder->clazz()->addFieldDef(this->_text, type);
+		this->varIndex = builder->clazz()->addVar(this->_text, type);
 
 }
 
@@ -1429,6 +1453,9 @@ void fay::AstField::dig4(FayBuilder* builder)
 		builder->addInst(new inst::SetStatic(builder->clazz()->fullname(), this->_text));
 	}
 	else
+	{
+		builder->addInst(new inst::LoadLocal(0));
 		builder->addInst(new inst::SetField(this->varIndex));
+	}
 }
 

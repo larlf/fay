@@ -73,7 +73,7 @@ fay::Lexer::Lexer()
 	//特别的方法名
 	this->_rules.push_back((ITokenRule*)new WordsTokenRule(LexMode::Program, TokenType::SystemName,
 	{
-		".create", ".destory", ".main"
+		FUN_CREATE, FUN_DESTORY, ".main"
 	}));
 
 	//数字
