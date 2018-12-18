@@ -65,10 +65,26 @@ public class TestClassA
 
 public class BaseA
 {
+	public fun fun2():int
+	{
+		return 1002;
+	}
 
+	public fun fun1():int
+	{
+		return 1001;
+	}
 }
 
 public class SubA : BaseA
 {
+	public fun fun1():int
+	{
+		return 2001;
+	}
 
+	public fun fun2():int
+	{
+		return 2002;
+	}
 }

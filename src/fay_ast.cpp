@@ -120,6 +120,28 @@ void fay::AstClass::dig1(FayBuilder* builder)
 void fay::AstClass::dig2(FayBuilder* builder)
 {
 	builder->bindClass(this->classIndex);
+
+	//处理父类
+	if(this->superClassText.size() > 0)
+	{
+		auto types = FayDomain::FindClass(builder->usings(), this->superClassText);
+		if(types.size() < 1)
+			throw BuildException(this->shared_from_this(), "err.no_class", this->superClassText);
+		if(types.size() > 1)
+			throw BuildException(this->shared_from_this(), "err.mutil_class", this->superClassText);
+		builder->clazz()->superClass(types[0]);
+	}
+
+	//添加特殊函数
+	PTR(FayInstFun) fun = MKPTR(FayInstFun)(FUN_STATIC_INIT, true, FunAccessType::Private, nullptr);
+	this->initFunIndex = builder->addFun(fun);
+	fun = MKPTR(FayInstFun)(FUN_CREATE, false, FunAccessType::Private, nullptr);
+	fun->addVar("this", builder->clazz());
+	this->createFunIndex = builder->addFun(fun);
+	//fun = MKPTR(FayInstFun)(FUN_DESTORY, false, FunAccessType::Private, nullptr);
+	//fun->addVar("this", builder->clazz());
+	this->destoryFunIndex = builder->addFun(fun);
+
 	AstNode::dig2(builder);
 }
 
@@ -133,29 +155,18 @@ void fay::AstClass::dig4(FayBuilder* builder)
 {
 	builder->bindClass(this->classIndex);
 
-	//生成初始化方法
-	PTR(FayInstFun) fun = MKPTR(FayInstFun)(FUN_STATIC_INIT, true, FunAccessType::Private);
-	builder->addFun(fun);
-
 	//先处理静态字段
+	builder->bindFun(this->initFunIndex, true);
 	for each(auto it in this->_nodes)
 		if(it && it->is<AstField>() && TOPTR(AstField, it)->isStatic())
 			it->dig4(builder);
-
-	//生成用于初始化静态内容的代码
 	builder->optimizeInsts();
 
-	//生成默认构造方法
-	fun = MKPTR(FayInstFun)(FUN_CREATE, false, FunAccessType::Private);
-	fun->addVar("this", builder->clazz());
-	builder->addFun(fun);
-
 	//处理非静态字段
+	builder->bindFun(this->createFunIndex, false);
 	for each(auto it in this->_nodes)
 		if(it && it->is<AstField>() && !TOPTR(AstField, it)->isStatic())
 			it->dig4(builder);
-
-	//生成用于初始化非静态内容的代码
 	builder->optimizeInsts();
 
 	//再处理其它的内容
@@ -181,8 +192,14 @@ void fay::AstFun::dig2(FayBuilder* builder)
 			_accessType = FunAccessType::Protected;
 	}
 
+	//返回值
+	if(this->_nodes[1])
+		this->_classType = this->_nodes[1]->classType();
+	else
+		this->_classType.reset();
+
 	//创建这个函数定义
-	PTR(FayInstFun) fun = MKPTR(FayInstFun)(this->_text, this->isStatic, _accessType, builder->params);
+	PTR(FayInstFun) fun = MKPTR(FayInstFun)(this->_text, this->isStatic, _accessType, builder->params, this->_classType.lock());
 
 	//添加初始化的变量
 	if(!this->isStatic)
@@ -191,13 +208,6 @@ void fay::AstFun::dig2(FayBuilder* builder)
 	//添加参数变量
 	for(auto param : builder->params)
 		fun->addVar(param->name(), param->type());
-
-	//处理参数
-	if(this->_nodes[1])
-	{
-		this->_classType = this->_nodes[1]->classType();
-		fun->returnValue(this->_nodes[1]->classType());
-	}
 
 	this->_index = builder->addFun(fun);
 }
@@ -612,10 +622,10 @@ void fay::AstID::dig3(FayBuilder* builder)
 		std::string varName = this->_text.substr(pos + 1);
 
 		auto localVar = builder->fun()->findVar(className);
-		if (localVar)
+		if(localVar)
 		{
-			auto varDef=localVar->classType()->findVar(varName);
-			if (!varDef)
+			auto varDef = localVar->classType()->findVar(varName);
+			if(!varDef)
 				throw new BuildException(this->shared_from_this(), "err.unknow_var", className, varName);
 
 			this->_type = VarType::Field;
@@ -626,13 +636,13 @@ void fay::AstID::dig3(FayBuilder* builder)
 		else
 		{
 			auto classes = FayDomain::FindClass(builder->usings(), className);
-			if (classes.size() < 1)
+			if(classes.size() < 1)
 				throw BuildException(this->shared_from_this(), "err.cannot_find_class", className);
-			if (classes.size() > 1)
+			if(classes.size() > 1)
 				throw BuildException(this->shared_from_this(), "err.mutil_class", className);
 
 			auto var = classes[0]->findStaticVar(varName);
-			if (var == nullptr)
+			if(var == nullptr)
 				throw BuildException(this->shared_from_this(), "err.unknow_static_var", className, varName);
 
 			this->_type = VarType::Static;
@@ -646,10 +656,8 @@ void fay::AstID::dig3(FayBuilder* builder)
 void fay::AstID::dig4(FayBuilder* builder)
 {
 	//不同模式下的操作不一样
-	if (builder->exprMode == BuildExprMode::LeftValue)
-	{
+	if(builder->exprMode == BuildExprMode::LeftValue)
 		builder->addInst(new inst::CopyLocal(this->_varIndex));
-	}
 	else
 	{
 

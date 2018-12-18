@@ -68,6 +68,11 @@ TEST(TestUtils, Hash)
 		"sixsixsixsixsixsixsixsixsixsixsix"
 	};
 
+	std::vector<void*> v3
+	{
+		"abc","abc","abc","abc","abc",
+	};
+
 	MAP<std::string, std::vector<int>> v2;
 	for (std::string str : v1)
 		v2[str] = std::vector<int>{};
@@ -75,15 +80,15 @@ TEST(TestUtils, Hash)
 	std::vector<int> r1;
 	auto t1 = utils::TimeUtils::MSTime();
 
-	for(auto i = 0; i < 10000; ++i)
+	for(auto i = 0; i < 100000; ++i)
 	{
-		//for(std::string str : v1)
-		//{
-		//	if(str == "sixsixsixsixsixsixsixsixsixsixsix")
-		//		break;
-		//}
+		for(void* str : v3)
+		{
+			if(str == this)
+				break;
+		}
 
-		r1 = v2["sixsixsixsixsixsixsixsixsixsixsix1"];
+		//r1 = v2["sixsixsixsixsixsixsixsixsixsixsix1"];
 	}
 
 	auto t2 = utils::TimeUtils::MSTime();

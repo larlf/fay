@@ -1,4 +1,5 @@
 ﻿#include "fay_lang.h"
+#include "fay_lang.h"
 #include <fay_lang.h>
 #include <mirror_utils_log.h>
 #include <mirror_utils_file.h>
@@ -37,7 +38,7 @@ bool fay::FayClass::match(PTR(FayClass) type)
 	if(type && type.get() == this)
 		return true;
 
-	PTR(FayClass) parent = this->_parent.lock();
+	PTR(FayClass) parent = this->_superClass.lock();
 	if(parent && parent->match(type))
 		return true;
 
@@ -71,7 +72,7 @@ pos_t fay::FayClass::addVar(const std::string &name, PTR(FayClass) type)
 	return this->_varDefs.add(field);
 }
 
-PTR(FayVarDef) fay::FayClass::findVar(const std::string & name)
+PTR(FayVarDef) fay::FayClass::findVar(const std::string &name)
 {
 	return this->_varDefs.find(name);
 }
@@ -117,19 +118,23 @@ std::vector<PTR(FayFun)> fay::FayClass::findFunByName(const std::string &name, b
 
 void fay::FayClass::buildString(mirror::utils::StringBuilder* sb)
 {
-	sb->add(this->fullname());
-	sb->increaseIndent();
+	sb->add("[Class] ")->add(this->fullname());
+	if(!this->_superClass.expired())
+		sb->add(" : ")->add(this->_superClass.lock()->fullname());
+	sb->endl();
 
-	sb->add("SFT : ")->endl();
 	sb->increaseIndent();
-	this->_sft.buildString(sb);
-	sb->decreaseIndent();
+	{
+		sb->add("[SFT] ")->endl();
+		sb->increaseIndent();
+		this->_sft.buildString(sb);
+		sb->decreaseIndent();
 
-	sb->add("VFT : ")->endl();
-	sb->increaseIndent();
-	this->_vft.buildString(sb);
-	sb->decreaseIndent();
-
+		sb->add("[VFT] ")->endl();
+		sb->increaseIndent();
+		this->_vft.buildString(sb);
+		sb->decreaseIndent();
+	}
 	sb->decreaseIndent();
 }
 
@@ -312,9 +317,18 @@ pos_t fay::FayInstFun::getVarIndex(const std::string &name)
 
 void fay::FayInstFun::buildString(mirror::utils::StringBuilder* sb)
 {
-	sb->add("[FayInstFun]")->add(this->fullname())->endl();
+	sb->add("[FayInstFun] ")->add(this->fullname())->endl();
 
 	sb->increaseIndent();
+
+	sb->add("[Params] ")->endl();
+	sb->increaseIndent();
+	for(auto i = 0; i < this->_params.size(); ++i)
+	{
+		sb->add(i)->add("> ");
+		this->_params[i]->buildString(sb);
+	}
+	sb->decreaseIndent();
 
 	sb->add("[Vars] ")->endl();
 	sb->increaseIndent();
@@ -324,9 +338,6 @@ void fay::FayInstFun::buildString(mirror::utils::StringBuilder* sb)
 		sb->add(i)->add("> ")->add(it->name())->add(":")->add(it->classType()->fullname())->endl();
 	}
 	sb->decreaseIndent();
-
-	for each(auto it in this->_params)
-		it->buildString(sb);
 
 	sb->add("[Inst] ")->endl();
 	sb->increaseIndent();
@@ -344,8 +355,8 @@ void fay::FayInstFun::buildString(mirror::utils::StringBuilder* sb)
 	sb->decreaseIndent();
 }
 
-fay::FayFun::FayFun(const std::string &name, FunType type, bool isStatic, FunAccessType accessType, std::vector<PTR(FayParamDef)> &params)
-	: _name(name), _type(type), _isStatic(isStatic), _accessType(accessType), _params(params)
+fay::FayFun::FayFun(const std::string &name, FunType type, bool isStatic, FunAccessType accessType, std::vector<PTR(FayParamDef)> &params, PTR(FayClass) returnValue)
+	: _name(name), _type(type), _isStatic(isStatic), _accessType(accessType), _params(params), _returnValue(returnValue)
 {
 	std::string str;
 	for each(auto it in this->_params)
@@ -356,15 +367,14 @@ fay::FayFun::FayFun(const std::string &name, FunType type, bool isStatic, FunAcc
 	}
 
 	_fullname += this->_name;
-	_fullname += "(" + str + ")";
-}
+	_fullname += "(" + str + "):";
 
-void fay::FayFun::returnValue(PTR(FayClass) type)
-{
-	if(!this->_returnValue.expired())
-		LOG_ERROR("Reset return value");
+	if(returnValue == nullptr)
+		_fullname += "void";
+	else
+		_fullname += returnValue->fullname();
 
-	this->_returnValue = type;
+	//LOG_DEBUG("Fun : " << _fullname);
 }
 
 bool fay::FayFun::match(const std::vector<PTR(FayClass)> &paramsType)
@@ -386,13 +396,6 @@ bool fay::FayFun::match(const std::vector<PTR(FayClass)> &paramsType)
 void fay::FayFun::buildString(mirror::utils::StringBuilder* sb)
 {
 	sb->add("[FayFun]")->add(this->fullname())->endl();
-
-	//sb->increaseIndent();
-
-	//for each(auto it in this->_params)
-	//	it->toString(sb);
-
-	//sb->decreaseIndent();
 }
 
 pos_t fay::FayClass::addFun(PTR(FayFun) fun)
@@ -522,7 +525,7 @@ fay::FayParamDef::FayParamDef(const std::string &name, PTR(FayClass) type)
 
 void fay::FayParamDef::buildString(mirror::utils::StringBuilder* sb)
 {
-	sb->add("[FayParamDef] ")->add(this->fullname())->endl();
+	sb->add(this->fullname())->endl();
 }
 
 std::string fay::FayLangUtils::Fullname(const std::string &funName, const std::vector<PTR(FayClass)> &params)
@@ -1260,6 +1263,15 @@ void fay::FunTable::rebuild(std::vector<PTR(FayFun)> &parentFuns)
 		this->addFun(funs[i]);
 }
 
+void fay::FunTable::rebuild(FunTable* parent)
+{
+	std::vector<PTR(FayFun)> funs = this->_funs;
+	this->_funs = parent->_funs;
+
+	for(auto i = 0; i < funs.size(); ++i)
+		this->addFun(funs[i]);
+}
+
 std::vector<PTR(FayFun)> fay::FunTable::matchFun(const std::string &funName, const std::vector<PTR(FayClass)> &paramsType)
 {
 	std::vector<PTR(FayFun)> funs;
@@ -1316,7 +1328,7 @@ void fay::FunTable::buildString(mirror::utils::StringBuilder* sb)
 {
 	for(auto i = 0; i < this->_funs.size(); ++i)
 	{
-		sb->add(i)->add(" : ");
+		sb->add(i)->add("> ");
 		this->_funs[i]->buildString(sb);
 	}
 }

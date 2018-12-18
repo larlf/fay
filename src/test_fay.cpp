@@ -422,7 +422,7 @@ TEST_F(TestFay, String)
 	rs = FayVM::Run(funs[0]);
 }
 
-TEST_F(TestFay, OOP)
+TEST_F(TestFay, OOP1)
 {
 	PRINT(project->findSource("OOPTest.fay")->tokensStr());
 	PRINT(project->findSource("OOPTest.fay")->astStr());
@@ -473,6 +473,16 @@ TEST_F(TestFay, OOP)
 	rs = FayVM::Run(funs[0]);
 	ASSERT_EQ(rs.type(), ValueType::Int);
 	ASSERT_EQ(rs.intVal(), 24);
+}
+
+TEST_F(TestFay, OOP2)
+{
+	//PRINT(project->findSource("OOPTest.fay")->tokensStr());
+	//PRINT(project->findSource("OOPTest.fay")->astStr());
+	auto type = FayDomain::FindClass("fay.dev.test.BaseA");
+	PRINT(type->toString());
+	type = FayDomain::FindClass("fay.dev.test.SubA");
+	PRINT(type->toString());
 }
 
 TEST_F(TestFay, FayValue)

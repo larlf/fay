@@ -59,6 +59,7 @@ namespace fay
 		PTR(FayFun) getFun(pos_t index);
 		//根据父类的虚函数进行重建
 		void rebuild(std::vector<PTR(FayFun)> &parentFuns);
+		void rebuild(FunTable *parent);
 		//匹配函数
 		std::vector<PTR(FayFun)> matchFun(const std::string &funName, const std::vector<PTR(FayClass)> &paramsType);
 		pos_t getFunIndex(const std::string &fullname);
@@ -113,12 +114,19 @@ namespace fay
 		std::string _name;
 		std::string _fullname;
 		WPTR(FayLib) _lib;
-		WPTR(FayClass) _parent;  //父类
+
+		WPTR(FayClass) _superClass;  //父类
 		FunTable _sft;  //静态函数表
 		FunTable _vft;  //虚函数表
 		IndexMap<FayStaticVarDef> _staticVarDefs;  //静态变量表
 		IndexMap<FayVarDef> _varDefs;  //变量表
-		bool _isInited = false;  //是否已经初始化过
+
+		//是否已经构建过
+		//这一步在解析完成后执行，主要用于创建OOP体系
+		bool _isRebuild = false;  
+		//是否已经初始化过
+		//这一步在第一次使用这个类的时候执行，主要用于静态内容进行初始化
+		bool _isInited = false;  
 
 	public:
 		FayClass(const std::string &package, const std::string &name);
@@ -136,8 +144,8 @@ namespace fay
 		PTR(FayLib) lib() { return this->_lib.lock(); }
 
 		//处理父类
-		inline void parent(PTR(FayClass) v) { this->_parent = v; }
-		PTR(FayClass) parent() { return this->_parent.lock(); }
+		inline void superClass(PTR(FayClass) v) { this->_superClass = v; }
+		PTR(FayClass) superClass() { return this->_superClass.lock(); }
 
 		//是否匹配
 		//当传入的类型和自己一样或是此类型的子类的时候为True
@@ -157,7 +165,6 @@ namespace fay
 
 		//添加函数
 		pos_t addFun(PTR(FayFun) fun);
-
 		//匹配符合要求的函数
 		std::vector<PTR(FayFun)> findFun(const std::string &funName, const std::vector<PTR(FayClass)> &paramsType, bool isStatic);
 		PTR(FayFun) findFun(pos_t index, bool isStatic);
@@ -233,20 +240,20 @@ namespace fay
 	class FayFun : public BaseObject, public std::enable_shared_from_this<FayFun>
 	{
 	protected:
+		std::string _name;  //函数名称
+		WPTR(FayClass) _class;  //所属的Class
 		FunType _type;  //函数的类型
 		bool _isStatic;  //是否是静态函数，非静态函数需要有this参数
 		FunAccessType _accessType = FunAccessType::Public;  //访问权限
-		WPTR(FayClass) _class;  //所属的Class
-		std::string _name;  //函数名称
-		std::string _fullname;
 		std::vector<PTR(FayParamDef)> _params;  //参数定义
 		WPTR(FayClass) _returnValue;  //返回值的类型，支持多返回值
+
+		std::string _fullname;
 		PTR(FayLabelTable) _labels = MKPTR(FayLabelTable)();  //标签表，以后可以判断下，运行期不用创建此对象
 		pos_t _indexValue = -1;
 
 	public:
-		FayFun(const std::string &name, FunType type, bool isStatic, FunAccessType accessType, std::vector<PTR(FayParamDef)> &params);
-
+		FayFun(const std::string &name, FunType type, bool isStatic, FunAccessType accessType, std::vector<PTR(FayParamDef)> &params, PTR(FayClass) returnValue);
 		virtual ~FayFun() {}
 
 		//Get & Set
@@ -259,7 +266,6 @@ namespace fay
 		inline const size_t paramsCount() { return this->_params.size(); }
 		inline const std::vector<PTR(FayParamDef)> params() { return this->_params; }
 		inline const PTR(FayClass) returnValue() { return this->_returnValue.lock(); }
-		void returnValue(PTR(FayClass) type);
 		inline const PTR(FayLabelTable) labels() { return this->_labels; }
 		inline pos_t indexValue() { return this->_indexValue; }
 
@@ -286,10 +292,12 @@ namespace fay
 		void prepareInsts();
 
 	public:
-		FayInstFun(const std::string &name, bool isStatic, FunAccessType accessType, std::vector<PTR(FayParamDef)> &params)
-			: FayFun(name, FunType::Code, isStatic, accessType, params) {}
-		FayInstFun(const std::string &name, bool isStatic, FunAccessType accessType)
-			: FayFun(name, FunType::Code, isStatic, accessType, std::vector<PTR(FayParamDef)> {}) {}
+		FayInstFun(const std::string &name, bool isStatic, FunAccessType accessType, std::vector<PTR(FayParamDef)> &params, PTR(FayClass) returnValue)
+			: FayFun(name, FunType::Code, isStatic, accessType, params, returnValue) {}
+		FayInstFun(const std::string &name, bool isStatic, FunAccessType accessType, PTR(FayClass) returnValue)
+			: FayFun(name, FunType::Code, isStatic, accessType, std::vector<PTR(FayParamDef)> {}, returnValue) {}
+		//FayInstFun(const std::string &name, bool isStatic, FunAccessType accessType)
+		//	: FayFun(name, FunType::Code, isStatic, accessType, std::vector<PTR(FayParamDef)> {}, nullptr) {}
 		virtual ~FayInstFun();
 
 		//添加指令集
@@ -314,10 +322,10 @@ namespace fay
 		std::function<void(PTR(std::stack<FayValue>))> _fun;
 
 	public:
-		FayInternalFun(const std::string &name, bool isStatic, std::vector<PTR(FayParamDef)> &params, std::function<void(PTR(std::stack<FayValue>))> fun)
-			: FayFun(name, FunType::Internal, isStatic, FunAccessType::Public, params), _fun(fun) {}
-		FayInternalFun(const std::string &name, bool isStatic, std::function<void(PTR(std::stack<FayValue>))> fun)
-			: FayFun(name, FunType::Internal, isStatic, FunAccessType::Public, std::vector<PTR(FayParamDef)> {}), _fun(fun) {}
+		FayInternalFun(const std::string &name, bool isStatic, std::vector<PTR(FayParamDef)> &params, PTR(FayClass) returnValue, std::function<void(PTR(std::stack<FayValue>))> fun)
+			: FayFun(name, FunType::Internal, isStatic, FunAccessType::Public, params, returnValue), _fun(fun) {}
+		FayInternalFun(const std::string &name, bool isStatic, PTR(FayClass) returnValue, std::function<void(PTR(std::stack<FayValue>))> fun)
+			: FayFun(name, FunType::Internal, isStatic, FunAccessType::Public, std::vector<PTR(FayParamDef)> {}, returnValue), _fun(fun) {}
 
 		//执行内部函数
 		inline void Invoke(PTR(std::stack<FayValue>) stack) { this->_fun(stack); }

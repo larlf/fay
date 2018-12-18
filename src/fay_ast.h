@@ -160,6 +160,11 @@ namespace fay
 	private:
 		std::vector<std::string> _descWords;
 		pos_t classIndex = -1;  //用于记录在domain中的位置
+
+		pos_t initFunIndex = -1;
+		pos_t createFunIndex = -1;
+		pos_t destoryFunIndex = -1;
+
 	public:
 		std::string superClassText;
 		std::vector<std::string> interfaceText;
