@@ -80,6 +80,11 @@ void fay::FayProject::build()
 		}
 	}
 
+	for (auto clazz : FayDomain::classes().list())
+	{
+		clazz->rebuild();
+	}
+
 	for (auto it : this->_files)
 	{
 		try

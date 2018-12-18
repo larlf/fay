@@ -1,5 +1,6 @@
 ﻿#include <fay_internal_fun.h>
 #include <mirror_utils_time.h>
+#include <fay_lang.h>
 
 using namespace mirror;
 
@@ -168,8 +169,11 @@ void fay::internal::InternalFun::ToString(PTR(std::stack<FayValue>) stack)
 			str = *stack->top().strVal();
 			break;
 		case fay::ValueType::Object:
-			str = "object<" + std::to_string((int64_t)stack->top().ptrVal<void>()) + ">";
+		{
+			PTR(FayObject) obj = stack->top().objVal<FayObject>();
+			str = obj->clazz()->fullname()+"<" + std::to_string((int64_t)stack->top().ptrVal<void>()) + ">";
 			break;
+		}
 		case fay::ValueType::Function:
 			str = "fun<" + std::to_string((int64_t)stack->top().ptrVal<void>()) + ">";
 			break;

@@ -9,8 +9,7 @@ using namespace mirror;
 PTR(FayClass) fay::internal::ObjectClass::initInternalFun()
 {
 	PTR(FayInternalFun) fun;
-	fun = MKPTR(FayInternalFun)( "toString", false, FayDomain::FindClass(ValueType::String), fay::internal::InternalFun::ToString);
-	this->addFun(fun);
+	this->addFun(MKPTR(FayInternalFun)("toString", false, FayDomain::FindClass(ValueType::String), fay::internal::InternalFun::ToString));
 
 	return this->shared_from_this();
 }

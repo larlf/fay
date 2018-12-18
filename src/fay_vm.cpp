@@ -7,7 +7,12 @@ using namespace fay::internal;
 
 void fay::FayVM::_run(PTR(std::stack<FayValue>) stack, PTR(FayInstFun) fun)
 {
-	LOG_DEBUG("Fun : " << fun->name() << ", " << fun->varsSize());
+	//LOG_DEBUG("Fun : " << fun->name() << ", " << fun->varsSize());
+
+	//记录下初始的堆栈的长度
+	size_t oldStackSize = stack->size();
+
+	//初始化本地变量
 	std::vector<FayValue> localVars(fun->varsSize());
 	size_t paramCount = fun->isStatic() ? 0 : 1;
 	paramCount += fun->paramsCount();
@@ -17,6 +22,7 @@ void fay::FayVM::_run(PTR(std::stack<FayValue>) stack, PTR(FayInstFun) fun)
 		stack->pop();
 	}
 
+	//取得方法的代码
 	std::vector<FayInst*>* insts = fun->getPreparedInsts();
 	FayInst* inst;
 

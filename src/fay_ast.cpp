@@ -131,6 +131,11 @@ void fay::AstClass::dig2(FayBuilder* builder)
 			throw BuildException(this->shared_from_this(), "err.mutil_class", this->superClassText);
 		builder->clazz()->superClass(types[0]);
 	}
+	else
+	{
+		//默认用Object当父类
+		builder->clazz()->superClass(FayDomain::FindClass("fay.system.Object"));
+	}
 
 	//添加特殊函数
 	PTR(FayInstFun) fun = MKPTR(FayInstFun)(FUN_STATIC_INIT, true, FunAccessType::Private, nullptr);
@@ -376,7 +381,7 @@ void fay::AstCall::dig3(FayBuilder* builder)
 
 			auto funs = clazz->findFun(funName, paramsType, false);
 			if(funs.size() < 1)
-				throw BuildException(this->shared_from_this(), "err.no_fun", className, funName);
+				throw BuildException(this->shared_from_this(), "err.no_fun", clazz->fullname(), funName);
 
 			fun = funs[0];
 		}
@@ -749,16 +754,16 @@ void fay::AstTypeConvert::dig4(FayBuilder* builder)
 	if(!dstType)
 		throw BuildException(this->shared_from_this(), "err.cannot_convert_to_void");
 
-	if (srcType->valueType() == ValueType::Object && dstType->valueType() == ValueType::Object)
+	if(srcType->valueType() == ValueType::Object && dstType->valueType() == ValueType::Object)
 	{
 		//如果不能转换，就提示错误，能转换的话，不进行任何处理
-		if (!srcType->canCovertTo(dstType))
+		if(!srcType->canCovertTo(dstType))
 			throw BuildException(this->shared_from_this(), "err.cannot_convert_type", srcType->fullname(), dstType->fullname());
 	}
 	else
 	{
 		FayInst* inst = FayLangUtils::ConvertInst(srcType->valueType(), dstType->valueType());
-		if (inst == nullptr)
+		if(inst == nullptr)
 			throw BuildException(this->shared_from_this(), "err.cannot_convert", srcType->fullname(), dstType->fullname());
 
 		builder->addInst(inst);
@@ -1090,7 +1095,7 @@ void fay::AstReturn::dig3(FayBuilder* builder)
 	{
 		PTR(FayFun) fun = builder->fun();
 
-		if(fun->returnValue()->valueType() == ValueType::Void)
+		if(fun->returnValue() == nullptr || fun->returnValue()->valueType() == ValueType::Void)
 			throw BuildException(this->shared_from_this(), "err.return_to_void");
 
 		//先算出目标类型

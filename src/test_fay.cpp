@@ -41,11 +41,6 @@ void test::TestFay::SetUpTestCase()
 	project->addFiles(files);
 	project->parse();
 	project->build();
-
-	for (auto clazz : FayDomain::classes().list())
-	{
-		clazz->rebuild();
-	}
 }
 
 TEST_F(TestFay, Type)

@@ -18,6 +18,7 @@ namespace fay
 			using FayClass::FayClass;
 		public:
 			virtual PTR(FayClass) initInternalFun();
+			virtual ValueType valueType() override { return ValueType::Object; }
 		};
 
 		class VoidClass : public ObjectClass

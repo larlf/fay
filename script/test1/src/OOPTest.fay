@@ -82,10 +82,6 @@ public class BaseA
 		return 1001;
 	}
 
-	public fun toString():string
-	{
-		return "Base A";
-	}
 }
 
 public class SubA : BaseA
