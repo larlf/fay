@@ -732,26 +732,37 @@ void fay::AstLeftRightOP::dig4(FayBuilder* builder)
 }
 
 fay::AstTypeConvert::AstTypeConvert(const PTR(Token)& token, PTR(FayClass) srcType, PTR(FayClass) destType)
-	: AstNode(token), _srcType(srcType), _destType(destType)
+	: AstNode(token), _srcType(srcType), _dstType(destType)
 {
-	this->_classType = this->_destType;
+	this->_classType = this->_dstType;
 }
 
 void fay::AstTypeConvert::dig4(FayBuilder* builder)
 {
 	AstNode::dig4(builder);
 
-	if(this->_srcType.expired())
+	PTR(FayClass) srcType = this->_srcType.lock();
+	if(!srcType)
 		throw BuildException(this->shared_from_this(), "err.cannot_convert_from_void");
 
-	if(this->_destType.expired())
+	PTR(FayClass) dstType = this->_dstType.lock();
+	if(!dstType)
 		throw BuildException(this->shared_from_this(), "err.cannot_convert_to_void");
 
-	FayInst* inst = FayLangUtils::ConvertInst(this->_srcType.lock()->valueType(), this->classType()->valueType());
-	if(inst == nullptr)
-		throw BuildException(this->shared_from_this(), "err.cannot_convert", this->_srcType.lock()->fullname(), this->classType()->fullname());
+	if (srcType->valueType() == ValueType::Object && dstType->valueType() == ValueType::Object)
+	{
+		//如果不能转换，就提示错误，能转换的话，不进行任何处理
+		if (!srcType->canCovertTo(dstType))
+			throw BuildException(this->shared_from_this(), "err.cannot_convert_type", srcType->fullname(), dstType->fullname());
+	}
+	else
+	{
+		FayInst* inst = FayLangUtils::ConvertInst(srcType->valueType(), dstType->valueType());
+		if (inst == nullptr)
+			throw BuildException(this->shared_from_this(), "err.cannot_convert", srcType->fullname(), dstType->fullname());
 
-	builder->addInst(inst);
+		builder->addInst(inst);
+	}
 }
 
 void fay::AstBool::dig3(FayBuilder* builder)

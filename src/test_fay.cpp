@@ -41,6 +41,11 @@ void test::TestFay::SetUpTestCase()
 	project->addFiles(files);
 	project->parse();
 	project->build();
+
+	for (auto clazz : FayDomain::classes().list())
+	{
+		clazz->rebuild();
+	}
 }
 
 TEST_F(TestFay, Type)
@@ -483,6 +488,14 @@ TEST_F(TestFay, OOP2)
 	PRINT(type->toString());
 	type = FayDomain::FindClass("fay.dev.test.SubA");
 	PRINT(type->toString());
+
+	type = FayDomain::FindClass("fay.dev.test.OOPTest");
+	auto funs = type->findFunByName("test6", true);
+	ASSERT_GT(funs.size(), 0);
+	PRINT(funs[0]->toString());
+	auto rs = FayVM::Run(funs[0]);
+	ASSERT_EQ(rs.type(), ValueType::Int);
+	//ASSERT_EQ(rs.intVal(), 24);
 }
 
 TEST_F(TestFay, FayValue)

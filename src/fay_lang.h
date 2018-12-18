@@ -137,6 +137,7 @@ namespace fay
 
 		//第一次使用的时候要对类进行一下初始化
 		void initClass();
+		void rebuild();
 
 		//Get or set
 		//ClassType type() { return this->_type; }
@@ -170,6 +171,9 @@ namespace fay
 		PTR(FayFun) findFun(pos_t index, bool isStatic);
 		PTR(FayFun) findFun(const std::string &fullname, bool isStatic);
 		std::vector<PTR(FayFun)> findFunByName(const std::string &name, bool isStatic);
+
+		//是否可以转换为指定的类型
+		bool canCovertTo(PTR(FayClass) type);
 
 		virtual ValueType valueType() { return ValueType::Void; }
 		virtual void buildString(mirror::utils::StringBuilder* sb) override;

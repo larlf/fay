@@ -1,5 +1,6 @@
 ﻿#include "fay_lang.h"
 #include "fay_lang.h"
+#include "fay_lang.h"
 #include <fay_lang.h>
 #include <mirror_utils_log.h>
 #include <mirror_utils_file.h>
@@ -28,6 +29,21 @@ void fay::FayClass::initClass()
 		auto funs = this->findFunByName(FUN_STATIC_INIT, true);
 		for(auto fun : funs)
 			FayVM::Run(fun);
+	}
+}
+
+void fay::FayClass::rebuild()
+{
+	if (!this->_isRebuild)
+	{
+		this->_isRebuild = true;
+
+		auto superClass = this->_superClass.lock();
+		if (superClass)
+		{
+			superClass->rebuild();
+			this->_vft.rebuild(&superClass->_vft);
+		}
 	}
 }
 
@@ -114,6 +130,20 @@ std::vector<PTR(FayFun)> fay::FayClass::findFunByName(const std::string &name, b
 	else
 		this->_vft.findFunByName(name, r);
 	return r;
+}
+
+bool fay::FayClass::canCovertTo(PTR(FayClass) type)
+{
+	if (type)
+	{
+		if (type.get() == this)
+			return true;
+
+		if (!this->_superClass.expired())
+			return this->_superClass.lock()->canCovertTo(type);
+	}
+
+	return false;
 }
 
 void fay::FayClass::buildString(mirror::utils::StringBuilder* sb)

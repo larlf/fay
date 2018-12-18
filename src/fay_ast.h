@@ -551,7 +551,7 @@ namespace fay
 	{
 	private:
 		WPTR(FayClass) _srcType;
-		WPTR(FayClass) _destType;
+		WPTR(FayClass) _dstType;
 
 	public:
 		AstTypeConvert(const PTR(Token) &token, PTR(FayClass) srcType, PTR(FayClass) destType);

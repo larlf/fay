@@ -36,6 +36,13 @@ public class OOPTest
 		var obj=new TestClassA();
 		return obj.fun3(7, 8);
 	}
+
+	static public fun test6():int
+	{
+		var obj:BaseA=new SubA();
+		IO.Print(obj.toString());
+		return 0;
+	}
 }
 
 public class TestClassA
@@ -73,6 +80,11 @@ public class BaseA
 	public fun fun1():int
 	{
 		return 1001;
+	}
+
+	public fun toString():string
+	{
+		return "Base A";
 	}
 }
 
