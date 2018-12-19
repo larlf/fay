@@ -67,12 +67,12 @@ namespace fay
 
 		//Class相关的处理
 		pos_t addClass(PTR(FayInstClass) clazz);
-		void bindClass(pos_t index);
-		std::vector<PTR(FayClass)> findClass(const std::string &name);
+		void bindClass(PTR(FayInstClass) clazz) { this->_class = clazz; }
+		//std::vector<PTR(FayClass)> findClass(const std::string &name);
 
 		//函数定义相关的处理
 		pos_t addFun(PTR(FayInstFun) fun);
-		void bindFun(pos_t index, bool isStatic);
+		void bindFun(PTR(FayInstFun) fun) { this->_fun = fun; }
 
 		//以下是代码生成相关的内容
 

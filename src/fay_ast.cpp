@@ -104,22 +104,22 @@ void fay::AstNode::dig4(FayBuilder* builder)
 
 void fay::AstClass::dig1(FayBuilder* builder)
 {
-	PTR(FayInstClass) clazz = MKPTR(FayInstClass)(builder->package(), this->_text);
+	this->_clazz = MKPTR(FayInstClass)(builder->package(), this->_text);
 
 	//检查是否重复
-	std::string fullname = clazz->fullname();
+	std::string fullname = this->_clazz->fullname();
 	if(FayDomain::FindClass(fullname) != nullptr)
 		throw BuildException(this->shared_from_this(), "err.repeated_class", fullname);
 
 	//添加到domain
-	this->classIndex = builder->addClass(clazz);
+	builder->addClass(this->_clazz);
 
 	AstNode::dig1(builder);
 }
 
 void fay::AstClass::dig2(FayBuilder* builder)
 {
-	builder->bindClass(this->classIndex);
+	builder->bindClass(this->_clazz);
 
 	//处理父类
 	if(this->superClassText.size() > 0)
@@ -138,37 +138,40 @@ void fay::AstClass::dig2(FayBuilder* builder)
 	}
 
 	//添加特殊函数
-	PTR(FayInstFun) fun = MKPTR(FayInstFun)(FUN_STATIC_INIT, true, FunAccessType::Private, nullptr);
-	this->initFunIndex = builder->addFun(fun);
-	fun = MKPTR(FayInstFun)(FUN_CREATE, false, FunAccessType::Private, nullptr);
-	fun->addVar("this", builder->clazz());
-	this->createFunIndex = builder->addFun(fun);
+
+	this->_initFun = MKPTR(FayInstFun)(FUN_STATIC_INIT, true, FunAccessType::Private, nullptr);
+	builder->addFun(this->_initFun);
+
+	this->_createFun = MKPTR(FayInstFun)(FUN_CREATE, false, FunAccessType::Private, nullptr);
+	this->_createFun->addVar("this", builder->clazz());
+	builder->addFun(this->_createFun);
+
 	//fun = MKPTR(FayInstFun)(FUN_DESTORY, false, FunAccessType::Private, nullptr);
 	//fun->addVar("this", builder->clazz());
-	this->destoryFunIndex = builder->addFun(fun);
+	//this->destoryFunIndex = builder->addFun(fun);
 
 	AstNode::dig2(builder);
 }
 
 void fay::AstClass::dig3(FayBuilder* builder)
 {
-	builder->bindClass(this->classIndex);
+	builder->bindClass(this->_clazz);
 	AstNode::dig3(builder);
 }
 
 void fay::AstClass::dig4(FayBuilder* builder)
 {
-	builder->bindClass(this->classIndex);
+	builder->bindClass(this->_clazz);
 
 	//先处理静态字段
-	builder->bindFun(this->initFunIndex, true);
+	builder->bindFun(this->_initFun);
 	for each(auto it in this->_nodes)
 		if(it && it->is<AstField>() && TOPTR(AstField, it)->isStatic())
 			it->dig4(builder);
 	builder->optimizeInsts();
 
 	//处理非静态字段
-	builder->bindFun(this->createFunIndex, false);
+	builder->bindFun(this->_createFun);
 	for each(auto it in this->_nodes)
 		if(it && it->is<AstField>() && !TOPTR(AstField, it)->isStatic())
 			it->dig4(builder);
@@ -187,10 +190,11 @@ void fay::AstFun::dig2(FayBuilder* builder)
 	AstNode::dig2(builder);
 
 	FunAccessType _accessType = FunAccessType::Public;
+	bool isStatic = false;
 	for(auto it : this->_descWords)
 	{
 		if(it == "static")
-			this->isStatic = true;
+			isStatic = true;
 		else if(it == "private")
 			_accessType = FunAccessType::Private;
 		else if(it == "protected")
@@ -204,34 +208,28 @@ void fay::AstFun::dig2(FayBuilder* builder)
 		this->_classType.reset();
 
 	//创建这个函数定义
-	PTR(FayInstFun) fun = MKPTR(FayInstFun)(this->_text, this->isStatic, _accessType, builder->params, this->_classType.lock());
+	this->_fun = MKPTR(FayInstFun)(this->_text, isStatic, _accessType, builder->params, this->_classType.lock());
 
 	//添加初始化的变量
-	if(!this->isStatic)
-		fun->addVar("this", builder->clazz());
+	if(!isStatic)
+		this->_fun->addVar("this", builder->clazz());
 
 	//添加参数变量
 	for(auto param : builder->params)
-		fun->addVar(param->name(), param->type());
+		this->_fun->addVar(param->name(), param->type());
 
-	this->_index = builder->addFun(fun);
+	builder->addFun(this->_fun);
 }
 
 void fay::AstFun::dig3(FayBuilder* builder)
 {
-	builder->bindFun(this->_index, this->isStatic);
-	if(!builder->fun())
-		throw BuildException(this->shared_from_this(), "err.cannot_find_fun", this->_text);
-
+	builder->bindFun(this->_fun);
 	AstNode::dig3(builder);
 }
 
 void fay::AstFun::dig4(FayBuilder* builder)
 {
-	builder->bindFun(this->_index, this->isStatic);
-	if(!builder->fun())
-		throw BuildException(this->shared_from_this(), "err.cannot_find_fun", this->_text);
-
+	builder->bindFun(this->_fun);
 	AstNode::dig4(builder);
 	builder->optimizeInsts();
 }
@@ -1429,7 +1427,7 @@ void fay::AstNew::dig3(FayBuilder* builder)
 {
 	AstNode::dig3(builder);
 
-	auto classes = builder->findClass(this->_text);
+	auto classes = FayDomain::FindClass(builder->usings(), this->_text);
 	if(classes.size() <= 0)
 		throw BuildException(this->shared_from_this(), "err.no_class", this->_text);
 	else if(classes.size() > 1)

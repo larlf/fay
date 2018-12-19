@@ -66,35 +66,20 @@ pos_t fay::FayBuilder::addClass(PTR(FayInstClass) clazz)
 	return this->_lib->addClass(clazz);
 }
 
-void fay::FayBuilder::bindClass(pos_t index)
-{
-	this->_class = TOPTR(FayInstClass, FayDomain::FindClass(index));
-}
+//void fay::FayBuilder::bindClass(pos_t index)
+//{
+//	this->_class = TOPTR(FayInstClass, FayDomain::FindClass(index));
+//}
 
-std::vector<PTR(FayClass)> fay::FayBuilder::findClass(const std::string & name)
-{
-	return FayDomain::FindClass(this->_usings, name);
-}
+//std::vector<PTR(FayClass)> fay::FayBuilder::findClass(const std::string & name)
+//{
+//	return FayDomain::FindClass(this->_usings, name);
+//}
 
 pos_t fay::FayBuilder::addFun(PTR(FayInstFun) fun)
 {
 	this->_fun = fun;
 	return this->_class->addFun(this->_fun);
-}
-
-void fay::FayBuilder::bindFun(pos_t index, bool isStatic)
-{
-	if(index < 0)
-	{
-		LOG_ERROR("Bad fun index : " << index);
-		return;
-	}
-
-	this->_fun = TOPTR(FayInstFun, this->_class->findFun(index, isStatic));
-
-	//清空指令集
-	if(this->_insts.size() > 0)
-		this->_insts.clear();
 }
 
 void fay::FayBuilder::addInst(FayInst* inst)
