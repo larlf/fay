@@ -41,6 +41,8 @@ void test::TestFay::SetUpTestCase()
 	project->addFiles(files);
 	project->parse();
 	project->build();
+
+	utils::FileUtils::WriteTextFile("domain.txt", FayDomain::ToString());
 }
 
 TEST_F(TestFay, Type)
@@ -382,6 +384,12 @@ TEST_F(TestFay, Flow)
 	rs = FayVM::Run(funs[0]);
 	ASSERT_EQ(rs.type(), ValueType::Int);
 	ASSERT_EQ(rs.intVal(), 16);
+
+	funs = type->findFunByName("test7", true);
+	PRINT(funs[0]->toString());
+	rs = FayVM::Run(funs[0]);
+	//ASSERT_EQ(rs.type(), ValueType::Int);
+	//ASSERT_EQ(rs.intVal(), 16);
 }
 
 TEST_F(TestFay, String)
@@ -479,12 +487,12 @@ TEST_F(TestFay, OOP2)
 {
 	//PRINT(project->findSource("OOPTest.fay")->tokensStr());
 	//PRINT(project->findSource("OOPTest.fay")->astStr());
-	auto type = FayDomain::FindClass("fay.dev.test.BaseA");
-	PRINT(type->toString());
-	type = FayDomain::FindClass("fay.dev.test.SubA");
-	PRINT(type->toString());
+	//auto type = FayDomain::FindClass("fay.dev.test.BaseA");
+	//PRINT(type->toString());
+	//type = FayDomain::FindClass("fay.dev.test.SubA");
+	//PRINT(type->toString());
 
-	type = FayDomain::FindClass("fay.dev.test.OOPTest");
+	auto type = FayDomain::FindClass("fay.dev.test.OOPTest");
 	auto funs = type->findFunByName("test6", true);
 	ASSERT_GT(funs.size(), 0);
 	PRINT(funs[0]->toString());

@@ -20,6 +20,9 @@ namespace mirror
 			//查找目录下所有的文件（递归）
 			static std::vector<std::string> FindFiles(const std::string &path, bool recursive = true, const std::string &extName = "");
 
+			//写入文本文件
+			static bool WriteTextFile(const std::string &filename, const std::string &content);
+
 		};
 	}
 }

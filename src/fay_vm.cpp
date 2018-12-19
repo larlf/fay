@@ -22,6 +22,8 @@ void fay::FayVM::_run(PTR(std::stack<FayValue>) stack, PTR(FayInstFun) fun)
 		stack->pop();
 	}
 
+	//LOG_DEBUG("Stack Size : " << stack->size());
+
 	//取得方法的代码
 	std::vector<FayInst*>* insts = fun->getPreparedInsts();
 	FayInst* inst;

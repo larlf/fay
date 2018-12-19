@@ -476,6 +476,13 @@ void fay::FayDomain::buildString(mirror::utils::StringBuilder* sb)
 	sb->decreaseIndent();
 }
 
+std::string fay::FayDomain::ToString()
+{
+	utils::StringBuilder sb;
+	FayDomain::buildString(&sb);
+	return sb.toString();
+}
+
 pos_t fay::FayDomain::AddClass(PTR(FayClass) t)
 {
 	std::string fullname = t->fullname();
@@ -1443,4 +1450,17 @@ void fay::FayObject::init()
 	auto funs = this->_class->findFunByName(FUN_CREATE, false);
 	for(auto fun : funs)
 		FayVM::Run(fun, FayValue(this->shared_from_this()));
+}
+
+void fay::FayObject::setVar(const std::string & name, FayValue & value)
+{
+	auto varDef=this->_class->findVar(name);
+	if (!varDef)
+	{
+		LOG_ERROR("Cannot find var : " << name << " in " << this->_class->fullname());
+		return;
+	}
+
+	//TODO 这里最好加一个类型的Check
+	this->_vars[varDef->indexValue()] = value;
 }

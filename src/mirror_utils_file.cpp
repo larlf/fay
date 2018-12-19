@@ -1,4 +1,5 @@
-﻿#include <mirror_utils_file.h>
+﻿#include "mirror_utils_file.h"
+#include <mirror_utils_file.h>
 #include <mirror_utils_log.h>
 
 using namespace mirror::utils;
@@ -51,5 +52,24 @@ std::vector<std::string> mirror::utils::FileUtils::FindFiles(const std::string &
 	fs::path thePath(path);
 	_FindFiles(files, path, recursive, extName);
 	return files;
+}
+
+bool mirror::utils::FileUtils::WriteTextFile(const std::string & filename, const std::string & content)
+{
+	FILE *file = fopen(filename.c_str(), "w");
+	if (file == nullptr)
+	{
+		LOG_ERROR("Cannot write file : " << filename);
+		return false;
+	}
+
+	size_t length = fwrite(content.c_str(), 1, content.size(), file);
+	if (length != content.size())
+	{
+		LOG_ERROR("Write file size error : " << length << " != " << content.size());
+	}
+
+	fclose(file);
+	return true;
 }
 

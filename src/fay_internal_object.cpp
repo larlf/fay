@@ -85,3 +85,9 @@ PTR(FayClass) fay::internal::DateClass::initInternalFun()
 
 	return this->shared_from_this();
 }
+
+PTR(FayClass) fay::internal::ErrorClass::initInternalFun()
+{
+	this->addVar("message", FayDomain::FindClass(ValueType::String));
+	return PTR(FayClass)();
+}

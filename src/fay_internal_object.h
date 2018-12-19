@@ -132,6 +132,13 @@ namespace fay
 
 			virtual PTR(FayClass) initInternalFun() override;
 		};
+
+		class ErrorClass : public ObjectClass
+		{
+			using ObjectClass::ObjectClass;
+		public:
+			virtual PTR(FayClass) initInternalFun() override;
+		};
 	}
 
 

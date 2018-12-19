@@ -425,6 +425,7 @@ namespace fay
 		static PTR(FayClass) UseClass(pos_t index);
 
 		static void buildString(mirror::utils::StringBuilder* sb);
+		static std::string ToString();
 	};
 
 	/////////////////////////////////////////////////
@@ -443,6 +444,7 @@ namespace fay
 		void init();
 
 		std::vector<FayValue> &vars() { return this->_vars; }
+		void setVar(const std::string &name, FayValue &value);
 	};
 
 	/////////////////////////////////////////////////

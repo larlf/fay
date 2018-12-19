@@ -73,4 +73,27 @@ public class FlowTest
 
 		return count;
 	}
+
+	static public fun test7():void
+	{
+		try
+		{
+			var a=5;
+			var b=0;
+			var c=b/b;
+			IO.Print(c);
+		}
+		catch
+		{
+			IO.Print(error.code);
+			IO.Print(error.message);
+			IO.Print(error.stack);
+			throw "Bad value";
+			throw error;
+		}
+		finally
+		{
+
+		}
+	}
 }
