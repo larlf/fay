@@ -213,7 +213,7 @@ namespace fay
 	};
 
 	//标签
-	class FayLabel
+	class FayLabel : public BaseObject
 	{
 	private:
 		std::string _name;
@@ -224,6 +224,7 @@ namespace fay
 		FayLabel(const std::string &name) : _name(name) {}
 		void addTarget(int32_t* target);
 		void setPos(int32_t pos);
+		virtual void buildString(mirror::utils::StringBuilder* sb) override;
 	};
 
 	//标签表
@@ -282,13 +283,15 @@ namespace fay
 	};
 
 	//异常处理
-	class TryHandler
+	class TryHandler : public BaseObject
 	{
 	public:
 		TryHandlerType type = TryHandlerType::Catch;
 		int start = -1;
 		int end = -1;
 		int target = -1;
+
+		virtual void buildString(mirror::utils::StringBuilder* sb) override;
 	};
 
 	//指令函数
@@ -328,6 +331,8 @@ namespace fay
 
 		//TryHandler
 		void addHandler(TryHandler* handler) { this->_handlers.push_back(handler); }
+		//查找代码段是否在Handler中
+		TryHandler* findHandler(int ip);
 
 		virtual void buildString(mirror::utils::StringBuilder* sb) override;
 	};

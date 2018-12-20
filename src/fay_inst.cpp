@@ -181,6 +181,12 @@ void fay::inst::LoadStatic::buildString(mirror::utils::StringBuilder * sb)
 		->endl();
 }
 
+void fay::inst::LoadError::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("LoadError")
+		->endl();
+}
+
 void fay::inst::CopyLocal::buildString(mirror::utils::StringBuilder * sb)
 {
 	sb->add("CopyLocal")

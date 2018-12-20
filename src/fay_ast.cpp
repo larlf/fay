@@ -624,34 +624,49 @@ void fay::AstID::dig3(FayBuilder* builder)
 		std::string className = this->_text.substr(0, pos);
 		std::string varName = this->_text.substr(pos + 1);
 
-		auto localVar = builder->fun()->findVar(className);
-		if(localVar)
+		if (className == "err")
 		{
-			auto varDef = localVar->classType()->findVar(varName);
+			PTR(FayClass) errType = FayDomain::FindClass("fay.system.Error");
+			PTR(FayVarDef) varDef = errType->findVar(varName);
 			if(!varDef)
-				throw new BuildException(this->shared_from_this(), "err.unknow_var", className, varName);
+				throw BuildException(this->shared_from_this(), "err.unknow_var", className, varName);
 
-			this->_type = VarType::Field;
-			this->_classIndex = localVar->indexValue();
+			this->_type = VarType::Error;
+			this->_classIndex = -1;
 			this->_varIndex = varDef->indexValue();
 			this->_classType = varDef->classType();
 		}
 		else
 		{
-			auto classes = FayDomain::FindClass(builder->usings(), className);
-			if(classes.size() < 1)
-				throw BuildException(this->shared_from_this(), "err.cannot_find_class", className);
-			if(classes.size() > 1)
-				throw BuildException(this->shared_from_this(), "err.mutil_class", className);
+			auto localVar = builder->fun()->findVar(className);
+			if (localVar)
+			{
+				auto varDef = localVar->classType()->findVar(varName);
+				if (!varDef)
+					throw BuildException(this->shared_from_this(), "err.unknow_var", className, varName);
 
-			auto var = classes[0]->findStaticVar(varName);
-			if(var == nullptr)
-				throw BuildException(this->shared_from_this(), "err.unknow_static_var", className, varName);
+				this->_type = VarType::Field;
+				this->_classIndex = localVar->indexValue();
+				this->_varIndex = varDef->indexValue();
+				this->_classType = varDef->classType();
+			}
+			else
+			{
+				auto classes = FayDomain::FindClass(builder->usings(), className);
+				if (classes.size() < 1)
+					throw BuildException(this->shared_from_this(), "err.cannot_find_class", className);
+				if (classes.size() > 1)
+					throw BuildException(this->shared_from_this(), "err.mutil_class", className);
 
-			this->_type = VarType::Static;
-			this->_classIndex = classes[0]->indexValue();
-			this->_varIndex = var->indexValue();
-			this->_classType = var->classType();
+				auto var = classes[0]->findStaticVar(varName);
+				if (var == nullptr)
+					throw BuildException(this->shared_from_this(), "err.unknow_static_var", className, varName);
+
+				this->_type = VarType::Static;
+				this->_classIndex = classes[0]->indexValue();
+				this->_varIndex = var->indexValue();
+				this->_classType = var->classType();
+			}
 		}
 	}
 }
@@ -681,6 +696,10 @@ void fay::AstID::dig4(FayBuilder* builder)
 			}
 			case VarType::Local:
 				builder->addInst(new inst::LoadLocal(this->_varIndex));
+				break;
+			case VarType::Error:
+				builder->addInst(new inst::LoadError());
+				builder->addInst(new inst::LoadField(this->_varIndex));
 				break;
 			default:
 				throw BuildException(this->shared_from_this(), "err.bad_id_type", TypeDict::ToName(this->_type));
@@ -1481,3 +1500,28 @@ void fay::AstField::dig4(FayBuilder* builder)
 	}
 }
 
+void fay::AstTry::dig4(FayBuilder * builder)
+{
+	std::string startLabel = builder->makeLabel();
+	std::string endLabel = builder->makeLabel();
+	std::string catchLabel = builder->makeLabel();
+
+	TryHandler* handler = new TryHandler();
+	builder->useLabel(startLabel, &handler->start);
+	builder->useLabel(endLabel, &handler->end);
+	builder->useLabel(catchLabel, &handler->target);
+	builder->fun()->addHandler(handler);
+
+	//开始点
+	builder->fixedLabel(startLabel);
+	this->_nodes[0]->dig4(builder);
+
+	builder->fixedLabel(endLabel);
+	builder->addInst(new inst::LeaveTry());
+
+	builder->fixedLabel(catchLabel);
+	this->_nodes[1]->dig4(builder);
+
+	//结束Catch
+	builder->addInst(new inst::LeaveCatch());
+}

@@ -180,8 +180,8 @@ class FayInst {
         str = str.replace(/this\./g, "FayVM::");
         str = str.replace(/\#val/g, "FayValue");
         str = str.replace(/\#new/g, "FayValue");
-        str = str.replace(/\n/g, "\n\t"); //缩进
-        str = "case InstType::" + this.name + ":\n{" + (str ? "\n\t" + str : str) + "\n\tbreak;\n}";
+        str = str.replace(/\n/g, "\n\t\t"); //缩进
+        str = "\tcase InstType::" + this.name + ":\n\t{" + (str ? "\n\t\t" + str : str) + "\n\t\tbreak;\n\t}";
         return str;
     }
     makeNameCode() {

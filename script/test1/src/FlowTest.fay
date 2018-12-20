@@ -85,8 +85,8 @@ public class FlowTest
 		}
 		catch
 		{
-			//IO.Print(error.code);
-			//IO.Print(error.message);
+			IO.Print(err.code);
+			IO.Print(err.message);
 		}
 		finally
 		{

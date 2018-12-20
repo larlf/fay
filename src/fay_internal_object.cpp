@@ -27,6 +27,7 @@ void fay::internal::SystemLib::preInit()
 	this->addClass(MKPTR(ObjectClass)( "fay.system", "Object"));
 	this->addClass(MKPTR(IOClass)( "fay.system", "IO"));
 	this->addClass(MKPTR(DateClass)( "fay.system", "Date"));
+	this->addClass(MKPTR(ErrorClass)("fay.system", "Error"));
 }
 
 void fay::internal::SystemLib::postInit()
@@ -88,6 +89,7 @@ PTR(FayClass) fay::internal::DateClass::initInternalFun()
 
 PTR(FayClass) fay::internal::ErrorClass::initInternalFun()
 {
+	this->addVar("code", FayDomain::FindClass(ValueType::Int));
 	this->addVar("message", FayDomain::FindClass(ValueType::String));
 	return PTR(FayClass)();
 }

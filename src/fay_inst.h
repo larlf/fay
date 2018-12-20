@@ -240,6 +240,13 @@ namespace fay
 			virtual void buildString(mirror::utils::StringBuilder* sb) override;
 		};
 		
+		class LoadError : public fay::FayInst 
+		{ 
+		public:
+			LoadError() : FayInst(InstType::LoadError) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
 		class CopyLocal : public fay::FayInst 
 		{ 
 		public:
