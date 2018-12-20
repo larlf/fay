@@ -317,26 +317,28 @@ PTR(AstNode) fay::Parser::_New(TokenStack * stack)
 
 PTR(AstNode) fay::Parser::_Stmt(TokenStack* stack)
 {
-	if(stack->now()->is(TokenType::Semicolon))
+	if (stack->now()->is(TokenType::Semicolon))
 		return MKPTR(AstEmptyStmt)(stack->move());
-	else if(stack->now()->is(TokenType::LeftBrace))
+	else if (stack->now()->is(TokenType::LeftBrace))
 		return _StmtBlock(stack);
-	else if(stack->now()->is(TokenType::Var))
+	else if (stack->now()->is(TokenType::Var))
 		return _StmtVar(stack);
-	else if(stack->now()->is(TokenType::Return))
+	else if (stack->now()->is(TokenType::Return))
 		return _StmtReturn(stack);
-	else if(stack->now()->is(TokenType::If))
+	else if (stack->now()->is(TokenType::If))
 		return _StmtIf(stack);
-	else if(stack->now()->is(TokenType::For))
+	else if (stack->now()->is(TokenType::For))
 		return _StmtFor(stack);
 	else if (stack->now()->is(TokenType::While))
 		return _StmtWhile(stack);
 	else if (stack->now()->is(TokenType::Do))
 		return _StmtDoWhile(stack);
-	else if(stack->now()->is(TokenType::Label))
+	else if (stack->now()->is(TokenType::Label))
 		return _StmtLabel(stack);
-	else if(stack->now()->is(TokenType::Goto))
+	else if (stack->now()->is(TokenType::Goto))
 		return _StmtGoto(stack);
+	else if (stack->now()->is(TokenType::Try))
+		return _StmtTry(stack);
 
 	//如果不是语句，尝试当做一个表达式来解析
 	PTR(AstNode) expr = _Expr(stack);
@@ -696,6 +698,39 @@ PTR(AstNode) fay::Parser::_StmtReturn(TokenStack* stack)
 	if(!stack->now()->is(TokenType::Semicolon))
 		throw ParseException(stack, "expect ;");
 	stack->next();
+
+	return node;
+}
+
+PTR(AstNode) fay::Parser::_StmtTry(TokenStack * stack)
+{
+	PTR(AstTry) node = MKPTR(AstTry)(stack->now());
+	stack->next();
+
+	PTR(AstNode) stmt = _Stmt(stack);
+	if (!stmt)
+		throw ParseException(stack, "err.null_stmt");
+	node->addChildNode(stmt);
+
+	//catch
+	if (!stack->now()->is(TokenType::Catch))
+		throw ParseException(stack, "err.expect", "catch");
+	stack->next();
+
+	stmt = _Stmt(stack);
+	if (!stmt)
+		throw ParseException(stack, "err.null_stmt");
+	node->addChildNode(stmt);
+
+	//finally
+	if (stack->now()->is(TokenType::Finally))
+	{
+		stack->next();
+		stmt = _Stmt(stack);
+		if (!stmt)
+			throw ParseException(stack, "err.null_stmt");
+		node->addChildNode(stmt);
+	}
 
 	return node;
 }

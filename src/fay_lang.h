@@ -59,7 +59,7 @@ namespace fay
 		PTR(FayFun) getFun(pos_t index);
 		//根据父类的虚函数进行重建
 		void rebuild(std::vector<PTR(FayFun)> &parentFuns);
-		void rebuild(FunTable *parent);
+		void rebuild(FunTable* parent);
 		//匹配函数
 		std::vector<PTR(FayFun)> matchFun(const std::string &funName, const std::vector<PTR(FayClass)> &paramsType);
 		pos_t getFunIndex(const std::string &fullname);
@@ -123,10 +123,10 @@ namespace fay
 
 		//是否已经构建过
 		//这一步在解析完成后执行，主要用于创建OOP体系
-		bool _isRebuild = false;  
+		bool _isRebuild = false;
 		//是否已经初始化过
 		//这一步在第一次使用这个类的时候执行，主要用于静态内容进行初始化
-		bool _isInited = false;  
+		bool _isInited = false;
 
 	public:
 		FayClass(const std::string &package, const std::string &name);
@@ -281,6 +281,16 @@ namespace fay
 		friend class FunTable;
 	};
 
+	//异常处理
+	class TryHandler
+	{
+	public:
+		TryHandlerType type = TryHandlerType::Catch;
+		int start = -1;
+		int end = -1;
+		int target = -1;
+	};
+
 	//指令函数
 	class FayInstFun : public FayFun
 	{
@@ -290,6 +300,8 @@ namespace fay
 		std::vector<FayInst*> _insts;
 		//内部变量表
 		IndexMap<FayVarDef> _vars;
+		//Catch表
+		std::vector<TryHandler*> _handlers;
 		//是否已经进行过预处理
 		bool isPrepared = false;
 		//对代码运行前做一些预处理
@@ -300,8 +312,6 @@ namespace fay
 			: FayFun(name, FunType::Code, isStatic, accessType, params, returnValue) {}
 		FayInstFun(const std::string &name, bool isStatic, FunAccessType accessType, PTR(FayClass) returnValue)
 			: FayFun(name, FunType::Code, isStatic, accessType, std::vector<PTR(FayParamDef)> {}, returnValue) {}
-		//FayInstFun(const std::string &name, bool isStatic, FunAccessType accessType)
-		//	: FayFun(name, FunType::Code, isStatic, accessType, std::vector<PTR(FayParamDef)> {}, nullptr) {}
 		virtual ~FayInstFun();
 
 		//添加指令集
@@ -315,6 +325,9 @@ namespace fay
 		PTR(FayVarDef) findVar(const std::string &name);
 		pos_t getVarIndex(const std::string &name);
 		size_t varsSize() { return this->_vars.size(); }
+
+		//TryHandler
+		void addHandler(TryHandler* handler) { this->_handlers.push_back(handler); }
 
 		virtual void buildString(mirror::utils::StringBuilder* sb) override;
 	};

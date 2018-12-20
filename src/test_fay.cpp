@@ -1,6 +1,7 @@
 ﻿#include <test_fay.h>
 #include <mirror_utils_file.h>
 #include <mirror_utils_log.h>
+#include <fay_system.h>
 #include <fay_token_stack.h>
 #include <fay_lexer.h>
 #include <fay_parser.h>
@@ -23,6 +24,9 @@ void test::TestFay::SetUpTestCase()
 {
 	LOG_DEBUG("Path : " << fs::current_path());
 	LOG_DEBUG("Path : " << fs::temp_directory_path());
+
+	//初始化系统环境
+	fay::SystemEnv::Init();
 
 	//初始化字典数据
 	fay::TypeDict::Init();

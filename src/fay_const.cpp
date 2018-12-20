@@ -45,6 +45,9 @@ void fay::TypeDict::Init()
 	TypeDict::TokenTypeName[TokenType::Bool] = "Bool";
 	TypeDict::TokenTypeName[TokenType::As] = "As";
 	TypeDict::TokenTypeName[TokenType::New] = "New";
+	TypeDict::TokenTypeName[TokenType::Try] = "Try";
+	TypeDict::TokenTypeName[TokenType::Catch] = "Catch";
+	TypeDict::TokenTypeName[TokenType::Finally] = "Finally";
 	//TokenTypeNameEnd
 
 	//ValueTypeNameStart
@@ -79,6 +82,9 @@ void fay::TypeDict::Init()
 	TypeDict::InstTypeName[InstType::JumpFalse] = "JumpFalse";
 	TypeDict::InstTypeName[InstType::JumpTrue] = "JumpTrue";
 	TypeDict::InstTypeName[InstType::Return] = "Return";
+	TypeDict::InstTypeName[InstType::LeaveTry] = "LeaveTry";
+	TypeDict::InstTypeName[InstType::LeaveCatch] = "LeaveCatch";
+	TypeDict::InstTypeName[InstType::LeaveFinally] = "LeaveFinally";
 	TypeDict::InstTypeName[InstType::PushBool] = "PushBool";
 	TypeDict::InstTypeName[InstType::PushByte] = "PushByte";
 	TypeDict::InstTypeName[InstType::PushInt] = "PushInt";

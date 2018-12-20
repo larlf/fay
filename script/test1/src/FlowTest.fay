@@ -80,16 +80,13 @@ public class FlowTest
 		{
 			var a=5;
 			var b=0;
-			var c=b/b;
+			var c=a/b;
 			IO.Print(c);
 		}
 		catch
 		{
-			IO.Print(error.code);
-			IO.Print(error.message);
-			IO.Print(error.stack);
-			throw "Bad value";
-			throw error;
+			//IO.Print(error.code);
+			//IO.Print(error.message);
 		}
 		finally
 		{

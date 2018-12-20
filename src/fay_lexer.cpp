@@ -43,6 +43,9 @@ fay::Lexer::Lexer()
 	this->_rules.push_back((ITokenRule*)new WordTokenRule(LexMode::Program, TokenType::Label, "label"));
 	this->_rules.push_back((ITokenRule*)new WordTokenRule(LexMode::Program, TokenType::Goto, "goto"));
 	this->_rules.push_back((ITokenRule*)new WordTokenRule(LexMode::Program, TokenType::As, "as"));
+	this->_rules.push_back((ITokenRule*)new WordTokenRule(LexMode::Program, TokenType::Try, "try"));
+	this->_rules.push_back((ITokenRule*)new WordTokenRule(LexMode::Program, TokenType::Catch, "catch"));
+	this->_rules.push_back((ITokenRule*)new WordTokenRule(LexMode::Program, TokenType::Finally, "finally"));
 
 	//分隔符
 	this->_rules.push_back((ITokenRule*)new SymbolTokenRule(LexMode::Program, TokenType::Semicolon,  ';'));

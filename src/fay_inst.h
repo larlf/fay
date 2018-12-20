@@ -65,6 +65,27 @@ namespace fay
 			virtual void buildString(mirror::utils::StringBuilder* sb) override;
 		};
 		
+		class LeaveTry : public fay::FayInst 
+		{ 
+		public:
+			LeaveTry() : FayInst(InstType::LeaveTry) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class LeaveCatch : public fay::FayInst 
+		{ 
+		public:
+			LeaveCatch() : FayInst(InstType::LeaveCatch) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
+		class LeaveFinally : public fay::FayInst 
+		{ 
+		public:
+			LeaveFinally() : FayInst(InstType::LeaveFinally) {}
+			virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		};
+		
 		class PushBool : public fay::FayInst 
 		{ 
 		public:

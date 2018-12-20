@@ -35,6 +35,24 @@ void fay::inst::Return::buildString(mirror::utils::StringBuilder * sb)
 		->endl();
 }
 
+void fay::inst::LeaveTry::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("LeaveTry")
+		->endl();
+}
+
+void fay::inst::LeaveCatch::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("LeaveCatch")
+		->endl();
+}
+
+void fay::inst::LeaveFinally::buildString(mirror::utils::StringBuilder * sb)
+{
+	sb->add("LeaveFinally")
+		->endl();
+}
+
 void fay::inst::PushBool::buildString(mirror::utils::StringBuilder * sb)
 {
 	sb->add("PushBool")

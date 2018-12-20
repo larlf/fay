@@ -475,6 +475,11 @@ namespace fay
 		virtual void dig4(FayBuilder* builder) override;
 	};
 
+	class AstTry : public AstNode
+	{
+		using AstNode::AstNode;
+	};
+
 	class AstVar : public AstNode
 	{
 		using AstNode::AstNode;
