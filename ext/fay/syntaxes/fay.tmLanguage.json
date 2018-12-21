@@ -1,0 +1,97 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "fay",
+	"scopeName": "source.fay",
+	"fileTypes": [
+		"fay"
+	],
+	"patterns": [
+		{
+			"include": "#keywords"
+		},
+		{
+			"include": "#strings"
+		},
+		{
+			"include": "#number"
+		},
+		{
+			"include": "#storage"
+		},
+		{
+			"include": "#constant"
+		},
+		{
+			"include": "#comment"
+		}
+	],
+	"repository": {
+		"keywords": {
+			"patterns": [
+				{
+					"name": "keyword.control.fay",
+					"match": "\\b(using|package|class|fun|var|if|else|elseif|while|for|do|return|try|catch|finally|as|goto|label)\\b"
+				}
+			]
+		},
+		"strings": {
+			"name": "string.quoted.double.fay",
+			"begin": "\"",
+			"end": "\"",
+			"patterns": [
+				{
+					"name": "constant.character.escape.fay",
+					"match": "\\\\."
+				}
+			]
+		},
+		"number": {
+			"name": "constant.numeric.fay",
+			"patterns": [
+				{
+					"name": "constant.numeric.fay",
+					"match": "\\b([0-9.]+)\\b"
+				}
+			]
+		},
+		"storage": {
+			"name": "storage.fay",
+			"patterns": [
+				{
+					"name": "storage.type.basic.fay",
+					"match": "\\b(void|int|long|float|double|string|bool)\\b"
+				},
+				{
+					"name": "storage.modifier.fay",
+					"match": "\\b(static|public|private|protected)\\b"
+				}
+			]
+		},
+		"constant": {
+			"name": "constant.language.fay",
+			"patterns": [
+				{
+					"name": "constant.language.boolean.fay",
+					"match": "\\b(true|false)\\b"
+				},
+				{
+					"name": "entity.name.type.fay",
+					"match": "(?<=class\\s)\\b[a-zA-Z0-9_]+\\b"
+				},
+				{
+					"name": "entity.name.function.fay",
+					"match": "(?<=fun\\s)\\b[a-zA-Z0-9_]+\\b"
+				}
+			]
+		},
+		"comment": {
+			"name": "comment.fay",
+			"patterns": [
+				{
+					"name": "comment.fay",
+					"match": "(\/\/.*)"
+				}
+			]
+		}
+	}
+}

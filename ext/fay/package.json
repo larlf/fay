@@ -1,0 +1,35 @@
+{
+    "name": "fay",
+    "displayName": "Fay",
+    "description": "Fay program language",
+    "version": "0.0.2",
+    "publisher": "larlf",
+    "engines": {
+        "vscode": "^1.30.0"
+    },
+    "categories": [
+        "Programming Languages"
+    ],
+    "contributes": {
+        "languages": [
+            {
+                "id": "fay",
+                "aliases": [
+                    "fay",
+                    "fay"
+                ],
+                "extensions": [
+                    ".fay"
+                ],
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "fay",
+                "scopeName": "source.fay",
+                "path": "./syntaxes/fay.tmLanguage.json"
+            }
+        ]
+    }
+}
