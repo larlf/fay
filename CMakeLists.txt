@@ -5,9 +5,9 @@ cmake_minimum_required(VERSION 2.6)
 
 #设置Debug版的编译参数，Windows下只支持Debug版
 if(WIN32)
-	set(CMAKE_C_FLAGS 				"-DWIN32 /MT /EHsc -D_WIN32_WINNT=0x0502")
+	set(CMAKE_C_FLAGS 				"-DWIN32 /MT /EHa -D_WIN32_WINNT=0x0502")
 	set(CMAKE_C_FLAGS_DEBUG			"/MTd -DDEBUG /Zi /Od")
-	set(CMAKE_CXX_FLAGS				"-DWIN32 /GR /MT /EHsc -D_WIN32_WINNT=0x0502")
+	set(CMAKE_CXX_FLAGS				"-DWIN32 /GR /MT /EHa -D_WIN32_WINNT=0x0502")
 	set(CMAKE_CXX_FLAGS_DEBUG		"/MTd -DDEBUG /Zi /Od")
 	set(CMAKE_EXE_LINKER_FLAGS		"${CMAKE_EXE_LINKER_FLAGS}")
 	set(type win64)
