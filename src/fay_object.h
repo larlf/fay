@@ -42,6 +42,25 @@ namespace fay
 		const std::string line(int index);
 	};
 
+	//代码片段
+	class FayPart
+	{
+	private:
+		PTR(FayFile) _file;
+		int _line;
+		int _start;
+		int _end;
+
+	public:
+		FayPart(PTR(FayFile) file, int line, int start, int end)
+			: _file(file), _line(line), _start(start), _end(end) {}
+
+		PTR(FayFile) file() { return this->_file; }
+		int line() { return this->_line; }
+		int start() { return this->_start; }
+		int end() { return this->_end; }
+	};
+
 	//用于处理报错信息的异常
 	class FayCompileException : public std::exception
 	{
