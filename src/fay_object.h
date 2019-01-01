@@ -27,8 +27,8 @@ namespace fay
 	class FayFile : public BaseObject
 	{
 	private:
-		std::string _filename;
-		std::string _text;
+		std::string _filename;  //文件的名称
+		std::string _text;  //文件的内容
 
 	public:
 		FayFile(const std::string &filename, const std::string &text)
@@ -49,16 +49,16 @@ namespace fay
 		PTR(FayFile) _file;
 		int _line;
 		int _start;
-		int _end;
+		int _len;
 
 	public:
-		FayPart(PTR(FayFile) file, int line, int start, int end)
-			: _file(file), _line(line), _start(start), _end(end) {}
+		FayPart(PTR(FayFile) file, int line, int start, int len)
+			: _file(file), _line(line), _start(start), _len(len) {}
 
 		PTR(FayFile) file() { return this->_file; }
 		int line() { return this->_line; }
 		int start() { return this->_start; }
-		int end() { return this->_end; }
+		int len() { return this->_len; }
 	};
 
 	//用于处理报错信息的异常

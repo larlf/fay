@@ -9,7 +9,8 @@ namespace fay
 	class FayCompileResult
 	{
 	public:
-		void warn(PTR(FayFile) file, )
+		void warn(PTR(FayPart) part, const std::string &msg);
+		void error(PTR(FayPart) part, const std::string &msg);
 	};
 
 	//编译任务，多个任务可能会返回到一个编译结果里
