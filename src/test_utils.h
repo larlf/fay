@@ -9,5 +9,6 @@ namespace test
 	{
 	public:
 		static void findFiles(std::vector<std::string> &list, const std::experimental::filesystem::path &path);
+		static void logThread();
 	};
 }

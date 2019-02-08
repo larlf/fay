@@ -7,7 +7,7 @@
 using namespace mirror;
 using namespace fay;
 
-fay::FayProject::FayProject(const std::string & name, int marjor, int minjor)
+fay::FayProject::FayProject(const std::string &name, int marjor, int minjor)
 	: _name(name), _marjor(marjor), _minjor(minjor)
 {
 	//_domain = MKPTR(fay::FayDomain)()->init();
@@ -50,13 +50,13 @@ void fay::FayProject::parse()
 
 void fay::FayProject::build()
 {
-	for (auto it : this->_files)
+	for(auto it : this->_files)
 	{
 		try
 		{
 			it.second->ast()->dig1(this->_builder.get());
 		}
-		catch (FayCompileException &e)
+		catch(FayCompileException &e)
 		{
 			LOG_ERROR(e.what());
 			PRINT(e.source());
@@ -65,13 +65,13 @@ void fay::FayProject::build()
 		}
 	}
 
-	for (auto it : this->_files)
+	for(auto it : this->_files)
 	{
 		try
 		{
 			it.second->ast()->dig2(this->_builder.get());
 		}
-		catch (FayCompileException &e)
+		catch(FayCompileException &e)
 		{
 			LOG_ERROR(e.what());
 			PRINT(e.source());
@@ -80,18 +80,16 @@ void fay::FayProject::build()
 		}
 	}
 
-	for (auto clazz : FayDomain::classes().list())
-	{
+	for(auto clazz : FayDomain::classes().list())
 		clazz->rebuild();
-	}
 
-	for (auto it : this->_files)
+	for(auto it : this->_files)
 	{
 		try
 		{
 			it.second->ast()->dig3(this->_builder.get());
 		}
-		catch (FayCompileException &e)
+		catch(FayCompileException &e)
 		{
 			LOG_ERROR(e.what());
 			PRINT(e.source());
@@ -100,13 +98,13 @@ void fay::FayProject::build()
 		}
 	}
 
-	for (auto it : this->_files)
+	for(auto it : this->_files)
 	{
 		try
 		{
 			it.second->ast()->dig4(this->_builder.get());
 		}
-		catch (FayCompileException &e)
+		catch(FayCompileException &e)
 		{
 			LOG_ERROR(e.what());
 			PRINT(e.source());
@@ -116,14 +114,12 @@ void fay::FayProject::build()
 	}
 }
 
-PTR(FaySource) fay::FayProject::findSource(const std::string & name)
+PTR(FaySource) fay::FayProject::findSource(const std::string &name)
 {
-	for (auto it : this->_files)
+	for(auto it : this->_files)
 	{
-		if (it.second->filename().find(name) != std::string::npos)
-		{
+		if(it.second->filename().find(name) != std::string::npos)
 			return it.second;
-		}
 	}
 
 	return nullptr;
@@ -139,9 +135,9 @@ std::string fay::FaySource::tokensStr()
 {
 	utils::StringBuilder sb;
 
-	for (auto it : *this->_tokens)
+	for(auto it : *this->_tokens)
 	{
-		if (sb.size() > 0)
+		if(sb.size() > 0)
 			sb.add("\n");
 
 		sb.add(it->toString());

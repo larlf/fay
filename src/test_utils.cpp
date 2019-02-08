@@ -5,7 +5,9 @@
 #include <filesystem>
 #include <regex>
 #include <mirror_sys_const.h>
+#include <thread>
 
+using namespace test;
 using namespace mirror;
 namespace fs = std::experimental::filesystem;
 
@@ -20,6 +22,11 @@ void test::TestUtils::findFiles(std::vector<std::string> &list, const fs::path &
 	}
 }
 
+void test::TestUtils::logThread()
+{
+	LOG_DEBUG("one," << "two," << "three," << "four," << "five");
+}
+
 TEST(TestUtils, Log)
 {
 	std::string str = mirror::utils::TimeUtils::MSTimeString();
@@ -30,6 +37,15 @@ TEST(TestUtils, Log)
 	LOG_INFO("This is info");
 	LOG_WARN("This is warn");
 	LOG_ERROR("This is error");
+
+	//多线程下的Log
+	for(auto i = 0; i < 10; ++i)
+	{
+		std::thread t(TestUtils::logThread);
+		t.detach();
+	}
+
+	std::this_thread::sleep_for(chrono::seconds(1));
 }
 
 TEST(TestUtils, Trace)
@@ -70,12 +86,12 @@ TEST(TestUtils, Hash)
 
 	std::vector<void*> v3
 	{
-		"abc","abc","abc","abc","abc",
+		"abc", "abc", "abc", "abc", "abc",
 	};
 
 	MAP<std::string, std::vector<int>> v2;
-	for (std::string str : v1)
-		v2[str] = std::vector<int>{};
+	for(std::string str : v1)
+		v2[str] = std::vector<int> {};
 
 	std::vector<int> r1;
 	auto t1 = utils::TimeUtils::MSTime();

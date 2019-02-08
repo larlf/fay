@@ -10,6 +10,8 @@
 
 #pragma comment(lib, "Dbghelp.lib")
 
+std::atomic_flag mirror::log::LogState::LogLock = ATOMIC_FLAG_INIT;
+
 std::string mirror::log::SysTrace::TraceInfo()
 {
 #if WIN32
@@ -34,18 +36,18 @@ std::string mirror::log::SysTrace::TraceInfo()
 	//生成堆栈信息
 	std::string str;
 	std::string indent;
-	for (auto i = 0; i < frames; i++)
+	for(auto i = 0; i < frames; i++)
 	{
 		DWORD64 address = (DWORD64)(stack[i]);
 		SymFromAddr(process, address, NULL, symbol);
 
 		//当前方法不加入进来
-		if (strstr(symbol->Name, "::SysTrace::") != NULL)
+		if(strstr(symbol->Name, "::SysTrace::") != NULL)
 			continue;
 
-		if (SymGetLineFromAddr64(process, address, &displacement, line))
+		if(SymGetLineFromAddr64(process, address, &displacement, line))
 		{
-			if (str.size())
+			if(str.size())
 			{
 				str.append("\n");
 				str.append(indent);
@@ -68,6 +70,7 @@ std::string mirror::log::SysTrace::TraceInfo()
 
 #endif
 }
+
 
 
 
