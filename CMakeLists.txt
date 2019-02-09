@@ -42,6 +42,7 @@ link_directories(
 #########################################################
 
 set(mirror_src
+	src/cmdline.h
 	src/mirror_sys_termcolor.h
 	src/mirror_sys_termcolor.cpp
 	src/mirror_sys_const.h
@@ -103,34 +104,20 @@ set(faylib_src
 	src/fay_project.cpp
 )
 
-add_library(fay STATIC ${faylib_src})
+add_library(faylib STATIC ${faylib_src})
 
 #########################################################
 
-set(fayvm_src
-	src/fayvm_main.cpp
+set(fay_src
+	src/fay_main.cpp
 )
 
-add_executable(fayvm ${fayvm_src})
+add_executable(fay ${fay_src})
 
 if(WIN32)
-	target_link_libraries(fayvm fay mirror winmm.lib jansson.lib libiconv.lib)
+	target_link_libraries(fay faylib mirror winmm.lib jansson.lib libiconv.lib)
 else()
-	target_link_libraries(fayvm fay mirror.lib)
-endif()
-
-#########################################################
-
-set(fayc_src
-	src/fayc_main.cpp
-)
-
-add_executable(fayc ${fayc_src})
-
-if(WIN32)
-	target_link_libraries(fayc fay mirror winmm.lib jansson.lib libiconv.lib)
-else()
-	target_link_libraries(fayc mirror.lib)
+	target_link_libraries(fay faylib mirror.lib)
 endif()
 
 #########################################################
@@ -146,9 +133,9 @@ set(test_src
 add_executable(fay_test ${test_src})
 
 if(WIN32)
-	target_link_libraries(fay_test mirror fay winmm.lib jansson.lib libiconv.lib gtestd.lib)
+	target_link_libraries(fay_test mirror faylib winmm.lib jansson.lib libiconv.lib gtestd.lib)
 else()
-	target_link_libraries(fay_test mirror fay)
+	target_link_libraries(fay_test mirror faylib)
 endif()
 
 
