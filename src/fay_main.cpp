@@ -1,18 +1,17 @@
 ﻿#include <iostream>
 #include <mirror_utils_log.h>
+#include <mirror_utils_cmdline.h>
 #include <cmdline.h>
+
+using namespace mirror::utils;
 
 int main(int argc, char** argv)
 {
-	cmdline::parser cmd;
-	cmd.add("filename", 'f', "filename");
-	cmd.parse_check(argc, argv);
-
-	if(cmd.exist("filename"))
-	{
-		std::string filename = cmd.get<std::string>("filename");
-		LOG_DEBUG("filename : " << filename);
-	}
+	mirror::utils::CmdlineParser parser;
+	parser.addParam(MKPTR(CmdlineParam)("filename", "f", false, "Filename"));
+	parser.addParam(MKPTR(CmdlineParam)("pipe", "", true, "Test param"));
+	parser.parse(argc, argv);
+	parser.debug();
 
 	return 0;
 }

@@ -41,7 +41,7 @@ namespace mirror
 	} while(0)
 
 /** 打印信息 */
-#define PRINT(p1) _LOG_START("  | C ", p1)  _LOG_BODY(white) _LOG_END
+#define PRINT(p1) std::cout<<##p1##<<std::endl;
 
 /** 输出调试信息 */
 #ifdef DEBUG

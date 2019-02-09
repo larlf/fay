@@ -57,6 +57,8 @@ set(mirror_src
 	src/mirror_utils_log.cpp
 	src/mirror_utils_file.h
 	src/mirror_utils_file.cpp
+	src/mirror_utils_cmdline.h
+	src/mirror_utils_cmdline.cpp
 	src/mirror_data_buffer.h
 	src/mirror_data_buffer.cpp
 )
