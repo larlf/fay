@@ -39,10 +39,11 @@ void test::TestFay::SetUpTestCase()
 
 	//取得所有的代码文件
 	std::string projectPath = "../script/test1";
-	std::vector<std::string> files = utils::FileUtils::FindFiles(projectPath + "/src", true, ".fay");
+	std::vector<fs::path> files;
+	utils::FileUtils::FindFiles(files, projectPath + "/src", true, ".fay");
 
-	project = MKPTR(FayProject)("Test1", 1, 0);
-	project->addFiles(files);
+	project = MKPTR(FayProject)(projectPath);
+	//project->addFiles(files);
 	project->parse();
 	project->build();
 

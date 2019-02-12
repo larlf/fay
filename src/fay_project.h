@@ -33,20 +33,25 @@ namespace fay
 	class FayProject : BaseObject
 	{
 	private:
+		std::string _path;  //项目所在的目录
 		std::string _name;
-		int _marjor;
-		int _minjor;
+		int _marjor = 0;
+		int _minjor = 0;
 
 		MAP<std::string, PTR(FaySource)> _files;
 		PTR(FayBuilder) _builder;
 
+		//检查所有需要处理的文件
+		void checkAllFiles();
+
 	public:
+		FayProject(const std::string &projectPath);
 		FayProject(const std::string &name, int marjor, int minjor);
 
-		void addFiles(std::vector<std::string> &files);
+		//void addFiles(std::vector<std::string> &files);
 		void parse();
 		void build();
 
-		PTR(FaySource) findSource(const std::string& name);
+		PTR(FaySource) findSource(const std::string &name);
 	};
 }

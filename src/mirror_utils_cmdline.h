@@ -30,6 +30,7 @@ namespace mirror
 
 			void add(PTR(CmdlineParam) param);
 			void parse(int argc, char** argv);
+			std::string help();
 			void debug();
 		};
 	}

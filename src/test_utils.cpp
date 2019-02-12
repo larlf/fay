@@ -112,4 +112,9 @@ TEST(TestUtils, Hash)
 	LOG_DEBUG("Time : " << (t2 - t1));
 }
 
-
+TEST(TestUtils, Path)
+{
+	fs::path p1("d:/temp");
+	p1.append("abc.exe");
+	LOG_DEBUG(p1);
+}

@@ -42,7 +42,6 @@ link_directories(
 #########################################################
 
 set(mirror_src
-	src/cmdline.h
 	src/mirror_sys_termcolor.h
 	src/mirror_sys_termcolor.cpp
 	src/mirror_sys_const.h

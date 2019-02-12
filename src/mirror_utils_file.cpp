@@ -3,9 +3,8 @@
 #include <mirror_utils_log.h>
 
 using namespace mirror::utils;
-namespace fs = std::experimental::filesystem;
 
-void mirror::utils::FileUtils::_FindFiles(std::vector<std::string> &files, const std::experimental::filesystem::path &path, bool recursive, const std::string &extName)
+void mirror::utils::FileUtils::_FindFiles(std::vector<fs::path> &files, const fs::path &path, bool recursive, const std::string &extName)
 {
 	for(auto &fe : fs::directory_iterator(path))
 	{
@@ -19,7 +18,7 @@ void mirror::utils::FileUtils::_FindFiles(std::vector<std::string> &files, const
 		{
 			std::string filename = fe.path().string();
 			if(extName.size() < 1 || (filename.find_last_of(extName) == filename.size() - 1))
-				files.push_back(fe.path().string());
+				files.push_back(fe.path());
 		}
 	}
 }
@@ -46,28 +45,28 @@ std::string mirror::utils::FileUtils::ReadTextFile(const std::string &filename)
 	return "";
 }
 
-std::vector<std::string> mirror::utils::FileUtils::FindFiles(const std::string &path, bool recursive, const std::string &extName)
+void mirror::utils::FileUtils::FindFiles(std::vector<fs::path> &files, const std::string &path, bool recursive, const std::string &extName)
 {
-	std::vector<std::string> files;
-	fs::path thePath(path);
 	_FindFiles(files, path, recursive, extName);
-	return files;
 }
 
-bool mirror::utils::FileUtils::WriteTextFile(const std::string & filename, const std::string & content)
+void mirror::utils::FileUtils::FildFiles(std::vector<fs::path> &files, const fs::path &path, bool recursive, const std::string &extName)
 {
-	FILE *file = fopen(filename.c_str(), "w");
-	if (file == nullptr)
+	_FindFiles(files, path, recursive, extName);
+}
+
+bool mirror::utils::FileUtils::WriteTextFile(const std::string &filename, const std::string &content)
+{
+	FILE* file = fopen(filename.c_str(), "w");
+	if(file == nullptr)
 	{
 		LOG_ERROR("Cannot write file : " << filename);
 		return false;
 	}
 
 	size_t length = fwrite(content.c_str(), 1, content.size(), file);
-	if (length != content.size())
-	{
+	if(length != content.size())
 		LOG_ERROR("Write file size error : " << length << " != " << content.size());
-	}
 
 	fclose(file);
 	return true;
