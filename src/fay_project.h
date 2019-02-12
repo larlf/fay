@@ -49,7 +49,7 @@ namespace fay
 		FayProject(const std::string &name, int marjor, int minjor);
 
 		//void addFiles(std::vector<std::string> &files);
-		void parse();
+		//void parse();
 		void build();
 
 		PTR(FaySource) findSource(const std::string &name);

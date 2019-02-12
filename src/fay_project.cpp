@@ -58,27 +58,47 @@ fay::FayProject::FayProject(const std::string &name, int marjor, int minjor)
 //	}
 //}
 
-void fay::FayProject::parse()
-{
-	PTR(Lexer) lexer = MKPTR(Lexer)();
-
-	for(auto it : this->_files)
-	{
-		try
-		{
-			it.second->parse(lexer);
-		}
-		catch(FayCompileException &e)
-		{
-			LOG_ERROR(e.what());
-			PRINT(e.source());
-			PRINT(e.trace());
-		}
-	}
-}
+//void fay::FayProject::parse()
+//{
+//	PTR(Lexer) lexer = MKPTR(Lexer)();
+//
+//	for(auto it : this->_files)
+//	{
+//		try
+//		{
+//			it.second->parse(lexer);
+//		}
+//		catch(FayCompileException &e)
+//		{
+//			LOG_ERROR(e.what());
+//			PRINT(e.source());
+//			PRINT(e.trace());
+//		}
+//	}
+//}
 
 void fay::FayProject::build()
 {
+	this->checkAllFiles();
+
+	{
+		PTR(Lexer) lexer = MKPTR(Lexer)();
+
+		for(auto it : this->_files)
+		{
+			try
+			{
+				it.second->parse(lexer);
+			}
+			catch(FayCompileException &e)
+			{
+				LOG_ERROR(e.what());
+				PRINT(e.source());
+				PRINT(e.trace());
+			}
+		}
+	}
+
 	for(auto it : this->_files)
 	{
 		try

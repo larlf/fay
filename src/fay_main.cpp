@@ -16,10 +16,13 @@ int main(int argc, char** argv)
 
 	//没有可处理的文件
 	if(parser.cmds.size() < 2)
+	{
+		LOG_ERROR("fay <projectPath>");
 		return 0;
+	}
 
 	FayProject project(parser.cmds[1]);
-	project.parse();
+	//project.parse();
 	project.build();
 
 	return 0;

@@ -30,31 +30,32 @@ namespace mirror
 
 #ifdef WIN32
 
-#define _LOG_START(p1, p2) do { \
-	std::ostringstream __FUNCTION____LINE__; __FUNCTION____LINE__<<##p1##<<mirror::utils::TimeUtils::MSTimeString()<<" | "<<##p2##; \
-	std::string str=mirror::utils::StringUtils::Encoding(__FUNCTION____LINE__.str(), "UTF-8", "GBK");
-#define _LOG_BODY(p1) while(mirror::log::LogState::LogLock.test_and_set()) { std::this_thread::yield(); }; try{ \
-	std::cout<<termcolor::##p1##<<str<<termcolor::reset<<" ... "<< __FUNCTION__<<"() "<<__FILE__<<"("<<__LINE__<<")"<<std::endl; \
-	} catch(std::exception& ex) {};
-#define _LOG_TRACE std::cout<<mirror::log::SysTrace::TraceInfo()<<std::endl;
-#define _LOG_END mirror::log::LogState::LogLock.clear(); \
+#define _LOG_START(p1) do { \
+	std::ostringstream __FUNCTION____LINE__; __FUNCTION____LINE__<<p1; \
+	std::string str=mirror::utils::StringUtils::Encoding(__FUNCTION____LINE__.str(), "UTF-8", "GBK"); \
+	while(mirror::log::LogState::LogLock.test_and_set()) { std::this_thread::yield(); }; try{
+#define _LOG_LOCATION " ... "<< __FUNCTION__<<"() "<<__FILE__<<"("<<__LINE__<<")"
+#define _LOG_PREFIX(p1) p1<<"| "<<mirror::utils::TimeUtils::MSTimeString()<<" | "
+#define _LOG_TRACE mirror::log::SysTrace::TraceInfo()
+#define _LOG_END } catch(std::exception& ex) {}; \
+	mirror::log::LogState::LogLock.clear(); \
 	} while(0)
 
 /** 打印信息 */
-#define PRINT(p1) std::cout<<##p1##<<std::endl;
+#define PRINT(p1) _LOG_START(p1) std::cout<<str<<std::endl; _LOG_END
 
 /** 输出调试信息 */
 #ifdef DEBUG
-#define LOG_DEBUG(p1) _LOG_START("  | C ", p1)  _LOG_BODY(green) _LOG_END
+#define LOG_DEBUG(p1) _LOG_START(p1) std::cout<<termcolor::green<<_LOG_PREFIX("  ")<<str<<termcolor::reset<<_LOG_LOCATION<<std::endl; _LOG_END
 #else
 #define LOG_DEBUG(p1)
 #endif
 /** 输出系统信息 */
-#define LOG_INFO(p1) _LOG_START(" .| C ", p1)  _LOG_BODY(yellow) _LOG_END
+#define LOG_INFO(p1) _LOG_START(p1) std::cout<<termcolor::yellow<<_LOG_PREFIX(" .")<<str<<termcolor::reset<<_LOG_LOCATION<<std::endl; _LOG_END
 /** 输出警告信息 */
-#define LOG_WARN(p1) _LOG_START(" !| C ", p1)  _LOG_BODY(magenta) _LOG_END
+#define LOG_WARN(p1) _LOG_START(p1) std::cout<<termcolor::magenta<<_LOG_PREFIX(" !")<<str<<termcolor::reset<<_LOG_LOCATION<<std::endl; _LOG_END
 /** 输出错误信息 */
-#define LOG_ERROR(p1) _LOG_START("><| C ", p1)  _LOG_BODY(red) _LOG_TRACE _LOG_END
+#define LOG_ERROR(p1) _LOG_START(p1) std::cout<<termcolor::red<<_LOG_PREFIX("><")<<str<<termcolor::reset<<_LOG_LOCATION<<std::endl<<_LOG_TRACE<<std::endl; _LOG_END
 
 #else  //WIN32
 

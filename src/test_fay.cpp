@@ -44,7 +44,7 @@ void test::TestFay::SetUpTestCase()
 
 	project = MKPTR(FayProject)(projectPath);
 	//project->addFiles(files);
-	project->parse();
+	//project->parse();
 	project->build();
 
 	utils::FileUtils::WriteTextFile("domain.txt", FayDomain::ToString());
