@@ -1,8 +1,6 @@
 ﻿#pragma once
 #include <gtest/gtest.h>
-#include <fay_type.h>
-#include <fay_project.h>
-#include <fay_vm.h>
+#include <fay.h>
 
 using namespace fay;
 

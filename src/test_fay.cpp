@@ -1,22 +1,11 @@
 ﻿#include <test_fay.h>
-#include <mirror_utils_file.h>
-#include <mirror_utils_log.h>
-#include <fay_system.h>
-#include <fay_token_stack.h>
-#include <fay_lexer.h>
-#include <fay_parser.h>
-#include <fay_internal_fun.h>
-#include <fay_vm.h>
-#include <fay_i18n.h>
-#include <fay_project.h>
+#include <mirror.h>
 #include <stack>
 #include <gtest/gtest.h>
-#include <filesystem>
 
 using namespace mirror;
 using namespace fay;
 using namespace test;
-namespace fs = std::experimental::filesystem;
 
 PTR(FayProject) test::TestFay::project;
 

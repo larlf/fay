@@ -7,6 +7,10 @@
 #include <unordered_map>
 #include <memory>
 #include <functional>
+#include <filesystem>
+
+//对于Namespace的统一管理
+namespace fs = std::experimental::filesystem;
 
 //智能指针
 #define PTR(T) std::shared_ptr<T>

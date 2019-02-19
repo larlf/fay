@@ -42,6 +42,7 @@ link_directories(
 #########################################################
 
 set(mirror_src
+	src/mirror.h
 	src/mirror_sys_termcolor.h
 	src/mirror_sys_termcolor.cpp
 	src/mirror_sys_const.h
@@ -67,6 +68,7 @@ add_library(mirror STATIC ${mirror_src})
 #########################################################
 
 set(faylib_src
+	src/fay.h
 	src/fay_const.h
 	src/fay_const.cpp
 	src/fay_system.h

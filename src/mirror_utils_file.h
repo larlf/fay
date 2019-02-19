@@ -2,9 +2,7 @@
 
 #include <iostream>
 #include <vector>
-#include <filesystem>
-
-namespace fs = std::experimental::filesystem;
+#include <mirror_sys_const.h>
 
 namespace mirror
 {
