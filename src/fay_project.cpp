@@ -1,6 +1,6 @@
 ﻿#include "fay_project.h"
 #include <fay_parser.h>
-#include <mirror_utils_file.h>
+#include <mirror.h>
 
 using namespace mirror;
 using namespace fay;

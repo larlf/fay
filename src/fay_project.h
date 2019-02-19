@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <mutex>
 #include <fay_lang.h>
 #include <fay_ast.h>
 #include <fay_lexer.h>
@@ -53,5 +54,34 @@ namespace fay
 		void build();
 
 		PTR(FaySource) findSource(const std::string &name);
+	};
+
+	class BuildTask
+	{
+	public:
+	};
+
+	template<class T>
+	class BuildTaskQueue
+	{
+	private:
+		std::mutex _lock;  //锁
+		int taskCount = 0;  //任务数量
+		int taskPos = -1;  //当前指向的任务
+		std::vector<PTR(T)> _queue;  //任务队列
+
+	public:
+		size_t add(PTR(T) task)
+		{
+			std::lock_guard<std::mutex> lg(this->_lock);
+			this->_queue.push_back(task);
+		}
+
+		PTR(T) get()
+		{
+			std::lock_guard<std::mutex> lg(this->_lock);
+
+			return nullptr;
+		}
 	};
 }

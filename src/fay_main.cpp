@@ -11,7 +11,7 @@ int main(int argc, char** argv)
 	mirror::utils::CmdlineParser parser;
 	parser.set(MKPTR(CmdlineParamDef)("path", "Project's path"));
 	parser.set(MKPTR(CmdlineOptionDef)("filename", "f", false, "Filename"));
-	parser.set(MKPTR(CmdlineOptionDef)("pipe", "", true, "Test param"));
+	parser.set(MKPTR(CmdlineOptionDef)("test", "", true, "Test param"));
 	parser.parse(argc, argv);
 	//parser.debug();
 
