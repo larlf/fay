@@ -1,0 +1,1 @@
+"%~dp0build\bin\Debug\fay.exe" %*

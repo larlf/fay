@@ -9,19 +9,20 @@ using namespace fay;
 int main(int argc, char** argv)
 {
 	mirror::utils::CmdlineParser parser;
-	parser.add(MKPTR(CmdlineParam)("filename", "f", false, "Filename"));
-	parser.add(MKPTR(CmdlineParam)("pipe", "", true, "Test param"));
+	parser.set(MKPTR(CmdlineParamDef)("path", "Project's path"));
+	parser.set(MKPTR(CmdlineOptionDef)("filename", "f", false, "Filename"));
+	parser.set(MKPTR(CmdlineOptionDef)("pipe", "", true, "Test param"));
 	parser.parse(argc, argv);
-	parser.debug();
+	//parser.debug();
 
 	//没有可处理的文件
-	if(parser.cmds.size() < 2)
+	if(parser.paramCount() < 1)
 	{
-		LOG_ERROR("fay <projectPath>");
+		PRINT(parser.help());
 		return 0;
 	}
 
-	FayProject project(parser.cmds[1]);
+	FayProject project(parser.get("path"));
 	//project.parse();
 	project.build();
 
