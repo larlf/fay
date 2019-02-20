@@ -12,6 +12,8 @@ namespace mirror
 		{
 		private:
 			static void _FindFiles(std::vector<fs::path> &files, const fs::path &path, bool recursive = true, const std::string &extName = "");
+			static bool _WriteTextFile(const std::string &filename, const std::string &content, const std::string &mode);
+
 
 		public:
 			//读取文本文件
@@ -23,6 +25,8 @@ namespace mirror
 
 			//写入文本文件
 			static bool WriteTextFile(const std::string &filename, const std::string &content);
+			//追加文本文件
+			static bool AppendTextFile(const std::string &filename, const std::string &content);
 		};
 	}
 }

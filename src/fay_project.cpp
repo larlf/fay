@@ -33,7 +33,8 @@ void fay::FayProject::checkAllFiles()
 fay::FayProject::FayProject(const std::string &projectPath)
 	: _path(projectPath)
 {
-
+	_builder = MKPTR(FayBuilder)();
+	_builder->beginLib("default");
 }
 
 fay::FayProject::FayProject(const std::string &name, int marjor, int minjor)
@@ -44,38 +45,6 @@ fay::FayProject::FayProject(const std::string &name, int marjor, int minjor)
 	_builder = MKPTR(FayBuilder)();
 	_builder->beginLib(name);
 }
-
-//void fay::FayProject::addFiles(std::vector<std::string> &files)
-//{
-//	for(auto filename : files)
-//	{
-//		if(this->_files.find(filename) == this->_files.end())
-//		{
-//			std::string text = utils::FileUtils::ReadTextFile(filename);
-//			PTR(FayFile) file = MKPTR(FayFile)(filename, text);
-//			this->_files[filename] = MKPTR(FaySource)(file);
-//		}
-//	}
-//}
-
-//void fay::FayProject::parse()
-//{
-//	PTR(Lexer) lexer = MKPTR(Lexer)();
-//
-//	for(auto it : this->_files)
-//	{
-//		try
-//		{
-//			it.second->parse(lexer);
-//		}
-//		catch(FayCompileException &e)
-//		{
-//			LOG_ERROR(e.what());
-//			PRINT(e.source());
-//			PRINT(e.trace());
-//		}
-//	}
-//}
 
 void fay::FayProject::build()
 {

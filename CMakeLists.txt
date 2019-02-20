@@ -77,6 +77,8 @@ set(faylib_src
 	src/fay_i18n.cpp
 	src/fay_object.h
 	src/fay_object.cpp
+	src/fay_log.h
+	src/fay_log.cpp
 	src/fay_type.h
 	src/fay_type.cpp
 	src/fay_lexer.h

@@ -1,9 +1,11 @@
 ﻿#pragma once
-#include <mirror_sys_const.h>
-#include <mirror_utils_string.h>
+#include <mirror.h>
 #include <fay_const.h>
 #include <string>
 #include <exception>
+#include <thread>
+#include <queue>
+#include <mutex>
 
 //这个文件主要用于定义一些不同对象之前公用或限定规则的类
 
@@ -162,5 +164,69 @@ namespace fay
 		}
 	};
 
+	//编译时的任务队列
+	//因为要给多个工作线程使用，这是里的方法都是线程安全的
+	template<class T>
+	class BuildTaskQueue
+	{
+	private:
+		std::mutex _lock;  //锁
+		size_t _taskCount = 0;  //任务数量，这个是没有完成的任务数量
+		std::queue<PTR(T)> _waitQueue;  //待处理任务队列
+		std::vector<PTR(T)> _doingTasks;  //待完成任务队列
+		std::vector<PTR(T)> _completedTasks;  //待完成和已完成任务队列
+
+	public:
+		//等待处理的任务数量
+		size_t waitSize() { return this->_waitQueue.size(); }
+		//没有处理完成的任务数量
+		size_t activeSize() { return this->_taskCount; }
+		//完成的任务列表
+		std::vector<PTR(T)> completedTasks() { return this->_completedTasks; }
+
+		//添加任务
+		void add(PTR(T) task)
+		{
+			std::lock_guard<std::mutex> lg(this->_lock);
+
+			if (task != nullptr)
+			{
+				this->_waitQueue.push(task);
+				this->_taskCount++;
+			}
+		}
+
+		//取得任务
+		PTR(T) get()
+		{
+			std::lock_guard<std::mutex> lg(this->_lock);
+
+			if (this->_waitQueue.size() > 0)
+			{
+				PTR(T) task = this->_waitQueue.front();
+				this->_waitQueue.pop();
+				this->_doingTasks.push_back(task);
+				return task;
+			}
+
+			return nullptr;
+		}
+
+		//完成并交还任务
+		void complete(PTR(T) task)
+		{
+			std::lock_guard<std::mutex> lg(this->_lock);
+
+			for (auto i = 0; i < this->_doingTasks.size(); ++i)
+			{
+				if (this->_doingTasks[i] != nullptr && this->_doingTasks[i] == task)
+				{
+					this->_completedTasks.push_back(task);
+					this->_doingTasks[i] = nullptr;
+					this->_taskCount--;
+				}
+			}
+		}
+	};
 
 }

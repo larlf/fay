@@ -6,35 +6,52 @@ using namespace mirror::utils;
 
 void mirror::utils::FileUtils::_FindFiles(std::vector<fs::path> &files, const fs::path &path, bool recursive, const std::string &extName)
 {
-	for(auto &fe : fs::directory_iterator(path))
+	for (auto &fe : fs::directory_iterator(path))
 	{
 		//如果是目录，就递归
-		if(fs::is_directory(fe.path()))
+		if (fs::is_directory(fe.path()))
 		{
-			if(recursive)
+			if (recursive)
 				FileUtils::_FindFiles(files, fe.path(), recursive, extName);
 		}
 		else
 		{
 			std::string filename = fe.path().string();
-			if(extName.size() < 1 || (filename.find_last_of(extName) == filename.size() - 1))
+			if (extName.size() < 1 || (filename.find_last_of(extName) == filename.size() - 1))
 				files.push_back(fe.path());
 		}
 	}
+}
+
+bool mirror::utils::FileUtils::_WriteTextFile(const std::string & filename, const std::string & content, const std::string & mode)
+{
+	FILE* file = fopen(filename.c_str(), mode.c_str());
+	if (file == nullptr)
+	{
+		LOG_ERROR("Cannot write file : " << filename);
+		return false;
+	}
+
+	size_t length = fwrite(content.c_str(), 1, content.size(), file);
+	if (length != content.size())
+		LOG_ERROR("Write file size error : " << length << " != " << content.size());
+
+	fclose(file);
+	return true;
 }
 
 std::string mirror::utils::FileUtils::ReadTextFile(const std::string &filename)
 {
 	FILE* fp = fopen(filename.c_str(), "rb");
 
-	if(!fp)
+	if (!fp)
 		LOG_ERROR("Cannot read file : " << filename);
 	else
 	{
 		string text;
 		char* buffer = new char[1024];
 		size_t len = 0;
-		while(len = fread(buffer, 1, 1024, fp))
+		while (len = fread(buffer, 1, 1024, fp))
 			text.append(buffer, len);
 
 		delete[] buffer;
@@ -57,18 +74,10 @@ void mirror::utils::FileUtils::FildFiles(std::vector<fs::path> &files, const fs:
 
 bool mirror::utils::FileUtils::WriteTextFile(const std::string &filename, const std::string &content)
 {
-	FILE* file = fopen(filename.c_str(), "w");
-	if(file == nullptr)
-	{
-		LOG_ERROR("Cannot write file : " << filename);
-		return false;
-	}
-
-	size_t length = fwrite(content.c_str(), 1, content.size(), file);
-	if(length != content.size())
-		LOG_ERROR("Write file size error : " << length << " != " << content.size());
-
-	fclose(file);
-	return true;
+	return FileUtils::_WriteTextFile(filename, content, "w");
 }
 
+bool mirror::utils::FileUtils::AppendTextFile(const std::string & filename, const std::string & content)
+{
+	return FileUtils::_WriteTextFile(filename, content, "a");
+}
