@@ -6,6 +6,15 @@ using namespace fay;
 
 namespace test
 {
+	//用于测试的类型
+	class TestClass
+	{
+	public:
+		std::string name;
+
+		TestClass(const std::string &name) : name(name) {}
+	};
+
 	class TestValue // : public std::enable_shared_from_this<FayValue>
 	{
 	private:

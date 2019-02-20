@@ -547,3 +547,60 @@ TEST_F(TestFay, RTTI)
 	ASSERT_EQ(ast1->is<test::TestFay>(), false);
 }
 
+TEST_F(TestFay, TaskQueue)
+{
+	PTR(fay::BuildTaskQueue<TestClass>) queue = MKPTR(fay::BuildTaskQueue<TestClass>)();
+	queue->add(MKPTR(TestClass)("one"));
+	queue->add(MKPTR(TestClass)("two"));
+	queue->add(MKPTR(TestClass)("three"));
+	ASSERT_EQ(queue->activeSize(), 3);
+	ASSERT_EQ(queue->waitSize(), 3);
+
+	PTR(TestClass) task1 = queue->get();
+	ASSERT_EQ(queue->activeSize(), 3);
+	ASSERT_EQ(queue->waitSize(), 2);
+
+	PTR(TestClass) task2 = queue->get();
+	ASSERT_EQ(queue->activeSize(), 3);
+	ASSERT_EQ(queue->waitSize(), 1);
+
+	queue->complete(task1);
+	ASSERT_EQ(queue->activeSize(), 2);
+	ASSERT_EQ(queue->waitSize(), 1);
+
+	queue->complete(task1);
+	ASSERT_EQ(queue->activeSize(), 2);
+	ASSERT_EQ(queue->waitSize(), 1);
+
+	queue->complete(task1);
+	ASSERT_EQ(queue->activeSize(), 2);
+	ASSERT_EQ(queue->waitSize(), 1);
+
+	queue->complete(task2);
+	ASSERT_EQ(queue->activeSize(), 1);
+	ASSERT_EQ(queue->waitSize(), 1);
+
+	auto list = queue->completedTasks();
+	ASSERT_EQ(list.size(), 2);
+	ASSERT_EQ(list[0], task1);
+	ASSERT_EQ(list[1], task2);
+
+	PTR(TestClass) task3 = queue->get();
+	ASSERT_EQ(queue->activeSize(), 1);
+	ASSERT_EQ(queue->waitSize(), 0);
+
+	PTR(TestClass) task4 = queue->get();
+	ASSERT_EQ(queue->activeSize(), 1);
+	ASSERT_EQ(queue->waitSize(), 0);
+	ASSERT_EQ(task4, nullptr);
+
+	queue->complete(task4);
+	ASSERT_EQ(queue->activeSize(), 1);
+	ASSERT_EQ(queue->waitSize(), 0);
+
+	queue->complete(task3);
+	ASSERT_EQ(queue->activeSize(), 0);
+	ASSERT_EQ(queue->waitSize(), 0);
+	ASSERT_EQ(queue->completedTasks().size(), 3);
+}
+
