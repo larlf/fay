@@ -31,7 +31,8 @@ namespace fay
 				PTR(Token) token = ast->token();
 				if(token)
 				{
-					this->_file = token->file();
+					//TODO
+					//this->_file = token->file();
 					this->_line = token->line();
 					this->_col = token->col();
 				}

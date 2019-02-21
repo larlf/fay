@@ -121,10 +121,10 @@ fay::Lexer::~Lexer()
 	this->_rules.clear();
 }
 
-PTR(std::vector<PTR(Token)>) fay::Lexer::Execute(PTR(FayFile) file)
+PTR(std::vector<PTR(Token)>) fay::Lexer::Execute(const std::string &text)
 {
 	//输入和输出
-	ByteData chars((byte*)file->text().c_str(), file->text().size());
+	ByteData chars((byte*)text.c_str(), text.size());
 	PTR(std::vector<PTR(Token)>) r = MKPTR(std::vector<PTR(Token)>)();
 
 	int pos = 0;  //当前处理的位置
@@ -158,7 +158,7 @@ PTR(std::vector<PTR(Token)>) fay::Lexer::Execute(PTR(FayFile) file)
 		{
 			if(it->mode() == this->_mode)
 			{
-				Token* t = it->match(file, chars, pos, line, col);
+				Token* t = it->match(chars, pos, line, col);
 				if(t != nullptr)
 					tokens.push_back(PTR(Token)(t));
 			}

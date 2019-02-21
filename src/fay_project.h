@@ -10,14 +10,16 @@ namespace fay
 	{
 	private:
 		PTR(FayFile) _file;
-		PTR(std::vector<PTR(Token)>) _tokens;
 		PTR(AstNode) _ast;
 
 	public:
+		PTR(std::vector<PTR(Token)>) tokens;
+
 		FaySource(PTR(FayFile) file) : _file(file) {}
 
+		PTR(FayFile) file() { return this->_file; }
 		const std::string filename() { return this->_file->filename(); }
-		PTR(std::vector<PTR(Token)>) tokens() { return this->_tokens; }
+		//PTR(std::vector<PTR(Token)>) tokens() { return this->_tokens; }
 		PTR(AstNode) ast() { return this->_ast; }
 
 		//对内容进行解析
@@ -44,7 +46,7 @@ namespace fay
 		//检查所有需要处理的文件
 		void checkAllFiles();
 
-		void lexicalWorker(BuildTaskQueue<FaySource>* queue);
+		static void lexicalWorker(BuildTaskQueue<FaySource>* queue);
 
 	public:
 		FayProject(const std::string &projectPath);

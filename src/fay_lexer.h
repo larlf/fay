@@ -28,7 +28,7 @@ namespace fay
 	public:
 		Lexer();
 		~Lexer();
-		PTR(std::vector<PTR(Token)>) Execute(PTR(FayFile) file);
+		PTR(std::vector<PTR(Token)>) Execute(const std::string &text);
 	};
 
 

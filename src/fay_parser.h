@@ -19,7 +19,8 @@ namespace fay
 			PTR(Token) token = stack->now();
 			if(token)
 			{
-				this->_file = token->file();
+				//TODO
+				//this->_file = token->file();
 				this->_line = token->line();
 				this->_col = token->col();
 			}
