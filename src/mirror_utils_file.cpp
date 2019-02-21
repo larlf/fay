@@ -36,6 +36,10 @@ bool mirror::utils::FileUtils::_WriteTextFile(const std::string & filename, cons
 	if (length != content.size())
 		LOG_ERROR("Write file size error : " << length << " != " << content.size());
 
+	//文本文件的追加模式式，默认加换行
+	if (mode.size() > 0 && mode[0] == 'a')
+		putc('\n', file);
+
 	fclose(file);
 	return true;
 }
@@ -77,6 +81,8 @@ bool mirror::utils::FileUtils::WriteTextFile(const std::string &filename, const 
 	return FileUtils::_WriteTextFile(filename, content, "w");
 }
 
+//向文本文件添加内容
+//注意，这个方法写完后，会自己添加了一个\n
 bool mirror::utils::FileUtils::AppendTextFile(const std::string & filename, const std::string & content)
 {
 	return FileUtils::_WriteTextFile(filename, content, "a");

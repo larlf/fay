@@ -6,26 +6,29 @@ using namespace fay;
 
 int main(int argc, char** argv)
 {
-	LogBus::LogFile = "build.log";
-	LogBus::Log("aabbccdd");
-
 	mirror::utils::CmdlineParser parser;
 	parser.set(MKPTR(CmdlineParamDef)("path", "Project's path"));
-	parser.set(MKPTR(CmdlineOptionDef)("filename", "f", false, "Filename"));
-	parser.set(MKPTR(CmdlineOptionDef)("test", "", true, "Test param"));
+	parser.set(MKPTR(CmdlineOptionDef)("output", "o", false, "Output file name"));
+	parser.set(MKPTR(CmdlineOptionDef)("log-file", "lf", false, "Log filename"));
+	parser.set(MKPTR(CmdlineOptionDef)("log-level", "ll", false, "Log level (debug|info|warn|error)"));
 	parser.parse(argc, argv);
 	//parser.debug();
+
+	//Test
+	LogBus::SetLogFile("build.log");
 
 	//没有可处理的文件
 	if(parser.paramCount() < 1)
 	{
-		PRINT(parser.help());
+		LogBus::Error(parser.help());
 		return 0;
 	}
 
+	FayDomain::InitSysLib();
+
 	FayProject project(parser.get("path"));
 	//project.parse();
-	project.build();
+	project.build2();
 
 	return 0;
 }

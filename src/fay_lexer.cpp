@@ -224,7 +224,7 @@ PTR(std::vector<PTR(Token)>) fay::Lexer::Execute(PTR(FayFile) file)
 			sb.add('^');
 
 			//抛出异常
-			throw LexerException(sb.toString(), file, line, col);
+			throw LexerException(sb.toString(), line, col);
 		}
 	}
 

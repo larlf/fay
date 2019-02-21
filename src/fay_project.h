@@ -44,12 +44,17 @@ namespace fay
 		//检查所有需要处理的文件
 		void checkAllFiles();
 
+		void lexicalWorker(BuildTaskQueue<FaySource>* queue);
+
 	public:
 		FayProject(const std::string &projectPath);
 		FayProject(const std::string &name, int marjor, int minjor);
 
-		void build();
 		PTR(FaySource) findSource(const std::string &name);
+
+		void build();
+		void build2();
+
 	};
 
 	class BuildTask

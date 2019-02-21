@@ -6,9 +6,13 @@
 namespace fay
 {
 	//词法解析错误后的异常处理
-	class LexerException : public FayCompileException
+	class LexerException : public std::exception
 	{
-		using FayCompileException::FayCompileException;
+	public:
+		int line = 0;
+		int col = 0;
+
+		LexerException(const std::string &msg, int line, int col) : std::exception(msg.c_str()), line(line), col(col) {}
 	};
 
 	//词法分析器

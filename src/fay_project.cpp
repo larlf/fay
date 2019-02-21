@@ -1,5 +1,6 @@
 ﻿#include "fay_project.h"
 #include <fay_parser.h>
+#include <fay_log.h>
 #include <mirror.h>
 
 using namespace mirror;
@@ -7,27 +8,48 @@ using namespace fay;
 
 void fay::FayProject::checkAllFiles()
 {
-	if(this->_path.size() < 1)
+	if (this->_path.size() < 1)
 	{
-		LOG_ERROR("Unknow project path");
+		LogBus::Error("Project path is empty");
 		return;
 	}
+
+	if (LogBus::IsDebug())
+		LogBus::Debug(TOSTR("[Check Source Files]\nFind all source files at : " << this->_path));
 
 	//找到所有的代码文件并读取进来
 	fs::path srcPath(this->_path);
 	srcPath.append("src");
 	std::vector<fs::path> files;
 	utils::FileUtils::FindFiles(files, this->_path, true, ".fay");
-	for(auto it : files)
+	for (auto it : files)
 	{
 		std::string filename = it.string();
-		if(this->_files.find(filename) == this->_files.end())
+		LogBus::Debug(filename);
+		if (this->_files.find(filename) == this->_files.end())
 		{
 			std::string text = utils::FileUtils::ReadTextFile(filename);
 			PTR(FayFile) file = MKPTR(FayFile)(filename, text);
 			this->_files[filename] = MKPTR(FaySource)(file);
+
+			if (LogBus::IsDebug())
+				LogBus::Debug(TOSTR("Add source file " << filename << ", " << text.size() << " bytes."));
 		}
 	}
+}
+
+void fay::FayProject::lexicalWorker(BuildTaskQueue<FaySource>* queue)
+{
+	Lexer lexer;
+
+	//auto task = queue->get();
+	//while(task!=nullptr)
+	//{
+	//	lexer.Execute()
+
+	//	task = queue->get();
+	//}
+
 }
 
 fay::FayProject::FayProject(const std::string &projectPath)
@@ -53,13 +75,13 @@ void fay::FayProject::build()
 	{
 		PTR(Lexer) lexer = MKPTR(Lexer)();
 
-		for(auto it : this->_files)
+		for (auto it : this->_files)
 		{
 			try
 			{
 				it.second->parse(lexer);
 			}
-			catch(FayCompileException &e)
+			catch (FayCompileException &e)
 			{
 				LOG_ERROR(e.what());
 				PRINT(e.source());
@@ -68,13 +90,13 @@ void fay::FayProject::build()
 		}
 	}
 
-	for(auto it : this->_files)
+	for (auto it : this->_files)
 	{
 		try
 		{
 			it.second->ast()->dig1(this->_builder.get());
 		}
-		catch(FayCompileException &e)
+		catch (FayCompileException &e)
 		{
 			LOG_ERROR(e.what());
 			PRINT(e.source());
@@ -83,13 +105,13 @@ void fay::FayProject::build()
 		}
 	}
 
-	for(auto it : this->_files)
+	for (auto it : this->_files)
 	{
 		try
 		{
 			it.second->ast()->dig2(this->_builder.get());
 		}
-		catch(FayCompileException &e)
+		catch (FayCompileException &e)
 		{
 			LOG_ERROR(e.what());
 			PRINT(e.source());
@@ -98,16 +120,16 @@ void fay::FayProject::build()
 		}
 	}
 
-	for(auto clazz : FayDomain::classes().list())
+	for (auto clazz : FayDomain::classes().list())
 		clazz->rebuild();
 
-	for(auto it : this->_files)
+	for (auto it : this->_files)
 	{
 		try
 		{
 			it.second->ast()->dig3(this->_builder.get());
 		}
-		catch(FayCompileException &e)
+		catch (FayCompileException &e)
 		{
 			LOG_ERROR(e.what());
 			PRINT(e.source());
@@ -116,13 +138,13 @@ void fay::FayProject::build()
 		}
 	}
 
-	for(auto it : this->_files)
+	for (auto it : this->_files)
 	{
 		try
 		{
 			it.second->ast()->dig4(this->_builder.get());
 		}
-		catch(FayCompileException &e)
+		catch (FayCompileException &e)
 		{
 			LOG_ERROR(e.what());
 			PRINT(e.source());
@@ -132,11 +154,25 @@ void fay::FayProject::build()
 	}
 }
 
+void fay::FayProject::build2()
+{
+	this->checkAllFiles();
+
+	//创建诃法解析的任务
+	BuildTaskQueue<FaySource> lexicalQueue;
+	for (auto it : this->_files)
+	{
+		lexicalQueue.add(it.second);
+	}
+
+
+}
+
 PTR(FaySource) fay::FayProject::findSource(const std::string &name)
 {
-	for(auto it : this->_files)
+	for (auto it : this->_files)
 	{
-		if(it.second->filename().find(name) != std::string::npos)
+		if (it.second->filename().find(name) != std::string::npos)
 			return it.second;
 	}
 
@@ -153,9 +189,9 @@ std::string fay::FaySource::tokensStr()
 {
 	utils::StringBuilder sb;
 
-	for(auto it : *this->_tokens)
+	for (auto it : *this->_tokens)
 	{
-		if(sb.size() > 0)
+		if (sb.size() > 0)
 			sb.add("\n");
 
 		sb.add(it->toString());

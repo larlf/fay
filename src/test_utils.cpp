@@ -118,3 +118,9 @@ TEST(TestUtils, Path)
 	p1.append("abc.exe");
 	LOG_DEBUG(p1);
 }
+
+TEST(TestUtils, StringStream)
+{
+	std::string str = TOSTR("aabbcc"<<123<<"hello");
+	ASSERT_EQ(str, "aabbcc123hello");
+}

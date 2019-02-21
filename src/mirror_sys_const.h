@@ -12,6 +12,9 @@
 //对于Namespace的统一管理
 namespace fs = std::experimental::filesystem;
 
+//字符串处理
+#define TOSTR(p1) ([&](){std::ostringstream os; os<<##p1##; return std::string(os.str());})()
+
 //智能指针
 #define PTR(T) std::shared_ptr<T>
 #define MKPTR(T) std::make_shared<T>
