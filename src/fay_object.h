@@ -42,6 +42,8 @@ namespace fay
 		//取出指定行的内容
 		//处理的时候没有考虑性能，只在报错的时候再用
 		const std::string line(int index);
+		//生成错误信息的时候用
+		const std::string line(int line, int col);
 	};
 
 	//代码片段

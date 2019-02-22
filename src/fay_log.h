@@ -1,6 +1,8 @@
 #pragma once
 #include <mirror.h>
 #include <fay_const.h>
+#include <thread>
+#include <mutex>
 
 namespace fay
 {
@@ -17,10 +19,11 @@ namespace fay
 	class LogBus
 	{
 	private:
-		static std::atomic_flag LogLock;
 		static std::string _LogFile;
 
 	public:
+		static std::recursive_mutex LogLock;
+
 		static void SetLogFile(const std::string &filename);
 		static void Log(LogType type, const std::string &msg);
 		static bool IsDebug() { return true; }
@@ -28,6 +31,8 @@ namespace fay
 		static void Info(const std::string &msg) { LogBus::Log(LogType::Info, msg); }
 		static void Warn(const std::string &msg) { LogBus::Log(LogType::Warn, msg); }
 		static void Error(const std::string &msg) { LogBus::Log(LogType::Error, msg); }
+		//´òÓ¡´úÂë
+		static void PrintSource(const std::string &filename, const std::string &text, int line, int col);
 	};
 }
 

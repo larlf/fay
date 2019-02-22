@@ -6,6 +6,7 @@
 #endif
 #include <exception>
 #include <string>
+#include <fay_const.h>
 
 //这个文件里，主要是对不同系统平台上的一些特殊处理
 
@@ -25,6 +26,7 @@ namespace fay
 
 	public:
 		static size_t CPUS;  //CPU的数量
+		static fs::path CurrentPath;  // 当前目录
 
 		static void Init();
 	};

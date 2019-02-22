@@ -12,7 +12,7 @@ namespace fay
 		static MAP<std::string, std::string> _Dict;
 
 	public:
-		static void Init(const std::string &text);
+		static void Init(const std::string &filename);
 
 		template<typename... Params>
 		static std::string Get(const std::string &key, Params... args)

@@ -12,7 +12,7 @@ namespace fay
 		int line = 0;
 		int col = 0;
 
-		LexerException(const std::string &msg, int line, int col) : std::exception(msg.c_str()), line(line), col(col) {}
+		LexerException(int line, int col) : line(line), col(col) {}
 	};
 
 	//词法分析器

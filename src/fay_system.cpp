@@ -43,13 +43,19 @@ void fay::SystemEnv::SignalHandler(int signal)
 }
 
 size_t fay::SystemEnv::CPUS = 0;
+fs::path fay::SystemEnv::CurrentPath;
 
 void fay::SystemEnv::Init()
 {
-	LogBus::Debug("\n[SetupSystem]");
+	LogBus::Debug("[SetupSystem]");
 
 	SystemEnv::CPUS = std::thread::hardware_concurrency();
 	LogBus::Debug(TOSTR("CPUS : "<<SystemEnv::CPUS));
+
+	SystemEnv::CurrentPath = fs::current_path();
+	LogBus::Debug(TOSTR("CurrentPath : " << SystemEnv::CurrentPath));
+
+	LogBus::Debug("");
 
 	_set_se_translator(SystemEnv::SystemExceptionHandler);
 	_set_invalid_parameter_handler(SystemEnv::SystemInvalidParameterHandler);

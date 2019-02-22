@@ -21,8 +21,7 @@ void test::TestFay::SetUpTestCase()
 	fay::TypeDict::Init();
 
 	//初始化国际化信息
-	std::string i18nText = utils::FileUtils::ReadTextFile("../doc/i18n.cn.json");
-	fay::I18N::Init(i18nText);
+	fay::I18N::Init("../doc/i18n.cn.json");
 
 	FayDomain::InitSysLib();
 

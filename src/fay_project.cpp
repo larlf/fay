@@ -17,7 +17,7 @@ void fay::FayProject::step1CheckFiles()
 	}
 
 	if (LogBus::IsDebug())
-		LogBus::Debug(TOSTR("\n[Files]\nProject path : " << this->_path));
+		LogBus::Debug(TOSTR("[Files]\nProject path : " << this->_path));
 
 	//找到所有的代码文件并读取进来
 	fs::path srcPath(this->_path);
@@ -38,6 +38,8 @@ void fay::FayProject::step1CheckFiles()
 				LogBus::Debug(TOSTR("Add source file " << filename << ", " << text.size() << " bytes."));
 		}
 	}
+
+	LogBus::Debug("");
 }
 
 void fay::FayProject::step2Lexical()
@@ -84,14 +86,19 @@ void fay::FayProject::lexicalWorkThread(BuildTaskQueue<FaySource>* queue)
 			//生成Debug的信息
 			if (LogBus::IsDebug())
 			{
-				std::string str = TOSTR("\n[Tokens]\n" << task->filename() << "\n" << task->tokensStr());
+				std::string str = TOSTR("[Tokens]\n" << task->filename() << "\n" << task->tokensStr());
 				LogBus::Debug(str);
+				LogBus::Debug("");
 			}
 
 		}
 		catch (LexerException e)
 		{
-			LogBus::Error(e.what());
+			std::string msg = I18N::Get("err.lexical", task->filename(), std::to_string(e.line), std::to_string(e.col));
+			std::lock_guard<std::recursive_mutex> lg(LogBus::LogLock);
+			LogBus::Error(msg);
+			LogBus::PrintSource(task->file()->filename(), task->file()->text(), e.line, e.col);
+			LogBus::Debug("");
 		}
 		catch (std::exception e)
 		{
@@ -242,7 +249,7 @@ std::string fay::FaySource::tokensStr()
 
 			if (sb.size() > 0)
 				sb.add("\n");
-			sb.add("Line:")->add(lineStr)->add(' ', 10 - lineStr.size());
+			sb.add(' ', 5 - lineStr.size())->add(lineStr)->add(" | ");
 		}
 
 		std::string text = utils::StringUtils::EncodeSpecialChar(it->text());

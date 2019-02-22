@@ -24,6 +24,7 @@ int main(int argc, char** argv)
 		return 0;
 	}
 
+	fay::I18N::Init("doc/i18n.cn.json");
 	SystemEnv::Init();
 	TypeDict::Init();
 	FayDomain::InitSysLib();

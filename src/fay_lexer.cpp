@@ -201,30 +201,8 @@ PTR(std::vector<PTR(Token)>) fay::Lexer::Execute(const std::string &text)
 		}
 		else
 		{
-			//生成错误信息
-			utils::StringBuilder sb;
-			sb.add(I18N::Get("err.lex"))->endl();
-
-			//取当前行的内容
-			int strPos = lineEnd + 1;
-			while(strPos < chars.size() && chars[strPos] != '\n' && chars[strPos] != '\r')
-			{
-				if(chars[strPos] == '\t')
-					sb.add(' ');
-				else
-					sb.add((char)chars[strPos]);
-
-				strPos++;
-			}
-
-			//显示位置
-			sb.endl();
-			for(auto i = 0; i < col - 1; ++i)
-				sb.add(' ');
-			sb.add('^');
-
 			//抛出异常
-			throw LexerException(sb.toString(), line, col);
+			throw LexerException(line, col);
 		}
 	}
 
