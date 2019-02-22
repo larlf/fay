@@ -1,6 +1,8 @@
 #include <fay_system.h>
-#include <mirror_utils_log.h>
+#include <fay_log.h>
+#include <mirror.h>
 #include <string>
+#include <thread>
 
 using namespace fay;
 
@@ -40,9 +42,14 @@ void fay::SystemEnv::SignalHandler(int signal)
 	throw SEHException(0, "SignalHandler");
 }
 
+size_t fay::SystemEnv::CPUS = 0;
+
 void fay::SystemEnv::Init()
 {
-	LOG_DEBUG("Init System Env");
+	LogBus::Debug("\n[SetupSystem]");
+
+	SystemEnv::CPUS = std::thread::hardware_concurrency();
+	LogBus::Debug(TOSTR("CPUS : "<<SystemEnv::CPUS));
 
 	_set_se_translator(SystemEnv::SystemExceptionHandler);
 	_set_invalid_parameter_handler(SystemEnv::SystemInvalidParameterHandler);

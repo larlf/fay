@@ -44,9 +44,12 @@ namespace fay
 		PTR(FayBuilder) _builder;
 
 		//检查所有需要处理的文件
-		void checkAllFiles();
+		void step1CheckFiles();
+		//词法分析
+		void step2Lexical();
 
-		static void lexicalWorker(BuildTaskQueue<FaySource>* queue);
+		//用于进行词法分析的工作线程
+		static void lexicalWorkThread(BuildTaskQueue<FaySource>* queue);
 
 	public:
 		FayProject(const std::string &projectPath);

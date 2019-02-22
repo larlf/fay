@@ -24,6 +24,8 @@ int main(int argc, char** argv)
 		return 0;
 	}
 
+	SystemEnv::Init();
+	TypeDict::Init();
 	FayDomain::InitSysLib();
 
 	FayProject project(parser.get("path"));

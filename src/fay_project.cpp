@@ -1,12 +1,14 @@
 ﻿#include "fay_project.h"
 #include <fay_parser.h>
 #include <fay_log.h>
+#include <fay_system.h>
 #include <mirror.h>
+#include <string>
 
 using namespace mirror;
 using namespace fay;
 
-void fay::FayProject::checkAllFiles()
+void fay::FayProject::step1CheckFiles()
 {
 	if (this->_path.size() < 1)
 	{
@@ -15,7 +17,7 @@ void fay::FayProject::checkAllFiles()
 	}
 
 	if (LogBus::IsDebug())
-		LogBus::Debug(TOSTR("[Check Source Files]\nFind all source files at : " << this->_path));
+		LogBus::Debug(TOSTR("\n[Files]\nProject path : " << this->_path));
 
 	//找到所有的代码文件并读取进来
 	fs::path srcPath(this->_path);
@@ -38,7 +40,37 @@ void fay::FayProject::checkAllFiles()
 	}
 }
 
-void fay::FayProject::lexicalWorker(BuildTaskQueue<FaySource>* queue)
+void fay::FayProject::step2Lexical()
+{
+	//创建诃法解析的任务
+	BuildTaskQueue<FaySource> lexicalQueue;
+	for (auto it : this->_files)
+	{
+		lexicalQueue.add(it.second);
+	}
+
+	//定一下要开几个线程来进行处理
+	int threadCount = 1;
+	while (threadCount<SystemEnv::CPUS && lexicalQueue.activeSize()>threadCount * 5)
+	{
+		threadCount++;
+	}
+
+	//启动进行诃法分析的线程
+	for (auto i = 0; i < threadCount; ++i)
+	{
+		std::thread t(BIND_S(FayProject::lexicalWorkThread, &lexicalQueue));
+		t.detach();
+	}
+
+	//等候词法分析的完成
+	while (lexicalQueue.activeSize() > 0)
+	{
+		std::this_thread::yield();
+	}
+}
+
+void fay::FayProject::lexicalWorkThread(BuildTaskQueue<FaySource>* queue)
 {
 	Lexer lexer;
 
@@ -52,7 +84,7 @@ void fay::FayProject::lexicalWorker(BuildTaskQueue<FaySource>* queue)
 			//生成Debug的信息
 			if (LogBus::IsDebug())
 			{
-				std::string str = TOSTR("\n[Token : "<<task->filename()<<"]\n"<<task->tokensStr());
+				std::string str = TOSTR("\n[Tokens]\n" << task->filename() << "\n" << task->tokensStr());
 				LogBus::Debug(str);
 			}
 
@@ -89,7 +121,7 @@ fay::FayProject::FayProject(const std::string &name, int marjor, int minjor)
 
 void fay::FayProject::build()
 {
-	this->checkAllFiles();
+	this->step1CheckFiles();
 
 	{
 		PTR(Lexer) lexer = MKPTR(Lexer)();
@@ -175,26 +207,8 @@ void fay::FayProject::build()
 
 void fay::FayProject::build2()
 {
-	this->checkAllFiles();
-
-	//创建诃法解析的任务
-	BuildTaskQueue<FaySource> lexicalQueue;
-	for (auto it : this->_files)
-	{
-		lexicalQueue.add(it.second);
-	}
-
-	std::thread t1(BIND_S(FayProject::lexicalWorker, &lexicalQueue));
-	t1.detach();
-	std::thread t2(BIND_S(FayProject::lexicalWorker, &lexicalQueue));
-	t2.detach();
-	std::thread t3(BIND_S(FayProject::lexicalWorker, &lexicalQueue));
-	t3.detach();
-
-	while (lexicalQueue.activeSize() > 0)
-	{
-		std::this_thread::yield();
-	}
+	this->step1CheckFiles();
+	this->step2Lexical();
 }
 
 PTR(FaySource) fay::FayProject::findSource(const std::string &name)
@@ -217,13 +231,22 @@ void fay::FaySource::parse(PTR(Lexer) lexer)
 std::string fay::FaySource::tokensStr()
 {
 	utils::StringBuilder sb;
+	int line = 0;
 
 	for (auto it : *this->tokens)
 	{
-		if (sb.size() > 0)
-			sb.add("\n");
+		if (it->line() != line)
+		{
+			line = it->line();
+			std::string lineStr = std::to_string(line);
 
-		sb.add(it->toString());
+			if (sb.size() > 0)
+				sb.add("\n");
+			sb.add("Line:")->add(lineStr)->add(' ', 10 - lineStr.size());
+		}
+
+		std::string text = utils::StringUtils::EncodeSpecialChar(it->text());
+		sb.add(text)->add("(")->add(TypeDict::ToName(it->type()))->add(") ");
 	}
 
 	return sb.toString();

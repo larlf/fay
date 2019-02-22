@@ -74,10 +74,26 @@ namespace mirror
 				return this;
 			}
 
+			StringBuilder *add(const std::string &str, size_t count)
+			{
+				this->checkNewline();
+				for (auto i = 0; i < count; ++i)
+					text.append(str);
+				return this;
+			}
+
 			StringBuilder *add(const char c)
 			{
 				this->checkNewline();
 				text.append(&c, 1);
+				return this;
+			}
+
+			StringBuilder *add(const char c, size_t count)
+			{
+				this->checkNewline();
+				for (auto i = 0; i < count; ++i)
+					text.append(&c, 1);
 				return this;
 			}
 

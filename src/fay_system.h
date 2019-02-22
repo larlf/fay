@@ -24,6 +24,8 @@ namespace fay
 		static void SignalHandler(int signal);
 
 	public:
+		static size_t CPUS;  //CPUµÄÊıÁ¿
+
 		static void Init();
 	};
 
