@@ -8,19 +8,15 @@ namespace fay
 	//源代码
 	class FaySource : BaseObject
 	{
-	private:
-		PTR(FayFile) _file;
-		PTR(AstNode) _ast;
-
 	public:
+		PTR(FayFile) file;
 		PTR(std::vector<PTR(Token)>) tokens;
+		PTR(AstNode) ast;
 
-		FaySource(PTR(FayFile) file) : _file(file) {}
+		FaySource(PTR(FayFile) file) : file(file) {}
 
-		PTR(FayFile) file() { return this->_file; }
-		const std::string filename() { return this->_file->filename(); }
-		//PTR(std::vector<PTR(Token)>) tokens() { return this->_tokens; }
-		PTR(AstNode) ast() { return this->_ast; }
+		const std::string filename() { return this->file->filename(); }
+		const std::string text() { return this->file->text(); }
 
 		//对内容进行解析
 		void parse(PTR(Lexer) lexer);

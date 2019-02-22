@@ -85,7 +85,7 @@ void fay::FayProject::lexicalWorkThread(BuildTaskQueue<FaySource>* queue)
 	{
 		try
 		{
-			task->tokens = lexer.Execute(task->file()->text());
+			task->tokens = lexer.Execute(task->text());
 
 			//生成Debug的信息
 			if (LogBus::IsDebug())
@@ -94,14 +94,13 @@ void fay::FayProject::lexicalWorkThread(BuildTaskQueue<FaySource>* queue)
 				LogBus::Debug(str);
 				LogBus::Debug("");
 			}
-
 		}
 		catch (LexerException e)
 		{
 			std::string msg = I18N::Get("err.lexical", task->filename(), std::to_string(e.line), std::to_string(e.col));
 			std::lock_guard<std::recursive_mutex> lg(LogBus::LogLock);
 			LogBus::Error(msg);
-			LogBus::PrintSource(task->file()->filename(), task->file()->text(), e.line, e.col);
+			LogBus::PrintSource(task->filename(), task->text(), e.line, e.col);
 			LogBus::Debug("");
 		}
 		catch (std::exception e)
@@ -156,7 +155,7 @@ void fay::FayProject::build()
 	{
 		try
 		{
-			it.second->ast()->dig1(this->_builder.get());
+			it.second->ast->dig1(this->_builder.get());
 		}
 		catch (FayCompileException &e)
 		{
@@ -171,7 +170,7 @@ void fay::FayProject::build()
 	{
 		try
 		{
-			it.second->ast()->dig2(this->_builder.get());
+			it.second->ast->dig2(this->_builder.get());
 		}
 		catch (FayCompileException &e)
 		{
@@ -189,7 +188,7 @@ void fay::FayProject::build()
 	{
 		try
 		{
-			it.second->ast()->dig3(this->_builder.get());
+			it.second->ast->dig3(this->_builder.get());
 		}
 		catch (FayCompileException &e)
 		{
@@ -204,7 +203,7 @@ void fay::FayProject::build()
 	{
 		try
 		{
-			it.second->ast()->dig4(this->_builder.get());
+			it.second->ast->dig4(this->_builder.get());
 		}
 		catch (FayCompileException &e)
 		{
@@ -266,7 +265,7 @@ std::string fay::FaySource::tokensStr()
 std::string fay::FaySource::astStr()
 {
 	utils::StringBuilder sb;
-	this->_ast->buildString(&sb);
+	this->ast->buildString(&sb);
 	return sb.toString();
 
 }
