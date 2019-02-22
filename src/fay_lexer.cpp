@@ -1,7 +1,6 @@
 ﻿#include <fay_lexer.h>
 #include <fay_i18n.h>
-#include <mirror_utils_string.h>
-#include <mirror_utils_log.h>
+#include <mirror.h>
 
 using namespace mirror;
 using namespace mirror::data;

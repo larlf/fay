@@ -47,6 +47,8 @@ namespace fay
 		void step1CheckFiles();
 		//词法分析
 		void step2Lexical();
+		//构建语法树
+		void step3AST();
 
 		//用于进行词法分析的工作线程
 		static void lexicalWorkThread(BuildTaskQueue<FaySource>* queue);

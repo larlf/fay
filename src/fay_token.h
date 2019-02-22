@@ -1,9 +1,6 @@
 ﻿#pragma once
-
-#include <mirror_sys_const.h>
-#include <mirror_data_buffer.h>
+#include <mirror.h>
 #include <fay_const.h>
-#include <fay_object.h>
 
 namespace fay
 {

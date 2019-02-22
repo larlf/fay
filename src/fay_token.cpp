@@ -1,6 +1,4 @@
 ﻿#include <fay_token.h>
-#include <mirror_utils_lang.h>
-#include <mirror_utils_string.h>
 #include <stdio.h>
 #include <string.h>
 

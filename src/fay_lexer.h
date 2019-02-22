@@ -1,7 +1,5 @@
 ﻿#pragma once
-
 #include <fay_token.h>
-#include <fay_object.h>
 
 namespace fay
 {

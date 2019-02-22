@@ -72,6 +72,10 @@ void fay::FayProject::step2Lexical()
 	}
 }
 
+void fay::FayProject::step3AST()
+{
+}
+
 void fay::FayProject::lexicalWorkThread(BuildTaskQueue<FaySource>* queue)
 {
 	Lexer lexer;
