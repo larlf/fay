@@ -1,4 +1,5 @@
 ﻿#include "fay_project.h"
+#include "fay_project.h"
 #include <fay_parser.h>
 #include <fay_log.h>
 #include <fay_system.h>
@@ -68,6 +69,29 @@ void fay::FayProject::step2Lexical()
 
 void fay::FayProject::step3AST()
 {
+	//创建语法解析的任务
+	BuildTaskQueue<FaySource> astQueue;
+	for(auto it : this->_files)
+	{
+		if(it.second->tokens != nullptr)
+			astQueue.add(it.second);
+	}
+
+	//定一下要开几个线程来进行处理
+	int threadCount = 1;
+	while(threadCount < SystemEnv::CPUS && astQueue.activeSize() > threadCount * 5)
+		threadCount++;
+
+	//启动进行语法分析的线程
+	for(auto i = 0; i < threadCount; ++i)
+	{
+		std::thread t(BIND_S(FayProject::astWorkThread, &astQueue));
+		t.detach();
+	}
+
+	//等候语法分析的完成
+	while(astQueue.activeSize() > 0)
+		std::this_thread::yield();
 }
 
 void fay::FayProject::lexicalWorkThread(BuildTaskQueue<FaySource>* queue)
@@ -96,6 +120,26 @@ void fay::FayProject::lexicalWorkThread(BuildTaskQueue<FaySource>* queue)
 			LogBus::Error(msg);
 			LogBus::PrintSource(task->filename(), task->text(), e.line, e.col, 0);
 			LogBus::Debug("");
+		}
+		catch(std::exception e)
+		{
+			LogBus::Error(e.what());
+		}
+
+		queue->complete(task);
+		task = queue->get();
+	}
+}
+
+void fay::FayProject::astWorkThread(BuildTaskQueue<FaySource>* queue)
+{
+	auto task = queue->get();
+	while(task != nullptr)
+	{
+		try
+		{
+			auto ast = fay::Parser::Parse(task->tokens, task->filename());
+			task->ast = ast;
 		}
 		catch(std::exception e)
 		{
@@ -213,6 +257,7 @@ void fay::FayProject::build2()
 {
 	this->step1CheckFiles();
 	this->step2Lexical();
+	this->step3AST();
 }
 
 PTR(FaySource) fay::FayProject::findSource(const std::string &name)

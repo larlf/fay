@@ -48,6 +48,8 @@ namespace fay
 
 		//用于进行词法分析的工作线程
 		static void lexicalWorkThread(BuildTaskQueue<FaySource>* queue);
+		//用于生成AST的工作线程
+		static void astWorkThread(BuildTaskQueue<FaySource>* queue);
 
 	public:
 		FayProject(const std::string &projectPath);
