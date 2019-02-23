@@ -32,7 +32,7 @@ namespace fay
 		static void Warn(const std::string &msg) { LogBus::Log(LogType::Warn, msg); }
 		static void Error(const std::string &msg) { LogBus::Log(LogType::Error, msg); }
 		//ДђгЁДњТы
-		static void PrintSource(const std::string &filename, const std::string &text, int line, int col);
+		static void PrintSource(const std::string &filename, const std::string &text, int line, int col, int count);
 	};
 }
 

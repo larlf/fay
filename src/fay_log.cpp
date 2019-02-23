@@ -6,10 +6,10 @@ std::recursive_mutex fay::LogBus::LogLock;
 
 std::string fay::LogBus::_LogFile;
 
-void fay::LogBus::SetLogFile(const std::string & filename)
+void fay::LogBus::SetLogFile(const std::string &filename)
 {
 	LogBus::_LogFile = filename;
-	if (filename.size() > 0)
+	if(filename.size() > 0)
 		FileUtils::WriteTextFile(filename, "");
 }
 
@@ -19,38 +19,38 @@ void fay::LogBus::Log(LogType type, const std::string &data)
 
 	std::lock_guard<std::recursive_mutex> lg(LogBus::LogLock);
 
-	switch (type)
+	switch(type)
 	{
-	case LogType::Info:
+		case LogType::Info:
 #if WIN32
-		std::cout << termcolor::yellow << StringUtils::Encoding(msg, "UTF-8", "GBK") << termcolor::reset << std::endl;
+			std::cout << termcolor::yellow << StringUtils::Encoding(msg, "UTF-8", "GBK") << termcolor::reset << std::endl;
 #else
-		std::cout << termcolor::yellow << msg << termcolor::reset << std::endl;
+			std::cout << termcolor::yellow << msg << termcolor::reset << std::endl;
 #endif
-		break;
-	case LogType::Warn:
-		msg.insert(0, "Warn : ");
+			break;
+		case LogType::Warn:
+			msg.insert(0, "Warn : ");
 #if WIN32
-		std::cout << termcolor::magenta << StringUtils::Encoding(msg, "UTF-8", "GBK") << termcolor::reset << std::endl;
+			std::cout << termcolor::magenta << StringUtils::Encoding(msg, "UTF-8", "GBK") << termcolor::reset << std::endl;
 #else
-		std::cout << termcolor::magenta << msg << termcolor::reset << std::endl;
+			std::cout << termcolor::magenta << msg << termcolor::reset << std::endl;
 #endif
-		break;
-	case LogType::Error:
-		msg.insert(0, "Error : ");
+			break;
+		case LogType::Error:
+			msg.insert(0, "Error : ");
 #if WIN32
-		std::cout << termcolor::red << StringUtils::Encoding(msg, "UTF-8", "GBK") << termcolor::reset << std::endl;
+			std::cout << termcolor::red << StringUtils::Encoding(msg, "UTF-8", "GBK") << termcolor::reset << std::endl;
 #else
-		std::cout << termcolor::red << msg << termcolor::reset << std::endl;
+			std::cout << termcolor::red << msg << termcolor::reset << std::endl;
 #endif
-		break;
+			break;
 	}
 
-	if (_LogFile.size() > 0)
+	if(_LogFile.size() > 0)
 		FileUtils::AppendTextFile(_LogFile, msg);
 }
 
-void fay::LogBus::PrintSource(const std::string &filename, const std::string & text, int line, int col)
+void fay::LogBus::PrintSource(const std::string &filename, const std::string &text, int line, int col, int count)
 {
 	std::lock_guard<std::recursive_mutex> lg(LogBus::LogLock);
 
@@ -69,22 +69,22 @@ void fay::LogBus::PrintSource(const std::string &filename, const std::string & t
 	}
 
 	char c;
-	for (int i = 0; i < text.size(); ++i)
+	for(int i = 0; i < text.size(); ++i)
 	{
 		c = text[i];
 
 		//有一些字符不处理
-		if (c == '\r')
+		if(c == '\r')
 			continue;
 
 		//当前列
 		strCol = i - strLineStart;
 
 		//显示前后3行
-		if (strLine >= line - 3 && strLine <= line + 3)
+		if(strLine >= line - 3 && strLine <= line + 3)
 		{
 			//处理行号
-			if (nowLine != strLine)
+			if(nowLine != strLine)
 			{
 				nowLine = strLine;
 
@@ -98,22 +98,28 @@ void fay::LogBus::PrintSource(const std::string &filename, const std::string & t
 				msg += temp;
 			}
 
-			switch (state)
+			switch(state)
 			{
-			case 0:
-				if (strLine == line && strCol == col)
-				{
-					state = 1;
-					std::cout << termcolor::on_red;
-				}
-				break;
-			case 1:
-				if (c == '\n' || c == ' ' || c == '\t' || c == ';' || c == ')')
-				{
+				case 0:
+					if(strLine == line && strCol == col)
+					{
+						state = 1;
+						std::cout << termcolor::on_red;
+					}
+					break;
+				case 1:
+					if(count > 0)
+					{
+						if(strCol - col <= count)
+							break;
+					}
+					else if(c != '\n' && c != ' ' && c != '\t' && c != ';' && c != ')')
+						break;
+
+					//如果需要结束，这里改变状态
 					state = 2;
 					std::cout << termcolor::reset;
-				}
-				break;
+					break;
 			}
 
 			std::cout << c;
@@ -121,7 +127,7 @@ void fay::LogBus::PrintSource(const std::string &filename, const std::string & t
 		}
 
 		//换行
-		if (c == '\n')
+		if(c == '\n')
 		{
 			strLine++;
 			strLineStart = i;
@@ -129,11 +135,11 @@ void fay::LogBus::PrintSource(const std::string &filename, const std::string & t
 	}
 
 	//防止状态没有转换过来
-	if (state == 1)
+	if(state == 1)
 		std::cout << termcolor::reset;
 	std::cout << std::endl;
 
 	//输出到Log文件
-	if (_LogFile.size() > 0)
+	if(_LogFile.size() > 0)
 		FileUtils::AppendTextFile(_LogFile, msg);
 }

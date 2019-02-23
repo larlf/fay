@@ -10,13 +10,13 @@ using namespace fay;
 
 void fay::FayProject::step1CheckFiles()
 {
-	if (this->_path.size() < 1)
+	if(this->_path.size() < 1)
 	{
 		LogBus::Error("Project path is empty");
 		return;
 	}
 
-	if (LogBus::IsDebug())
+	if(LogBus::IsDebug())
 		LogBus::Debug(TOSTR("[Files]\nProject path : " << this->_path));
 
 	//找到所有的代码文件并读取进来
@@ -24,17 +24,17 @@ void fay::FayProject::step1CheckFiles()
 	srcPath.append("src");
 	std::vector<fs::path> files;
 	utils::FileUtils::FindFiles(files, this->_path, true, ".fay");
-	for (auto it : files)
+	for(auto it : files)
 	{
 		std::string filename = it.string();
 		LogBus::Debug(filename);
-		if (this->_files.find(filename) == this->_files.end())
+		if(this->_files.find(filename) == this->_files.end())
 		{
 			std::string text = utils::FileUtils::ReadTextFile(filename);
 			PTR(FayFile) file = MKPTR(FayFile)(filename, text);
 			this->_files[filename] = MKPTR(FaySource)(file);
 
-			if (LogBus::IsDebug())
+			if(LogBus::IsDebug())
 				LogBus::Debug(TOSTR("Add source file " << filename << ", " << text.size() << " bytes."));
 		}
 	}
@@ -46,30 +46,24 @@ void fay::FayProject::step2Lexical()
 {
 	//创建诃法解析的任务
 	BuildTaskQueue<FaySource> lexicalQueue;
-	for (auto it : this->_files)
-	{
+	for(auto it : this->_files)
 		lexicalQueue.add(it.second);
-	}
 
 	//定一下要开几个线程来进行处理
 	int threadCount = 1;
-	while (threadCount<SystemEnv::CPUS && lexicalQueue.activeSize()>threadCount * 5)
-	{
+	while(threadCount < SystemEnv::CPUS && lexicalQueue.activeSize() > threadCount * 5)
 		threadCount++;
-	}
 
 	//启动进行诃法分析的线程
-	for (auto i = 0; i < threadCount; ++i)
+	for(auto i = 0; i < threadCount; ++i)
 	{
 		std::thread t(BIND_S(FayProject::lexicalWorkThread, &lexicalQueue));
 		t.detach();
 	}
 
 	//等候词法分析的完成
-	while (lexicalQueue.activeSize() > 0)
-	{
+	while(lexicalQueue.activeSize() > 0)
 		std::this_thread::yield();
-	}
 }
 
 void fay::FayProject::step3AST()
@@ -81,29 +75,29 @@ void fay::FayProject::lexicalWorkThread(BuildTaskQueue<FaySource>* queue)
 	Lexer lexer;
 
 	auto task = queue->get();
-	while (task != nullptr)
+	while(task != nullptr)
 	{
 		try
 		{
 			task->tokens = lexer.Execute(task->text());
 
 			//生成Debug的信息
-			if (LogBus::IsDebug())
+			if(LogBus::IsDebug())
 			{
 				std::string str = TOSTR("[Tokens]\n" << task->filename() << "\n" << task->tokensStr());
 				LogBus::Debug(str);
 				LogBus::Debug("");
 			}
 		}
-		catch (LexerException e)
+		catch(LexerException e)
 		{
 			std::string msg = I18N::Get("err.lexical", task->filename(), std::to_string(e.line), std::to_string(e.col));
 			std::lock_guard<std::recursive_mutex> lg(LogBus::LogLock);
 			LogBus::Error(msg);
-			LogBus::PrintSource(task->filename(), task->text(), e.line, e.col);
+			LogBus::PrintSource(task->filename(), task->text(), e.line, e.col, 0);
 			LogBus::Debug("");
 		}
-		catch (std::exception e)
+		catch(std::exception e)
 		{
 			LogBus::Error(e.what());
 		}
@@ -136,13 +130,13 @@ void fay::FayProject::build()
 	{
 		PTR(Lexer) lexer = MKPTR(Lexer)();
 
-		for (auto it : this->_files)
+		for(auto it : this->_files)
 		{
 			try
 			{
 				it.second->parse(lexer);
 			}
-			catch (FayCompileException &e)
+			catch(FayCompileException &e)
 			{
 				LOG_ERROR(e.what());
 				PRINT(e.source());
@@ -151,13 +145,13 @@ void fay::FayProject::build()
 		}
 	}
 
-	for (auto it : this->_files)
+	for(auto it : this->_files)
 	{
 		try
 		{
 			it.second->ast->dig1(this->_builder.get());
 		}
-		catch (FayCompileException &e)
+		catch(FayCompileException &e)
 		{
 			LOG_ERROR(e.what());
 			PRINT(e.source());
@@ -166,13 +160,13 @@ void fay::FayProject::build()
 		}
 	}
 
-	for (auto it : this->_files)
+	for(auto it : this->_files)
 	{
 		try
 		{
 			it.second->ast->dig2(this->_builder.get());
 		}
-		catch (FayCompileException &e)
+		catch(FayCompileException &e)
 		{
 			LOG_ERROR(e.what());
 			PRINT(e.source());
@@ -181,16 +175,16 @@ void fay::FayProject::build()
 		}
 	}
 
-	for (auto clazz : FayDomain::classes().list())
+	for(auto clazz : FayDomain::classes().list())
 		clazz->rebuild();
 
-	for (auto it : this->_files)
+	for(auto it : this->_files)
 	{
 		try
 		{
 			it.second->ast->dig3(this->_builder.get());
 		}
-		catch (FayCompileException &e)
+		catch(FayCompileException &e)
 		{
 			LOG_ERROR(e.what());
 			PRINT(e.source());
@@ -199,13 +193,13 @@ void fay::FayProject::build()
 		}
 	}
 
-	for (auto it : this->_files)
+	for(auto it : this->_files)
 	{
 		try
 		{
 			it.second->ast->dig4(this->_builder.get());
 		}
-		catch (FayCompileException &e)
+		catch(FayCompileException &e)
 		{
 			LOG_ERROR(e.what());
 			PRINT(e.source());
@@ -223,9 +217,9 @@ void fay::FayProject::build2()
 
 PTR(FaySource) fay::FayProject::findSource(const std::string &name)
 {
-	for (auto it : this->_files)
+	for(auto it : this->_files)
 	{
-		if (it.second->filename().find(name) != std::string::npos)
+		if(it.second->filename().find(name) != std::string::npos)
 			return it.second;
 	}
 
@@ -243,14 +237,14 @@ std::string fay::FaySource::tokensStr()
 	utils::StringBuilder sb;
 	int line = 0;
 
-	for (auto it : *this->tokens)
+	for(auto it : *this->tokens)
 	{
-		if (it->line() != line)
+		if(it->line() != line)
 		{
 			line = it->line();
 			std::string lineStr = std::to_string(line);
 
-			if (sb.size() > 0)
+			if(sb.size() > 0)
 				sb.add("\n");
 			sb.add(' ', 5 - lineStr.size())->add(lineStr)->add(" | ");
 		}
