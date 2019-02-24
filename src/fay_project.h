@@ -15,8 +15,8 @@ namespace fay
 
 		FaySource(PTR(FayFile) file) : file(file) {}
 
-		const std::string filename() { return this->file->filename(); }
-		const std::string text() { return this->file->text(); }
+		const std::string filename() { return this->file->filename; }
+		const std::string text() { return this->file->text; }
 
 		//对内容进行解析
 		void parse(PTR(Lexer) lexer);

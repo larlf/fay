@@ -28,41 +28,25 @@ namespace fay
 	//文件对象
 	class FayFile : public BaseObject
 	{
-	private:
-		std::string _filename;  //文件的名称
-		std::string _text;  //文件的内容
-
 	public:
+		std::string filename;  //文件的名称
+		std::string text;  //文件的内容
+
 		FayFile(const std::string &filename, const std::string &text)
-			: _filename(filename), _text(text) {}
-
-		const std::string &filename() { return this->_filename; }
-		const std::string &text() { return this->_text; }
-
-		//取出指定行的内容
-		//处理的时候没有考虑性能，只在报错的时候再用
-		const std::string line(int index);
-		//生成错误信息的时候用
-		const std::string line(int line, int col);
+			: filename(filename), text(text) {}
 	};
 
 	//代码片段
 	class FayPart
 	{
-	private:
-		PTR(FayFile) _file;
-		int _line;
-		int _start;
-		int _len;
-
 	public:
-		FayPart(PTR(FayFile) file, int line, int start, int len)
-			: _file(file), _line(line), _start(start), _len(len) {}
+		PTR(FayFile) file;
+		int line;
+		int start;
+		int len;
 
-		PTR(FayFile) file() { return this->_file; }
-		int line() { return this->_line; }
-		int start() { return this->_start; }
-		int len() { return this->_len; }
+		FayPart(PTR(FayFile) file, int line, int start, int len)
+			: file(file), line(line), start(start), len(len) {}
 	};
 
 	//用于处理报错信息的异常
@@ -191,7 +175,7 @@ namespace fay
 		{
 			std::lock_guard<std::mutex> lg(this->_lock);
 
-			if (task != nullptr)
+			if(task != nullptr)
 			{
 				this->_waitQueue.push(task);
 				this->_taskCount++;
@@ -203,7 +187,7 @@ namespace fay
 		{
 			std::lock_guard<std::mutex> lg(this->_lock);
 
-			if (this->_waitQueue.size() > 0)
+			if(this->_waitQueue.size() > 0)
 			{
 				PTR(T) task = this->_waitQueue.front();
 				this->_waitQueue.pop();
@@ -219,9 +203,9 @@ namespace fay
 		{
 			std::lock_guard<std::mutex> lg(this->_lock);
 
-			for (auto i = 0; i < this->_doingTasks.size(); ++i)
+			for(auto i = 0; i < this->_doingTasks.size(); ++i)
 			{
-				if (this->_doingTasks[i] != nullptr && this->_doingTasks[i] == task)
+				if(this->_doingTasks[i] != nullptr && this->_doingTasks[i] == task)
 				{
 					this->_completedTasks.push_back(task);
 					this->_doingTasks[i] = nullptr;
