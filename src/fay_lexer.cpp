@@ -201,7 +201,7 @@ PTR(std::vector<PTR(Token)>) fay::Lexer::Execute(const std::string &text)
 		else
 		{
 			//抛出异常
-			throw LexerException(line, col);
+			throw LexerException(I18N::Get("err.lexical"), line, col);
 		}
 	}
 

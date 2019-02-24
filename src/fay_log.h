@@ -1,6 +1,7 @@
 #pragma once
 #include <mirror.h>
 #include <fay_const.h>
+#include <fay_object.h>
 #include <thread>
 #include <mutex>
 
@@ -33,6 +34,21 @@ namespace fay
 		static void Error(const std::string &msg) { LogBus::Log(LogType::Error, msg); }
 		//打印代码
 		static void PrintSource(const std::string &filename, const std::string &text, int line, int col, int count);
+	};
+
+	//一条Log数据
+	class LogData
+	{
+	public:
+		LogType type = LogType::Debug;
+		std::string msg;
+		std::string filename;
+		int line = 0;
+		int col = 0;
+		int count = 0;
+
+		LogData(LogType type, const std::string &msg, const std::string &filename, int line, int col, int count)
+			: type(type), msg(msg), filename(filename), line(line), col(col), count(count) {}
 	};
 }
 

@@ -1,5 +1,4 @@
-﻿#include "fay_project.h"
-#include "fay_project.h"
+﻿#include <fay_project.h>
 #include <fay_parser.h>
 #include <fay_log.h>
 #include <fay_system.h>
@@ -96,7 +95,7 @@ void fay::FayProject::step3AST()
 
 void fay::FayProject::lexicalWorkThread(BuildTaskQueue<FaySource>* queue)
 {
-	Lexer lexer;
+	Lexer lexer;  //构建词法解析器
 
 	auto task = queue->get();
 	while(task != nullptr)
@@ -115,7 +114,9 @@ void fay::FayProject::lexicalWorkThread(BuildTaskQueue<FaySource>* queue)
 		}
 		catch(LexerException e)
 		{
-			std::string msg = I18N::Get("err.lexical", task->filename(), std::to_string(e.line), std::to_string(e.col));
+			std::string msg = e.what();
+			msg += I18N::Get("location", task->filename(), std::to_string(e.line), std::to_string(e.col));
+
 			std::lock_guard<std::recursive_mutex> lg(LogBus::LogLock);
 			LogBus::Error(msg);
 			LogBus::PrintSource(task->filename(), task->text(), e.line, e.col, 0);
@@ -123,7 +124,11 @@ void fay::FayProject::lexicalWorkThread(BuildTaskQueue<FaySource>* queue)
 		}
 		catch(std::exception e)
 		{
-			LogBus::Error(e.what());
+			std::string msg = I18N::Get("err.lexical");
+			msg += task->filename();
+			msg += "\n";
+			msg += e.what();
+			LogBus::Error(msg);
 		}
 
 		queue->complete(task);
@@ -138,12 +143,35 @@ void fay::FayProject::astWorkThread(BuildTaskQueue<FaySource>* queue)
 	{
 		try
 		{
+			LogBus::Debug(TOSTR("Start parse ast : " << task->filename()));
 			auto ast = fay::Parser::Parse(task->tokens, task->filename());
 			task->ast = ast;
+
+			//生成Debug的信息
+			if(LogBus::IsDebug())
+			{
+				std::string str = TOSTR("[AST]\n" << task->filename() << "\n" << task->astStr());
+				LogBus::Debug(str);
+				LogBus::Debug("");
+			}
+		}
+		catch(ParseException e)
+		{
+			std::string msg = e.what();
+			msg += I18N::Get("location", task->filename(), std::to_string(e.token->line()), std::to_string(e.token->col()));
+
+			std::lock_guard<std::recursive_mutex> lg(LogBus::LogLock);
+			LogBus::Error(msg);
+			LogBus::PrintSource(task->filename(), task->text(), e.token->line(), e.token->col(), e.token->size());
+			LogBus::Debug("");
 		}
 		catch(std::exception e)
 		{
-			LogBus::Error(e.what());
+			std::string msg = I18N::Get("err.ast");
+			msg += task->filename();
+			msg += "\n";
+			msg += e.what();
+			LogBus::Error(msg);
 		}
 
 		queue->complete(task);

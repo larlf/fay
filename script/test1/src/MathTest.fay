@@ -8,7 +8,7 @@ public class MathTest
 	{
 		var a = 5;
 		var b:int;
-		b= -a;
+		b= -*a;
 		return b;
 	}
 

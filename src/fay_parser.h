@@ -7,23 +7,17 @@
 namespace fay
 {
 	//语法解析中的异常
-	class ParseException : public FayCompileException
+	class ParseException : public std::exception
 	{
 	public:
+		PTR(Token) token;
+
 		//stack : 当前正在处理的TokenStack
 		//key : 错误信息的国际化信息
 		template<typename... Params>
 		ParseException(TokenStack* stack, const std::string &key, Params... args)
-			: FayCompileException((I18N::Get(key, args...)))
+			: std::exception(I18N::Get(key, args...).c_str()), token(stack->now())
 		{
-			PTR(Token) token = stack->now();
-			if(token)
-			{
-				//TODO
-				//this->_file = token->file();
-				this->_line = token->line();
-				this->_col = token->col();
-			}
 		}
 	};
 
