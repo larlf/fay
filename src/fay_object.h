@@ -37,7 +37,7 @@ namespace fay
 	};
 
 	//代码片段
-	class FayPart
+	class FilePart
 	{
 	public:
 		PTR(FayFile) file;
@@ -45,7 +45,7 @@ namespace fay
 		int start;
 		int len;
 
-		FayPart(PTR(FayFile) file, int line, int start, int len)
+		FilePart(PTR(FayFile) file, int line, int start, int len)
 			: file(file), line(line), start(start), len(len) {}
 	};
 

@@ -6,6 +6,8 @@ std::recursive_mutex fay::LogBus::LogLock;
 
 std::string fay::LogBus::_LogFile;
 
+MAP<std::thread::id, PTR(std::vector<fay::LogData>)> fay::LogBus::_Records;
+
 void fay::LogBus::SetLogFile(const std::string &filename)
 {
 	LogBus::_LogFile = filename;

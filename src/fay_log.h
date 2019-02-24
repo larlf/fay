@@ -16,11 +16,28 @@ namespace fay
 		Error
 	};
 
+	//一条Log数据
+	class LogData
+	{
+	public:
+		LogType type = LogType::Debug;
+		std::string msg;
+		std::string filename;
+		int line = 0;
+		int col = 0;
+		int count = 0;
+		fay::FilePart part;
+
+		LogData(LogType type, const std::string &msg, const std::string &filename, int line, int col, int count)
+			: type(type), msg(msg), filename(filename), line(line), col(col), count(count) {}
+	};
+
 	//用于统一处理Log的部分
 	class LogBus
 	{
 	private:
 		static std::string _LogFile;
+		static MAP<std::thread::id, PTR(std::vector<LogData>)> _Records;
 
 	public:
 		static std::recursive_mutex LogLock;
@@ -36,19 +53,6 @@ namespace fay
 		static void PrintSource(const std::string &filename, const std::string &text, int line, int col, int count);
 	};
 
-	//一条Log数据
-	class LogData
-	{
-	public:
-		LogType type = LogType::Debug;
-		std::string msg;
-		std::string filename;
-		int line = 0;
-		int col = 0;
-		int count = 0;
 
-		LogData(LogType type, const std::string &msg, const std::string &filename, int line, int col, int count)
-			: type(type), msg(msg), filename(filename), line(line), col(col), count(count) {}
-	};
 }
 
