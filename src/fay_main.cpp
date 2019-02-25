@@ -15,7 +15,7 @@ int main(int argc, char** argv)
 	//parser.debug();
 
 	//Test
-	LogBus::SetLogFile("build.log");
+	LogBus::Init("build.log");
 
 	//没有可处理的文件
 	if(parser.paramCount() < 1)

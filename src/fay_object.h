@@ -42,11 +42,18 @@ namespace fay
 	public:
 		PTR(FayFile) file;
 		int line;
-		int start;
-		int len;
+		int col;
+		int count;
 
-		FilePart(PTR(FayFile) file, int line, int start, int len)
-			: file(file), line(line), start(start), len(len) {}
+		//file : 所属的文件
+		//line : 第几行
+		//col : 第几列
+		//count : 字符数
+		FilePart(PTR(FayFile) file, int line, int col, int count)
+			: file(file), line(line), col(col), count(count) {}
+
+		//输出到终端，并返回内容
+		std::string print();
 	};
 
 	//用于处理报错信息的异常

@@ -1,21 +1,65 @@
-#include "fay_log.h"
+#include <fay_log.h>
 
 using namespace mirror::utils;
+using namespace fay;
 
 std::recursive_mutex fay::LogBus::LogLock;
 
+std::thread::id fay::LogBus::_MainThreadID;
+
 std::string fay::LogBus::_LogFile;
 
-MAP<std::thread::id, PTR(std::vector<fay::LogData>)> fay::LogBus::_Records;
+MAP<std::thread::id, PTR(std::vector<PTR(fay::LogData)>)> fay::LogBus::_Loggers;
 
-void fay::LogBus::SetLogFile(const std::string &filename)
+PTR(std::vector<PTR(LogData)>) fay::LogBus::_GetThreadLogger(const std::thread::id &id)
 {
-	LogBus::_LogFile = filename;
-	if(filename.size() > 0)
-		FileUtils::WriteTextFile(filename, "");
+	std::lock_guard<std::recursive_mutex> lg(LogBus::LogLock);
+
+	auto it = LogBus::_Loggers.find(id);
+	if(it != LogBus::_Loggers.end())
+		return it->second;
+
+	PTR(std::vector<PTR(LogData)>) logger = MKPTR(std::vector<PTR(LogData)>)();
+	LogBus::_Loggers[id] = logger;
+	return logger;
 }
 
-void fay::LogBus::Log(LogType type, const std::string &data)
+void fay::LogBus::_RemoveThreadLogger(const std::thread::id &id)
+{
+	std::lock_guard<std::recursive_mutex> lg(LogBus::LogLock);
+
+	auto it = LogBus::_Loggers.find(id);
+	if(it != LogBus::_Loggers.end())
+		LogBus::_Loggers.erase(it);
+}
+
+void fay::LogBus::Init(const std::string &filename)
+{
+	LogBus::_MainThreadID = std::this_thread::get_id();
+
+	if(filename.size() > 0)
+	{
+		LogBus::_LogFile = filename;
+		FileUtils::WriteTextFile(filename, "");
+	}
+}
+
+void fay::LogBus::Log(LogType type, const std::string &msg, PTR(FilePart) part)
+{
+	std::thread::id id = std::this_thread::get_id();
+
+	if(id == LogBus::_MainThreadID)
+		LogBus::_Log(type, msg, part);
+	else
+	{
+		auto data = MKPTR(LogData)(type, msg, part);
+
+		std::lock_guard<std::recursive_mutex> lg(LogBus::LogLock);
+		LogBus::_GetThreadLogger(id)->push_back(data);
+	}
+}
+
+void fay::LogBus::_Log(LogType type, const std::string &data, PTR(FilePart) part)
 {
 	std::string msg = data;
 
@@ -50,98 +94,40 @@ void fay::LogBus::Log(LogType type, const std::string &data)
 
 	if(_LogFile.size() > 0)
 		FileUtils::AppendTextFile(_LogFile, msg);
+
+	if(part)
+	{
+		std::string str = part->print();
+
+		if(_LogFile.size() > 0)
+			FileUtils::AppendTextFile(_LogFile, msg);
+	}
 }
 
-void fay::LogBus::PrintSource(const std::string &filename, const std::string &text, int line, int col, int count)
+void fay::LogBus::EndThread()
+{
+	std::thread::id id = std::this_thread::get_id();
+
+	std::lock_guard<std::recursive_mutex> lg(LogBus::LogLock);
+	auto logger = LogBus::_GetThreadLogger(id);
+	if(logger != nullptr)
+	{
+		for(auto log : *logger)
+			LogBus::_Log(log->type, log->msg, log->part);
+
+		LogBus::_RemoveThreadLogger(id);
+	}
+}
+
+void fay::LogBus::Clear()
 {
 	std::lock_guard<std::recursive_mutex> lg(LogBus::LogLock);
 
-	std::string msg;
-	std::string str;
-	int strLine = 1;
-	int strCol = -1;
-	int strLineStart = -1;
-	int state = 0;  //状态
-	int nowLine = -1;  //当前显示的行
-
-	//显示文件名
+	for(auto logger : LogBus::_Loggers)
 	{
-		std::cout << termcolor::green << "[" << filename << "]" << termcolor::reset << std::endl;
-		msg += "[" + filename + "]\n";
+		for(auto log : *logger.second)
+			LogBus::_Log(log->type, log->msg, log->part);
 	}
 
-	char c;
-	for(int i = 0; i < text.size(); ++i)
-	{
-		c = text[i];
-
-		//有一些字符不处理
-		if(c == '\r')
-			continue;
-
-		//当前列
-		strCol = i - strLineStart;
-
-		//显示前后3行
-		if(strLine >= line - 3 && strLine <= line + 3)
-		{
-			//处理行号
-			if(nowLine != strLine)
-			{
-				nowLine = strLine;
-
-				StringBuilder sb;
-				std::string temp = std::to_string(nowLine);
-				sb.add(' ', 5 - temp.size());
-				sb.add(temp);
-				sb.add(" | ");
-				temp = sb.toString();
-				std::cout << termcolor::cyan << temp << termcolor::reset;
-				msg += temp;
-			}
-
-			switch(state)
-			{
-				case 0:
-					if(strLine == line && strCol == col)
-					{
-						state = 1;
-						std::cout << termcolor::on_red;
-					}
-					break;
-				case 1:
-					if(count > 0)
-					{
-						if(strCol - col <= count)
-							break;
-					}
-					else if(c != '\n' && c != ' ' && c != '\t' && c != ';' && c != ')')
-						break;
-
-					//如果需要结束，这里改变状态
-					state = 2;
-					std::cout << termcolor::reset;
-					break;
-			}
-
-			std::cout << c;
-			msg.append(&c, 0, 1);
-		}
-
-		//换行
-		if(c == '\n')
-		{
-			strLine++;
-			strLineStart = i;
-		}
-	}
-
-	//防止状态没有转换过来
-	if(state == 1)
-		std::cout << termcolor::reset;
-	std::cout << std::endl;
-
-	//输出到Log文件
-	if(_LogFile.size() > 0)
-		FileUtils::AppendTextFile(_LogFile, msg);
+	LogBus::_Loggers.clear();
 }

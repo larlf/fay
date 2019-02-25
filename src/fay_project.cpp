@@ -109,18 +109,13 @@ void fay::FayProject::lexicalWorkThread(BuildTaskQueue<FaySource>* queue)
 			{
 				std::string str = TOSTR("[Tokens]\n" << task->filename() << "\n" << task->tokensStr());
 				LogBus::Debug(str);
-				LogBus::Debug("");
 			}
 		}
 		catch(LexerException e)
 		{
 			std::string msg = e.what();
 			msg += I18N::Get("location", task->filename(), std::to_string(e.line), std::to_string(e.col));
-
-			std::lock_guard<std::recursive_mutex> lg(LogBus::LogLock);
-			LogBus::Error(msg);
-			LogBus::PrintSource(task->filename(), task->text(), e.line, e.col, 0);
-			LogBus::Debug("");
+			LogBus::Error(msg, MKPTR(FilePart)(task->file, e.line, e.col, 0));
 		}
 		catch(std::exception e)
 		{
@@ -131,6 +126,7 @@ void fay::FayProject::lexicalWorkThread(BuildTaskQueue<FaySource>* queue)
 			LogBus::Error(msg);
 		}
 
+		LogBus::EndThread();
 		queue->complete(task);
 		task = queue->get();
 	}
@@ -152,7 +148,6 @@ void fay::FayProject::astWorkThread(BuildTaskQueue<FaySource>* queue)
 			{
 				std::string str = TOSTR("[AST]\n" << task->filename() << "\n" << task->astStr());
 				LogBus::Debug(str);
-				LogBus::Debug("");
 			}
 		}
 		catch(ParseException e)
@@ -161,9 +156,7 @@ void fay::FayProject::astWorkThread(BuildTaskQueue<FaySource>* queue)
 			msg += I18N::Get("location", task->filename(), std::to_string(e.token->line()), std::to_string(e.token->col()));
 
 			std::lock_guard<std::recursive_mutex> lg(LogBus::LogLock);
-			LogBus::Error(msg);
-			LogBus::PrintSource(task->filename(), task->text(), e.token->line(), e.token->col(), e.token->size());
-			LogBus::Debug("");
+			LogBus::Error(msg, MKPTR(FilePart)(task->file, e.token->line(), e.token->col(), e.token->size()));
 		}
 		catch(std::exception e)
 		{
@@ -174,6 +167,7 @@ void fay::FayProject::astWorkThread(BuildTaskQueue<FaySource>* queue)
 			LogBus::Error(msg);
 		}
 
+		LogBus::EndThread();
 		queue->complete(task);
 		task = queue->get();
 	}
