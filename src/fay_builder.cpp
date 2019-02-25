@@ -17,7 +17,7 @@ fay::FayBuilder::~FayBuilder()
 	}
 }
 
-void fay::FayBuilder::log(BuildLogLevel level, int line, int col, const std::string & msg)
+void fay::FayBuilder::log(BuildLogLevel level, int line, int col, const std::string &msg)
 {
 }
 
@@ -28,25 +28,25 @@ std::string fay::FayBuilder::makeLabel()
 	return label;
 }
 
-void fay::FayBuilder::useLabel(const std::string & label, int32_t * target)
+void fay::FayBuilder::useLabel(const std::string &label, int32_t* target)
 {
 	this->_fun->labels()->addTarget(label, target);
 }
 
-void fay::FayBuilder::fixedLabel(const std::string & label)
+void fay::FayBuilder::fixedLabel(const std::string &label)
 {
 	this->_fun->labels()->setPos(label, this->instsSize());
 }
 
-void fay::FayBuilder::beginFile(const std::string &filename)
+void fay::FayBuilder::beginFile(PTR(FayFile) file)
 {
-	this->_filename = filename;
+	this->_file = file;
 	this->_usings.clear();
 }
 
 void fay::FayBuilder::endFile()
 {
-	this->_filename = "";
+	this->_file.reset();
 }
 
 void fay::FayBuilder::addUsing(const std::string &packageName)
@@ -98,7 +98,7 @@ PTR(FayVarDef) fay::FayBuilder::findVar(const std::string &name)
 {
 	auto var = this->_fun->findVar(name);
 
-	if (var) return var;
+	if(var) return var;
 
 
 

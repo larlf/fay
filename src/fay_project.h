@@ -18,9 +18,6 @@ namespace fay
 		const std::string filename() { return this->file->filename; }
 		const std::string text() { return this->file->text; }
 
-		//对内容进行解析
-		void parse(PTR(Lexer) lexer);
-
 		//取得Token的内容用于显示
 		std::string tokensStr();
 		//取得用于显示AST的内容
@@ -45,6 +42,10 @@ namespace fay
 		void step2Lexical();
 		//构建语法树
 		void step3AST();
+		//解析所有的类型
+		void step4ParseClass();
+		//解析所有的字段和方法
+		void step5ParseFieldAndMethod();
 
 		//用于进行词法分析的工作线程
 		static void lexicalWorkThread(BuildTaskQueue<FaySource>* queue);

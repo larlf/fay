@@ -38,8 +38,6 @@ void fay::FayProject::step1CheckFiles()
 				LogBus::Debug(TOSTR("Add source file " << filename << ", " << text.size() << " bytes."));
 		}
 	}
-
-	LogBus::Debug("");
 }
 
 void fay::FayProject::step2Lexical()
@@ -93,6 +91,41 @@ void fay::FayProject::step3AST()
 		std::this_thread::yield();
 }
 
+void fay::FayProject::step4ParseClass()
+{
+	FayBuilder builder;
+	for(auto it : this->_files)
+	{
+		auto src = it.second;
+		if(src->ast != nullptr)
+		{
+			try
+			{
+				LogBus::Debug("[Dig1]" + src->filename());
+				src->ast->dig1(&builder);
+			}
+			catch(BuildException e)
+			{
+				std::string msg = e.what();
+				msg += I18N::Get("location", src->filename(), std::to_string(e.ast->token()->line()), std::to_string(e.ast->token()->col()));
+				LogBus::Error(msg, MKPTR(FilePart)(src->file, e.ast->token()->line(), e.ast->token()->col(), e.ast->token()->size()));
+			}
+			catch(std::exception e)
+			{
+				std::string msg = I18N::Get("err.builder");
+				msg += src->filename();
+				msg += "\n";
+				msg += e.what();
+				LogBus::Error(msg);
+			}
+		}
+	}
+}
+
+void fay::FayProject::step5ParseFieldAndMethod()
+{
+}
+
 void fay::FayProject::lexicalWorkThread(BuildTaskQueue<FaySource>* queue)
 {
 	Lexer lexer;  //构建词法解析器
@@ -140,7 +173,7 @@ void fay::FayProject::astWorkThread(BuildTaskQueue<FaySource>* queue)
 		try
 		{
 			LogBus::Debug(TOSTR("Start parse ast : " << task->filename()));
-			auto ast = fay::Parser::Parse(task->tokens, task->filename());
+			auto ast = fay::Parser::Parse(task->file, task->tokens);
 			task->ast = ast;
 
 			//生成Debug的信息
@@ -200,7 +233,7 @@ void fay::FayProject::build()
 		{
 			try
 			{
-				it.second->parse(lexer);
+				//it.second->parse(lexer);
 			}
 			catch(FayCompileException &e)
 			{
@@ -280,6 +313,10 @@ void fay::FayProject::build2()
 	this->step1CheckFiles();
 	this->step2Lexical();
 	this->step3AST();
+	this->step4ParseClass();
+	this->step5ParseFieldAndMethod();
+
+	LogBus::Clear();
 }
 
 PTR(FaySource) fay::FayProject::findSource(const std::string &name)
@@ -291,12 +328,6 @@ PTR(FaySource) fay::FayProject::findSource(const std::string &name)
 	}
 
 	return nullptr;
-}
-
-void fay::FaySource::parse(PTR(Lexer) lexer)
-{
-	//this->_tokens = lexer->Execute(this->_file->text());
-	//this->_ast = fay::Parser::Parse(this->_tokens, this->_file->filename());
 }
 
 std::string fay::FaySource::tokensStr()

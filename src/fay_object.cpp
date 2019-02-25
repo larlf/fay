@@ -40,27 +40,27 @@ std::string fay::FilePart::print()
 
 	//显示文件名
 	{
-		std::cout << termcolor::green << "[" << this->file->filename << "]" << termcolor::reset << std::endl;
-		msg += "[" + this->file->filename + "]\n";
+		std::cout << termcolor::green  << this->file->filename << ":" << termcolor::reset << std::endl;
+		msg += this->file->filename + ":\n";
 	}
 
 	char c;
-	for (int i = 0; i < this->file->text.size(); ++i)
+	for(int i = 0; i < this->file->text.size(); ++i)
 	{
 		c = this->file->text[i];
 
 		//有一些字符不处理
-		if (c == '\r')
+		if(c == '\r')
 			continue;
 
 		//当前列
 		strCol = i - strLineStart;
 
 		//显示前后3行
-		if (strLine >= line - 3 && strLine <= line + 3)
+		if(strLine >= line - 3 && strLine <= line + 3)
 		{
 			//处理行号
-			if (nowLine != strLine)
+			if(nowLine != strLine)
 			{
 				nowLine = strLine;
 
@@ -74,28 +74,28 @@ std::string fay::FilePart::print()
 				msg += temp;
 			}
 
-			switch (state)
+			switch(state)
 			{
-			case 0:
-				if (strLine == line && strCol == this->col)
-				{
-					state = 1;
-					std::cout << termcolor::on_red;
-				}
-				break;
-			case 1:
-				if (this->count > 0)
-				{
-					if (strCol - this->col <= this->count)
-						break;
-				}
-				else if (c != '\n' && c != ' ' && c != '\t' && c != ';' && c != ')')
+				case 0:
+					if(strLine == line && strCol == this->col)
+					{
+						state = 1;
+						std::cout << termcolor::on_red;
+					}
 					break;
+				case 1:
+					if(this->count > 0)
+					{
+						if(strCol - this->col <= this->count)
+							break;
+					}
+					else if(c != '\n' && c != ' ' && c != '\t' && c != ';' && c != ')')
+						break;
 
-				//如果需要结束，这里改变状态
-				state = 2;
-				std::cout << termcolor::reset;
-				break;
+					//如果需要结束，这里改变状态
+					state = 2;
+					std::cout << termcolor::reset;
+					break;
 			}
 
 			std::cout << c;
@@ -103,7 +103,7 @@ std::string fay::FilePart::print()
 		}
 
 		//换行
-		if (c == '\n')
+		if(c == '\n')
 		{
 			strLine++;
 			strLineStart = i;
@@ -111,7 +111,7 @@ std::string fay::FilePart::print()
 	}
 
 	//防止状态没有转换过来
-	if (state == 1)
+	if(state == 1)
 		std::cout << termcolor::reset;
 	std::cout << std::endl;
 

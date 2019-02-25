@@ -236,28 +236,28 @@ void fay::AstFun::dig4(FayBuilder* builder)
 
 void fay::AstFile::dig1(FayBuilder* builder)
 {
-	builder->beginFile(this->_text);
+	builder->beginFile(this->_file);
 	AstNode::dig1(builder);
 	builder->endFile();
 }
 
 void fay::AstFile::dig2(FayBuilder* builder)
 {
-	builder->beginFile(this->_text);
+	builder->beginFile(this->_file);
 	AstNode::dig2(builder);
 	builder->endFile();
 }
 
 void fay::AstFile::dig3(FayBuilder* builder)
 {
-	builder->beginFile(this->_text);
+	builder->beginFile(this->_file);
 	AstNode::dig3(builder);
 	builder->endFile();
 }
 
 void fay::AstFile::dig4(FayBuilder* builder)
 {
-	builder->beginFile(this->_text);
+	builder->beginFile(this->_file);
 	AstNode::dig4(builder);
 	builder->endFile();
 }
@@ -624,7 +624,7 @@ void fay::AstID::dig3(FayBuilder* builder)
 		std::string className = this->_text.substr(0, pos);
 		std::string varName = this->_text.substr(pos + 1);
 
-		if (className == "err")
+		if(className == "err")
 		{
 			PTR(FayClass) errType = FayDomain::FindClass("fay.system.Error");
 			PTR(FayVarDef) varDef = errType->findVar(varName);
@@ -639,10 +639,10 @@ void fay::AstID::dig3(FayBuilder* builder)
 		else
 		{
 			auto localVar = builder->fun()->findVar(className);
-			if (localVar)
+			if(localVar)
 			{
 				auto varDef = localVar->classType()->findVar(varName);
-				if (!varDef)
+				if(!varDef)
 					throw BuildException(this->shared_from_this(), "err.unknow_var", className, varName);
 
 				this->_type = VarType::Field;
@@ -653,13 +653,13 @@ void fay::AstID::dig3(FayBuilder* builder)
 			else
 			{
 				auto classes = FayDomain::FindClass(builder->usings(), className);
-				if (classes.size() < 1)
+				if(classes.size() < 1)
 					throw BuildException(this->shared_from_this(), "err.cannot_find_class", className);
-				if (classes.size() > 1)
+				if(classes.size() > 1)
 					throw BuildException(this->shared_from_this(), "err.mutil_class", className);
 
 				auto var = classes[0]->findStaticVar(varName);
-				if (var == nullptr)
+				if(var == nullptr)
 					throw BuildException(this->shared_from_this(), "err.unknow_static_var", className, varName);
 
 				this->_type = VarType::Static;
@@ -1500,7 +1500,7 @@ void fay::AstField::dig4(FayBuilder* builder)
 	}
 }
 
-void fay::AstTry::dig4(FayBuilder * builder)
+void fay::AstTry::dig4(FayBuilder* builder)
 {
 	std::string startLabel = builder->makeLabel();
 	std::string endLabel = builder->makeLabel();

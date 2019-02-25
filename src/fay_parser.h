@@ -115,6 +115,6 @@ namespace fay
 
 	public:
 		//进行语法解析的入口
-		static PTR(AstNode) Parse(PTR(std::vector<PTR(Token)>) tokens, const std::string &filename);
+		static PTR(AstNode) Parse(PTR(FayFile) file, PTR(std::vector<PTR(Token)>) tokens);
 	};
 }

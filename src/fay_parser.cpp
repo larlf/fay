@@ -114,11 +114,11 @@ PTR(AstNode) fay::Parser::_Class(TokenStack* stack)
 	stack->next();
 
 	//处理父类
-	if (stack->now()->is(":"))
+	if(stack->now()->is(":"))
 	{
 		stack->next();
 
-		if (!stack->now()->is(TokenType::ID))
+		if(!stack->now()->is(TokenType::ID))
 			throw ParseException(stack, "err.bad_class_name");
 		node->superClassText = stack->now()->text();
 		stack->next();
@@ -179,7 +179,7 @@ PTR(AstNode) fay::Parser::_Class(TokenStack* stack)
 PTR(AstNode) fay::Parser::_Field(TokenStack* stack)
 {
 	std::vector<std::string> words;
-	while (stack->now()->is(TokenType::DescSymbol))
+	while(stack->now()->is(TokenType::DescSymbol))
 	{
 		//node->descWords[stack->now()->text()] = true;
 		words.push_back(stack->now()->text());
@@ -193,7 +193,7 @@ PTR(AstNode) fay::Parser::_Field(TokenStack* stack)
 	if(!stack->now()->is(TokenType::ID))
 		throw ParseException(stack, "connot find var name");
 	PTR(AstField) node = MKPTR(AstField)(stack->now());
-	for (auto it : words)
+	for(auto it : words)
 		node->descWords[it] = true;
 	stack->next();
 
@@ -275,13 +275,13 @@ PTR(AstNode) fay::Parser::_Call(TokenStack* stack)
 		PTR(AstCall) node = MKPTR(AstCall)(stack->now());
 		stack->next();
 
-		if (!stack->now()->is("("))
+		if(!stack->now()->is("("))
 			throw ParseException(stack, "err.expect", "(");
 		stack->next();
 
 		node->addChildNode(_ParamList((stack)));
 
-		if (!stack->now()->is(")"))
+		if(!stack->now()->is(")"))
 			throw ParseException(stack, "err.expect", ")");
 		stack->next();
 
@@ -291,24 +291,24 @@ PTR(AstNode) fay::Parser::_Call(TokenStack* stack)
 	return nullptr;
 }
 
-PTR(AstNode) fay::Parser::_New(TokenStack * stack)
+PTR(AstNode) fay::Parser::_New(TokenStack* stack)
 {
-	if (!stack->now()->is(TokenType::New))
+	if(!stack->now()->is(TokenType::New))
 		throw ParseException(stack, "err.expect", "new");
 	stack->next();
 
-	if (!stack->now()->is(TokenType::ID))
+	if(!stack->now()->is(TokenType::ID))
 		throw ParseException(stack, "err.not_class_name");
 	PTR(AstNew) node = MKPTR(AstNew)(stack->now());
 	stack->next();
 
-	if (!stack->now()->is("("))
+	if(!stack->now()->is("("))
 		throw ParseException(stack, "err.expect", "(");
 	stack->next();
 
 	node->addChildNode(_ParamList((stack)));
 
-	if (!stack->now()->is(")"))
+	if(!stack->now()->is(")"))
 		throw ParseException(stack, "err.expect", ")");
 	stack->next();
 
@@ -317,27 +317,27 @@ PTR(AstNode) fay::Parser::_New(TokenStack * stack)
 
 PTR(AstNode) fay::Parser::_Stmt(TokenStack* stack)
 {
-	if (stack->now()->is(TokenType::Semicolon))
+	if(stack->now()->is(TokenType::Semicolon))
 		return MKPTR(AstEmptyStmt)(stack->move());
-	else if (stack->now()->is(TokenType::LeftBrace))
+	else if(stack->now()->is(TokenType::LeftBrace))
 		return _StmtBlock(stack);
-	else if (stack->now()->is(TokenType::Var))
+	else if(stack->now()->is(TokenType::Var))
 		return _StmtVar(stack);
-	else if (stack->now()->is(TokenType::Return))
+	else if(stack->now()->is(TokenType::Return))
 		return _StmtReturn(stack);
-	else if (stack->now()->is(TokenType::If))
+	else if(stack->now()->is(TokenType::If))
 		return _StmtIf(stack);
-	else if (stack->now()->is(TokenType::For))
+	else if(stack->now()->is(TokenType::For))
 		return _StmtFor(stack);
-	else if (stack->now()->is(TokenType::While))
+	else if(stack->now()->is(TokenType::While))
 		return _StmtWhile(stack);
-	else if (stack->now()->is(TokenType::Do))
+	else if(stack->now()->is(TokenType::Do))
 		return _StmtDoWhile(stack);
-	else if (stack->now()->is(TokenType::Label))
+	else if(stack->now()->is(TokenType::Label))
 		return _StmtLabel(stack);
-	else if (stack->now()->is(TokenType::Goto))
+	else if(stack->now()->is(TokenType::Goto))
 		return _StmtGoto(stack);
-	else if (stack->now()->is(TokenType::Try))
+	else if(stack->now()->is(TokenType::Try))
 		return _StmtTry(stack);
 
 	//如果不是语句，尝试当做一个表达式来解析
@@ -605,27 +605,27 @@ PTR(AstNode) fay::Parser::_StmtFor(TokenStack* stack)
 	return node;
 }
 
-PTR(AstNode) fay::Parser::_StmtWhile(TokenStack * stack)
+PTR(AstNode) fay::Parser::_StmtWhile(TokenStack* stack)
 {
 	//while
-	if (!stack->now()->is(TokenType::While))
+	if(!stack->now()->is(TokenType::While))
 		throw ParseException(stack, "err.expect", "while");
 	PTR(AstWhile) node = MKPTR(AstWhile)(stack->now());
 	stack->next();
 
 	//(
-	if (!stack->now()->is("("))
+	if(!stack->now()->is("("))
 		throw ParseException(stack, "err.expect", "(");
 	stack->next();
 
 	//条件
 	PTR(AstNode) expr = _Expr(stack);
-	if (expr == nullptr)
+	if(expr == nullptr)
 		throw ParseException(stack, "err.while_expr");
 	node->addChildNode(expr);
 
 	//(
-	if (!stack->now()->is(")"))
+	if(!stack->now()->is(")"))
 		throw ParseException(stack, "err.expect", ")");
 	stack->next();
 
@@ -636,10 +636,10 @@ PTR(AstNode) fay::Parser::_StmtWhile(TokenStack * stack)
 	return node;
 }
 
-PTR(AstNode) fay::Parser::_StmtDoWhile(TokenStack * stack)
+PTR(AstNode) fay::Parser::_StmtDoWhile(TokenStack* stack)
 {
 	//do
-	if (!stack->now()->is(TokenType::Do))
+	if(!stack->now()->is(TokenType::Do))
 		throw ParseException(stack, "err.expect", "do");
 	PTR(AstDoWhile) node = MKPTR(AstDoWhile)(stack->now());
 	stack->next();
@@ -649,28 +649,28 @@ PTR(AstNode) fay::Parser::_StmtDoWhile(TokenStack * stack)
 	node->addChildNode(block);
 
 	//while
-	if (!stack->now()->is(TokenType::While))
+	if(!stack->now()->is(TokenType::While))
 		throw ParseException(stack, "err.expect", "while");
 	stack->next();
 
 	//(
-	if (!stack->now()->is("("))
+	if(!stack->now()->is("("))
 		throw ParseException(stack, "err.expect", "(");
 	stack->next();
 
 	//条件
 	PTR(AstNode) expr = _Expr(stack);
-	if (expr == nullptr)
+	if(expr == nullptr)
 		throw ParseException(stack, "err.while_expr");
 	node->addChildNode(expr);
 
 	//(
-	if (!stack->now()->is(")"))
+	if(!stack->now()->is(")"))
 		throw ParseException(stack, "err.expect", ")");
 	stack->next();
 
 	//;
-	if (!stack->now()->is(";"))
+	if(!stack->now()->is(";"))
 		throw ParseException(stack, "err.expect", ";");
 	stack->next();
 
@@ -702,32 +702,32 @@ PTR(AstNode) fay::Parser::_StmtReturn(TokenStack* stack)
 	return node;
 }
 
-PTR(AstNode) fay::Parser::_StmtTry(TokenStack * stack)
+PTR(AstNode) fay::Parser::_StmtTry(TokenStack* stack)
 {
 	PTR(AstTry) node = MKPTR(AstTry)(stack->now());
 	stack->next();
 
 	PTR(AstNode) stmt = _Stmt(stack);
-	if (!stmt)
+	if(!stmt)
 		throw ParseException(stack, "err.null_stmt");
 	node->addChildNode(stmt);
 
 	//catch
-	if (!stack->now()->is(TokenType::Catch))
+	if(!stack->now()->is(TokenType::Catch))
 		throw ParseException(stack, "err.expect", "catch");
 	stack->next();
 
 	stmt = _Stmt(stack);
-	if (!stmt)
+	if(!stmt)
 		throw ParseException(stack, "err.null_stmt");
 	node->addChildNode(stmt);
 
 	//finally
-	if (stack->now()->is(TokenType::Finally))
+	if(stack->now()->is(TokenType::Finally))
 	{
 		stack->next();
 		stmt = _Stmt(stack);
-		if (!stmt)
+		if(!stmt)
 			throw ParseException(stack, "err.null_stmt");
 		node->addChildNode(stmt);
 	}
@@ -849,15 +849,15 @@ PTR(AstNode) fay::Parser::_ParamList(TokenStack* stack)
 
 PTR(AstNode) fay::Parser::_ExprPrimary(TokenStack* stack)
 {
-	if (stack->now()->is(TokenType::Number))
+	if(stack->now()->is(TokenType::Number))
 		return MKPTR(AstNumber)(stack->move());
-	else if (stack->now()->is(TokenType::String))
+	else if(stack->now()->is(TokenType::String))
 		return MKPTR(AstString)(stack->move());
-	else if (stack->now()->is(TokenType::Char))
+	else if(stack->now()->is(TokenType::Char))
 		return MKPTR(AstByte)(stack->move());
-	else if (stack->now()->is(TokenType::Bool))
+	else if(stack->now()->is(TokenType::Bool))
 		return MKPTR(AstBool)(stack->move());
-	else if (stack->now()->is(TokenType::New))
+	else if(stack->now()->is(TokenType::New))
 		return _New(stack);
 	else if(stack->now()->is(TokenType::ID))
 	{
@@ -1132,10 +1132,10 @@ PTR(AstNode) fay::Parser::_AddrExpr(TokenStack* stack)
 	return _AddrExprBracket(stack);
 }
 
-PTR(AstNode) fay::Parser::Parse(PTR(std::vector<PTR(Token)>) tokens, const std::string &filename)
+PTR(AstNode) fay::Parser::Parse(PTR(FayFile) file, PTR(std::vector<PTR(Token)>) tokens)
 {
 	TokenStack stack(tokens);
-	PTR(AstFile) ast = MKPTR(AstFile)(filename);
+	PTR(AstFile) ast = MKPTR(AstFile)(file);
 
 	while(true)
 	{

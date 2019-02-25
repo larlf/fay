@@ -16,10 +16,9 @@ namespace fay
 		int _col = -1;
 
 	public:
-		//Token(const std::string &text) : _text(text) {}
 		Token() {}
 		Token(TokenType type, mirror::data::ByteData &data, int pos, int size, int line, int col)
-			: _type(type), _line(line), _col(col)
+			:  _type(type), _line(line), _col(col)
 		{
 			this->_text = std::string((char*)data.data(), pos, size);
 		}

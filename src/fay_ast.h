@@ -2,9 +2,7 @@
 
 #include <string>
 #include <vector>
-#include <mirror_sys_const.h>
-#include <mirror_utils_log.h>
-#include <mirror_utils_string.h>
+#include <mirror.h>
 #include <fay_const.h>
 #include <fay_object.h>
 #include <fay_type.h>
@@ -17,27 +15,16 @@ namespace fay
 	class AstNode;
 
 	//语法解析中的异常
-	class BuildException : public FayCompileException
+	class BuildException : public std::exception
 	{
 	public:
+		PTR(fay::AstNode) ast;
+
 		//stack : 当前正在处理的TokenStack
 		//key : 错误信息的国际化信息
 		template<typename... Params>
 		BuildException(PTR(fay::AstNode) ast, const std::string &key, Params... args)
-			: FayCompileException((I18N::Get(key, args...)))
-		{
-			if(ast)
-			{
-				PTR(Token) token = ast->token();
-				if(token)
-				{
-					//TODO
-					//this->_file = token->file();
-					this->_line = token->line();
-					this->_col = token->col();
-				}
-			}
-		}
+			: ast(ast), std::exception(I18N::Get(key, args...).c_str()) {}
 	};
 
 	class AstNode : public BaseObject, public std::enable_shared_from_this<AstNode>
@@ -94,14 +81,15 @@ namespace fay
 
 		//因为生成数据的时候对结构会有依赖，只能先生成结构，再生成代码
 		//就像在田里挖土豆，挖一遍再挖一遍，需要经过多次dig()才能生成最终的结构
-		//第一次，只产生Class这一级的信息
+		//第一次，只产生Class这一级的信息，这一级不支持并行处理
 		virtual void dig1(FayBuilder* builder);
-		//第二次，生成函数和函数参数列表
+		//第二次，生成函数和函数参数列表，这一级不支持并行处理
 		virtual void dig2(FayBuilder* builder);
 		//第三次，确定每个节点的类型，并做一些生成代码之前的准备和优化的工作
+		//这一级只处理方法内部的代码，支持并行处理
 		//因为一些特别的原因，这个方法编写的时候应该尽量考虑到多次执行的情况
 		virtual void dig3(FayBuilder* builder);
-		//第四次，生成中间代码
+		//第四次，生成中间代码，支持并行处理
 		virtual void dig4(FayBuilder* builder);
 	};
 
@@ -112,10 +100,13 @@ namespace fay
 	//文件节点
 	class AstFile : public AstNode
 	{
+	private:
+		PTR(FayFile) _file;
+
 	public:
-		AstFile(const std::string &filename) : AstNode(nullptr)
+		AstFile(PTR(FayFile) file) : _file(file), AstNode(nullptr)
 		{
-			this->_text = filename;
+			this->_text = file->filename;
 		}
 
 		virtual void dig1(FayBuilder* builder) override;

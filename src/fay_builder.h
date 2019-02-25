@@ -26,7 +26,7 @@ namespace fay
 	{
 	private:
 		std::string _package;
-		std::string _filename;
+		PTR(FayFile) _file;
 		PTR(FayLib) _lib;
 		PTR(FayInstClass) _class;
 		PTR(FayInstFun) _fun;
@@ -46,12 +46,13 @@ namespace fay
 		//log记录
 		void log(BuildLogLevel level, int line, int col, const std::string &msg);
 
+		PTR(FayFile) file() { return this->_file; }
 		PTR(FayLib) lib() { return this->_lib; }
 		PTR(FayInstClass) clazz() { return this->_class; }
 		PTR(FayInstFun) fun() { return this->_fun; }
 
 		//文件的开始和结束
-		void beginFile(const std::string &filename);
+		void beginFile(PTR(FayFile) file);
 		void endFile();
 
 		//Lib相关的处理

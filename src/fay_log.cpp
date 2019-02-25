@@ -61,7 +61,7 @@ void fay::LogBus::Log(LogType type, const std::string &msg, PTR(FilePart) part)
 
 void fay::LogBus::_Log(LogType type, const std::string &data, PTR(FilePart) part)
 {
-	std::string msg = data;
+	//std::string msg = data;
 
 	std::lock_guard<std::recursive_mutex> lg(LogBus::LogLock);
 
@@ -69,38 +69,56 @@ void fay::LogBus::_Log(LogType type, const std::string &data, PTR(FilePart) part
 	{
 		case LogType::Info:
 #if WIN32
-			std::cout << termcolor::yellow << StringUtils::Encoding(msg, "UTF-8", "GBK") << termcolor::reset << std::endl;
+			std::cout << termcolor::yellow << "Info : " << StringUtils::Encoding(data, "UTF-8", "GBK") << termcolor::reset << std::endl;
 #else
 			std::cout << termcolor::yellow << msg << termcolor::reset << std::endl;
 #endif
 			break;
 		case LogType::Warn:
-			msg.insert(0, "Warn : ");
 #if WIN32
-			std::cout << termcolor::magenta << StringUtils::Encoding(msg, "UTF-8", "GBK") << termcolor::reset << std::endl;
+			std::cout << termcolor::magenta << "Warn : " << StringUtils::Encoding(data, "UTF-8", "GBK") << termcolor::reset << std::endl;
 #else
 			std::cout << termcolor::magenta << msg << termcolor::reset << std::endl;
 #endif
 			break;
 		case LogType::Error:
-			msg.insert(0, "Error : ");
 #if WIN32
-			std::cout << termcolor::red << StringUtils::Encoding(msg, "UTF-8", "GBK") << termcolor::reset << std::endl;
+			std::cout << termcolor::red << "Error : " << StringUtils::Encoding(data, "UTF-8", "GBK") << termcolor::reset << std::endl;
 #else
 			std::cout << termcolor::red << msg << termcolor::reset << std::endl;
 #endif
 			break;
 	}
 
+	//输出到文件
 	if(_LogFile.size() > 0)
-		FileUtils::AppendTextFile(_LogFile, msg);
+	{
+		switch(type)
+		{
+			case fay::LogType::Debug:
+				break;
+			case fay::LogType::Info:
+				FileUtils::AppendTextFile(_LogFile, "[Info]");
+				break;
+			case fay::LogType::Warn:
+				FileUtils::AppendTextFile(_LogFile, "[Warn]");
+				break;
+			case fay::LogType::Error:
+				FileUtils::AppendTextFile(_LogFile, "[Error]");
+				break;
+			default:
+				break;
+		}
+		FileUtils::AppendTextFile(_LogFile, data);
+	}
 
+	//如果有代码的位置，输出一下
 	if(part)
 	{
 		std::string str = part->print();
 
 		if(_LogFile.size() > 0)
-			FileUtils::AppendTextFile(_LogFile, msg);
+			FileUtils::AppendTextFile(_LogFile, str);
 	}
 }
 
