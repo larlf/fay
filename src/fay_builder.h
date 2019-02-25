@@ -46,10 +46,10 @@ namespace fay
 		//log记录
 		void log(BuildLogLevel level, int line, int col, const std::string &msg);
 
-		PTR(FayFile) file() { return this->_file; }
-		PTR(FayLib) lib() { return this->_lib; }
-		PTR(FayInstClass) clazz() { return this->_class; }
-		PTR(FayInstFun) fun() { return this->_fun; }
+		PTR(FayFile) file() { if(!this->_file) LOG_ERROR("File is null"); return this->_file; }
+		PTR(FayLib) lib() { if(!this->_lib) LOG_ERROR("Lib is null");  return this->_lib; }
+		PTR(FayInstClass) clazz() { if(!this->_class) LOG_ERROR("class is null"); return this->_class; }
+		PTR(FayInstFun) fun() { if(!this->_fun) LOG_ERROR("Fun is null"); return this->_fun; }
 
 		//文件的开始和结束
 		void beginFile(PTR(FayFile) file);

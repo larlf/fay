@@ -94,6 +94,8 @@ void fay::FayProject::step3AST()
 void fay::FayProject::step4ParseClass()
 {
 	FayBuilder builder;
+	builder.beginLib("default");
+
 	for(auto it : this->_files)
 	{
 		auto src = it.second;
