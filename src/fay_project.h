@@ -34,7 +34,8 @@ namespace fay
 		int _minjor = 0;
 
 		MAP<std::string, PTR(FaySource)> _files;
-		PTR(FayBuilder) _builder;
+		//PTR(FayBuilder) _builder;
+		PTR(FayLib) _lib;
 
 		//检查所有需要处理的文件
 		void step1CheckFiles();
@@ -58,7 +59,6 @@ namespace fay
 
 		PTR(FaySource) findSource(const std::string &name);
 
-		void build();
 		void build2();
 
 	};

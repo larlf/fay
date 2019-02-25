@@ -211,107 +211,17 @@ void fay::FayProject::astWorkThread(BuildTaskQueue<FaySource>* queue)
 fay::FayProject::FayProject(const std::string &projectPath)
 	: _path(projectPath)
 {
-	_builder = MKPTR(FayBuilder)();
-	_builder->beginLib("default");
 }
 
 fay::FayProject::FayProject(const std::string &name, int marjor, int minjor)
 	: _name(name), _marjor(marjor), _minjor(minjor)
 {
-	//_domain = MKPTR(fay::FayDomain)()->init();
-
-	_builder = MKPTR(FayBuilder)();
-	_builder->beginLib(name);
-}
-
-void fay::FayProject::build()
-{
-	this->step1CheckFiles();
-
-	{
-		PTR(Lexer) lexer = MKPTR(Lexer)();
-
-		for(auto it : this->_files)
-		{
-			try
-			{
-				//it.second->parse(lexer);
-			}
-			catch(FayCompileException &e)
-			{
-				LOG_ERROR(e.what());
-				PRINT(e.source());
-				PRINT(e.trace());
-			}
-		}
-	}
-
-	for(auto it : this->_files)
-	{
-		try
-		{
-			it.second->ast->dig1(this->_builder.get());
-		}
-		catch(FayCompileException &e)
-		{
-			LOG_ERROR(e.what());
-			PRINT(e.source());
-			PRINT(e.trace());
-			return;
-		}
-	}
-
-	for(auto it : this->_files)
-	{
-		try
-		{
-			it.second->ast->dig2(this->_builder.get());
-		}
-		catch(FayCompileException &e)
-		{
-			LOG_ERROR(e.what());
-			PRINT(e.source());
-			PRINT(e.trace());
-			return;
-		}
-	}
-
-	for(auto clazz : FayDomain::classes().list())
-		clazz->rebuild();
-
-	for(auto it : this->_files)
-	{
-		try
-		{
-			it.second->ast->dig3(this->_builder.get());
-		}
-		catch(FayCompileException &e)
-		{
-			LOG_ERROR(e.what());
-			PRINT(e.source());
-			PRINT(e.trace());
-			return;
-		}
-	}
-
-	for(auto it : this->_files)
-	{
-		try
-		{
-			it.second->ast->dig4(this->_builder.get());
-		}
-		catch(FayCompileException &e)
-		{
-			LOG_ERROR(e.what());
-			PRINT(e.source());
-			PRINT(e.trace());
-			return;
-		}
-	}
 }
 
 void fay::FayProject::build2()
 {
+	this->_lib = MKPTR(FayLib)("default", 0, 0);
+
 	this->step1CheckFiles();
 	this->step2Lexical();
 	this->step3AST();
