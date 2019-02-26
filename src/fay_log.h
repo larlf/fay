@@ -36,6 +36,7 @@ namespace fay
 	private:
 		static std::thread::id _MainThreadID;
 		static std::string _LogFile;
+		static std::recursive_mutex LogLock;
 
 		//用于保存当前线程的Log
 		static MAP<std::thread::id, PTR(std::vector<PTR(LogData)>)> _Loggers;
@@ -47,7 +48,6 @@ namespace fay
 		static void _Log(LogType type, const std::string &msg, PTR(FilePart) part);
 
 	public:
-		static std::recursive_mutex LogLock;
 
 		static void Init(const std::string &filename = "");
 		static bool IsDebug() { return true; }

@@ -31,7 +31,7 @@ int main(int argc, char** argv)
 
 	FayProject project(parser.get("path"));
 	//project.parse();
-	project.build2();
+	project.build();
 
 	return 0;
 }

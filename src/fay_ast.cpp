@@ -236,30 +236,30 @@ void fay::AstFun::dig4(FayBuilder* builder)
 
 void fay::AstFile::dig1(FayBuilder* builder)
 {
-	builder->beginFile(this->_file);
+	builder->bindFile(this->_file);
 	AstNode::dig1(builder);
-	builder->endFile();
+	builder->unbindFile();
 }
 
 void fay::AstFile::dig2(FayBuilder* builder)
 {
-	builder->beginFile(this->_file);
+	builder->bindFile(this->_file);
 	AstNode::dig2(builder);
-	builder->endFile();
+	builder->unbindFile();
 }
 
 void fay::AstFile::dig3(FayBuilder* builder)
 {
-	builder->beginFile(this->_file);
+	builder->bindFile(this->_file);
 	AstNode::dig3(builder);
-	builder->endFile();
+	builder->unbindFile();
 }
 
 void fay::AstFile::dig4(FayBuilder* builder)
 {
-	builder->beginFile(this->_file);
+	builder->bindFile(this->_file);
 	AstNode::dig4(builder);
-	builder->endFile();
+	builder->unbindFile();
 }
 
 void fay::AstString::dig3(FayBuilder* builder)

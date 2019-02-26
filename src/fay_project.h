@@ -47,11 +47,20 @@ namespace fay
 		void step4ParseClass();
 		//解析所有的字段和方法
 		void step5ParseFieldAndMethod();
+		//确定每个节点的类型
+		//如果有找不到类之类的错误，基本都是在这个过程中发现的
+		void step6FixedNodeType();
+		//生成中间代码
+		void step7GenerateIL();
 
 		//用于进行词法分析的工作线程
 		static void lexicalWorkThread(BuildTaskQueue<FaySource>* queue);
 		//用于生成AST的工作线程
 		static void astWorkThread(BuildTaskQueue<FaySource>* queue);
+		//Dig3工作线程的问题
+		static void Dig3WorkThread(BuildTaskQueue<FaySource>* queue, PTR(FayLib) lib);
+		//Dig4工作线程的问题
+		static void Dig4WorkThread(BuildTaskQueue<FaySource>* queue, PTR(FayLib) lib);
 
 	public:
 		FayProject(const std::string &projectPath);
@@ -59,7 +68,7 @@ namespace fay
 
 		PTR(FaySource) findSource(const std::string &name);
 
-		void build2();
+		void build();
 
 	};
 

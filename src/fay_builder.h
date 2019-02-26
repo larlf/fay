@@ -52,11 +52,11 @@ namespace fay
 		PTR(FayInstFun) fun() { if(!this->_fun) LOG_ERROR("Fun is null"); return this->_fun; }
 
 		//文件的开始和结束
-		void beginFile(PTR(FayFile) file);
-		void endFile();
+		void bindFile(PTR(FayFile) file);
+		void unbindFile();
 
 		//Lib相关的处理
-		void beginLib(const std::string &name);
+		void bindLib(PTR(FayLib) lib);
 
 		//引用相关的处理
 		void addUsing(const std::string &packageName);

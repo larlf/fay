@@ -38,13 +38,13 @@ void fay::FayBuilder::fixedLabel(const std::string &label)
 	this->_fun->labels()->setPos(label, this->instsSize());
 }
 
-void fay::FayBuilder::beginFile(PTR(FayFile) file)
+void fay::FayBuilder::bindFile(PTR(FayFile) file)
 {
 	this->_file = file;
 	this->_usings.clear();
 }
 
-void fay::FayBuilder::endFile()
+void fay::FayBuilder::unbindFile()
 {
 	this->_file.reset();
 }
@@ -54,10 +54,9 @@ void fay::FayBuilder::addUsing(const std::string &packageName)
 	this->_usings.push_back(packageName);
 }
 
-void fay::FayBuilder::beginLib(const std::string &name)
+void fay::FayBuilder::bindLib(PTR(FayLib) lib)
 {
-	this->_lib = MKPTR(FayLib)(name, 0, 0);
-	FayDomain::AddLib(this->_lib);
+	this->_lib = lib;
 }
 
 pos_t fay::FayBuilder::addClass(PTR(FayInstClass) clazz)
