@@ -9,14 +9,12 @@ namespace fay
 	class BuildTask : BaseObject
 	{
 	public:
+		std::string filename;
 		PTR(FayFile) file;
 		PTR(std::vector<PTR(Token)>) tokens;
 		PTR(AstNode) ast;
 
-		BuildTask(PTR(FayFile) file) : file(file) {}
-
-		const std::string filename() { return this->file->filename; }
-		const std::string text() { return this->file->text; }
+		BuildTask(const std::string &filename) : filename(filename) {}
 
 		//取得Token的内容用于显示
 		std::string tokensStr();
@@ -33,17 +31,20 @@ namespace fay
 		int _marjor = 0;
 		int _minjor = 0;
 
-		MAP<std::string, PTR(BuildTask)> _files;
-		//PTR(FayBuilder) _builder;
+		MAP<std::string, PTR(BuildTask)> _tasks;
 		PTR(FayLib) _lib;
 
+		//对线程内处理逻辑的封装
+		static void WorkThread(BuildTaskQueue<BuildTask>* queue, std::function<void(PTR(BuildTask))> fun, const std::string &errorMsg);
+		//读取文件的工具线程
+		static void ReadFileThread(BuildTaskQueue<BuildTask>* queue);
 		//用于进行词法分析的工作线程
 		static void LexicalWorkThread(BuildTaskQueue<BuildTask>* queue);
 		//用于生成AST的工作线程
 		static void ASTWorkThread(BuildTaskQueue<BuildTask>* queue);
-		//Dig3工作线程的问题
+		//Dig3工作线程
 		static void Dig3WorkThread(BuildTaskQueue<BuildTask>* queue, PTR(FayLib) lib);
-		//Dig4工作线程的问题
+		//Dig4工作线程
 		static void Dig4WorkThread(BuildTaskQueue<BuildTask>* queue, PTR(FayLib) lib);
 
 		//在线程中运行
@@ -69,8 +70,10 @@ namespace fay
 		FayProject(const std::string &projectPath);
 		FayProject(const std::string &name, int marjor, int minjor);
 
+		//根据文件名称查找代码
 		PTR(BuildTask) findSource(const std::string &name);
 
+		//进行编译
 		void build();
 
 	};
