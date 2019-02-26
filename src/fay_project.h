@@ -6,14 +6,14 @@
 namespace fay
 {
 	//源代码
-	class FaySource : BaseObject
+	class BuildTask : BaseObject
 	{
 	public:
 		PTR(FayFile) file;
 		PTR(std::vector<PTR(Token)>) tokens;
 		PTR(AstNode) ast;
 
-		FaySource(PTR(FayFile) file) : file(file) {}
+		BuildTask(PTR(FayFile) file) : file(file) {}
 
 		const std::string filename() { return this->file->filename; }
 		const std::string text() { return this->file->text; }
@@ -33,9 +33,21 @@ namespace fay
 		int _marjor = 0;
 		int _minjor = 0;
 
-		MAP<std::string, PTR(FaySource)> _files;
+		MAP<std::string, PTR(BuildTask)> _files;
 		//PTR(FayBuilder) _builder;
 		PTR(FayLib) _lib;
+
+		//用于进行词法分析的工作线程
+		static void LexicalWorkThread(BuildTaskQueue<BuildTask>* queue);
+		//用于生成AST的工作线程
+		static void ASTWorkThread(BuildTaskQueue<BuildTask>* queue);
+		//Dig3工作线程的问题
+		static void Dig3WorkThread(BuildTaskQueue<BuildTask>* queue, PTR(FayLib) lib);
+		//Dig4工作线程的问题
+		static void Dig4WorkThread(BuildTaskQueue<BuildTask>* queue, PTR(FayLib) lib);
+
+		//在线程中运行
+		void executeThreads(std::function<void(BuildTaskQueue<BuildTask>*)> fun);
 
 		//检查所有需要处理的文件
 		void step1CheckFiles();
@@ -53,40 +65,14 @@ namespace fay
 		//生成中间代码
 		void step7GenerateIL();
 
-		//用于进行词法分析的工作线程
-		static void lexicalWorkThread(BuildTaskQueue<FaySource>* queue);
-		//用于生成AST的工作线程
-		static void astWorkThread(BuildTaskQueue<FaySource>* queue);
-		//Dig3工作线程的问题
-		static void Dig3WorkThread(BuildTaskQueue<FaySource>* queue, PTR(FayLib) lib);
-		//Dig4工作线程的问题
-		static void Dig4WorkThread(BuildTaskQueue<FaySource>* queue, PTR(FayLib) lib);
-
 	public:
 		FayProject(const std::string &projectPath);
 		FayProject(const std::string &name, int marjor, int minjor);
 
-		PTR(FaySource) findSource(const std::string &name);
+		PTR(BuildTask) findSource(const std::string &name);
 
 		void build();
 
 	};
-
-	class BuildTask
-	{
-	public:
-	};
-
-	//词法分析的任务
-	class LexicalTask
-	{
-	public:
-		PTR(FayFile) file;
-		PTR(std::vector<PTR(Token)>) tokens;
-
-		LexicalTask(PTR(FayFile) file) : file(file) {}
-		std::string debugInfo();
-	};
-
 
 }

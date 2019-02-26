@@ -57,23 +57,21 @@ namespace fay
 	};
 
 	//用于处理报错信息的异常
-	class FayCompileException : public std::exception
+	class CompileException : public std::exception
 	{
-	protected:
-		PTR(FayFile) _file;  //文件名称
-		std::string _trace;  //堆栈
-		int _line;  //行号
-		int _col;  //列
-
 	public:
-		FayCompileException(const std::string &msg);
-		FayCompileException(const std::string &msg, PTR(FayFile) file, int line, int col);
+		PTR(FilePart) part;
 
-		const PTR(FayFile) file() { return this->_file; }
-		const std::string &trace() { return this->_trace; }
-		const std::string source();
-		int line() { return this->_line; }
-		int col() { return this->_col; }
+		CompileException(const std::string &msg) : std::exception(msg.c_str())
+		{
+			LOG_ERROR(msg);
+		}
+
+		CompileException(const std::string &msg, PTR(FayFile) file, int line, int col, int count)
+			: std::exception(msg.c_str()), part(MKPTR(FilePart)(file, line, col, count))
+		{
+			LOG_ERROR(msg);
+		}
 	};
 
 	//放向IndexMap的元素

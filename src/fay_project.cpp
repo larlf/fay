@@ -32,7 +32,7 @@ void fay::FayProject::step1CheckFiles()
 		{
 			std::string text = utils::FileUtils::ReadTextFile(filename);
 			PTR(FayFile) file = MKPTR(FayFile)(filename, text);
-			this->_files[filename] = MKPTR(FaySource)(file);
+			this->_files[filename] = MKPTR(BuildTask)(file);
 
 			if(LogBus::IsDebug())
 				LogBus::Debug(TOSTR("Add source file " << filename << ", " << text.size() << " bytes."));
@@ -42,32 +42,13 @@ void fay::FayProject::step1CheckFiles()
 
 void fay::FayProject::step2Lexical()
 {
-	//创建诃法解析的任务
-	BuildTaskQueue<FaySource> lexicalQueue;
-	for(auto it : this->_files)
-		lexicalQueue.add(it.second);
-
-	//定一下要开几个线程来进行处理
-	int threadCount = 1;
-	while(threadCount < SystemEnv::CPUS && lexicalQueue.activeSize() > threadCount * 5)
-		threadCount++;
-
-	//启动进行诃法分析的线程
-	for(auto i = 0; i < threadCount; ++i)
-	{
-		std::thread t(BIND_S(FayProject::lexicalWorkThread, &lexicalQueue));
-		t.detach();
-	}
-
-	//等候词法分析的完成
-	while(lexicalQueue.activeSize() > 0)
-		std::this_thread::yield();
+	this->executeThreads(BIND1_S(FayProject::LexicalWorkThread));
 }
 
 void fay::FayProject::step3AST()
 {
 	//创建语法解析的任务
-	BuildTaskQueue<FaySource> astQueue;
+	BuildTaskQueue<BuildTask> astQueue;
 	for(auto it : this->_files)
 	{
 		if(it.second->tokens != nullptr)
@@ -82,7 +63,7 @@ void fay::FayProject::step3AST()
 	//启动进行语法分析的线程
 	for(auto i = 0; i < threadCount; ++i)
 	{
-		std::thread t(BIND_S(FayProject::astWorkThread, &astQueue));
+		std::thread t(BIND_S(FayProject::ASTWorkThread, &astQueue));
 		t.detach();
 	}
 
@@ -106,11 +87,9 @@ void fay::FayProject::step4ParseClass()
 				LogBus::Debug("[Dig1]" + src->filename());
 				src->ast->dig1(&builder);
 			}
-			catch(BuildException e)
+			catch(fay::CompileException e)
 			{
-				std::string msg = e.what();
-				msg += I18N::Get("location", src->filename(), std::to_string(e.ast->token()->line()), std::to_string(e.ast->token()->col()));
-				LogBus::Error(msg, MKPTR(FilePart)(src->file, e.ast->token()->line(), e.ast->token()->col(), e.ast->token()->size()));
+				LogBus::Error(e.what(), e.part);
 			}
 			catch(std::exception e)
 			{
@@ -145,11 +124,9 @@ void fay::FayProject::step5ParseFieldAndMethod()
 				LogBus::Debug("[Dig2]" + src->filename());
 				src->ast->dig2(&builder);
 			}
-			catch(BuildException e)
+			catch(fay::CompileException e)
 			{
-				std::string msg = e.what();
-				msg += I18N::Get("location", src->filename(), std::to_string(e.ast->token()->line()), std::to_string(e.ast->token()->col()));
-				LogBus::Error(msg, MKPTR(FilePart)(src->file, e.ast->token()->line(), e.ast->token()->col(), e.ast->token()->size()));
+				LogBus::Error(e.what(), e.part);
 			}
 			catch(std::exception e)
 			{
@@ -172,7 +149,7 @@ void fay::FayProject::step5ParseFieldAndMethod()
 void fay::FayProject::step6FixedNodeType()
 {
 	//创建语法解析的任务
-	BuildTaskQueue<FaySource> taskQueue;
+	BuildTaskQueue<BuildTask> taskQueue;
 	for(auto it : this->_files)
 	{
 		if(it.second->ast != nullptr)
@@ -199,7 +176,7 @@ void fay::FayProject::step6FixedNodeType()
 void fay::FayProject::step7GenerateIL()
 {
 	//创建语法解析的任务
-	BuildTaskQueue<FaySource> taskQueue;
+	BuildTaskQueue<BuildTask> taskQueue;
 	for(auto it : this->_files)
 	{
 		if(it.second->ast != nullptr)
@@ -223,7 +200,7 @@ void fay::FayProject::step7GenerateIL()
 		std::this_thread::yield();
 }
 
-void fay::FayProject::lexicalWorkThread(BuildTaskQueue<FaySource>* queue)
+void fay::FayProject::LexicalWorkThread(BuildTaskQueue<BuildTask>* queue)
 {
 	Lexer lexer;  //构建词法解析器
 
@@ -232,7 +209,7 @@ void fay::FayProject::lexicalWorkThread(BuildTaskQueue<FaySource>* queue)
 	{
 		try
 		{
-			task->tokens = lexer.Execute(task->text());
+			task->tokens = lexer.Execute(task->file);
 
 			//生成Debug的信息
 			if(LogBus::IsDebug())
@@ -241,11 +218,9 @@ void fay::FayProject::lexicalWorkThread(BuildTaskQueue<FaySource>* queue)
 				LogBus::Debug(str);
 			}
 		}
-		catch(LexerException e)
+		catch(fay::CompileException e)
 		{
-			std::string msg = e.what();
-			msg += I18N::Get("location", task->filename(), std::to_string(e.line), std::to_string(e.col));
-			LogBus::Error(msg, MKPTR(FilePart)(task->file, e.line, e.col, 0));
+			LogBus::Error(e.what(), e.part);
 		}
 		catch(std::exception e)
 		{
@@ -262,7 +237,7 @@ void fay::FayProject::lexicalWorkThread(BuildTaskQueue<FaySource>* queue)
 	}
 }
 
-void fay::FayProject::astWorkThread(BuildTaskQueue<FaySource>* queue)
+void fay::FayProject::ASTWorkThread(BuildTaskQueue<BuildTask>* queue)
 {
 	auto task = queue->get();
 	while(task != nullptr)
@@ -301,7 +276,7 @@ void fay::FayProject::astWorkThread(BuildTaskQueue<FaySource>* queue)
 	}
 }
 
-void fay::FayProject::Dig3WorkThread(BuildTaskQueue<FaySource>* queue, PTR(FayLib) lib)
+void fay::FayProject::Dig3WorkThread(BuildTaskQueue<BuildTask>* queue, PTR(FayLib) lib)
 {
 	FayBuilder builder;
 	builder.bindLib(lib);
@@ -309,33 +284,34 @@ void fay::FayProject::Dig3WorkThread(BuildTaskQueue<FaySource>* queue, PTR(FayLi
 	auto task = queue->get();
 	while(task != nullptr)
 	{
-		try
+		if(task->ast != nullptr)
 		{
-			LogBus::Debug(TOSTR("[Dig3]" << task->filename()));
-			task->ast->dig3(&builder);
-		}
-		catch(BuildException e)
-		{
-			std::string msg = e.what();
-			msg += I18N::Get("location", task->filename(), std::to_string(e.ast->token()->line()), std::to_string(e.ast->token()->col()));
-			LogBus::Error(msg, MKPTR(FilePart)(task->file, e.ast->token()->line(), e.ast->token()->col(), e.ast->token()->size()));
-		}
-		catch(std::exception e)
-		{
-			std::string msg = I18N::Get("err.build");
-			msg += task->filename();
-			msg += "\n";
-			msg += e.what();
-			LogBus::Error(msg);
-		}
+			try
+			{
+				LogBus::Debug(TOSTR("[Dig3]" << task->filename()));
+				task->ast->dig3(&builder);
+			}
+			catch(fay::CompileException e)
+			{
+				LogBus::Error(e.what(), e.part);
+			}
+			catch(std::exception e)
+			{
+				std::string msg = I18N::Get("err.build");
+				msg += task->filename();
+				msg += "\n";
+				msg += e.what();
+				LogBus::Error(msg);
+			}
 
-		LogBus::EndThread();
-		queue->complete(task);
-		task = queue->get();
+			LogBus::EndThread();
+			queue->complete(task);
+			task = queue->get();
+		}
 	}
 }
 
-void fay::FayProject::Dig4WorkThread(BuildTaskQueue<FaySource>* queue, PTR(FayLib) lib)
+void fay::FayProject::Dig4WorkThread(BuildTaskQueue<BuildTask>* queue, PTR(FayLib) lib)
 {
 	FayBuilder builder;
 	builder.bindLib(lib);
@@ -343,30 +319,51 @@ void fay::FayProject::Dig4WorkThread(BuildTaskQueue<FaySource>* queue, PTR(FayLi
 	auto task = queue->get();
 	while(task != nullptr)
 	{
-		try
+		if(task->ast != nullptr)
 		{
-			LogBus::Debug(TOSTR("[Dig4]" << task->filename()));
-			task->ast->dig4(&builder);
-		}
-		catch(BuildException e)
-		{
-			std::string msg = e.what();
-			msg += I18N::Get("location", task->filename(), std::to_string(e.ast->token()->line()), std::to_string(e.ast->token()->col()));
-			LogBus::Error(msg, MKPTR(FilePart)(task->file, e.ast->token()->line(), e.ast->token()->col(), e.ast->token()->size()));
-		}
-		catch(std::exception e)
-		{
-			std::string msg = I18N::Get("err.build");
-			msg += task->filename();
-			msg += "\n";
-			msg += e.what();
-			LogBus::Error(msg);
-		}
+			try
+			{
+				LogBus::Debug(TOSTR("[Dig4]" << task->filename()));
+				task->ast->dig4(&builder);
+			}
+			catch(fay::CompileException e)
+			{
+				LogBus::Error(e.what(), e.part);
+			}
+			catch(std::exception e)
+			{
+				LOG_ERROR("Dig4() Error : " << task->filename() << "\n" << e.what());
+			}
 
-		LogBus::EndThread();
-		queue->complete(task);
-		task = queue->get();
+			LogBus::EndThread();
+			queue->complete(task);
+			task = queue->get();
+		}
 	}
+}
+
+void fay::FayProject::executeThreads(std::function<void(BuildTaskQueue<BuildTask>*)> fun)
+{
+	//创建语法解析的任务
+	BuildTaskQueue<BuildTask> taskQueue;
+	for(auto it : this->_files)
+		taskQueue.add(it.second);
+
+	//定一下要开几个线程来进行处理
+	int threadCount = 1;
+	while(threadCount < SystemEnv::CPUS && taskQueue.activeSize() > threadCount * 5)
+		threadCount++;
+
+	//启动进行语法分析的线程
+	for(auto i = 0; i < threadCount; ++i)
+	{
+		std::thread t(BIND_S(fun, &taskQueue));
+		t.detach();
+	}
+
+	//等候语法分析的完成
+	while(taskQueue.activeSize() > 0)
+		std::this_thread::yield();
 }
 
 fay::FayProject::FayProject(const std::string &projectPath)
@@ -394,7 +391,7 @@ void fay::FayProject::build()
 	LogBus::Clear();
 }
 
-PTR(FaySource) fay::FayProject::findSource(const std::string &name)
+PTR(BuildTask) fay::FayProject::findSource(const std::string &name)
 {
 	for(auto it : this->_files)
 	{
@@ -405,7 +402,7 @@ PTR(FaySource) fay::FayProject::findSource(const std::string &name)
 	return nullptr;
 }
 
-std::string fay::FaySource::tokensStr()
+std::string fay::BuildTask::tokensStr()
 {
 	utils::StringBuilder sb;
 	int line = 0;
@@ -429,7 +426,7 @@ std::string fay::FaySource::tokensStr()
 	return sb.toString();
 }
 
-std::string fay::FaySource::astStr()
+std::string fay::BuildTask::astStr()
 {
 	utils::StringBuilder sb;
 	this->ast->buildString(&sb);

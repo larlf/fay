@@ -15,16 +15,14 @@ namespace fay
 	class AstNode;
 
 	//语法解析中的异常
-	class BuildException : public std::exception
+	class BuildException : public fay::CompileException
 	{
 	public:
-		PTR(fay::AstNode) ast;
-
 		//stack : 当前正在处理的TokenStack
 		//key : 错误信息的国际化信息
 		template<typename... Params>
-		BuildException(PTR(fay::AstNode) ast, const std::string &key, Params... args)
-			: ast(ast), std::exception(I18N::Get(key, args...).c_str()) {}
+		BuildException(PTR(FayFile) file, PTR(fay::Token) token, const std::string &key, Params... args)
+			: fay::CompileException(I18N::Get(key, args...), file, token->line(), token->col(), token->size()) {}
 	};
 
 	class AstNode : public BaseObject, public std::enable_shared_from_this<AstNode>

@@ -109,7 +109,7 @@ void fay::AstClass::dig1(FayBuilder* builder)
 	//检查是否重复
 	std::string fullname = this->_clazz->fullname();
 	if(FayDomain::FindClass(fullname) != nullptr)
-		throw BuildException(this->shared_from_this(), "err.repeated_class", fullname);
+		throw BuildException(builder->file(), this->token(), "err.repeated_class", fullname);
 
 	//添加到domain
 	builder->addClass(this->_clazz);
@@ -126,9 +126,9 @@ void fay::AstClass::dig2(FayBuilder* builder)
 	{
 		auto types = FayDomain::FindClass(builder->usings(), this->superClassText);
 		if(types.size() < 1)
-			throw BuildException(this->shared_from_this(), "err.no_class", this->superClassText);
+			throw BuildException(builder->file(), this->token(), "err.no_class", this->superClassText);
 		if(types.size() > 1)
-			throw BuildException(this->shared_from_this(), "err.mutil_class", this->superClassText);
+			throw BuildException(builder->file(), this->token(), "err.mutil_class", this->superClassText);
 		builder->clazz()->superClass(types[0]);
 	}
 	else
@@ -307,7 +307,7 @@ void fay::AstParamDefine::dig2(FayBuilder* builder)
 {
 	this->_classType = FayDomain::FindClass(this->_nodes[0]->text());
 	if(this->_classType.expired())
-		throw BuildException(this->shared_from_this(), "err.unknow_type", this->_nodes[0]->text());
+		throw BuildException(builder->file(), this->token(), "err.unknow_type", this->_nodes[0]->text());
 
 	PTR(FayParamDef) def = MKPTR(FayParamDef)(this->text(), this->_classType.lock());
 	builder->params.push_back(def);
@@ -375,11 +375,11 @@ void fay::AstCall::dig3(FayBuilder* builder)
 
 			auto clazz = varDef->classType();
 			if(!clazz)
-				throw BuildException(this->shared_from_this(), "err.unknow_type", className);
+				throw BuildException(builder->file(), this->token(), "err.unknow_type", className);
 
 			auto funs = clazz->findFun(funName, paramsType, false);
 			if(funs.size() < 1)
-				throw BuildException(this->shared_from_this(), "err.no_fun", clazz->fullname(), funName);
+				throw BuildException(builder->file(), this->token(), "err.no_fun", clazz->fullname(), funName);
 
 			fun = funs[0];
 		}
@@ -387,15 +387,15 @@ void fay::AstCall::dig3(FayBuilder* builder)
 		{
 			auto classes = FayDomain::FindClass(builder->usings(), className);
 			if(classes.size() < 1)
-				throw BuildException(this->shared_from_this(), "err.no_class", className);
+				throw BuildException(builder->file(), this->token(), "err.no_class", className);
 			else if(classes.size() > 1)
-				throw BuildException(this->shared_from_this(), "err.too_many_class", className);
+				throw BuildException(builder->file(), this->token(), "err.too_many_class", className);
 
 			auto funs = classes[0]->findFun(funName, paramsType, true);
 			if(funs.size() < 1)
-				throw BuildException(this->shared_from_this(), "err.no_fun", className, funName);
+				throw BuildException(builder->file(), this->token(), "err.no_fun", className, funName);
 			else if(funs.size() > 1)
-				throw BuildException(this->shared_from_this(), "err.too_many_fun", className, funName);
+				throw BuildException(builder->file(), this->token(), "err.too_many_fun", className, funName);
 
 			fun = funs[0];
 		}
@@ -416,7 +416,7 @@ void fay::AstCall::dig4(FayBuilder* builder)
 {
 	PTR(FayFun) fun = this->_fun.lock();
 	if(!fun)
-		throw BuildException(this->shared_from_this(), "err.unknow_fun", this->_text);
+		throw BuildException(builder->file(), this->token(), "err.unknow_fun", this->_text);
 
 	if(fun->isStatic())
 	{
@@ -455,7 +455,7 @@ std::vector<PTR(FayClass)> fay::AstParamDefineList::getTypeList(FayBuilder* buil
 	{
 		auto n = this->childNode<AstParamDefine>(i);
 		if(!n)
-			throw BuildException(this->shared_from_this(), "expect AstParamDefine");
+			throw BuildException(builder->file(), this->token(), "expect AstParamDefine");
 
 		list.push_back(n->getType(builder));
 	}
@@ -471,7 +471,7 @@ void fay::AstVarItem::dig3(FayBuilder* builder)
 	if(this->_nodes[0] == nullptr)
 	{
 		if(this->_nodes[1] == nullptr)
-			throw BuildException(this->shared_from_this(), "err.unknow_type");
+			throw BuildException(builder->file(), this->token(), "err.unknow_type");
 
 		this->_classType = this->_nodes[1]->classType();
 	}
@@ -483,7 +483,7 @@ void fay::AstVarItem::dig3(FayBuilder* builder)
 
 	//检查类型定义是否正确
 	if(this->_classType.expired())
-		throw BuildException(this->_nodes[0], "err.unknow_type", this->_nodes[0]->text());
+		throw BuildException(builder->file(), this->_nodes[0]->token(), "err.unknow_type", this->_nodes[0]->text());
 
 	//新添加变量
 	std::string varName = this->text();
@@ -515,7 +515,7 @@ void fay::AstVarItem::dig4(FayBuilder* builder)
 		{
 			FayInst* inst = FayLangUtils::PushDefault(this->_nodes[0]->classType());
 			if(inst == nullptr)
-				throw BuildException(this->shared_from_this(), "err.no_default_value", this->_nodes[0]->classType()->fullname());
+				throw BuildException(builder->file(), this->token(), "err.no_default_value", this->_nodes[0]->classType()->fullname());
 			builder->addInst(inst);
 		}
 
@@ -629,7 +629,7 @@ void fay::AstID::dig3(FayBuilder* builder)
 			PTR(FayClass) errType = FayDomain::FindClass("fay.system.Error");
 			PTR(FayVarDef) varDef = errType->findVar(varName);
 			if(!varDef)
-				throw BuildException(this->shared_from_this(), "err.unknow_var", className, varName);
+				throw BuildException(builder->file(), this->token(), "err.unknow_var", className, varName);
 
 			this->_type = VarType::Error;
 			this->_classIndex = -1;
@@ -643,7 +643,7 @@ void fay::AstID::dig3(FayBuilder* builder)
 			{
 				auto varDef = localVar->classType()->findVar(varName);
 				if(!varDef)
-					throw BuildException(this->shared_from_this(), "err.unknow_var", className, varName);
+					throw BuildException(builder->file(), this->token(), "err.unknow_var", className, varName);
 
 				this->_type = VarType::Field;
 				this->_classIndex = localVar->indexValue();
@@ -654,13 +654,13 @@ void fay::AstID::dig3(FayBuilder* builder)
 			{
 				auto classes = FayDomain::FindClass(builder->usings(), className);
 				if(classes.size() < 1)
-					throw BuildException(this->shared_from_this(), "err.cannot_find_class", className);
+					throw BuildException(builder->file(), this->token(), "err.cannot_find_class", className);
 				if(classes.size() > 1)
-					throw BuildException(this->shared_from_this(), "err.mutil_class", className);
+					throw BuildException(builder->file(), this->token(), "err.mutil_class", className);
 
 				auto var = classes[0]->findStaticVar(varName);
 				if(var == nullptr)
-					throw BuildException(this->shared_from_this(), "err.unknow_static_var", className, varName);
+					throw BuildException(builder->file(), this->token(), "err.unknow_static_var", className, varName);
 
 				this->_type = VarType::Static;
 				this->_classIndex = classes[0]->indexValue();
@@ -702,7 +702,7 @@ void fay::AstID::dig4(FayBuilder* builder)
 				builder->addInst(new inst::LoadField(this->_varIndex));
 				break;
 			default:
-				throw BuildException(this->shared_from_this(), "err.bad_id_type", TypeDict::ToName(this->_type));
+				throw BuildException(builder->file(), this->token(), "err.bad_id_type", TypeDict::ToName(this->_type));
 				break;
 		}
 	}
@@ -750,7 +750,7 @@ void fay::AstLeftRightOP::dig4(FayBuilder* builder)
 	if(inst)
 		builder->addInst(inst);
 	else
-		throw BuildException(this->shared_from_this(), "err.not_support_op", this->_text, this->_classType.lock()->fullname());
+		throw BuildException(builder->file(), this->token(), "err.not_support_op", this->_text, this->_classType.lock()->fullname());
 }
 
 fay::AstTypeConvert::AstTypeConvert(const PTR(Token)& token, PTR(FayClass) srcType, PTR(FayClass) destType)
@@ -765,23 +765,23 @@ void fay::AstTypeConvert::dig4(FayBuilder* builder)
 
 	PTR(FayClass) srcType = this->_srcType.lock();
 	if(!srcType)
-		throw BuildException(this->shared_from_this(), "err.cannot_convert_from_void");
+		throw BuildException(builder->file(), this->token(), "err.cannot_convert_from_void");
 
 	PTR(FayClass) dstType = this->_dstType.lock();
 	if(!dstType)
-		throw BuildException(this->shared_from_this(), "err.cannot_convert_to_void");
+		throw BuildException(builder->file(), this->token(), "err.cannot_convert_to_void");
 
 	if(srcType->valueType() == ValueType::Object && dstType->valueType() == ValueType::Object)
 	{
 		//如果不能转换，就提示错误，能转换的话，不进行任何处理
 		if(!srcType->canCovertTo(dstType))
-			throw BuildException(this->shared_from_this(), "err.cannot_convert_type", srcType->fullname(), dstType->fullname());
+			throw BuildException(builder->file(), this->token(), "err.cannot_convert_type", srcType->fullname(), dstType->fullname());
 	}
 	else
 	{
 		FayInst* inst = FayLangUtils::ConvertInst(srcType->valueType(), dstType->valueType());
 		if(inst == nullptr)
-			throw BuildException(this->shared_from_this(), "err.cannot_convert", srcType->fullname(), dstType->fullname());
+			throw BuildException(builder->file(), this->token(), "err.cannot_convert", srcType->fullname(), dstType->fullname());
 
 		builder->addInst(inst);
 	}
@@ -843,7 +843,7 @@ void fay::AstIf::dig4(FayBuilder* builder)
 		if(this->_nodes.size() > i + 2)
 		{
 			if(!this->_nodes[i + 2]->is<AstCondition>())
-				throw BuildException(this->_nodes[i + 2], "bad branch");
+				throw BuildException(builder->file(), this->_nodes[i + 2]->token(), "bad branch");
 
 			std::string nextBranchLabel = TOPTR(AstCondition, this->_nodes[i + 2])->label();
 			inst::JumpFalse* inst = new inst::JumpFalse(-1);
@@ -913,7 +913,7 @@ void fay::AstEqualityOP::dig4(FayBuilder* builder)
 	if(inst)
 		builder->addInst(inst);
 	else
-		throw BuildException(this->shared_from_this(), "unknow bool inst : " + this->_text + " " + this->_itemType.lock()->fullname());
+		throw BuildException(builder->file(), this->token(), "unknow bool inst : " + this->_text + " " + this->_itemType.lock()->fullname());
 }
 
 void fay::AstCondition::dig3(FayBuilder* builder)
@@ -1000,7 +1000,7 @@ void fay::AstPreOP::dig3(FayBuilder* builder)
 
 	//必需要是数值
 	if(!FayLangUtils::IsNumberType(subNode->valueType()))
-		throw BuildException(this->shared_from_this(), "not a number type : " + TypeDict::ToName(subNode->valueType()));
+		throw BuildException(builder->file(), this->token(), "not a number type : " + TypeDict::ToName(subNode->valueType()));
 
 	//根据类型生成右值
 	this->_classType = subNode->classType();
@@ -1018,7 +1018,7 @@ void fay::AstPreOP::dig4(FayBuilder* builder)
 	else if(this->_text == "--")
 		builder->addInst(FayLangUtils::OPInst(InstGroupType::Sub, this->valueType()));
 	else
-		throw BuildException(this->shared_from_this(), "err.unknow_pre_op : " + this->_text);
+		throw BuildException(builder->file(), this->token(), "err.unknow_pre_op : " + this->_text);
 
 	//如果是ID，需要把值给复制过去
 	if(!this->_id.empty())
@@ -1044,7 +1044,7 @@ void fay::AstFixedNumber::dig4(FayBuilder* builder)
 {
 	FayInst* inst = FayLangUtils::PushNumber(this->_type, this->_value);
 	if(inst == nullptr)
-		throw BuildException(this->shared_from_this(), "make push number error : " + TypeDict::ToName(this->_type));
+		throw BuildException(builder->file(), this->token(), "make push number error : " + TypeDict::ToName(this->_type));
 
 	builder->addInst(inst);
 }
@@ -1097,9 +1097,9 @@ void fay::AstType::dig2(FayBuilder* builder)
 
 	auto classes = FayDomain::FindClass(builder->usings(), this->_text);
 	if(classes.size() <= 0)
-		throw BuildException(this->shared_from_this(), "err.cannot_find_class", this->_text);
+		throw BuildException(builder->file(), this->token(), "err.cannot_find_class", this->_text);
 	else if(classes.size() > 1)
-		throw BuildException(this->shared_from_this(), "err.unsolved_class", this->_text);
+		throw BuildException(builder->file(), this->token(), "err.unsolved_class", this->_text);
 
 	this->_classType = classes[0];
 }
@@ -1113,7 +1113,7 @@ void fay::AstReturn::dig3(FayBuilder* builder)
 		PTR(FayFun) fun = builder->fun();
 
 		if(fun->returnValue() == nullptr || fun->returnValue()->valueType() == ValueType::Void)
-			throw BuildException(this->shared_from_this(), "err.return_to_void");
+			throw BuildException(builder->file(), this->token(), "err.return_to_void");
 
 		//先算出目标类型
 		auto t1 = this->_nodes[0]->classType();
@@ -1156,7 +1156,7 @@ void fay::AstPostOP::dig3(FayBuilder* builder)
 
 	//必需要是数值
 	if(!FayLangUtils::IsNumberType(subNode->valueType()))
-		throw BuildException(this->shared_from_this(), "not a number type : " + TypeDict::ToName(subNode->valueType()));
+		throw BuildException(builder->file(), this->token(), "not a number type : " + TypeDict::ToName(subNode->valueType()));
 
 	//根据类型生成右值
 	this->_classType = subNode->classType();
@@ -1177,7 +1177,7 @@ void fay::AstPostOP::dig4(FayBuilder* builder)
 	else if(this->_text == "--")
 		builder->addInst(FayLangUtils::OPInst(InstGroupType::Sub, this->valueType()));
 	else
-		throw BuildException(this->shared_from_this(), "err.unknow_post_op : ", this->_text);
+		throw BuildException(builder->file(), this->token(), "err.unknow_post_op : ", this->_text);
 
 	//如果是ID，需要把值给复制过去
 	if(!this->_id.empty())
@@ -1234,7 +1234,7 @@ void fay::AstBitNot::dig3(FayBuilder* builder)
 
 	this->_classType = this->_nodes[0]->classType();
 	if(!FayLangUtils::IsIntegerNumberType(this->valueType()))
-		throw BuildException(this->shared_from_this(), "err.not_int_number");
+		throw BuildException(builder->file(), this->token(), "err.not_int_number");
 }
 
 void fay::AstBitNot::dig4(FayBuilder* builder)
@@ -1267,7 +1267,7 @@ void fay::AstBitOP::dig3(FayBuilder* builder)
 
 	//限定要是整数
 	if(!FayLangUtils::IsIntegerNumberType(t3->valueType()))
-		throw BuildException(this->shared_from_this(), "err.not_integer", t3->fullname());
+		throw BuildException(builder->file(), this->token(), "err.not_integer", t3->fullname());
 
 	//如果和目标类型不一致，就转换一下
 	if(t1 != t3)
@@ -1293,7 +1293,7 @@ void fay::AstBitOP::dig4(FayBuilder* builder)
 	if(inst)
 		builder->addInst(inst);
 	else
-		throw BuildException(this->shared_from_this(), "err.not_support_op", this->_text, this->_classType.lock()->fullname());
+		throw BuildException(builder->file(), this->token(), "err.not_support_op", this->_text, this->_classType.lock()->fullname());
 }
 
 void fay::AstBoolOP::dig3(FayBuilder* builder)
@@ -1328,7 +1328,7 @@ void fay::AstBoolOP::dig4(FayBuilder* builder)
 	if(inst)
 		builder->addInst(inst);
 	else
-		throw BuildException(this->shared_from_this(), "err.not_support_op", this->_text, this->_classType.lock()->fullname());
+		throw BuildException(builder->file(), this->token(), "err.not_support_op", this->_text, this->_classType.lock()->fullname());
 }
 
 void fay::AstCondExpr::dig3(FayBuilder* builder)
@@ -1448,9 +1448,9 @@ void fay::AstNew::dig3(FayBuilder* builder)
 
 	auto classes = FayDomain::FindClass(builder->usings(), this->_text);
 	if(classes.size() <= 0)
-		throw BuildException(this->shared_from_this(), "err.no_class", this->_text);
+		throw BuildException(builder->file(), this->token(), "err.no_class", this->_text);
 	else if(classes.size() > 1)
-		throw BuildException(this->shared_from_this(), "err.multi_class", this->_text);
+		throw BuildException(builder->file(), this->token(), "err.multi_class", this->_text);
 
 	this->_classType = classes[0];
 }
@@ -1468,11 +1468,11 @@ void fay::AstField::dig2(FayBuilder* builder)
 	AstNode::dig2(builder);
 
 	if(!this->_nodes[0])
-		throw BuildException(this->shared_from_this(), "err.no_type");
+		throw BuildException(builder->file(), this->token(), "err.no_type");
 
 	PTR(FayClass) type = this->_nodes[0]->classType();
 	if(!type)
-		throw BuildException(this->shared_from_this(), "err.bad_type");
+		throw BuildException(builder->file(), this->token(), "err.bad_type");
 
 	if(this->isStatic())
 		this->varIndex = builder->clazz()->addStaticVar(this->_text, type);

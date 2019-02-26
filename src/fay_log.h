@@ -22,6 +22,7 @@ namespace fay
 	public:
 		LogType type = LogType::Debug;
 		std::string msg;
+		std::string trace;
 		PTR(fay::FilePart) part;
 
 		LogData(LogType type, const std::string &msg)

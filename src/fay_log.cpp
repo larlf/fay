@@ -59,7 +59,7 @@ void fay::LogBus::Log(LogType type, const std::string &msg, PTR(FilePart) part)
 	}
 }
 
-void fay::LogBus::_Log(LogType type, const std::string &data, PTR(FilePart) part)
+void fay::LogBus::_Log(LogType type, const std::string &msg, PTR(FilePart) part)
 {
 	//std::string msg = data;
 
@@ -69,21 +69,21 @@ void fay::LogBus::_Log(LogType type, const std::string &data, PTR(FilePart) part
 	{
 		case LogType::Info:
 #if WIN32
-			std::cout << termcolor::yellow << "Info : " << StringUtils::Encoding(data, "UTF-8", "GBK") << termcolor::reset << std::endl;
+			std::cout << termcolor::yellow << "Info : " << StringUtils::Encoding(msg, "UTF-8", "GBK") << termcolor::reset << std::endl;
 #else
 			std::cout << termcolor::yellow << msg << termcolor::reset << std::endl;
 #endif
 			break;
 		case LogType::Warn:
 #if WIN32
-			std::cout << termcolor::magenta << "Warn : " << StringUtils::Encoding(data, "UTF-8", "GBK") << termcolor::reset << std::endl;
+			std::cout << termcolor::magenta << "Warn : " << StringUtils::Encoding(msg, "UTF-8", "GBK") << termcolor::reset << std::endl;
 #else
 			std::cout << termcolor::magenta << msg << termcolor::reset << std::endl;
 #endif
 			break;
 		case LogType::Error:
 #if WIN32
-			std::cout << termcolor::red << "Error : " << StringUtils::Encoding(data, "UTF-8", "GBK") << termcolor::reset << std::endl;
+			std::cout << termcolor::red << "Error : " << StringUtils::Encoding(msg, "UTF-8", "GBK") << termcolor::reset << std::endl;
 #else
 			std::cout << termcolor::red << msg << termcolor::reset << std::endl;
 #endif
@@ -109,7 +109,7 @@ void fay::LogBus::_Log(LogType type, const std::string &data, PTR(FilePart) part
 			default:
 				break;
 		}
-		FileUtils::AppendTextFile(_LogFile, data);
+		FileUtils::AppendTextFile(_LogFile, msg);
 	}
 
 	//如果有代码的位置，输出一下
