@@ -30,8 +30,9 @@ int main(int argc, char** argv)
 	FayDomain::InitSysLib();
 
 	FayProject project(parser.get("path"));
-	//project.parse();
 	project.build();
+
+
 
 	return 0;
 }

@@ -409,6 +409,8 @@ namespace fay
 		~FayLib() {}
 
 		pos_t addClass(PTR(FayClass) clazz);
+		//在库里查找Main函数的入口点
+		PTR(std::vector<PTR(FayFun)>) findMainFun();
 
 		virtual void buildString(mirror::utils::StringBuilder* sb) override;
 	};

@@ -182,6 +182,20 @@ pos_t fay::FayLib::addClass(PTR(FayClass) clazz)
 	return FayDomain::AddClass(clazz);
 }
 
+PTR(std::vector<PTR(FayFun)>) fay::FayLib::findMainFun()
+{
+	PTR(std::vector<PTR(FayFun)>) funs = MKPTR(std::vector<PTR(FayFun)>)();
+
+	for(auto clazz : this->classes)
+	{
+		auto fs = clazz->findFunByName("Main", true);
+		for(auto f : fs)
+			funs->push_back(f);
+	}
+
+	return funs;
+}
+
 void fay::FayLib::buildString(mirror::utils::StringBuilder* sb)
 {
 	sb->add("[FayLib]")->add(this->name)->endl();
