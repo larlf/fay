@@ -224,11 +224,7 @@ void fay::FayProject::LexicalWorkThread(BuildTaskQueue<BuildTask>* queue)
 		}
 		catch(std::exception e)
 		{
-			std::string msg = I18N::Get("err.builder");
-			msg += task->filename();
-			msg += "\n";
-			msg += e.what();
-			LogBus::Error(msg);
+			LogBus::Error(e.what());
 		}
 
 		LogBus::EndThread();
@@ -255,19 +251,13 @@ void fay::FayProject::ASTWorkThread(BuildTaskQueue<BuildTask>* queue)
 				LogBus::Debug(str);
 			}
 		}
-		catch(ParseException e)
+		catch(fay::CompileException e)
 		{
-			std::string msg = e.what();
-			msg += I18N::Get("location", task->filename(), std::to_string(e.token->line()), std::to_string(e.token->col()));
-			LogBus::Error(msg, MKPTR(FilePart)(task->file, e.token->line(), e.token->col(), e.token->size()));
+			LogBus::Error(e.what(), e.part);
 		}
 		catch(std::exception e)
 		{
-			std::string msg = I18N::Get("err.ast");
-			msg += task->filename();
-			msg += "\n";
-			msg += e.what();
-			LogBus::Error(msg);
+			LogBus::Error(e.what());
 		}
 
 		LogBus::EndThread();
@@ -297,11 +287,7 @@ void fay::FayProject::Dig3WorkThread(BuildTaskQueue<BuildTask>* queue, PTR(FayLi
 			}
 			catch(std::exception e)
 			{
-				std::string msg = I18N::Get("err.build");
-				msg += task->filename();
-				msg += "\n";
-				msg += e.what();
-				LogBus::Error(msg);
+				LogBus::Error(e.what());
 			}
 
 			LogBus::EndThread();
@@ -332,7 +318,7 @@ void fay::FayProject::Dig4WorkThread(BuildTaskQueue<BuildTask>* queue, PTR(FayLi
 			}
 			catch(std::exception e)
 			{
-				LOG_ERROR("Dig4() Error : " << task->filename() << "\n" << e.what());
+				LogBus::Error(e.what());
 			}
 
 			LogBus::EndThread();
@@ -409,9 +395,9 @@ std::string fay::BuildTask::tokensStr()
 
 	for(auto it : *this->tokens)
 	{
-		if(it->line() != line)
+		if(it->line != line)
 		{
-			line = it->line();
+			line = it->line;
 			std::string lineStr = std::to_string(line);
 
 			if(sb.size() > 0)
@@ -419,8 +405,8 @@ std::string fay::BuildTask::tokensStr()
 			sb.add(' ', 5 - lineStr.size())->add(lineStr)->add(" | ");
 		}
 
-		std::string text = utils::StringUtils::EncodeSpecialChar(it->text());
-		sb.add(text)->add("(")->add(TypeDict::ToName(it->type()))->add(") ");
+		std::string text = utils::StringUtils::EncodeSpecialChar(it->text);
+		sb.add(text)->add("(")->add(TypeDict::ToName(it->type))->add(") ");
 	}
 
 	return sb.toString();

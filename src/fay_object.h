@@ -64,13 +64,13 @@ namespace fay
 
 		CompileException(const std::string &msg) : std::exception(msg.c_str())
 		{
-			LOG_ERROR(msg);
+			//LOG_ERROR(msg);
 		}
 
 		CompileException(const std::string &msg, PTR(FayFile) file, int line, int col, int count)
 			: std::exception(msg.c_str()), part(MKPTR(FilePart)(file, line, col, count))
 		{
-			LOG_ERROR(msg);
+			//LOG_ERROR(msg);
 		}
 	};
 

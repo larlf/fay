@@ -12,7 +12,7 @@ PTR(AstNode) fay::Parser::_MakeLeftRightOPNode(std::function<PTR(AstNode)(TokenS
 		throw ParseException(stack, "err.cannot_find_left_value");
 
 	while(stack->now()->is(TokenType::OP)
-		&& (std::find(ops.begin(), ops.end(), stack->now()->text()) != ops.end()))
+		&& (std::find(ops.begin(), ops.end(), stack->now()->text) != ops.end()))
 	{
 		//生成节点
 		auto node = nodeCreater(stack->now());
@@ -38,7 +38,7 @@ PTR(AstNode) fay::Parser::_MakeBoolOPNode(std::function<PTR(AstNode)(TokenStack*
 		throw ParseException(stack, "err.cannot_find_left_value");
 
 	while(stack->now()->is(TokenType::OP)
-		&& (std::find(ops.begin(), ops.end(), stack->now()->text()) != ops.end()))
+		&& (std::find(ops.begin(), ops.end(), stack->now()->text) != ops.end()))
 	{
 		//生成节点
 		auto node = MKPTR(AstEqualityOP)(stack->now());
@@ -101,7 +101,7 @@ PTR(AstNode) fay::Parser::_Class(TokenStack* stack)
 {
 	std::vector<std::string> descWords;
 	while(stack->now()->is(TokenType::DescSymbol))
-		descWords.push_back(stack->move()->text());
+		descWords.push_back(stack->move()->text);
 
 	if(!stack->now()->is(TokenType::Class))
 		throw ParseException(stack, "cannot find keyword : class");
@@ -120,7 +120,7 @@ PTR(AstNode) fay::Parser::_Class(TokenStack* stack)
 
 		if(!stack->now()->is(TokenType::ID))
 			throw ParseException(stack, "err.bad_class_name");
-		node->superClassText = stack->now()->text();
+		node->superClassText = stack->now()->text;
 		stack->next();
 	}
 
@@ -148,7 +148,7 @@ PTR(AstNode) fay::Parser::_Class(TokenStack* stack)
 			break;
 
 		//处理函数和字段
-		switch(nextToken->type())
+		switch(nextToken->type)
 		{
 			case TokenType::Var:
 			{
@@ -165,7 +165,7 @@ PTR(AstNode) fay::Parser::_Class(TokenStack* stack)
 				break;
 			}
 			default:
-				throw ParseException(stack, "unknow token type : " + TypeDict::ToName(nextToken->type()));
+				throw ParseException(stack, "unknow token type : " + TypeDict::ToName(nextToken->type));
 		}
 	}
 
@@ -182,7 +182,7 @@ PTR(AstNode) fay::Parser::_Field(TokenStack* stack)
 	while(stack->now()->is(TokenType::DescSymbol))
 	{
 		//node->descWords[stack->now()->text()] = true;
-		words.push_back(stack->now()->text());
+		words.push_back(stack->now()->text);
 		stack->next();
 	}
 
@@ -225,7 +225,7 @@ PTR(AstNode) fay::Parser::_Fun(TokenStack* stack)
 {
 	std::vector<std::string> descWords;
 	while(stack->now()->is(TokenType::DescSymbol))
-		descWords.push_back(stack->move()->text());
+		descWords.push_back(stack->move()->text);
 
 	if(!stack->now()->is(TokenType::Fun))
 		throw ParseException(stack, "unknow desc word");
@@ -1134,7 +1134,7 @@ PTR(AstNode) fay::Parser::_AddrExpr(TokenStack* stack)
 
 PTR(AstNode) fay::Parser::Parse(PTR(FayFile) file, PTR(std::vector<PTR(Token)>) tokens)
 {
-	TokenStack stack(tokens);
+	TokenStack stack(file, tokens);
 	PTR(AstFile) ast = MKPTR(AstFile)(file);
 
 	while(true)
@@ -1149,7 +1149,7 @@ PTR(AstNode) fay::Parser::Parse(PTR(FayFile) file, PTR(std::vector<PTR(Token)>) 
 		if(token)
 		{
 			PTR(AstNode) node;
-			switch(token->type())
+			switch(token->type)
 			{
 				case TokenType::Class:
 					node = _Class(&stack);

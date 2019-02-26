@@ -9,7 +9,7 @@ using namespace fay;
 PTR(Token) fay::Lexer::changeMode(PTR(Token) t)
 {
 	//如果进入到特别的内容中，处理下mode转换
-	switch(t->type())
+	switch(t->type)
 	{
 		case TokenType::DoubleSlash:
 			this->_mode = LexMode::Comment;
@@ -174,13 +174,13 @@ PTR(std::vector<PTR(Token)>) fay::Lexer::Execute(PTR(FayFile) file)
 			{
 				for each(auto it in tokens)
 				{
-					if(it->size() > t->size())
+					if(it->count > t->count)
 						t = it;
 				}
 			}
 
 			//对这部分内容进行其它分析
-			for(auto i = 0; i < t->size(); ++i)
+			for(auto i = 0; i < t->count; ++i)
 			{
 				//检查换行符，对行数进行计数
 				if(chars[pos + i] == '\n')
@@ -191,7 +191,7 @@ PTR(std::vector<PTR(Token)>) fay::Lexer::Execute(PTR(FayFile) file)
 			}
 
 			//修改位置指针
-			pos += t->size();
+			pos += t->count;
 
 			//添加取返回结果
 			t = changeMode(t);

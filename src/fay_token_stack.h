@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include <fay_token.h>
+#include <fay_object.h>
 
 namespace fay
 {
@@ -14,9 +15,10 @@ namespace fay
 
 	public:
 		static PTR(Token) EndToken;
+		PTR(FayFile) file;
 
-		TokenStack(PTR(std::vector<PTR(Token)>) tokens)
-			: _tokens(tokens) {}
+		TokenStack(PTR(FayFile) file, PTR(std::vector<PTR(Token)>) tokens)
+			: file(file), _tokens(tokens) {}
 
 		//当前的位置
 		int pos() { return this->_pos; }

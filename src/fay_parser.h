@@ -7,7 +7,7 @@
 namespace fay
 {
 	//语法解析中的异常
-	class ParseException : public std::exception
+	class ParseException : public fay::CompileException
 	{
 	public:
 		PTR(Token) token;
@@ -16,9 +16,7 @@ namespace fay
 		//key : 错误信息的国际化信息
 		template<typename... Params>
 		ParseException(TokenStack* stack, const std::string &key, Params... args)
-			: std::exception(I18N::Get(key, args...).c_str()), token(stack->now())
-		{
-		}
+			: fay::CompileException(I18N::Get(key, args...), stack->file, stack->now()->line, stack->now()->col, stack->now()->count) {}
 	};
 
 	//语法解析器

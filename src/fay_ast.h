@@ -22,7 +22,7 @@ namespace fay
 		//key : 错误信息的国际化信息
 		template<typename... Params>
 		BuildException(PTR(FayFile) file, PTR(fay::Token) token, const std::string &key, Params... args)
-			: fay::CompileException(I18N::Get(key, args...), file, token->line(), token->col(), token->size()) {}
+			: fay::CompileException(I18N::Get(key, args...), file, token->line, token->col, token->count) {}
 	};
 
 	class AstNode : public BaseObject, public std::enable_shared_from_this<AstNode>
@@ -36,7 +36,7 @@ namespace fay
 
 	public:
 		AstNode(const PTR(Token) &token)
-			: _token(token), _text(token ? token->text() : "") {}
+			: _token(token), _text(token ? token->text : "") {}
 
 		virtual ~AstNode() {}
 
@@ -499,7 +499,7 @@ namespace fay
 		FayValue _val;
 
 	public:
-		AstNumber(const PTR(Token) &token) : AstNumber::AstNumber(token, token->text()) {}
+		AstNumber(const PTR(Token) &token) : AstNumber::AstNumber(token, token->text) {}
 		AstNumber(const PTR(Token) &token, const std::string &text);
 		virtual void dig3(FayBuilder* builder) override;
 		virtual void dig4(FayBuilder* builder) override;

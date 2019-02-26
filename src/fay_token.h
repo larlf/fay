@@ -9,28 +9,22 @@ namespace fay
 	 */
 	class Token
 	{
-	private:
-		std::string _text;
-		TokenType _type = TokenType::None;
-		int _line = -1;
-		int _col = -1;
-
 	public:
+		TokenType type = TokenType::None;
+		std::string text;
+		int line = -1;
+		int col = -1;
+		int count = 0;
+
 		Token() {}
-		Token(TokenType type, mirror::data::ByteData &data, int pos, int size, int line, int col)
-			:  _type(type), _line(line), _col(col)
+		Token(TokenType type, mirror::data::ByteData &data, int pos, int count, int line, int col)
+			:  type(type), line(line), col(col), count(count)
 		{
-			this->_text = std::string((char*)data.data(), pos, size);
+			this->text = std::string((char*)data.data(), pos, count);
 		}
 
-		TokenType type() { return this->_type; }
-		const std::string &text() { return this->_text; }
-		int line() { return this->_line; }
-		int col() { return this->_col; }
-		size_t size() { return this->_text.size(); }
-
-		bool is(TokenType type) { return this->_type == type; }
-		bool is(const std::string &text) { return this->_text == text; }
+		bool is(TokenType type) { return this->type == type; }
+		bool is(const std::string &text) { return this->text == text; }
 
 		std::string toString();
 	};
