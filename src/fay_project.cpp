@@ -120,6 +120,13 @@ void fay::FayProject::step6FixedNodeType()
 void fay::FayProject::step7GenerateIL()
 {
 	this->executeThreads(BIND1_S(FayProject::Dig4WorkThread, this->_lib));
+
+	if(LogBus::IsDebug())
+	{
+		LogBus::Debug("[IL]");
+		std::string msg = this->_lib->toString();
+		LogBus::Debug(msg);
+	}
 }
 
 void fay::FayProject::WorkThread(BuildTaskQueue<BuildTask>* queue, std::function<void(PTR(BuildTask))> fun, const std::string &errorMsg)
@@ -213,6 +220,10 @@ void fay::FayProject::Dig3WorkThread(BuildTaskQueue<BuildTask>* queue, PTR(FayLi
 
 		LogBus::Debug(TOSTR("[Dig3]" << task->filename));
 		task->ast->dig3(&builder);
+
+		if(LogBus::IsDebug())
+			LogBus::Debug(task->ast->toString());
+
 	}, "Dig3 error.");
 }
 
@@ -228,6 +239,7 @@ void fay::FayProject::Dig4WorkThread(BuildTaskQueue<BuildTask>* queue, PTR(FayLi
 
 		LogBus::Debug(TOSTR("[Dig4]" << task->filename));
 		task->ast->dig4(&builder);
+
 	}, "Dig4 error.");
 }
 
@@ -239,9 +251,7 @@ void fay::FayProject::executeThreads(std::function<void(BuildTaskQueue<BuildTask
 		taskQueue.add(it.second);
 
 	//定一下要开几个线程来进行处理
-	int threadCount = 1;
-	while(threadCount < SystemEnv::CPUS && taskQueue.activeSize() > threadCount * 5)
-		threadCount++;
+	size_t threadCount = min((LogBus::IsDebug ? 1 : SystemEnv::CPUS), taskQueue.waitSize());
 
 	//启动进行语法分析的线程
 	for(auto i = 0; i < threadCount; ++i)

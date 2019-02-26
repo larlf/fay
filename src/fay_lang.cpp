@@ -155,15 +155,21 @@ void fay::FayClass::buildString(mirror::utils::StringBuilder* sb)
 
 	sb->increaseIndent();
 	{
-		sb->add("[SFT] ")->endl();
-		sb->increaseIndent();
-		this->_sft.buildString(sb);
-		sb->decreaseIndent();
+		if(this->_sft.size() > 0)
+		{
+			sb->add("[SFT] ")->endl();
+			sb->increaseIndent();
+			this->_sft.buildString(sb);
+			sb->decreaseIndent();
+		}
 
-		sb->add("[VFT] ")->endl();
-		sb->increaseIndent();
-		this->_vft.buildString(sb);
-		sb->decreaseIndent();
+		if(this->_vft.size() > 0)
+		{
+			sb->add("[VFT] ")->endl();
+			sb->increaseIndent();
+			this->_vft.buildString(sb);
+			sb->decreaseIndent();
+		}
 	}
 	sb->decreaseIndent();
 }
@@ -367,45 +373,57 @@ void fay::FayInstFun::buildString(mirror::utils::StringBuilder* sb)
 
 	sb->increaseIndent();
 
-	sb->add("[Params] ")->endl();
-	sb->increaseIndent();
-	for(auto i = 0; i < this->_params.size(); ++i)
+	if(this->_params.size() > 0)
 	{
-		sb->add(i)->add("> ");
-		this->_params[i]->buildString(sb);
+		sb->add("[Params] ")->endl();
+		sb->increaseIndent();
+		for(auto i = 0; i < this->_params.size(); ++i)
+		{
+			sb->add(i)->add("> ");
+			this->_params[i]->buildString(sb);
+		}
+		sb->decreaseIndent();
 	}
-	sb->decreaseIndent();
 
-	sb->add("[Vars] ")->endl();
-	sb->increaseIndent();
-	for(auto i = 0; i < this->_vars.list().size(); ++i)
+	if(this->_vars.list().size() > 0)
 	{
-		auto it = this->_vars.list()[i];
-		sb->add(i)->add("> ")->add(it->name())->add(":")->add(it->classType()->fullname())->endl();
+		sb->add("[Vars] ")->endl();
+		sb->increaseIndent();
+		for(auto i = 0; i < this->_vars.list().size(); ++i)
+		{
+			auto it = this->_vars.list()[i];
+			sb->add(i)->add("> ")->add(it->name())->add(":")->add(it->classType()->fullname())->endl();
+		}
+		sb->decreaseIndent();
 	}
-	sb->decreaseIndent();
 
-	sb->add("[Handler] ")->endl();
-	sb->increaseIndent();
-	for (auto it : this->_handlers)
+	if(this->_handlers.size() > 0)
 	{
-		it->buildString(sb);
-		sb->endl();
-	}
-	sb->decreaseIndent();
-
-	sb->add("[Inst] ")->endl();
-	sb->increaseIndent();
-	for(auto i = 0; i < this->_insts.size(); ++i)
-	{
-		auto it = this->_insts[i];
-		sb->add(i)->add("> ");
-		if(it)
+		sb->add("[Handler] ")->endl();
+		sb->increaseIndent();
+		for(auto it : this->_handlers)
+		{
 			it->buildString(sb);
-		else
-			sb->add("<nullptr>");
+			sb->endl();
+		}
+		sb->decreaseIndent();
 	}
-	sb->decreaseIndent();
+
+	if(this->_insts.size() > 0)
+	{
+		sb->add("[Inst] ")->endl();
+		sb->increaseIndent();
+		for(auto i = 0; i < this->_insts.size(); ++i)
+		{
+			auto it = this->_insts[i];
+			sb->add(i)->add("> ");
+			if(it)
+				it->buildString(sb);
+			else
+				sb->add("<nullptr>");
+		}
+		sb->decreaseIndent();
+	}
 
 	sb->decreaseIndent();
 }
@@ -1420,7 +1438,7 @@ void fay::FayLabel::setPos(int32_t pos)
 		(*it) = pos;
 }
 
-void fay::FayLabel::buildString(mirror::utils::StringBuilder * sb)
+void fay::FayLabel::buildString(mirror::utils::StringBuilder* sb)
 {
 	sb->add(this->_name)->add(" => ")->add(this->_pos);
 }
@@ -1495,7 +1513,7 @@ void fay::FayObject::setVar(const std::string &name, FayValue &value)
 	this->_vars[varDef->indexValue()] = value;
 }
 
-void fay::TryHandler::buildString(mirror::utils::StringBuilder * sb)
+void fay::TryHandler::buildString(mirror::utils::StringBuilder* sb)
 {
 	sb->add("(")->add(this->start)->add(",")->add(this->end)->add(") => ")->add(this->target);
 }

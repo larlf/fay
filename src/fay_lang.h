@@ -53,6 +53,7 @@ namespace fay
 		std::vector<PTR(FayFun)> _funs;  //所有的函数列表
 
 	public:
+		size_t size() { return this->_funs.size(); }
 		//添加函数
 		pos_t addFun(PTR(FayFun) fun);
 		//取得函数
