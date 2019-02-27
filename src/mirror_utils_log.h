@@ -39,7 +39,7 @@ namespace mirror
 #define _LOG_TRACE mirror::log::SysTrace::TraceInfo()
 #define _LOG_END } catch(std::exception& ex) {}; \
 	mirror::log::LogState::LogLock.clear(); \
-	} while(0)
+	} while(false)
 
 /** 打印信息 */
 #define PRINT(p1) _LOG_START(p1) std::cout<<str<<std::endl; _LOG_END

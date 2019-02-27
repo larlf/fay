@@ -10,7 +10,7 @@ using namespace fay;
 
 void fay::FayProject::step1CheckFiles()
 {
-	if(this->_path.size() < 1)
+	if(this->_path.empty())
 	{
 		LogBus::Error("Project path is empty");
 		return;
@@ -24,7 +24,7 @@ void fay::FayProject::step1CheckFiles()
 	srcPath.append("src");
 	std::vector<fs::path> files;
 	utils::FileUtils::FindFiles(files, this->_path, true, ".fay");
-	for(auto it : files)
+	for(const auto &it : files)
 	{
 		std::string filename = it.string();
 		LogBus::Debug(filename);
@@ -306,7 +306,7 @@ std::string fay::BuildTask::tokensStr()
 	utils::StringBuilder sb;
 	int line = 0;
 
-	for(auto it : *this->tokens)
+	for(const auto &it : *this->tokens)
 	{
 		if(it->line != line)
 		{

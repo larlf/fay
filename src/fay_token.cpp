@@ -100,9 +100,9 @@ fay::Token* fay::SymbolTokenRule::match(ByteData &data, int pos, int line, int c
 
 Token* fay::WordsTokenRule::match(ByteData &data, int pos, int line, int col)
 {
-	for(auto i = 0; i < this->_words.size(); ++i)
+	for(auto &i : this->_words)
 	{
-		std::string* word = &this->_words[i];
+		std::string* word = &i;
 		bool isMatch = true;
 		for(auto i = 0; i < word->size(); ++i)
 		{

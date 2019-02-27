@@ -16,7 +16,7 @@ using namespace mirror;
 fay::FayClass::FayClass(const std::string &package, const std::string &name)
 	: _package(package), _name(name)
 {
-	this->_fullname = (package.size() > 0 ? package + "." : "") + name;
+	this->_fullname = (!package.empty() ? package + "." : "") + name;
 }
 
 void fay::FayClass::initClass()
@@ -27,7 +27,7 @@ void fay::FayClass::initClass()
 
 		//执行初始化方法
 		auto funs = this->findFunByName(FUN_STATIC_INIT, true);
-		for(auto fun : funs)
+		for(const auto &fun : funs)
 			FayVM::Run(fun);
 	}
 }
@@ -186,7 +186,7 @@ PTR(std::vector<PTR(FayFun)>) fay::FayLib::findMainFun()
 {
 	PTR(std::vector<PTR(FayFun)>) funs = MKPTR(std::vector<PTR(FayFun)>)();
 
-	for(auto clazz : this->classes)
+	for(const auto &clazz : this->classes)
 	{
 		auto fs = clazz->findFun("Main():void", true);
 		if(fs)
@@ -211,15 +211,14 @@ void fay::FayLib::buildString(mirror::utils::StringBuilder* sb)
 
 void fay::FayInstFun::prepareInsts()
 {
-	for(auto i = 0; i < this->_insts.size(); ++i)
+	for(FayInst* inst : this->_insts)
 	{
-		FayInst* inst = this->_insts[i];
 		switch(inst->type())
 		{
 			case InstType::CallStatic:
 			{
 				//取出调用方法的索引值
-				inst::CallStatic* cmd = static_cast<inst::CallStatic*>(inst);
+				auto* cmd = static_cast<inst::CallStatic*>(inst);
 				auto clazz = FayDomain::FindClass(cmd->className);
 				if(!clazz)
 				{
@@ -241,7 +240,7 @@ void fay::FayInstFun::prepareInsts()
 			case InstType::CallVirtual:
 			{
 				//取出调用方法的索引值
-				inst::CallVirtual* cmd = static_cast<inst::CallVirtual*>(inst);
+				auto* cmd = static_cast<inst::CallVirtual*>(inst);
 				auto clazz = FayDomain::FindClass(cmd->className);
 				if(!clazz)
 				{
@@ -262,7 +261,7 @@ void fay::FayInstFun::prepareInsts()
 			}
 			case InstType::SetStatic:
 			{
-				inst::SetStatic* cmd = static_cast<inst::SetStatic*>(inst);
+				auto* cmd = static_cast<inst::SetStatic*>(inst);
 				auto clazz = FayDomain::FindClass(cmd->className);
 				if(!clazz)
 				{
@@ -283,7 +282,7 @@ void fay::FayInstFun::prepareInsts()
 			}
 			case InstType::LoadStatic:
 			{
-				inst::LoadStatic* cmd = static_cast<inst::LoadStatic*>(inst);
+				auto* cmd = static_cast<inst::LoadStatic*>(inst);
 				auto clazz = FayDomain::FindClass(cmd->className);
 				if(!clazz)
 				{
@@ -304,9 +303,9 @@ void fay::FayInstFun::prepareInsts()
 			}
 			case InstType::NewObject:
 			{
-				inst::NewObject* cmd = static_cast<inst::NewObject*>(inst);
+				auto* cmd = static_cast<inst::NewObject*>(inst);
 				auto clazz = FayDomain::FindClass(cmd->className);
-				if(clazz == NULL)
+				if(clazz == nullptr)
 					throw FayLangException("Cannot find class : " + cmd->className);
 
 				cmd->classIndex = clazz->indexValue();
@@ -387,7 +386,7 @@ void fay::FayInstFun::buildString(mirror::utils::StringBuilder* sb)
 
 	sb->increaseIndent();
 
-	if(this->_params.size() > 0)
+	if(!this->_params.empty())
 	{
 		sb->add("[Params] ")->endl();
 		sb->increaseIndent();
@@ -399,7 +398,7 @@ void fay::FayInstFun::buildString(mirror::utils::StringBuilder* sb)
 		sb->decreaseIndent();
 	}
 
-	if(this->_vars.list().size() > 0)
+	if(!this->_vars.list().empty())
 	{
 		sb->add("[Vars] ")->endl();
 		sb->increaseIndent();
@@ -411,7 +410,7 @@ void fay::FayInstFun::buildString(mirror::utils::StringBuilder* sb)
 		sb->decreaseIndent();
 	}
 
-	if(this->_handlers.size() > 0)
+	if(!this->_handlers.empty())
 	{
 		sb->add("[Handler] ")->endl();
 		sb->increaseIndent();
@@ -423,7 +422,7 @@ void fay::FayInstFun::buildString(mirror::utils::StringBuilder* sb)
 		sb->decreaseIndent();
 	}
 
-	if(this->_insts.size() > 0)
+	if(!this->_insts.empty())
 	{
 		sb->add("[Inst] ")->endl();
 		sb->increaseIndent();
@@ -1353,8 +1352,8 @@ void fay::FunTable::rebuild(std::vector<PTR(FayFun)> &parentFuns)
 	std::vector<PTR(FayFun)> funs = this->_funs;
 	this->_funs = parentFuns;
 
-	for(auto i = 0; i < funs.size(); ++i)
-		this->addFun(funs[i]);
+	for(const auto &fun : funs)
+		this->addFun(fun);
 }
 
 void fay::FunTable::rebuild(FunTable* parent)
@@ -1362,17 +1361,16 @@ void fay::FunTable::rebuild(FunTable* parent)
 	std::vector<PTR(FayFun)> funs = this->_funs;
 	this->_funs = parent->_funs;
 
-	for(auto i = 0; i < funs.size(); ++i)
-		this->addFun(funs[i]);
+	for(const auto &fun : funs)
+		this->addFun(fun);
 }
 
 std::vector<PTR(FayFun)> fay::FunTable::matchFun(const std::string &funName, const std::vector<PTR(FayClass)> &paramsType)
 {
 	std::vector<PTR(FayFun)> funs;
 
-	for(auto i = 0; i < this->_funs.size(); ++i)
+	for(const auto &it : this->_funs)
 	{
-		auto it = this->_funs[i];
 		if(it->name() == funName && it->match(paramsType))
 			funs.push_back(it);
 	}
@@ -1393,10 +1391,10 @@ pos_t fay::FunTable::getFunIndex(const std::string &fullname)
 
 PTR(FayFun) fay::FunTable::findFun(const std::string &fullname)
 {
-	for(auto i = 0; i < this->_funs.size(); ++i)
+	for(auto &fun : this->_funs)
 	{
-		if(this->_funs[i]->fullname() == fullname)
-			return this->_funs[i];
+		if(fun->fullname() == fullname)
+			return fun;
 	}
 
 	return nullptr;
@@ -1411,7 +1409,7 @@ std::vector<PTR(FayFun)> fay::FunTable::findFunByName(const std::string &name)
 
 void fay::FunTable::findFunByName(const std::string &name, std::vector<PTR(FayFun)> &list)
 {
-	for(auto fun : this->_funs)
+	for(const auto &fun : this->_funs)
 	{
 		if(fun->name() == name)
 			list.push_back(fun);

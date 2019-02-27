@@ -42,7 +42,7 @@ void fay::LogBus::Init(const std::string &filename)
 	LogBus::_MainThreadID = std::this_thread::get_id();
 	LogBus::ResetCount();
 
-	if(filename.size() > 0)
+	if(!filename.empty())
 	{
 		LogBus::_LogFile = filename;
 		FileUtils::WriteTextFile(filename, "");
@@ -97,7 +97,7 @@ void fay::LogBus::_Log(LogType type, const std::string &msg, PTR(FilePart) part,
 	}
 
 	//输出到文件
-	if(_LogFile.size() > 0)
+	if(!_LogFile.empty())
 	{
 		switch(type)
 		{
@@ -123,14 +123,14 @@ void fay::LogBus::_Log(LogType type, const std::string &msg, PTR(FilePart) part,
 	{
 		std::string str = part->print();
 
-		if(_LogFile.size() > 0)
+		if(!_LogFile.empty())
 			FileUtils::AppendTextFile(_LogFile, str);
 	}
 
 	//处理trace的信息
-	if(trace.size() > 0)
+	if(!trace.empty())
 	{
-		if(_LogFile.size() > 0)
+		if(!_LogFile.empty())
 			FileUtils::AppendTextFile(_LogFile, trace);
 	}
 }
@@ -143,7 +143,7 @@ void fay::LogBus::EndThread()
 	auto logger = LogBus::_GetThreadLogger(id);
 	if(logger != nullptr)
 	{
-		for(auto log : *logger)
+		for(const auto &log : *logger)
 			LogBus::_Log(log->type, log->msg, log->part, log->trace);
 
 		LogBus::_RemoveThreadLogger(id);
@@ -156,7 +156,7 @@ void fay::LogBus::EndAllThread()
 
 	for(auto logger : LogBus::_Loggers)
 	{
-		for(auto log : *logger.second)
+		for(const auto &log : *logger.second)
 			LogBus::_Log(log->type, log->msg, log->part, log->trace);
 	}
 
@@ -165,8 +165,8 @@ void fay::LogBus::EndAllThread()
 
 void fay::LogBus::ResetCount()
 {
-	for(size_t i = 0; i < (size_t)LogType::_Max; ++i)
-		LogBus::_Count[i] = 0;
+	for(size_t &i : LogBus::_Count)
+		i = 0;
 }
 
 size_t fay::LogBus::Count(LogType type)

@@ -29,7 +29,7 @@ void fay::FayVM::_run(PTR(std::stack<FayValue>) stack, PTR(FayValue) &error, PTR
 	FayInst* inst;
 	size_t ip = 0;
 
-	label1:
+label1:
 
 	try
 	{
@@ -47,26 +47,26 @@ void fay::FayVM::_run(PTR(std::stack<FayValue>) stack, PTR(FayValue) &error, PTR
 				}
 				case InstType::Jump:
 				{
-					ip=((inst::Jump*)inst)->target-1;
+					ip = ((inst::Jump*)inst)->target - 1;
 					break;
 				}
 				case InstType::JumpFalse:
 				{
-					FayValue v=stack->top();
+					FayValue v = stack->top();
 					stack->pop();
-					if(!v.boolVal()) ip=((inst::JumpFalse*)inst)->target-1;
+					if(!v.boolVal()) ip = ((inst::JumpFalse*)inst)->target - 1;
 					break;
 				}
 				case InstType::JumpTrue:
 				{
-					FayValue v=stack->top();
+					FayValue v = stack->top();
 					stack->pop();
-					if(v.boolVal()) ip=((inst::JumpTrue*)inst)->target-1;
+					if(v.boolVal()) ip = ((inst::JumpTrue*)inst)->target - 1;
 					break;
 				}
 				case InstType::Return:
 				{
-					ip=insts->size();
+					ip = insts->size();
 					break;
 				}
 				case InstType::LeaveTry:
@@ -145,22 +145,22 @@ void fay::FayVM::_run(PTR(std::stack<FayValue>) stack, PTR(FayValue) &error, PTR
 				}
 				case InstType::SetLocal:
 				{
-					localVars[((inst::SetLocal*)inst)->varIndex]=stack->top();
+					localVars[((inst::SetLocal*)inst)->varIndex] = stack->top();
 					stack->pop();
 					break;
 				}
 				case InstType::SetField:
 				{
-					FayValue obj=stack->top();
+					FayValue obj = stack->top();
 					stack->pop();
-					FayValue val=stack->top();
+					FayValue val = stack->top();
 					stack->pop();
-					obj.objVal<FayObject>()->vars()[((inst::SetField*)inst)->fieldIndex]=val;
+					obj.objVal<FayObject>()->vars()[((inst::SetField*)inst)->fieldIndex] = val;
 					break;
 				}
 				case InstType::SetStatic:
 				{
-					FayDomain::UseClass(((inst::SetStatic*)inst)->classIndex)->staticVar(((inst::SetStatic*)inst)->varIndex)=stack->top();
+					FayDomain::UseClass(((inst::SetStatic*)inst)->classIndex)->staticVar(((inst::SetStatic*)inst)->varIndex) = stack->top();
 					stack->pop();
 					break;
 				}
@@ -171,14 +171,14 @@ void fay::FayVM::_run(PTR(std::stack<FayValue>) stack, PTR(FayValue) &error, PTR
 				}
 				case InstType::LoadField:
 				{
-					FayValue obj=stack->top();
+					FayValue obj = stack->top();
 					stack->pop();
 					stack->push(obj.objVal<FayObject>()->vars()[((inst::LoadField*)inst)->varIndex]);
 					break;
 				}
 				case InstType::LoadStatic:
 				{
-					FayValue v=FayDomain::UseClass(((inst::LoadStatic*)inst)->classIndex)->staticVar(((inst::LoadStatic*)inst)->varIndex);
+					FayValue v = FayDomain::UseClass(((inst::LoadStatic*)inst)->classIndex)->staticVar(((inst::LoadStatic*)inst)->varIndex);
 					stack->push(v);
 					break;
 				}
@@ -189,7 +189,7 @@ void fay::FayVM::_run(PTR(std::stack<FayValue>) stack, PTR(FayValue) &error, PTR
 				}
 				case InstType::CopyLocal:
 				{
-					localVars[((inst::CopyLocal*)inst)->fieldIndex]=stack->top();
+					localVars[((inst::CopyLocal*)inst)->fieldIndex] = stack->top();
 					break;
 				}
 				case InstType::VoidToVoid:
@@ -241,21 +241,21 @@ void fay::FayVM::_run(PTR(std::stack<FayValue>) stack, PTR(FayValue) &error, PTR
 				}
 				case InstType::ByteToString:
 				{
-					FayValue v=stack->top();
+					FayValue v = stack->top();
 					stack->pop();
-					stack->push(v.boolVal()?FayValue("true"):FayValue("false"));
+					stack->push(v.boolVal() ? FayValue("true") : FayValue("false"));
 					break;
 				}
 				case InstType::IntToBool:
 				{
-					FayValue v=stack->top();
+					FayValue v = stack->top();
 					stack->pop();
 					stack->push(FayValue((bool)v.intVal()));
 					break;
 				}
 				case InstType::IntToByte:
 				{
-					FayValue v=stack->top();
+					FayValue v = stack->top();
 					stack->pop();
 					stack->push(FayValue((byte)v.intVal()));
 					break;
@@ -267,49 +267,49 @@ void fay::FayVM::_run(PTR(std::stack<FayValue>) stack, PTR(FayValue) &error, PTR
 				}
 				case InstType::IntToLong:
 				{
-					FayValue v=stack->top();
+					FayValue v = stack->top();
 					stack->pop();
 					stack->push(FayValue((int64_t)v.intVal()));
 					break;
 				}
 				case InstType::IntToFloat:
 				{
-					FayValue v=stack->top();
+					FayValue v = stack->top();
 					stack->pop();
 					stack->push(FayValue((float)v.intVal()));
 					break;
 				}
 				case InstType::IntToDouble:
 				{
-					FayValue v=stack->top();
+					FayValue v = stack->top();
 					stack->pop();
 					stack->push(FayValue((double)v.intVal()));
 					break;
 				}
 				case InstType::IntToString:
 				{
-					FayValue v=stack->top();
+					FayValue v = stack->top();
 					stack->pop();
 					stack->push(FayValue(std::to_string(v.intVal())));
 					break;
 				}
 				case InstType::LongToBool:
 				{
-					FayValue v=stack->top();
+					FayValue v = stack->top();
 					stack->pop();
 					stack->push(FayValue((bool)v.longVal()));
 					break;
 				}
 				case InstType::LongToByte:
 				{
-					FayValue v=stack->top();
+					FayValue v = stack->top();
 					stack->pop();
 					stack->push(FayValue((byte)v.longVal()));
 					break;
 				}
 				case InstType::LongToInt:
 				{
-					FayValue v=stack->top();
+					FayValue v = stack->top();
 					stack->pop();
 					stack->push(FayValue((int32_t)v.longVal()));
 					break;
@@ -321,49 +321,49 @@ void fay::FayVM::_run(PTR(std::stack<FayValue>) stack, PTR(FayValue) &error, PTR
 				}
 				case InstType::LongToFloat:
 				{
-					FayValue v=stack->top();
+					FayValue v = stack->top();
 					stack->pop();
 					stack->push(FayValue((float)v.longVal()));
 					break;
 				}
 				case InstType::LongToDouble:
 				{
-					FayValue v=stack->top();
+					FayValue v = stack->top();
 					stack->pop();
 					stack->push(FayValue((double)v.longVal()));
 					break;
 				}
 				case InstType::LongToString:
 				{
-					FayValue v=stack->top();
+					FayValue v = stack->top();
 					stack->pop();
 					stack->push(FayValue(std::to_string(v.longVal())));
 					break;
 				}
 				case InstType::FloatToBool:
 				{
-					FayValue v=stack->top();
+					FayValue v = stack->top();
 					stack->pop();
 					stack->push(FayValue((bool)v.floatVal()));
 					break;
 				}
 				case InstType::FloatToByte:
 				{
-					FayValue v=stack->top();
+					FayValue v = stack->top();
 					stack->pop();
 					stack->push(FayValue((byte)v.floatVal()));
 					break;
 				}
 				case InstType::FloatToInt:
 				{
-					FayValue v=stack->top();
+					FayValue v = stack->top();
 					stack->pop();
 					stack->push(FayValue((int32_t)v.floatVal()));
 					break;
 				}
 				case InstType::FloatToLong:
 				{
-					FayValue v=stack->top();
+					FayValue v = stack->top();
 					stack->pop();
 					stack->push(FayValue((int64_t)v.floatVal()));
 					break;
@@ -375,49 +375,49 @@ void fay::FayVM::_run(PTR(std::stack<FayValue>) stack, PTR(FayValue) &error, PTR
 				}
 				case InstType::FloatToDouble:
 				{
-					FayValue v=stack->top();
+					FayValue v = stack->top();
 					stack->pop();
 					stack->push(FayValue((double)v.floatVal()));
 					break;
 				}
 				case InstType::FloatToString:
 				{
-					FayValue v=stack->top();
+					FayValue v = stack->top();
 					stack->pop();
 					stack->push(FayValue(std::to_string(v.floatVal())));
 					break;
 				}
 				case InstType::DoubleToBool:
 				{
-					FayValue v=stack->top();
+					FayValue v = stack->top();
 					stack->pop();
 					stack->push(FayValue((bool)v.doubleVal()));
 					break;
 				}
 				case InstType::DoubleToByte:
 				{
-					FayValue v=stack->top();
+					FayValue v = stack->top();
 					stack->pop();
 					stack->push(FayValue((byte)v.doubleVal()));
 					break;
 				}
 				case InstType::DoubleToInt:
 				{
-					FayValue v=stack->top();
+					FayValue v = stack->top();
 					stack->pop();
 					stack->push(FayValue((int32_t)v.doubleVal()));
 					break;
 				}
 				case InstType::DoubleToLong:
 				{
-					FayValue v=stack->top();
+					FayValue v = stack->top();
 					stack->pop();
 					stack->push(FayValue((int64_t)v.doubleVal()));
 					break;
 				}
 				case InstType::DoubleToFloat:
 				{
-					FayValue v=stack->top();
+					FayValue v = stack->top();
 					stack->pop();
 					stack->push(FayValue((float)v.doubleVal()));
 					break;
@@ -429,7 +429,7 @@ void fay::FayVM::_run(PTR(std::stack<FayValue>) stack, PTR(FayValue) &error, PTR
 				}
 				case InstType::DoubleToString:
 				{
-					FayValue v=stack->top();
+					FayValue v = stack->top();
 					stack->pop();
 					stack->push(FayValue(std::to_string(v.doubleVal())));
 					break;
@@ -563,112 +563,112 @@ void fay::FayVM::_run(PTR(std::stack<FayValue>) stack, PTR(FayValue) &error, PTR
 				}
 				case InstType::SubByte:
 				{
-					byte v=stack->top().byteVal();
+					byte v = stack->top().byteVal();
 					stack->pop();
 					stack->top().val()->byteVal -= v;
 					break;
 				}
 				case InstType::SubInt:
 				{
-					int32_t v=stack->top().intVal();
+					int32_t v = stack->top().intVal();
 					stack->pop();
 					stack->top().val()->intVal -= v;
 					break;
 				}
 				case InstType::SubLong:
 				{
-					int64_t v=stack->top().longVal();
+					int64_t v = stack->top().longVal();
 					stack->pop();
 					stack->top().val()->longVal -= v;
 					break;
 				}
 				case InstType::SubFloat:
 				{
-					float v=stack->top().floatVal();
+					float v = stack->top().floatVal();
 					stack->pop();
 					stack->top().val()->floatVal -= v;
 					break;
 				}
 				case InstType::SubDouble:
 				{
-					double v=stack->top().doubleVal();
+					double v = stack->top().doubleVal();
 					stack->pop();
 					stack->top().val()->doubleVal -= v;
 					break;
 				}
 				case InstType::MulInt:
 				{
-					int32_t v=stack->top().intVal();
+					int32_t v = stack->top().intVal();
 					stack->pop();
 					stack->top().val()->intVal *= v;
 					break;
 				}
 				case InstType::MulLong:
 				{
-					int64_t v=stack->top().longVal();
+					int64_t v = stack->top().longVal();
 					stack->pop();
 					stack->top().val()->longVal *= v;
 					break;
 				}
 				case InstType::MulFloat:
 				{
-					float v=stack->top().floatVal();
+					float v = stack->top().floatVal();
 					stack->pop();
 					stack->top().val()->floatVal *= v;
 					break;
 				}
 				case InstType::MulDouble:
 				{
-					double v=stack->top().doubleVal();
+					double v = stack->top().doubleVal();
 					stack->pop();
 					stack->top().val()->doubleVal *= v;
 					break;
 				}
 				case InstType::DivInt:
 				{
-					int32_t v=stack->top().intVal();
+					int32_t v = stack->top().intVal();
 					stack->pop();
 					stack->top().val()->intVal /= v;
 					break;
 				}
 				case InstType::DivLong:
 				{
-					int64_t v=stack->top().longVal();
+					int64_t v = stack->top().longVal();
 					stack->pop();
 					stack->top().val()->longVal /= v;
 					break;
 				}
 				case InstType::DivFloat:
 				{
-					float v=stack->top().floatVal();
+					float v = stack->top().floatVal();
 					stack->pop();
 					stack->top().val()->floatVal /= v;
 					break;
 				}
 				case InstType::DivDouble:
 				{
-					double v=stack->top().doubleVal();
+					double v = stack->top().doubleVal();
 					stack->pop();
 					stack->top().val()->doubleVal /= v;
 					break;
 				}
 				case InstType::ModByte:
 				{
-					byte v=stack->top().byteVal();
+					byte v = stack->top().byteVal();
 					stack->pop();
 					stack->top().val()->byteVal %= v;
 					break;
 				}
 				case InstType::ModInt:
 				{
-					int32_t v=stack->top().intVal();
+					int32_t v = stack->top().intVal();
 					stack->pop();
 					stack->top().val()->intVal %= v;
 					break;
 				}
 				case InstType::ModLong:
 				{
-					int64_t v=stack->top().longVal();
+					int64_t v = stack->top().longVal();
 					stack->pop();
 					stack->top().val()->longVal %= v;
 					break;
@@ -680,347 +680,347 @@ void fay::FayVM::_run(PTR(std::stack<FayValue>) stack, PTR(FayValue) &error, PTR
 				}
 				case InstType::BoolAnd:
 				{
-					FayValue v=stack->top();
+					FayValue v = stack->top();
 					stack->pop();
 					stack->top().val()->boolVal = stack->top().boolVal() && v.boolVal();
 					break;
 				}
 				case InstType::BoolOr:
 				{
-					FayValue v=stack->top();
+					FayValue v = stack->top();
 					stack->pop();
 					stack->top().val()->boolVal = stack->top().boolVal() || v.boolVal();
 					break;
 				}
 				case InstType::EqualBool:
 				{
-					FayValue v2=stack->top();
+					FayValue v2 = stack->top();
 					stack->pop();
-					FayValue v1=stack->top();
+					FayValue v1 = stack->top();
 					stack->pop();
-					stack->push(FayValue(v1.boolVal()==v2.boolVal()));
+					stack->push(FayValue(v1.boolVal() == v2.boolVal()));
 					break;
 				}
 				case InstType::EqualByte:
 				{
-					FayValue v2=stack->top();
+					FayValue v2 = stack->top();
 					stack->pop();
-					FayValue v1=stack->top();
+					FayValue v1 = stack->top();
 					stack->pop();
-					stack->push(FayValue(v1.byteVal()==v2.byteVal()));
+					stack->push(FayValue(v1.byteVal() == v2.byteVal()));
 					break;
 				}
 				case InstType::EqualInt:
 				{
-					FayValue v2=stack->top();
+					FayValue v2 = stack->top();
 					stack->pop();
-					FayValue v1=stack->top();
+					FayValue v1 = stack->top();
 					stack->pop();
-					stack->push(FayValue(v1.intVal()==v2.intVal()));
+					stack->push(FayValue(v1.intVal() == v2.intVal()));
 					break;
 				}
 				case InstType::EqualLong:
 				{
-					FayValue v2=stack->top();
+					FayValue v2 = stack->top();
 					stack->pop();
-					FayValue v1=stack->top();
+					FayValue v1 = stack->top();
 					stack->pop();
-					stack->push(FayValue(v1.longVal()==v2.longVal()));
+					stack->push(FayValue(v1.longVal() == v2.longVal()));
 					break;
 				}
 				case InstType::EqualFloat:
 				{
-					FayValue v2=stack->top();
+					FayValue v2 = stack->top();
 					stack->pop();
-					FayValue v1=stack->top();
+					FayValue v1 = stack->top();
 					stack->pop();
-					stack->push(FayValue(v1.floatVal()==v2.floatVal()));
+					stack->push(FayValue(v1.floatVal() == v2.floatVal()));
 					break;
 				}
 				case InstType::EqualDouble:
 				{
-					FayValue v2=stack->top();
+					FayValue v2 = stack->top();
 					stack->pop();
-					FayValue v1=stack->top();
+					FayValue v1 = stack->top();
 					stack->pop();
-					stack->push(FayValue(v1.doubleVal()==v2.doubleVal()));
+					stack->push(FayValue(v1.doubleVal() == v2.doubleVal()));
 					break;
 				}
 				case InstType::EqualString:
 				{
-					FayValue v2=stack->top();
+					FayValue v2 = stack->top();
 					stack->pop();
-					FayValue v1=stack->top();
+					FayValue v1 = stack->top();
 					stack->pop();
-					stack->push(FayValue((*v1.strVal())==(*v2.strVal())));
+					stack->push(FayValue((*v1.strVal()) == (*v2.strVal())));
 					break;
 				}
 				case InstType::NotEqualBool:
 				{
-					FayValue v2=stack->top();
+					FayValue v2 = stack->top();
 					stack->pop();
-					FayValue v1=stack->top();
+					FayValue v1 = stack->top();
 					stack->pop();
-					stack->push(FayValue(v1.boolVal()!=v2.boolVal()));
+					stack->push(FayValue(v1.boolVal() != v2.boolVal()));
 					break;
 				}
 				case InstType::NotEqualByte:
 				{
-					FayValue v2=stack->top();
+					FayValue v2 = stack->top();
 					stack->pop();
-					FayValue v1=stack->top();
+					FayValue v1 = stack->top();
 					stack->pop();
-					stack->push(FayValue(v1.byteVal()!=v2.byteVal()));
+					stack->push(FayValue(v1.byteVal() != v2.byteVal()));
 					break;
 				}
 				case InstType::NotEqualInt:
 				{
-					FayValue v2=stack->top();
+					FayValue v2 = stack->top();
 					stack->pop();
-					FayValue v1=stack->top();
+					FayValue v1 = stack->top();
 					stack->pop();
-					stack->push(FayValue(v1.intVal()!=v2.intVal()));
+					stack->push(FayValue(v1.intVal() != v2.intVal()));
 					break;
 				}
 				case InstType::NotEqualLong:
 				{
-					FayValue v2=stack->top();
+					FayValue v2 = stack->top();
 					stack->pop();
-					FayValue v1=stack->top();
+					FayValue v1 = stack->top();
 					stack->pop();
-					stack->push(FayValue(v1.longVal()!=v2.longVal()));
+					stack->push(FayValue(v1.longVal() != v2.longVal()));
 					break;
 				}
 				case InstType::NotEqualFloat:
 				{
-					FayValue v2=stack->top();
+					FayValue v2 = stack->top();
 					stack->pop();
-					FayValue v1=stack->top();
+					FayValue v1 = stack->top();
 					stack->pop();
-					stack->push(FayValue(v1.floatVal()!=v2.floatVal()));
+					stack->push(FayValue(v1.floatVal() != v2.floatVal()));
 					break;
 				}
 				case InstType::NotEqualDouble:
 				{
-					FayValue v2=stack->top();
+					FayValue v2 = stack->top();
 					stack->pop();
-					FayValue v1=stack->top();
+					FayValue v1 = stack->top();
 					stack->pop();
-					stack->push(FayValue(v1.doubleVal()!=v2.doubleVal()));
+					stack->push(FayValue(v1.doubleVal() != v2.doubleVal()));
 					break;
 				}
 				case InstType::GreaterBool:
 				{
-					FayValue v2=stack->top();
+					FayValue v2 = stack->top();
 					stack->pop();
-					FayValue v1=stack->top();
+					FayValue v1 = stack->top();
 					stack->pop();
-					stack->push(FayValue(v1.boolVal()>v2.boolVal()));
+					stack->push(FayValue(v1.boolVal() > v2.boolVal()));
 					break;
 				}
 				case InstType::GreaterByte:
 				{
-					FayValue v2=stack->top();
+					FayValue v2 = stack->top();
 					stack->pop();
-					FayValue v1=stack->top();
+					FayValue v1 = stack->top();
 					stack->pop();
-					stack->push(FayValue(v1.byteVal()>v2.byteVal()));
+					stack->push(FayValue(v1.byteVal() > v2.byteVal()));
 					break;
 				}
 				case InstType::GreaterInt:
 				{
-					FayValue v2=stack->top();
+					FayValue v2 = stack->top();
 					stack->pop();
-					FayValue v1=stack->top();
+					FayValue v1 = stack->top();
 					stack->pop();
-					stack->push(FayValue(v1.intVal()>v2.intVal()));
+					stack->push(FayValue(v1.intVal() > v2.intVal()));
 					break;
 				}
 				case InstType::GreaterLong:
 				{
-					FayValue v2=stack->top();
+					FayValue v2 = stack->top();
 					stack->pop();
-					FayValue v1=stack->top();
+					FayValue v1 = stack->top();
 					stack->pop();
-					stack->push(FayValue(v1.longVal()>v2.longVal()));
+					stack->push(FayValue(v1.longVal() > v2.longVal()));
 					break;
 				}
 				case InstType::GreaterFloat:
 				{
-					FayValue v2=stack->top();
+					FayValue v2 = stack->top();
 					stack->pop();
-					FayValue v1=stack->top();
+					FayValue v1 = stack->top();
 					stack->pop();
-					stack->push(FayValue(v1.floatVal()>v2.floatVal()));
+					stack->push(FayValue(v1.floatVal() > v2.floatVal()));
 					break;
 				}
 				case InstType::GreaterDouble:
 				{
-					FayValue v2=stack->top();
+					FayValue v2 = stack->top();
 					stack->pop();
-					FayValue v1=stack->top();
+					FayValue v1 = stack->top();
 					stack->pop();
-					stack->push(FayValue(v1.doubleVal()>v2.doubleVal()));
+					stack->push(FayValue(v1.doubleVal() > v2.doubleVal()));
 					break;
 				}
 				case InstType::GreaterEqualBool:
 				{
-					FayValue v2=stack->top();
+					FayValue v2 = stack->top();
 					stack->pop();
-					FayValue v1=stack->top();
+					FayValue v1 = stack->top();
 					stack->pop();
 					stack->push(FayValue(v1.boolVal() >= v2.boolVal()));
 					break;
 				}
 				case InstType::GreaterEqualByte:
 				{
-					FayValue v2=stack->top();
+					FayValue v2 = stack->top();
 					stack->pop();
-					FayValue v1=stack->top();
+					FayValue v1 = stack->top();
 					stack->pop();
 					stack->push(FayValue(v1.byteVal() >= v2.byteVal()));
 					break;
 				}
 				case InstType::GreaterEqualInt:
 				{
-					FayValue v2=stack->top();
+					FayValue v2 = stack->top();
 					stack->pop();
-					FayValue v1=stack->top();
+					FayValue v1 = stack->top();
 					stack->pop();
 					stack->push(FayValue(v1.intVal() >= v2.intVal()));
 					break;
 				}
 				case InstType::GreaterEqualLong:
 				{
-					FayValue v2=stack->top();
+					FayValue v2 = stack->top();
 					stack->pop();
-					FayValue v1=stack->top();
+					FayValue v1 = stack->top();
 					stack->pop();
 					stack->push(FayValue(v1.longVal() >= v2.longVal()));
 					break;
 				}
 				case InstType::GreaterEqualFloat:
 				{
-					FayValue v2=stack->top();
+					FayValue v2 = stack->top();
 					stack->pop();
-					FayValue v1=stack->top();
+					FayValue v1 = stack->top();
 					stack->pop();
 					stack->push(FayValue(v1.floatVal() >= v2.floatVal()));
 					break;
 				}
 				case InstType::GreaterEqualDouble:
 				{
-					FayValue v2=stack->top();
+					FayValue v2 = stack->top();
 					stack->pop();
-					FayValue v1=stack->top();
+					FayValue v1 = stack->top();
 					stack->pop();
 					stack->push(FayValue(v1.doubleVal() >= v2.doubleVal()));
 					break;
 				}
 				case InstType::LessBool:
 				{
-					FayValue v2=stack->top();
+					FayValue v2 = stack->top();
 					stack->pop();
-					FayValue v1=stack->top();
+					FayValue v1 = stack->top();
 					stack->pop();
 					stack->push(FayValue(v1.boolVal() < v2.boolVal()));
 					break;
 				}
 				case InstType::LessByte:
 				{
-					FayValue v2=stack->top();
+					FayValue v2 = stack->top();
 					stack->pop();
-					FayValue v1=stack->top();
+					FayValue v1 = stack->top();
 					stack->pop();
 					stack->push(FayValue(v1.byteVal() < v2.byteVal()));
 					break;
 				}
 				case InstType::LessInt:
 				{
-					FayValue v2=stack->top();
+					FayValue v2 = stack->top();
 					stack->pop();
-					FayValue v1=stack->top();
+					FayValue v1 = stack->top();
 					stack->pop();
 					stack->push(FayValue(v1.intVal() < v2.intVal()));
 					break;
 				}
 				case InstType::LessLong:
 				{
-					FayValue v2=stack->top();
+					FayValue v2 = stack->top();
 					stack->pop();
-					FayValue v1=stack->top();
+					FayValue v1 = stack->top();
 					stack->pop();
 					stack->push(FayValue(v1.longVal() < v2.longVal()));
 					break;
 				}
 				case InstType::LessFloat:
 				{
-					FayValue v2=stack->top();
+					FayValue v2 = stack->top();
 					stack->pop();
-					FayValue v1=stack->top();
+					FayValue v1 = stack->top();
 					stack->pop();
 					stack->push(FayValue(v1.floatVal() < v2.floatVal()));
 					break;
 				}
 				case InstType::LessDouble:
 				{
-					FayValue v2=stack->top();
+					FayValue v2 = stack->top();
 					stack->pop();
-					FayValue v1=stack->top();
+					FayValue v1 = stack->top();
 					stack->pop();
 					stack->push(FayValue(v1.doubleVal() < v2.doubleVal()));
 					break;
 				}
 				case InstType::LessEqualBool:
 				{
-					FayValue v2=stack->top();
+					FayValue v2 = stack->top();
 					stack->pop();
-					FayValue v1=stack->top();
+					FayValue v1 = stack->top();
 					stack->pop();
 					stack->push(FayValue(v1.boolVal() <= v2.boolVal()));
 					break;
 				}
 				case InstType::LessEqualByte:
 				{
-					FayValue v2=stack->top();
+					FayValue v2 = stack->top();
 					stack->pop();
-					FayValue v1=stack->top();
+					FayValue v1 = stack->top();
 					stack->pop();
 					stack->push(FayValue(v1.byteVal() <= v2.byteVal()));
 					break;
 				}
 				case InstType::LessEqualInt:
 				{
-					FayValue v2=stack->top();
+					FayValue v2 = stack->top();
 					stack->pop();
-					FayValue v1=stack->top();
+					FayValue v1 = stack->top();
 					stack->pop();
 					stack->push(FayValue(v1.intVal() <= v2.intVal()));
 					break;
 				}
 				case InstType::LessEqualLong:
 				{
-					FayValue v2=stack->top();
+					FayValue v2 = stack->top();
 					stack->pop();
-					FayValue v1=stack->top();
+					FayValue v1 = stack->top();
 					stack->pop();
 					stack->push(FayValue(v1.longVal() <= v2.longVal()));
 					break;
 				}
 				case InstType::LessEqualFloat:
 				{
-					FayValue v2=stack->top();
+					FayValue v2 = stack->top();
 					stack->pop();
-					FayValue v1=stack->top();
+					FayValue v1 = stack->top();
 					stack->pop();
 					stack->push(FayValue(v1.floatVal() <= v2.floatVal()));
 					break;
 				}
 				case InstType::LessEqualDouble:
 				{
-					FayValue v2=stack->top();
+					FayValue v2 = stack->top();
 					stack->pop();
-					FayValue v1=stack->top();
+					FayValue v1 = stack->top();
 					stack->pop();
 					stack->push(FayValue(v1.doubleVal() <= v2.doubleVal()));
 					break;
@@ -1042,105 +1042,105 @@ void fay::FayVM::_run(PTR(std::stack<FayValue>) stack, PTR(FayValue) &error, PTR
 				}
 				case InstType::BitAndByte:
 				{
-					FayValue v1=stack->top();
+					FayValue v1 = stack->top();
 					stack->pop();
 					stack->top().val()->byteVal &= v1.val()->byteVal;
 					break;
 				}
 				case InstType::BitAndInt:
 				{
-					FayValue v1=stack->top();
+					FayValue v1 = stack->top();
 					stack->pop();
 					stack->top().val()->intVal &= v1.val()->intVal;
 					break;
 				}
 				case InstType::BitAndLong:
 				{
-					FayValue v1=stack->top();
+					FayValue v1 = stack->top();
 					stack->pop();
 					stack->top().val()->longVal &= v1.val()->longVal;
 					break;
 				}
 				case InstType::BitOrByte:
 				{
-					FayValue v1=stack->top();
+					FayValue v1 = stack->top();
 					stack->pop();
 					stack->top().val()->byteVal |= v1.val()->byteVal;
 					break;
 				}
 				case InstType::BitOrInt:
 				{
-					FayValue v1=stack->top();
+					FayValue v1 = stack->top();
 					stack->pop();
 					stack->top().val()->intVal |= v1.val()->intVal;
 					break;
 				}
 				case InstType::BitOrLong:
 				{
-					FayValue v1=stack->top();
+					FayValue v1 = stack->top();
 					stack->pop();
 					stack->top().val()->longVal |= v1.val()->longVal;
 					break;
 				}
 				case InstType::BitXorByte:
 				{
-					FayValue v1=stack->top();
+					FayValue v1 = stack->top();
 					stack->pop();
 					stack->top().val()->byteVal ^= v1.val()->byteVal;
 					break;
 				}
 				case InstType::BitXorInt:
 				{
-					FayValue v1=stack->top();
+					FayValue v1 = stack->top();
 					stack->pop();
 					stack->top().val()->intVal ^= v1.val()->intVal;
 					break;
 				}
 				case InstType::BitXorLong:
 				{
-					FayValue v1=stack->top();
+					FayValue v1 = stack->top();
 					stack->pop();
 					stack->top().val()->longVal ^= v1.val()->longVal;
 					break;
 				}
 				case InstType::LShiftByte:
 				{
-					byte v=stack->top().byteVal();
+					byte v = stack->top().byteVal();
 					stack->pop();
 					stack->top().val()->byteVal <<= v;
 					break;
 				}
 				case InstType::LShiftInt:
 				{
-					int32_t v=stack->top().intVal();
+					int32_t v = stack->top().intVal();
 					stack->pop();
 					stack->top().val()->intVal <<= v;
 					break;
 				}
 				case InstType::LShiftLong:
 				{
-					int64_t v=stack->top().longVal();
+					int64_t v = stack->top().longVal();
 					stack->pop();
 					stack->top().val()->longVal <<= v;
 					break;
 				}
 				case InstType::RShiftByte:
 				{
-					byte v=stack->top().byteVal();
+					byte v = stack->top().byteVal();
 					stack->pop();
 					stack->top().val()->byteVal >>= v;
 					break;
 				}
 				case InstType::RShiftInt:
 				{
-					int32_t v=stack->top().intVal();
+					int32_t v = stack->top().intVal();
 					stack->pop();
 					stack->top().val()->intVal >>= v;
 					break;
 				}
 				case InstType::RShiftLong:
 				{
-					int64_t v=stack->top().longVal();
+					int64_t v = stack->top().longVal();
 					stack->pop();
 					stack->top().val()->longVal >>= v;
 					break;
@@ -1168,7 +1168,7 @@ void fay::FayVM::_run(PTR(std::stack<FayValue>) stack, PTR(FayValue) &error, PTR
 	catch(std::exception e)
 	{
 		//LOG_ERROR(e.what());
-		
+
 		//生成错误对象
 		PTR(FayObject) errObj = MKPTR(FayObject)(FayDomain::FindClass("fay.system.Error"));
 		errObj->setVar("code", FayValue(1));
@@ -1176,8 +1176,8 @@ void fay::FayVM::_run(PTR(std::stack<FayValue>) stack, PTR(FayValue) &error, PTR
 		error = MKPTR(FayValue)(errObj);
 
 		//检查有没有Catch
-		TryHandler* handler=fun->findHandler(ip);
-		if (handler != nullptr)
+		TryHandler* handler = fun->findHandler(ip);
+		if(handler != nullptr)
 		{
 			ip = handler->target;
 			goto label1;
@@ -1222,7 +1222,7 @@ FayValue fay::FayVM::Run(PTR(FayFun) fun, FayValue &self, std::vector<FayValue> 
 	if(self.type() != ValueType::Void)
 		stack->push(self);
 
-	for(auto it : params)
+	for(const auto &it : params)
 		stack->push(it);
 
 	FayVM::_run(stack, error, fun);

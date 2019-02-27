@@ -58,9 +58,9 @@ PTR(Token) fay::TokenStack::findNextToken(const std::vector<TokenType> &types)
 {
 	for(auto i = this->_pos; i < this->_tokens->size(); ++i)
 	{
-		for(auto j = 0; j < types.size(); ++j)
+		for(auto type : types)
 		{
-			if((*this->_tokens)[i]->type == types[j])
+			if((*this->_tokens)[i]->type == type)
 				return (*this->_tokens)[i];
 		}
 	}

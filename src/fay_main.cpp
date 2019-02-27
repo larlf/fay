@@ -38,15 +38,15 @@ int main(int argc, char** argv)
 	{
 		//找到Main()方法并执行
 		PTR(std::vector<PTR(FayFun)>) mainFuns = project.lib()->findMainFun();
-		if(mainFuns->size() < 1)
+		if(mainFuns->empty())
 			LogBus::Error(I18N::Get("err.no_main"));
 		else if(mainFuns->size() > 1)
 		{
 			//显示找到的所有方法名
 			std::string str = "";
-			for(auto it : *mainFuns)
+			for(const auto &it : *mainFuns)
 			{
-				if(str.size() > 0)
+				if(!str.empty())
 					str.append(", ");
 				str.append(it->fullname());
 			}

@@ -193,7 +193,7 @@ PTR(AstNode) fay::Parser::_Field(TokenStack* stack)
 	if(!stack->now()->is(TokenType::ID))
 		throw ParseException(stack, "connot find var name");
 	PTR(AstField) node = MKPTR(AstField)(stack->now());
-	for(auto it : words)
+	for(const auto &it : words)
 		node->descWords[it] = true;
 	stack->next();
 

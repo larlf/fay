@@ -122,10 +122,10 @@ void fay::AstClass::dig2(FayBuilder* builder)
 	builder->bindClass(this->_clazz);
 
 	//处理父类
-	if(this->superClassText.size() > 0)
+	if(!this->superClassText.empty())
 	{
 		auto types = FayDomain::FindClass(builder->usings(), this->superClassText);
-		if(types.size() < 1)
+		if(types.empty())
 			throw BuildException(builder->file(), this->token(), "err.no_class", this->superClassText);
 		if(types.size() > 1)
 			throw BuildException(builder->file(), this->token(), "err.mutil_class", this->superClassText);
@@ -191,7 +191,7 @@ void fay::AstFun::dig2(FayBuilder* builder)
 
 	FunAccessType _accessType = FunAccessType::Public;
 	bool isStatic = false;
-	for(auto it : this->_descWords)
+	for(const auto &it : this->_descWords)
 	{
 		if(it == "static")
 			isStatic = true;
@@ -215,7 +215,7 @@ void fay::AstFun::dig2(FayBuilder* builder)
 		this->_fun->addVar("this", builder->clazz());
 
 	//添加参数变量
-	for(auto param : builder->params)
+	for(const auto &param : builder->params)
 		this->_fun->addVar(param->name(), param->type());
 
 	builder->addFun(this->_fun);
@@ -290,7 +290,7 @@ void fay::AstString::dig4(FayBuilder* builder)
 {
 	AstNode::dig4(builder);
 
-	inst::PushString* inst = new inst::PushString(this->_value);
+	auto* inst = new inst::PushString(this->_value);
 	builder->addInst(inst);
 }
 
@@ -365,7 +365,7 @@ void fay::AstCall::dig3(FayBuilder* builder)
 		funName = this->_text;
 	}
 
-	if(className.size() > 0)
+	if(!className.empty())
 	{
 		PTR(FayFun) fun;
 		auto varDef = builder->fun()->findVar(className);
@@ -378,7 +378,7 @@ void fay::AstCall::dig3(FayBuilder* builder)
 				throw BuildException(builder->file(), this->token(), "err.unknow_type", className);
 
 			auto funs = clazz->findFun(funName, paramsType, false);
-			if(funs.size() < 1)
+			if(funs.empty())
 				throw BuildException(builder->file(), this->token(), "err.no_fun", clazz->fullname(), funName);
 
 			fun = funs[0];
@@ -386,13 +386,13 @@ void fay::AstCall::dig3(FayBuilder* builder)
 		else
 		{
 			auto classes = FayDomain::FindClass(builder->usings(), className);
-			if(classes.size() < 1)
+			if(classes.empty())
 				throw BuildException(builder->file(), this->token(), "err.no_class", className);
 			else if(classes.size() > 1)
 				throw BuildException(builder->file(), this->token(), "err.too_many_class", className);
 
 			auto funs = classes[0]->findFun(funName, paramsType, true);
-			if(funs.size() < 1)
+			if(funs.empty())
 				throw BuildException(builder->file(), this->token(), "err.no_fun", className, funName);
 			else if(funs.size() > 1)
 				throw BuildException(builder->file(), this->token(), "err.too_many_fun", className, funName);
@@ -653,7 +653,7 @@ void fay::AstID::dig3(FayBuilder* builder)
 			else
 			{
 				auto classes = FayDomain::FindClass(builder->usings(), className);
-				if(classes.size() < 1)
+				if(classes.empty())
 					throw BuildException(builder->file(), this->token(), "err.cannot_find_class", className);
 				if(classes.size() > 1)
 					throw BuildException(builder->file(), this->token(), "err.mutil_class", className);
@@ -819,7 +819,7 @@ void fay::AstLabel::dig4(FayBuilder* builder)
 
 void fay::AstGoto::dig4(FayBuilder* builder)
 {
-	inst::Jump* inst = new inst::Jump(-1);
+	auto* inst = new inst::Jump(-1);
 	builder->fun()->labels()->addTarget(this->_text, &inst->target);
 	builder->addInst(inst);
 }
@@ -846,14 +846,14 @@ void fay::AstIf::dig4(FayBuilder* builder)
 				throw BuildException(builder->file(), this->_nodes[i + 2]->token(), "bad branch");
 
 			std::string nextBranchLabel = TOPTR(AstCondition, this->_nodes[i + 2])->label();
-			inst::JumpFalse* inst = new inst::JumpFalse(-1);
+			auto* inst = new inst::JumpFalse(-1);
 			builder->fun()->labels()->addTarget(nextBranchLabel, &inst->target);
 			builder->addInst(inst);
 		}
 		else
 		{
 			//没有的话，条件为false的时候跳到结束
-			inst::JumpFalse* inst = new inst::JumpFalse(-1);
+			auto* inst = new inst::JumpFalse(-1);
 			builder->fun()->labels()->addTarget(this->_endLabel, &inst->target);
 			builder->addInst(inst);
 		}
@@ -861,7 +861,7 @@ void fay::AstIf::dig4(FayBuilder* builder)
 		this->_nodes[i + 1]->dig4(builder);
 
 		//跳转到结束
-		inst::Jump* inst = new inst::Jump(-1);
+		auto* inst = new inst::Jump(-1);
 		builder->fun()->labels()->addTarget(this->_endLabel, &inst->target);
 		builder->addInst(inst);
 	}
@@ -923,7 +923,7 @@ void fay::AstCondition::dig3(FayBuilder* builder)
 
 	AstNode::dig3(builder);
 
-	if(this->_nodes.size() > 0)
+	if(!this->_nodes.empty())
 	{
 		//如果不是Bool，这里进行一下转换
 		auto type = this->_nodes[0]->classType();
@@ -963,7 +963,7 @@ void fay::AstFor::dig4(FayBuilder* builder)
 	this->_nodes[1]->dig4(builder);
 
 	//如果不成立，就跳向结束
-	inst::JumpFalse* inst2 = new inst::JumpFalse(-1);
+	auto* inst2 = new inst::JumpFalse(-1);
 	builder->useLabel(this->endLabel, &inst2->target);
 	builder->addInst(inst2);
 
@@ -979,7 +979,7 @@ void fay::AstFor::dig4(FayBuilder* builder)
 	builder->addInst(new inst::Pop());
 
 	//跳回到expr2进行判断
-	inst::Jump* inst = new inst::Jump(-1);
+	auto* inst = new inst::Jump(-1);
 	builder->useLabel(this->expr2Label, &inst->target);
 	builder->addInst(inst);
 
@@ -1096,7 +1096,7 @@ void fay::AstType::dig2(FayBuilder* builder)
 	AstNode::dig2(builder);
 
 	auto classes = FayDomain::FindClass(builder->usings(), this->_text);
-	if(classes.size() <= 0)
+	if(classes.empty())
 		throw BuildException(builder->file(), this->token(), "err.cannot_find_class", this->_text);
 	else if(classes.size() > 1)
 		throw BuildException(builder->file(), this->token(), "err.unsolved_class", this->_text);
@@ -1108,7 +1108,7 @@ void fay::AstReturn::dig3(FayBuilder* builder)
 {
 	AstNode::dig3(builder);
 
-	if(this->_nodes.size() > 0)
+	if(!this->_nodes.empty())
 	{
 		PTR(FayFun) fun = builder->fun();
 
@@ -1362,7 +1362,7 @@ void fay::AstCondExpr::dig4(FayBuilder* builder)
 	this->_nodes[0]->dig4(builder);
 	{
 		//加入否定跳转
-		inst::JumpFalse* inst = new inst::JumpFalse(-1);
+		auto* inst = new inst::JumpFalse(-1);
 		builder->useLabel(this->_v2Label, &inst->target);
 		builder->addInst(inst);
 	}
@@ -1370,7 +1370,7 @@ void fay::AstCondExpr::dig4(FayBuilder* builder)
 	this->_nodes[1]->dig4(builder);
 	{
 		//跳转到结束
-		inst::Jump* inst = new inst::Jump(-1);
+		auto* inst = new inst::Jump(-1);
 		builder->useLabel(this->_endLabel, &inst->target);
 		builder->addInst(inst);
 	}
@@ -1401,14 +1401,14 @@ void fay::AstWhile::dig4(FayBuilder* builder)
 
 	this->_nodes[0]->dig4(builder);
 
-	inst::JumpFalse* inst1 = new inst::JumpFalse(-1);
+	auto* inst1 = new inst::JumpFalse(-1);
 	builder->useLabel(this->endLabel, &inst1->target);
 	builder->addInst(inst1);
 
 	if(this->_nodes[1] != nullptr)
 		this->_nodes[1]->dig4(builder);
 
-	inst::Jump* inst2 = new inst::Jump(-1);
+	auto* inst2 = new inst::Jump(-1);
 	builder->useLabel(this->startLabel, &inst2->target);
 	builder->addInst(inst2);
 
@@ -1437,7 +1437,7 @@ void fay::AstDoWhile::dig4(FayBuilder* builder)
 
 	this->_nodes[1]->dig4(builder);
 
-	inst::JumpTrue* inst1 = new inst::JumpTrue(-1);
+	auto* inst1 = new inst::JumpTrue(-1);
 	builder->useLabel(this->startLabel, &inst1->target);
 	builder->addInst(inst1);
 }
@@ -1447,7 +1447,7 @@ void fay::AstNew::dig3(FayBuilder* builder)
 	AstNode::dig3(builder);
 
 	auto classes = FayDomain::FindClass(builder->usings(), this->_text);
-	if(classes.size() <= 0)
+	if(classes.empty())
 		throw BuildException(builder->file(), this->token(), "err.no_class", this->_text);
 	else if(classes.size() > 1)
 		throw BuildException(builder->file(), this->token(), "err.multi_class", this->_text);
@@ -1506,7 +1506,7 @@ void fay::AstTry::dig4(FayBuilder* builder)
 	std::string endLabel = builder->makeLabel();
 	std::string catchLabel = builder->makeLabel();
 
-	TryHandler* handler = new TryHandler();
+	auto* handler = new TryHandler();
 	builder->useLabel(startLabel, &handler->start);
 	builder->useLabel(endLabel, &handler->end);
 	builder->useLabel(catchLabel, &handler->target);

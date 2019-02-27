@@ -7,7 +7,7 @@ using namespace fay;
 fay::FayBuilder::~FayBuilder()
 {
 	//清除临时的指令
-	if(this->_insts.size() > 0)
+	if(!this->_insts.empty())
 	{
 		for each(auto it in this->_insts)
 		{

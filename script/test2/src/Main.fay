@@ -1,4 +1,4 @@
-//using fay.system;
+using fay.system;
 
 class MainClass
 {
