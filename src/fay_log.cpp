@@ -1,9 +1,13 @@
+#include "fay_log.h"
+#include "fay_log.h"
 #include <fay_log.h>
 
 using namespace mirror::utils;
 using namespace fay;
 
 std::recursive_mutex fay::LogBus::LogLock;
+
+size_t fay::LogBus::_Count[(size_t)LogType::_Max];
 
 std::thread::id fay::LogBus::_MainThreadID;
 
@@ -36,6 +40,7 @@ void fay::LogBus::_RemoveThreadLogger(const std::thread::id &id)
 void fay::LogBus::Init(const std::string &filename)
 {
 	LogBus::_MainThreadID = std::this_thread::get_id();
+	LogBus::ResetCount();
 
 	if(filename.size() > 0)
 	{
@@ -64,6 +69,7 @@ void fay::LogBus::_Log(LogType type, const std::string &msg, PTR(FilePart) part)
 	//std::string msg = data;
 
 	std::lock_guard<std::recursive_mutex> lg(LogBus::LogLock);
+	LogBus::_Count[(size_t)type]++;
 
 	switch(type)
 	{
@@ -137,7 +143,7 @@ void fay::LogBus::EndThread()
 	}
 }
 
-void fay::LogBus::Clear()
+void fay::LogBus::EndAllThread()
 {
 	std::lock_guard<std::recursive_mutex> lg(LogBus::LogLock);
 
@@ -148,4 +154,15 @@ void fay::LogBus::Clear()
 	}
 
 	LogBus::_Loggers.clear();
+}
+
+void fay::LogBus::ResetCount()
+{
+	for(size_t i = 0; i < (size_t)LogType::_Max; ++i)
+		LogBus::_Count[i] = 0;
+}
+
+size_t fay::LogBus::Count(LogType type)
+{
+	return LogBus::_Count[(size_t)type];
 }

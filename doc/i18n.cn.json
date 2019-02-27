@@ -1,5 +1,7 @@
 {
 	"location": "文件：{1}，第{2}行，第{3}列。",
+	"err.no_main":"找不到Main()函数。",
+	"err.multi_main":"存在多个Main()函数：{1}。",
 	"err.lexical": "词法解析错误。",
 	"err.ast": "语法解析错误",
 	"err.expect": "找不到预期的{1}",

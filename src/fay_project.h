@@ -70,6 +70,8 @@ namespace fay
 		FayProject(const std::string &projectPath);
 		FayProject(const std::string &name, int marjor, int minjor);
 
+		PTR(FayLib) lib() { return this->_lib; }
+
 		//根据文件名称查找代码
 		PTR(BuildTask) findSource(const std::string &name);
 

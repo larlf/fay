@@ -29,10 +29,33 @@ int main(int argc, char** argv)
 	TypeDict::Init();
 	FayDomain::InitSysLib();
 
+	//编译项目
 	FayProject project(parser.get("path"));
 	project.build();
 
+	//编译没有错误才会运行代码
+	if(LogBus::Count(LogType::Error) <= 0)
+	{
+		//找到Main()方法并执行
+		PTR(std::vector<PTR(FayFun)>) mainFuns = project.lib()->findMainFun();
+		if(mainFuns->size() < 1)
+			LogBus::Error(I18N::Get("err.no_main"));
+		else if(mainFuns->size() > 1)
+		{
+			//显示找到的所有方法名
+			std::string str = "";
+			for(auto it : *mainFuns)
+			{
+				if(str.size() > 0)
+					str.append(", ");
+				str.append(it->fullname());
+			}
 
+			LogBus::Error(I18N::Get("err.multi_main", str));
+		}
+		else
+			FayVM::Run((*mainFuns)[0]);
+	}
 
 	return 0;
 }

@@ -188,9 +188,9 @@ PTR(std::vector<PTR(FayFun)>) fay::FayLib::findMainFun()
 
 	for(auto clazz : this->classes)
 	{
-		auto fs = clazz->findFunByName("Main", true);
-		for(auto f : fs)
-			funs->push_back(f);
+		auto fs = clazz->findFun("Main():void", true);
+		if(fs)
+			funs->push_back(fs);
 	}
 
 	return funs;

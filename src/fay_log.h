@@ -13,7 +13,8 @@ namespace fay
 		Debug,
 		Info,
 		Warn,
-		Error
+		Error,
+		_Max
 	};
 
 	//一条Log数据
@@ -38,6 +39,8 @@ namespace fay
 		static std::thread::id _MainThreadID;
 		static std::string _LogFile;
 		static std::recursive_mutex LogLock;
+		//static MAP<LogType, size_t> _Count;  //Log的计数器
+		static size_t _Count[];
 
 		//用于保存当前线程的Log
 		static MAP<std::thread::id, PTR(std::vector<PTR(LogData)>)> _Loggers;
@@ -62,7 +65,12 @@ namespace fay
 		//输出当前线程下的Log
 		static void EndThread();
 		//清理并输出所有缓存的Log记录
-		static void Clear();
+		static void EndAllThread();
+
+		//重置Log的计数器
+		static void ResetCount();
+		//取得指定类型Log输出的数量
+		static size_t Count(LogType type);
 
 		//打印代码
 		//static void PrintSource(const std::string &filename, const std::string &text, int line, int col, int count);

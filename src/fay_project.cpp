@@ -287,7 +287,7 @@ void fay::FayProject::build()
 	this->step6FixedNodeType();
 	this->step7GenerateIL();
 
-	LogBus::Clear();
+	LogBus::EndAllThread();
 }
 
 PTR(BuildTask) fay::FayProject::findSource(const std::string &name)
