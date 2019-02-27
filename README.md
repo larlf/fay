@@ -2,14 +2,14 @@
 
 Fay program language.
 
-http://www.faylang.com
+<http://www.faylang.com>
 
-# Deps
+## Deps
 
-## Visual Leak Detector
-https://kinddragon.github.io/vld/
+### Visual Leak Detector
 
-## Iconv
+<https://kinddragon.github.io/vld/>
 
-## Jansson
+### Iconv
 
+### Jansson
