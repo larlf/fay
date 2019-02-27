@@ -64,7 +64,7 @@ void fay::FayProject::step4ParseClass()
 		}
 		catch(fay::CompileException e)
 		{
-			LogBus::Error(e.what(), e.part);
+			LogBus::Error(e.what(), e.part, e.trace);
 		}
 		catch(std::exception e)
 		{
@@ -97,7 +97,7 @@ void fay::FayProject::step5ParseFieldAndMethod()
 		}
 		catch(fay::CompileException e)
 		{
-			LogBus::Error(e.what(), e.part);
+			LogBus::Error(e.what(), e.part, e.trace);
 		}
 		catch(std::exception e)
 		{
@@ -140,7 +140,7 @@ void fay::FayProject::WorkThread(BuildTaskQueue<BuildTask>* queue, std::function
 		}
 		catch(fay::CompileException e)
 		{
-			LogBus::Error(e.what(), e.part);
+			LogBus::Error(e.what(), e.part, e.trace);
 		}
 		catch(std::exception e)
 		{

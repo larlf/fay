@@ -30,6 +30,8 @@ namespace fay
 			: type(type), msg(msg) {}
 		LogData(LogType type, const std::string &msg, PTR(FilePart) part)
 			: type(type), msg(msg), part(part) {}
+		LogData(LogType type, const std::string &msg, PTR(FilePart) part, const std::string &trace)
+			: type(type), msg(msg), part(part), trace(trace) {}
 	};
 
 	//用于统一处理Log的部分
@@ -38,9 +40,8 @@ namespace fay
 	private:
 		static std::thread::id _MainThreadID;
 		static std::string _LogFile;
-		static std::recursive_mutex LogLock;
-		//static MAP<LogType, size_t> _Count;  //Log的计数器
-		static size_t _Count[];
+		static std::recursive_mutex _LogLock;
+		static size_t _Count[];  //Log的计数器
 
 		//用于保存当前线程的Log
 		static MAP<std::thread::id, PTR(std::vector<PTR(LogData)>)> _Loggers;
@@ -49,18 +50,18 @@ namespace fay
 		//删除当前线程的Log
 		static void _RemoveThreadLogger(const std::thread::id &id);
 		//输出Log
-		static void _Log(LogType type, const std::string &msg, PTR(FilePart) part);
+		static void _Log(LogType type, const std::string &msg, PTR(FilePart) part, const std::string &trace);
 
 	public:
 
 		static void Init(const std::string &filename = "");
 		static bool IsDebug() { return true; }
 
-		static void Log(LogType type, const std::string &msg, PTR(FilePart) part);
-		static void Debug(const std::string &msg, PTR(FilePart) part = nullptr) { LogBus::Log(LogType::Debug, msg, part); }
-		static void Info(const std::string &msg, PTR(FilePart) part = nullptr) { LogBus::Log(LogType::Info, msg, part); }
-		static void Warn(const std::string &msg, PTR(FilePart) part = nullptr) { LogBus::Log(LogType::Warn, msg, part); }
-		static void Error(const std::string &msg, PTR(FilePart) part = nullptr) { LogBus::Log(LogType::Error, msg, part); }
+		static void Log(LogType type, const std::string &msg, PTR(FilePart) part, const std::string &trace);
+		static void Debug(const std::string &msg, PTR(FilePart) part = nullptr, const std::string &trace = "") { LogBus::Log(LogType::Debug, msg, part, trace); }
+		static void Info(const std::string &msg, PTR(FilePart) part = nullptr, const std::string &trace = "") { LogBus::Log(LogType::Info, msg, part, trace); }
+		static void Warn(const std::string &msg, PTR(FilePart) part = nullptr, const std::string &trace = "") { LogBus::Log(LogType::Warn, msg, part, trace); }
+		static void Error(const std::string &msg, PTR(FilePart) part = nullptr, const std::string &trace = "") { LogBus::Log(LogType::Error, msg, part, trace); }
 
 		//输出当前线程下的Log
 		static void EndThread();

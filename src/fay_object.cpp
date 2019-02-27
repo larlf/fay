@@ -11,6 +11,8 @@ std::string fay::BaseObject::toString()
 	return sb.toString();
 }
 
+int fay::FilePart::ContextLines = 3;
+
 std::string fay::FilePart::print()
 {
 	std::string msg;
@@ -41,7 +43,7 @@ std::string fay::FilePart::print()
 		strCol = i - strLineStart;
 
 		//显示前后3行
-		if(strLine >= line - 3 && strLine <= line + 3)
+		if(strLine >= (line - FilePart::ContextLines) && strLine <= (line + FilePart::ContextLines))
 		{
 			//处理行号
 			if(nowLine != strLine)
@@ -82,22 +84,31 @@ std::string fay::FilePart::print()
 					break;
 			}
 
-			std::cout << c;
-			msg.append(&c, 0, 1);
-		}
+			//换行
+			if(c == '\n')
+			{
+				strLine++;
+				strLineStart = i;
 
-		//换行
-		if(c == '\n')
-		{
-			strLine++;
-			strLineStart = i;
+				//判断换行后是不是已经超出显示范围，不然的话最后一个换行就不要了
+				if(strLine <= (line + FilePart::ContextLines))
+				{
+					std::cout << c;
+					msg.append(&c, 0, 1);
+				}
+			}
+			else
+			{
+				std::cout << c;
+				msg.append(&c, 0, 1);
+			}
 		}
 	}
 
 	//防止状态没有转换过来
 	if(state == 1)
 		std::cout << termcolor::reset;
-	std::cout << std::endl;
 
+	std::cout << std::endl;
 	return msg;
 }

@@ -39,6 +39,9 @@ namespace fay
 	//代码片段
 	class FilePart
 	{
+	private:
+		static int ContextLines;
+
 	public:
 		PTR(FayFile) file;
 		int line;
@@ -61,16 +64,17 @@ namespace fay
 	{
 	public:
 		PTR(FilePart) part;
+		std::string trace;
 
 		CompileException(const std::string &msg) : std::exception(msg.c_str())
 		{
-			//LOG_ERROR(msg);
+			this->trace = mirror::log::SysTrace::TraceInfo();
 		}
 
 		CompileException(const std::string &msg, PTR(FayFile) file, int line, int col, int count)
 			: std::exception(msg.c_str()), part(MKPTR(FilePart)(file, line, col, count))
 		{
-			//LOG_ERROR(msg);
+			this->trace = mirror::log::SysTrace::TraceInfo();
 		}
 	};
 

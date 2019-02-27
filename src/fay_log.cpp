@@ -5,7 +5,7 @@
 using namespace mirror::utils;
 using namespace fay;
 
-std::recursive_mutex fay::LogBus::LogLock;
+std::recursive_mutex fay::LogBus::_LogLock;
 
 size_t fay::LogBus::_Count[(size_t)LogType::_Max];
 
@@ -17,7 +17,7 @@ MAP<std::thread::id, PTR(std::vector<PTR(fay::LogData)>)> fay::LogBus::_Loggers;
 
 PTR(std::vector<PTR(LogData)>) fay::LogBus::_GetThreadLogger(const std::thread::id &id)
 {
-	std::lock_guard<std::recursive_mutex> lg(LogBus::LogLock);
+	std::lock_guard<std::recursive_mutex> lg(LogBus::_LogLock);
 
 	auto it = LogBus::_Loggers.find(id);
 	if(it != LogBus::_Loggers.end())
@@ -30,7 +30,7 @@ PTR(std::vector<PTR(LogData)>) fay::LogBus::_GetThreadLogger(const std::thread::
 
 void fay::LogBus::_RemoveThreadLogger(const std::thread::id &id)
 {
-	std::lock_guard<std::recursive_mutex> lg(LogBus::LogLock);
+	std::lock_guard<std::recursive_mutex> lg(LogBus::_LogLock);
 
 	auto it = LogBus::_Loggers.find(id);
 	if(it != LogBus::_Loggers.end())
@@ -49,26 +49,26 @@ void fay::LogBus::Init(const std::string &filename)
 	}
 }
 
-void fay::LogBus::Log(LogType type, const std::string &msg, PTR(FilePart) part)
+void fay::LogBus::Log(LogType type, const std::string &msg, PTR(FilePart) part, const std::string &trace)
 {
 	std::thread::id id = std::this_thread::get_id();
 
 	if(id == LogBus::_MainThreadID)
-		LogBus::_Log(type, msg, part);
+		LogBus::_Log(type, msg, part, trace);
 	else
 	{
-		auto data = MKPTR(LogData)(type, msg, part);
+		auto data = MKPTR(LogData)(type, msg, part, trace);
 
-		std::lock_guard<std::recursive_mutex> lg(LogBus::LogLock);
+		std::lock_guard<std::recursive_mutex> lg(LogBus::_LogLock);
 		LogBus::_GetThreadLogger(id)->push_back(data);
 	}
 }
 
-void fay::LogBus::_Log(LogType type, const std::string &msg, PTR(FilePart) part)
+void fay::LogBus::_Log(LogType type, const std::string &msg, PTR(FilePart) part, const std::string &trace)
 {
 	//std::string msg = data;
 
-	std::lock_guard<std::recursive_mutex> lg(LogBus::LogLock);
+	std::lock_guard<std::recursive_mutex> lg(LogBus::_LogLock);
 	LogBus::_Count[(size_t)type]++;
 
 	switch(type)
@@ -126,18 +126,25 @@ void fay::LogBus::_Log(LogType type, const std::string &msg, PTR(FilePart) part)
 		if(_LogFile.size() > 0)
 			FileUtils::AppendTextFile(_LogFile, str);
 	}
+
+	//处理trace的信息
+	if(trace.size() > 0)
+	{
+		if(_LogFile.size() > 0)
+			FileUtils::AppendTextFile(_LogFile, trace);
+	}
 }
 
 void fay::LogBus::EndThread()
 {
 	std::thread::id id = std::this_thread::get_id();
 
-	std::lock_guard<std::recursive_mutex> lg(LogBus::LogLock);
+	std::lock_guard<std::recursive_mutex> lg(LogBus::_LogLock);
 	auto logger = LogBus::_GetThreadLogger(id);
 	if(logger != nullptr)
 	{
 		for(auto log : *logger)
-			LogBus::_Log(log->type, log->msg, log->part);
+			LogBus::_Log(log->type, log->msg, log->part, log->trace);
 
 		LogBus::_RemoveThreadLogger(id);
 	}
@@ -145,12 +152,12 @@ void fay::LogBus::EndThread()
 
 void fay::LogBus::EndAllThread()
 {
-	std::lock_guard<std::recursive_mutex> lg(LogBus::LogLock);
+	std::lock_guard<std::recursive_mutex> lg(LogBus::_LogLock);
 
 	for(auto logger : LogBus::_Loggers)
 	{
 		for(auto log : *logger.second)
-			LogBus::_Log(log->type, log->msg, log->part);
+			LogBus::_Log(log->type, log->msg, log->part, log->trace);
 	}
 
 	LogBus::_Loggers.clear();

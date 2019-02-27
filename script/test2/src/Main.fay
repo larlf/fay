@@ -1,0 +1,9 @@
+//using fay.system;
+
+class MainClass
+{
+	static fun Main():void
+	{
+		IO.Print("Hello!");
+	}
+}
