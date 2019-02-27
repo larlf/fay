@@ -9,5 +9,7 @@
 	"err.no_default_value": "无法生成类型 {1} 的默认值",
 	"err.cannot_find_fun": "找不到函数 {1}",
 	"err.not_support_op": "不支持的操作，操作符：{1}，操作类型：{2}",
-	"err.cannot_find_right_value":"找不到右值。"
+	"err.cannot_find_right_value":"找不到右值。",
+	"err.no_class":"找不到类{1}。",
+	"err.unknow_fun":"找不到方法{1}。"
 }

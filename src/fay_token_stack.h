@@ -18,7 +18,12 @@ namespace fay
 		PTR(FayFile) file;
 
 		TokenStack(PTR(FayFile) file, PTR(std::vector<PTR(Token)>) tokens)
-			: file(file), _tokens(tokens) {}
+			: file(file), _tokens(tokens)
+		{
+			//跳过开头的注释
+			while(this->now()->is(TokenType::Comment))
+				this->next();
+		}
 
 		//当前的位置
 		int pos() { return this->_pos; }

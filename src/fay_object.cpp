@@ -84,24 +84,19 @@ std::string fay::FilePart::print()
 					break;
 			}
 
-			//换行
-			if(c == '\n')
-			{
-				strLine++;
-				strLineStart = i;
-
-				//判断换行后是不是已经超出显示范围，不然的话最后一个换行就不要了
-				if(strLine <= (line + FilePart::ContextLines))
-				{
-					std::cout << c;
-					msg.append(&c, 0, 1);
-				}
-			}
-			else
+			//判断换行后是不是已经超出显示范围，不然的话最后一个换行就不要了
+			if(c != '\n' || strLine < (line + FilePart::ContextLines))
 			{
 				std::cout << c;
 				msg.append(&c, 0, 1);
 			}
+		}
+
+		//换行
+		if(c == '\n')
+		{
+			strLine++;
+			strLineStart = i;
 		}
 	}
 
