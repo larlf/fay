@@ -95,8 +95,6 @@ set(faylib_src
 	src/fay_lang.cpp
 	src/fay_builder.h
 	src/fay_builder.cpp
-	src/fay_compiler.h
-	src/fay_compiler.cpp
 	src/fay_inst.h
 	src/fay_inst.cpp
 	src/fay_internal_object.h

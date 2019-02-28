@@ -21,7 +21,7 @@ void test::TestFay::SetUpTestCase()
 	fay::TypeDict::Init();
 
 	//初始化国际化信息
-	fay::I18N::Init("../doc/i18n.cn.json");
+	fay::I18nBus::Init(I18nLang::CN);
 
 	FayDomain::InitSysLib();
 

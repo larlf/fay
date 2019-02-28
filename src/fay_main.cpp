@@ -24,7 +24,7 @@ int main(int argc, char** argv)
 		return 0;
 	}
 
-	fay::I18N::Init("doc/i18n.cn.json");
+	fay::I18nBus::Init(I18nLang::CN);
 	SystemEnv::Init();
 	TypeDict::Init();
 	FayDomain::InitSysLib();
@@ -39,7 +39,7 @@ int main(int argc, char** argv)
 		//找到Main()方法并执行
 		PTR(std::vector<PTR(FayFun)>) mainFuns = project.lib()->findMainFun();
 		if(mainFuns->empty())
-			LogBus::Error(I18N::Get("err.no_main"));
+			LogBus::Error(I18nBus::Get(I18n::Err_NoMain));
 		else if(mainFuns->size() > 1)
 		{
 			//显示找到的所有方法名
@@ -51,7 +51,7 @@ int main(int argc, char** argv)
 				str.append(it->fullname());
 			}
 
-			LogBus::Error(I18N::Get("err.multi_main", str));
+			LogBus::Error(I18nBus::Get(I18n::Err_MultiMain, str));
 		}
 		else
 			FayVM::Run((*mainFuns)[0]);

@@ -13,7 +13,6 @@
 #include <fay_parser.h>
 #include <fay_lang.h>
 #include <fay_builder.h>
-#include <fay_compiler.h>
 #include <fay_inst.h>
 #include <fay_internal_object.h>
 #include <fay_internal_fun.h>

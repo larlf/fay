@@ -201,7 +201,7 @@ PTR(std::vector<PTR(Token)>) fay::Lexer::Execute(PTR(FayFile) file)
 		else
 		{
 			//抛出异常
-			throw fay::CompileException(I18N::Get("err.lexical"), file, line, col, 0);
+			throw CompileException(MKPTR(FilePart)(file, line, col, 0), I18n::Err_Lexical);
 		}
 	}
 

@@ -6,23 +6,17 @@
 
 namespace fay
 {
-	//语法解析中的异常
-	class ParseException : public fay::CompileException
-	{
-	public:
-		PTR(Token) token;
-
-		//stack : 当前正在处理的TokenStack
-		//key : 错误信息的国际化信息
-		template<typename... Params>
-		ParseException(TokenStack* stack, const std::string &key, Params... args)
-			: fay::CompileException(I18N::Get(key, args...), stack->file, stack->now()->line, stack->now()->col, stack->now()->count) {}
-	};
-
 	//语法解析器
 	class Parser
 	{
 	private:
+		//抛出错误
+		template<typename... Params>
+		static void _Error(TokenStack* stack, I18n code, Params... args)
+		{
+			throw CompileException(MKPTR(FilePart)(stack->file, stack->now()->line, stack->now()->col, stack->now()->count), code, args...);
+		}
+
 		//生成左右双向式操作的节点
 		static PTR(AstNode) _MakeLeftRightOPNode(
 			std::function<PTR(AstNode)(TokenStack*)> subExpr,

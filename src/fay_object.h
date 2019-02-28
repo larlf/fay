@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <mirror.h>
 #include <fay_const.h>
+#include <fay_i18n.h>
 #include <string>
 #include <exception>
 #include <thread>
@@ -66,13 +67,9 @@ namespace fay
 		PTR(FilePart) part;
 		std::string trace;
 
-		CompileException(const std::string &msg) : std::exception(msg.c_str())
-		{
-			this->trace = mirror::log::SysTrace::TraceInfo();
-		}
-
-		CompileException(const std::string &msg, PTR(FayFile) file, int line, int col, int count)
-			: std::exception(msg.c_str()), part(MKPTR(FilePart)(file, line, col, count))
+		template<typename... Params>
+		CompileException(PTR(FilePart) part, I18n code, Params... args)
+			: part(part), std::exception(I18nBus::Get(code, args...).c_str())
 		{
 			this->trace = mirror::log::SysTrace::TraceInfo();
 		}

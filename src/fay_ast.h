@@ -12,19 +12,6 @@
 
 namespace fay
 {
-	class AstNode;
-
-	//语法解析中的异常
-	class BuildException : public fay::CompileException
-	{
-	public:
-		//stack : 当前正在处理的TokenStack
-		//key : 错误信息的国际化信息
-		template<typename... Params>
-		BuildException(PTR(FayFile) file, PTR(fay::Token) token, const std::string &key, Params... args)
-			: fay::CompileException(I18N::Get(key, args...), file, token->line, token->col, token->count) {}
-	};
-
 	class AstNode : public BaseObject, public std::enable_shared_from_this<AstNode>
 	{
 	protected:
@@ -33,6 +20,13 @@ namespace fay
 		std::vector<PTR(AstNode)> _nodes;
 		PTR(fay::Token) _token;
 		WPTR(FayClass) _classType;
+
+		//抛出编译时候的异常
+		template<typename... Params>
+		void throwError(PTR(FayFile) file, PTR(Token) token, I18n code, Params... args)
+		{
+			throw CompileException(MKPTR(FilePart)(file, token->line, token->col, token->count), code, args...);
+		}
 
 	public:
 		AstNode(const PTR(Token) &token)

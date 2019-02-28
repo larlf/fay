@@ -299,7 +299,7 @@ Cmds.inst = function () {
             if (values[inst.name] === undefined) {
                 maxValue++;
                 inst.code = maxValue;
-                values[it.name] = maxValue;
+                values[it.Name] = maxValue;
             }
             else {
                 inst.code = values[it.Name];
@@ -325,6 +325,7 @@ Cmds.inst = function () {
         }
     });
     //保存已生成的代码值
+    //以后再生在编码的时候，已经有的就不变了，新添加的会依次向下排
     log.debug("Write : " + valueFilename);
     fs.writeFileSync(valueFilename, JSON.stringify(values, null, "\t"));
     replaceFileBody("src/fay_inst.h", "Inst", hText, "\t\t");
@@ -411,6 +412,30 @@ Cmds.deps = function () {
     }
     larlf.file.copyFiles(path.resolve(mirageDir, "src/mirage"), "*.h", path.resolve(__dirname, "../deps/win64/mirage/inc/mirage"));
     larlf.file.copyFiles(path.resolve(mirageDir, "build/bin/Debug"), "mirage.lib", path.resolve(__dirname, "../deps/win64/mirage/lib/"));
+};
+Cmds._i18n = "生成国际化信息相关的内容";
+Cmds.i18n = function () {
+    let file = xlsx.readFile(path.resolve(__dirname, "../doc/FayLang.xlsx"));
+    let data = xlsx.utils.sheet_to_json(file.Sheets['I18N']);
+    let codes = [];
+    let enText = [];
+    let cnText = [];
+    data.forEach(it => {
+        let code = it['code'];
+        if (!code)
+            return;
+        code = code.replace(/\./g, '_');
+        if (codes.indexOf(code) >= 0) {
+            log.error("Repeated i18n code : " + code);
+            return;
+        }
+        codes.push(code);
+        enText.push("_Dict[I18n::" + code + "] = \"" + (it['en'] ? it['en'].trim() : "") + "\";");
+        cnText.push("_Dict[I18n::" + code + "] = \"" + (it['cn'] ? it['cn'].trim() : "") + "\";");
+    });
+    replaceFileBody(path.resolve(__dirname, "../src/fay_i18n.h"), "I18NCode", codes.join(",\n"), "\t\t");
+    replaceFileBody(path.resolve(__dirname, "../src/fay_i18n.cpp"), "I18nEn", enText, "\t\t\t");
+    replaceFileBody(path.resolve(__dirname, "../src/fay_i18n.cpp"), "I18nCn", cnText, "\t\t\t");
 };
 main();
 //# sourceMappingURL=index.js.map
