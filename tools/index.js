@@ -224,6 +224,7 @@ Cmds.run = function () {
     Cmds.value_type();
     Cmds.inst();
     Cmds.convert_inst();
+    Cmds.i18n();
 };
 Cmds._token_type = "生成Token类型的数据";
 Cmds.token_type = function () {

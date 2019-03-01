@@ -4,6 +4,8 @@ class MainClass
 {
 	static fun Main():void
 	{
-		IO.Print("Hello!");
+		var a:int=-*5;
+		IO.Print(a);
 	}
 }
+

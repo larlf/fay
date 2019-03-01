@@ -54,7 +54,16 @@ int main(int argc, char** argv)
 			LogBus::Error(I18nBus::Get(I18n::Err_MultiMain, str));
 		}
 		else
-			FayVM::Run((*mainFuns)[0]);
+		{
+			try
+			{
+				FayVM::Run((*mainFuns)[0]);
+			}
+			catch(std::exception e)
+			{
+				LOG_ERROR(e.what());
+			}
+		}
 	}
 
 	return 0;
