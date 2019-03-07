@@ -1530,7 +1530,7 @@ void fay::TryHandler::buildString(mirror::utils::StringBuilder* sb)
 	sb->add("(")->add(this->start)->add(",")->add(this->end)->add(") => ")->add(this->target);
 }
 
-void fay::TypeDef::buildString(mirror::utils::StringBuilder* sb)
+void fay::TypeDesc::buildString(mirror::utils::StringBuilder* sb)
 {
 	if(this->isAny)
 		sb->add("any");
