@@ -46,6 +46,22 @@ namespace fay
 
 	////////////////////////////////////////////////////////////////
 
+	//类型说明信息
+	class TypeDesc : public BaseObject
+	{
+	public:
+		bool isAny = true;  //是否可以为任意类型
+		ValueType type = ValueType::Void;  //类型定义
+		PTR(FayClass) classType;  //类的定义
+
+		//分级处理的构造方法
+		TypeDesc() {}
+		TypeDesc(ValueType type) : isAny(false), type(type) {}
+		TypeDesc(PTR(FayClass) clazz) : isAny(false), type(ValueType::Object), classType(clazz) {}
+
+		virtual void buildString(mirror::utils::StringBuilder* sb) override;
+	};
+
 	//函数表
 	class FunTable : public BaseObject
 	{

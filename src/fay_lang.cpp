@@ -1529,3 +1529,13 @@ void fay::TryHandler::buildString(mirror::utils::StringBuilder* sb)
 {
 	sb->add("(")->add(this->start)->add(",")->add(this->end)->add(") => ")->add(this->target);
 }
+
+void fay::TypeDef::buildString(mirror::utils::StringBuilder* sb)
+{
+	if(this->isAny)
+		sb->add("any");
+	else if(this->type == ValueType::Object && this->classType)
+		this->classType->buildString(sb);
+	else
+		sb->add(TypeDict::ToName(this->type));
+}
