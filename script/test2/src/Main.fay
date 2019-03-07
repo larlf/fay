@@ -4,7 +4,7 @@ class MainClass
 {
 	static fun Main():void
 	{
-		var a:int=-*5;
+		var a:int=-1*5;
 		IO.Print(a);
 	}
 }

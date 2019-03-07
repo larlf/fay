@@ -27,6 +27,11 @@ namespace fay
 		{
 			throw CompileException(MKPTR(FilePart)(file, token->line, token->col, token->count), code, args...);
 		}
+		template<typename... Params>
+		void throwError(FayBuilder* builder, I18n code, Params... args)
+		{
+			throw CompileException(MKPTR(FilePart)(builder->file(), this->_token->line, this->_token->col, this->_token->count), code, args...);
+		}
 
 	public:
 		AstNode(const PTR(Token) &token)

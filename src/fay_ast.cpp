@@ -712,6 +712,11 @@ void fay::AstLeftRightOP::dig3(FayBuilder* builder)
 {
 	AstNode::dig3(builder);
 
+	if(this->_nodes[0] == nullptr)
+		this->throwError(builder, I18n::Err_NoLeftValue);
+	if(this->_nodes[1] == nullptr)
+		this->throwError(builder, I18n::Err_NoRightValue);
+
 	//先算出目标类型
 	auto t1 = this->_nodes[0]->classType();
 	auto t2 = this->_nodes[1]->classType();
@@ -1134,6 +1139,10 @@ void fay::AstReturn::dig4(FayBuilder* builder)
 void fay::AstMinusOP::dig3(FayBuilder* builder)
 {
 	AstNode::dig3(builder);
+
+	if(this->_nodes.size() < 1 || this->_nodes[0] == nullptr)
+		this->throwError(builder, I18n::Err_NoRightValue);
+
 	this->_classType = this->_nodes[0]->classType();
 }
 

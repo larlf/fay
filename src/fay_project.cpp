@@ -285,7 +285,9 @@ void fay::FayProject::build()
 	this->step4ParseClass();
 	this->step5ParseFieldAndMethod();
 	this->step6FixedNodeType();
-	this->step7GenerateIL();
+
+	if(!LogBus::Count(LogType::Error))
+		this->step7GenerateIL();
 
 	LogBus::EndAllThread();
 }
