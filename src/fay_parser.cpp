@@ -356,6 +356,7 @@ PTR(AstNode) fay::Parser::_Stmt(TokenStack* stack)
 	}
 
 	_Error(stack, I18n::Err_UnknowStatment);
+	return nullptr;
 }
 
 PTR(AstNode) fay::Parser::_StmtLabel(TokenStack* stack)
@@ -781,6 +782,7 @@ PTR(AstNode) fay::Parser::_Type(TokenStack* stack)
 	}
 
 	_Error(stack, I18n::Err_BadType);
+	return nullptr;
 }
 
 PTR(AstNode) fay::Parser::_ParamDef(TokenStack* stack)

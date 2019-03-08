@@ -61,6 +61,7 @@ void fay::TypeDict::Init()
 	TypeDict::ValueTypeName[ValueType::String] = "string";
 	TypeDict::ValueTypeName[ValueType::Object] = "object";
 	TypeDict::ValueTypeName[ValueType::Function] = "function";
+	TypeDict::ValueTypeName[ValueType::Any] = "any";
 	//ValueTypeNameEnd
 
 	//ValueTypeMapStart
@@ -74,6 +75,7 @@ void fay::TypeDict::Init()
 	TypeDict::ValueTypeMap["string"] = ValueType::String;
 	TypeDict::ValueTypeMap["object"] = ValueType::Object;
 	TypeDict::ValueTypeMap["function"] = ValueType::Function;
+	TypeDict::ValueTypeMap["any"] = ValueType::Any;
 	//ValueTypeMapEnd
 
 	//InstTypeNameStart

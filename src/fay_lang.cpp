@@ -804,6 +804,11 @@ fay::FayInst* fay::FayLangUtils::ConvertInst(ValueType src, ValueType dest)
 			{
 			}
 			break;
+		case ValueType::Any:
+			switch(dest)
+			{
+			}
+			break;
 	}
 	//ConvertInstEnd
 

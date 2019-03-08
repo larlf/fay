@@ -25,6 +25,7 @@ void fay::internal::SystemLib::preInit()
 	this->addClass(MKPTR(DoubleClass)("fay.system", "Double"));
 	this->addClass(MKPTR(StringClass)("fay.system", "String"));
 	this->addClass(MKPTR(ObjectClass)("fay.system", "Object"));
+
 	this->addClass(MKPTR(IOClass)("fay.system", "IO"));
 	this->addClass(MKPTR(DateClass)("fay.system", "Date"));
 	this->addClass(MKPTR(ErrorClass)("fay.system", "Error"));

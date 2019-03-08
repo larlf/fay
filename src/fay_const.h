@@ -83,6 +83,7 @@ namespace fay
 		String = 8,  //字符串
 		Object = 9,  //对象
 		Function = 10,  //函数
+		Any = 11,  //任意值，可能是上面的任一种
 		//ValueTypeEnd
 	};
 
