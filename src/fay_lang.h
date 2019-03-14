@@ -10,6 +10,7 @@
 namespace fay
 {
 	class FayLib;
+	class FayLibSet;
 	class FayInstClass;
 	class FayFun;
 	class FayCode;
@@ -130,7 +131,7 @@ namespace fay
 		std::string _package;
 		std::string _name;
 		std::string _fullname;
-		WPTR(FayLib) _lib;
+		//WPTR(FayLib) _lib;
 
 		WPTR(FayClass) _superClass;  //父类
 		FunTable _sft;  //静态函数表
@@ -158,8 +159,8 @@ namespace fay
 
 		//Get or set
 		//ClassType type() { return this->_type; }
-		void lib(PTR(FayLib) v) { this->_lib = v; }
-		PTR(FayLib) lib() { return this->_lib.lock(); }
+		//void lib(PTR(FayLib) v) { this->_lib = v; }
+		//PTR(FayLib) lib() { return this->_lib.lock(); }
 
 		//处理父类
 		inline void superClass(PTR(FayClass) v) { this->_superClass = v; }
@@ -410,51 +411,65 @@ namespace fay
 	};
 
 	//库
-	class FayLib : public BaseObject, public std::enable_shared_from_this<FayLib>
+	class FayLib : public BaseObject, public std::enable_shared_from_this<FayLib>, public IndexMapItem<FayLib>
 	{
 	private:
-		int _marjor = 0;
-		int _minjor = 0;
+		std::string _indexKey;  //库的Key
 
 	public:
-		std::string name;
-		std::vector<PTR(FayClass)> classes;
+		std::string name;  //库的名字
+		int marjor = 0;  //主版本
+		int minjor = 0;  //小版本
+		std::string version = 0;  //自定义版本
+		FayLibSet depLibs;  //所有依赖的库
 
-		FayLib(const std::string &name, int marjor, int minjor)
-			: name(name) {}
-		~FayLib() {}
+		IndexMap<FayClass> classes;  //所有的Class
+
+		FayLib(const std::string &name, int marjor, int minjor, const std::string &version)
+			: name(name), marjor(marjor), minjor(minjor), version(version)
+		{
+			this->_indexKey = TOSTR(name << "_" << marjor << "." << minjor);
+		}
+		virtual ~FayLib() {}
 
 		pos_t addClass(PTR(FayClass) clazz);
+		PTR(FayClass) findClass(const std::string &fullname);
+		LIST(PTR(FayClass)) findClassWithName(const std::string &name);
+
 		//在库里查找Main函数的入口点
 		PTR(std::vector<PTR(FayFun)>) findMainFun();
 
 		virtual void buildString(mirror::utils::StringBuilder* sb) override;
+
+		// Inherited via IndexMapItem
+		virtual const std::string &indexKey() override;
+	};
+
+	//一组Lib的集合
+	class FayLibSet
+	{
+	public:
+		LIST(PTR(FayLib)) libs;
+
+		void addLib(PTR(FayLib) lib);
 	};
 
 	//当前总体管理类
 	class FayDomain
 	{
-	private:
-		static std::vector<PTR(FayLib)> _libs;
-		static IndexMap<FayClass> _classes;
-
 	public:
-
-		static IndexMap<FayClass> &classes() { return FayDomain::_classes; }
+		static IndexMap<FayLib> libs;
 
 		//初始化系统库
 		static void InitSysLib();
 		//添加Lib
 		static void AddLib(PTR(FayLib) lib);
-		//添加新的类型
-		//返回类型在Domain里的序号
-		static pos_t AddClass(PTR(FayClass) t);
 		//根据类型的全称查找类型定义
 		static PTR(FayClass) FindClass(const std::string &fullname);
 		//static PTR(FayClass) operator[](const std::string &typeFullname) { return FayDomain::findClass(typeFullname); }
 		static PTR(FayClass) FindClass(ValueType type);
 		//static PTR(FayClass) operator[](ValueType type) { return FayDomain::findClass(type); }
-		static PTR(FayClass) FindClass(pos_t index);
+		static PTR(FayClass) FindClass(pos_t libIndex, pos_t lassIndex);
 		//根据引用和类型名，查找类型的定义
 		static std::vector<PTR(FayClass)> FindClass(std::vector<std::string> &imports, const std::string &typeName);
 

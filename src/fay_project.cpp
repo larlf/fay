@@ -277,7 +277,7 @@ fay::FayProject::FayProject(const std::string &name, int marjor, int minjor)
 
 void fay::FayProject::build()
 {
-	this->_lib = MKPTR(FayLib)("default", 0, 0);
+	this->_lib = MKPTR(FayLib)("default", 0, 0, "");
 
 	this->step1CheckFiles();
 	this->step2Lexical();

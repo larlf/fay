@@ -33,7 +33,7 @@ void fay::internal::SystemLib::preInit()
 
 void fay::internal::SystemLib::postInit()
 {
-	for(const auto &it : this->classes)
+	for(const auto &it : this->classes.list())
 		TOPTR(ObjectClass, it)->initInternalFun();
 }
 

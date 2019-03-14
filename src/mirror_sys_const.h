@@ -42,6 +42,11 @@ namespace fs = std::experimental::filesystem;
 #define BIND5_S(p1, ...) std::bind(p1, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5, ##__VA_ARGS__)
 #endif //SBIND
 
+//LIST
+#ifndef LIST
+#define LIST(p1) std::vector<##p1##>
+#endif
+
 //MAP
 #ifndef MAP
 #if TEST

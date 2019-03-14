@@ -176,17 +176,36 @@ void fay::FayClass::buildString(mirror::utils::StringBuilder* sb)
 
 pos_t fay::FayLib::addClass(PTR(FayClass) clazz)
 {
-	clazz->lib(this->shared_from_this());
-	this->classes.push_back(clazz);
+	//clazz->lib(this->shared_from_this());
+	this->classes.add(clazz);
 
 	return FayDomain::AddClass(clazz);
+}
+
+PTR(FayClass) fay::FayLib::findClass(const std::string &fullname)
+{
+	PTR(FayClass) clazz = this->classes.find(fullname);
+	return clazz;
+}
+
+LIST(PTR(FayClass)) fay::FayLib::findClassWithName(const std::string &name)
+{
+	LIST(PTR(FayClass)) list;
+
+	for(auto it : this->classes.list())
+	{
+		if(it->name() == name)
+			list.push_back(it);
+	}
+
+	return list;
 }
 
 PTR(std::vector<PTR(FayFun)>) fay::FayLib::findMainFun()
 {
 	PTR(std::vector<PTR(FayFun)>) funs = MKPTR(std::vector<PTR(FayFun)>)();
 
-	for(const auto &clazz : this->classes)
+	for(const auto &clazz : this->classes.list())
 	{
 		auto fs = clazz->findFun("Main():void", true);
 		if(fs)
@@ -203,10 +222,15 @@ void fay::FayLib::buildString(mirror::utils::StringBuilder* sb)
 	//显示Class的内容
 	sb->add("[Classes]")->endl();
 	sb->increaseIndent();
-	for each(auto it in this->classes)
+	for each(auto it in this->classes.list())
 		it->buildString(sb);
 	sb->decreaseIndent();
 	sb->decreaseIndent();
+}
+
+const std::string &fay::FayLib::indexKey()
+{
+	return this->_indexKey;
 }
 
 void fay::FayInstFun::prepareInsts()
@@ -493,7 +517,7 @@ pos_t fay::FayClass::addFun(PTR(FayFun) fun)
 		return this->_vft.addFun(fun);
 }
 
-std::vector<PTR(FayLib)> fay::FayDomain::_libs;
+std::vector<PTR(FayLib)> fay::FayDomain::libs;
 
 fay::IndexMap<fay::FayClass> fay::FayDomain::_classes;
 
@@ -501,7 +525,7 @@ fay::IndexMap<fay::FayClass> fay::FayDomain::_classes;
 void fay::FayDomain::InitSysLib()
 {
 	//添加系统库。因为存在循环依赖的问题，要分两次进行初始化
-	PTR(SystemLib) lib = MKPTR(SystemLib)("system", 1, 1);
+	PTR(SystemLib) lib = MKPTR(SystemLib)("system", 1, 0, 0);
 	lib->preInit();
 	FayDomain::AddLib(lib);
 	lib->postInit();
@@ -510,24 +534,13 @@ void fay::FayDomain::InitSysLib()
 void fay::FayDomain::AddLib(PTR(FayLib) lib)
 {
 	//先生成相互的引用关系
-	FayDomain::_libs.push_back(lib);
-
-	//然后对Lib里的东西进行一下排序
-	for each(auto it in lib->classes)
-		FayDomain::_classes.add(it);
+	FayDomain::libs.add(lib);
 }
 
 void fay::FayDomain::buildString(mirror::utils::StringBuilder* sb)
 {
 	sb->add("[FayDomain]")->endl();
-	sb->increaseIndent();
-	for(auto i = 0; i < FayDomain::_classes.list().size(); ++i)
-	{
-		auto t = FayDomain::_classes.list()[i];
-		sb->add(i)->add(" : ")->add(t->fullname())->endl();
-	}
-
-	for each(auto it in FayDomain::_libs)
+	for each(auto it in FayDomain::libs.list())
 		it->buildString(sb);
 	sb->decreaseIndent();
 }
@@ -539,31 +552,24 @@ std::string fay::FayDomain::ToString()
 	return sb.toString();
 }
 
-pos_t fay::FayDomain::AddClass(PTR(FayClass) t)
-{
-	std::string fullname = t->fullname();
-
-	//如果已经有了，就返回现有的位置
-	pos_t index = FayDomain::_classes.findIndex(fullname);
-	if(index >= 0)
-		return index;
-
-	return FayDomain::_classes.add(t);
-}
-
+//TODO Delete
 PTR(FayClass) fay::FayDomain::FindClass(const std::string &fullname)
 {
-	auto type = FayDomain::_classes.find(fullname);
-	return type;
+	//auto type = FayDomain::_classes.find(fullname);
+	//return type;
+	return nullptr;
 }
 
-PTR(FayClass) fay::FayDomain::FindClass(pos_t index)
+PTR(FayClass) fay::FayDomain::FindClass(pos_t libIndex, pos_t lassIndex)
 {
-	auto type = FayDomain::_classes.find(index);
-	if(!type)
-		LOG_ERROR("Cannot find type by index : " << index);
+	PTR(FayLib) lib = FayDomain::libs.find(libIndex);
+	if(lib != nullptr)
+	{
+		PTR(FayClass) type = lib->classes.find(lassIndex);
+		return type;
+	}
 
-	return type;
+	return nullptr;
 }
 
 PTR(FayClass) fay::FayDomain::FindClass(ValueType type)
@@ -592,20 +598,23 @@ std::vector<PTR(FayClass)> fay::FayDomain::FindClass(std::vector<std::string> &i
 	return types;
 }
 
+//TODO Delete
 PTR(FayClass) fay::FayDomain::UseClass(pos_t index)
 {
-	PTR(FayClass) clazz = FayDomain::_classes[index];
-	if(!clazz)
-	{
-		LOG_ERROR("Cannot find fun : " << index);
-		return nullptr;
-	}
+	//PTR(FayClass) clazz = FayDomain::_classes[index];
+	//if(!clazz)
+	//{
+	//	LOG_ERROR("Cannot find fun : " << index);
+	//	return nullptr;
+	//}
 
-	//运行初始化方法
-	if(!clazz->isInited())
-		clazz->initClass();
+	////运行初始化方法
+	//if(!clazz->isInited())
+	//	clazz->initClass();
 
-	return clazz;
+	//return clazz;
+
+	return nullptr;
 }
 
 fay::FayParamDef::FayParamDef(const std::string &name, PTR(FayClass) type)
@@ -1543,4 +1552,26 @@ void fay::TypeDesc::buildString(mirror::utils::StringBuilder* sb)
 		this->classType->buildString(sb);
 	else
 		sb->add(TypeDict::ToName(this->type));
+}
+
+void fay::FayLibSet::addLib(PTR(FayLib) lib)
+{
+	auto i = 0;
+	for(; i < this->libs.size(); ++i)
+	{
+		auto it = this->libs[i];
+		if(it->name == lib->name)
+		{
+			//如果新的比旧的新
+			if(lib->marjor > it->marjor || (lib->marjor == it->marjor && lib->minjor > it->minjor))
+			{
+				this->libs[i] = lib;
+				break;
+			}
+		}
+	}
+
+	//如果之前没有，加到最后
+	if(i >= this->libs.size())
+		this->libs.push_back(lib);
 }
