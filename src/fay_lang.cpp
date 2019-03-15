@@ -688,6 +688,12 @@ void fay::FayParamDef::buildString(mirror::utils::StringBuilder* sb)
 	sb->add(this->fullname())->endl();
 }
 
+std::string fay::FayLangUtils::ClassFullname(const std::string &package, const std::string &name)
+{
+	std::string fullname = TOSTR(package << "." << name);
+	return fullname;
+}
+
 std::string fay::FayLangUtils::Fullname(const std::string &funName, const std::vector<PTR(FayClass)> &params)
 {
 	std::string str;

@@ -59,11 +59,10 @@ void fay::FayBuilder::bindLib(PTR(FayLib) lib)
 	this->_lib = lib;
 }
 
-pos_t fay::FayBuilder::addClass(PTR(FayInstClass) clazz)
+PTR(FayInstClass) fay::FayBuilder::addClass(const std::string &name)
 {
-	this->_class = clazz;
-	this->_lib->addClass(clazz);
-	return clazz->indexValue();
+	this->_class = this->_lib->newClass<FayInstClass>(this->_package, name);
+	return this->_class;
 }
 
 //void fay::FayBuilder::bindClass(pos_t index)

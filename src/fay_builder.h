@@ -73,7 +73,7 @@ namespace fay
 		const std::string &package() { return this->_package; }
 
 		//Class相关的处理
-		pos_t addClass(PTR(FayInstClass) clazz);
+		PTR(FayInstClass) addClass(const std::string &name);
 		void bindClass(PTR(FayInstClass) clazz) { this->_class = clazz; }
 		//std::vector<PTR(FayClass)> findClass(const std::string &name);
 

@@ -104,15 +104,13 @@ void fay::AstNode::dig4(FayBuilder* builder)
 
 void fay::AstClass::dig1(FayBuilder* builder)
 {
-	this->_clazz = MKPTR(FayInstClass)(builder->lib(), builder->package(), this->_text);
-
 	//检查是否重复
-	std::string fullname = this->_clazz->fullname();
+	std::string fullname = FayLangUtils::ClassFullname(builder->package(), this->_text);
 	if(builder->deps()->findClass(fullname) != nullptr)
 		this->throwError(builder->file(), this->token(), I18n::Err_RepeatedClass, fullname);
 
-	//添加到domain
-	builder->addClass(this->_clazz);
+	//创建Class
+	this->_clazz = builder->addClass(this->_text);
 
 	AstNode::dig1(builder);
 }

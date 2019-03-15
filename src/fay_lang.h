@@ -23,6 +23,7 @@ namespace fay
 	{
 	public:
 		//用于生成名称的方法
+		static std::string ClassFullname(const std::string &package, const std::string &name);
 		static std::string Fullname(const std::string &funName, const std::vector<PTR(FayClass)> &params);
 		static std::string Fullname(const std::string &className, const std::string &funName, const std::vector<PTR(FayClass)> &params);
 
@@ -435,6 +436,16 @@ namespace fay
 			this->_indexKey = TOSTR(name << ":" << marjor);
 		}
 		virtual ~FayLib() {}
+
+		template<class T>
+		PTR(T) newClass(const std::string &package, const std::string &name)
+		{
+			//TODO 检查有没有重复创建
+
+			PTR(T) clazz = MKPTR(T)(this->shared_from_this(), package, name);
+			this->classes.add(clazz);
+			return clazz;
+		}
 
 		void addClass(PTR(FayClass) clazz);
 		PTR(FayClass) findClass(const std::string &fullname);

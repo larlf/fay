@@ -16,19 +16,19 @@ PTR(FayClass) fay::internal::ObjectClass::initInternalFun()
 
 void fay::internal::SystemLib::preInit()
 {
-	this->addClass(MKPTR(VoidClass)(this->shared_from_this(), "fay.system", "Void"));
-	this->addClass(MKPTR(BoolClass)(this->shared_from_this(), "fay.system", "Bool"));
-	this->addClass(MKPTR(ByteClass)(this->shared_from_this(), "fay.system", "Byte"));
-	this->addClass(MKPTR(IntClass)(this->shared_from_this(), "fay.system", "Int"));
-	this->addClass(MKPTR(LongClass)(this->shared_from_this(), "fay.system", "Long"));
-	this->addClass(MKPTR(FloatClass)(this->shared_from_this(), "fay.system", "Float"));
-	this->addClass(MKPTR(DoubleClass)(this->shared_from_this(), "fay.system", "Double"));
-	this->addClass(MKPTR(StringClass)(this->shared_from_this(), "fay.system", "String"));
-	this->addClass(MKPTR(ObjectClass)(this->shared_from_this(), "fay.system", "Object"));
+	this->newClass<VoidClass>("fay.system", "Void");
+	this->newClass<BoolClass>("fay.system", "Bool");
+	this->newClass<ByteClass>("fay.system", "Byte");
+	this->newClass<IntClass>("fay.system", "Int");
+	this->newClass<LongClass>("fay.system", "Long");
+	this->newClass<FloatClass>("fay.system", "Float");
+	this->newClass<DoubleClass>("fay.system", "Double");
+	this->newClass<StringClass>("fay.system", "String");
+	this->newClass<ObjectClass>("fay.system", "Object");
 
-	this->addClass(MKPTR(IOClass)(this->shared_from_this(), "fay.system", "IO"));
-	this->addClass(MKPTR(DateClass)(this->shared_from_this(), "fay.system", "Date"));
-	this->addClass(MKPTR(ErrorClass)(this->shared_from_this(), "fay.system", "Error"));
+	this->newClass<IOClass>("fay.system", "IO");
+	this->newClass<DateClass>("fay.system", "Date");
+	this->newClass<ErrorClass>("fay.system", "Error");
 }
 
 void fay::internal::SystemLib::postInit()
