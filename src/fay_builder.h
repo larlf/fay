@@ -28,6 +28,7 @@ namespace fay
 		std::string _package;
 		PTR(FayFile) _file;
 		PTR(FayLib) _lib;
+		PTR(FayLibSet) _deps;
 		PTR(FayInstClass) _class;
 		PTR(FayInstFun) _fun;
 		std::vector<std::string> _usings;

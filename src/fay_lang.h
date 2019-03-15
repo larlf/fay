@@ -147,6 +147,8 @@ namespace fay
 		bool _isInited = false;
 
 	public:
+		PTR(FayLibSet) libs;  //依赖的所有库
+
 		FayClass(const std::string &package, const std::string &name);
 
 		inline const std::string &name() { return this->_name; }
@@ -420,8 +422,7 @@ namespace fay
 		std::string name;  //库的名字
 		int marjor = 0;  //主版本
 		int minjor = 0;  //小版本
-		std::string version = 0;  //自定义版本
-		FayLibSet depLibs;  //所有依赖的库
+		std::string version;  //自定义版本
 
 		IndexMap<FayClass> classes;  //所有的Class
 
@@ -432,7 +433,7 @@ namespace fay
 		}
 		virtual ~FayLib() {}
 
-		pos_t addClass(PTR(FayClass) clazz);
+		void addClass(PTR(FayClass) clazz);
 		PTR(FayClass) findClass(const std::string &fullname);
 		LIST(PTR(FayClass)) findClassWithName(const std::string &name);
 
@@ -446,29 +447,40 @@ namespace fay
 	};
 
 	//一组Lib的集合
-	class FayLibSet
+	class FayLibSet : public BaseObject
 	{
 	public:
 		LIST(PTR(FayLib)) libs;
 
+		FayLibSet() {}
+
 		void addLib(PTR(FayLib) lib);
+
+		virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		PTR(FayClass) findClass(const std::string &fullname);
+		LIST(PTR(FayClass)) findClassWithName(const std::string &name);
 	};
 
 	//当前总体管理类
 	class FayDomain
 	{
 	public:
-		static IndexMap<FayLib> libs;
+		static IndexMap<FayLib> Libs;
 
 		//初始化系统库
 		static void InitSysLib();
 		//添加Lib
 		static void AddLib(PTR(FayLib) lib);
+		//查找LIb
+		static PTR(FayLib) FindLib(const std::string &name);
+		static PTR(FayLib) FindLib(const std::string &name, int marjor);
+		static PTR(FayLib) FindLib(const std::string &name, int marjor, int minjor);
+		//生成当前高版本的依赖库
+		static PTR(FayLibSet) CreateBestLibs();
+
 		//根据类型的全称查找类型定义
 		static PTR(FayClass) FindClass(const std::string &fullname);
-		//static PTR(FayClass) operator[](const std::string &typeFullname) { return FayDomain::findClass(typeFullname); }
 		static PTR(FayClass) FindClass(ValueType type);
-		//static PTR(FayClass) operator[](ValueType type) { return FayDomain::findClass(type); }
 		static PTR(FayClass) FindClass(pos_t libIndex, pos_t lassIndex);
 		//根据引用和类型名，查找类型的定义
 		static std::vector<PTR(FayClass)> FindClass(std::vector<std::string> &imports, const std::string &typeName);

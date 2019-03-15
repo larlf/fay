@@ -62,7 +62,8 @@ void fay::FayBuilder::bindLib(PTR(FayLib) lib)
 pos_t fay::FayBuilder::addClass(PTR(FayInstClass) clazz)
 {
 	this->_class = clazz;
-	return this->_lib->addClass(clazz);
+	this->_lib->addClass(clazz);
+	return clazz->indexValue();
 }
 
 //void fay::FayBuilder::bindClass(pos_t index)

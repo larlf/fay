@@ -239,6 +239,7 @@ namespace fay
 		using AstNode::AstNode;
 	private:
 		VarType _type = VarType::Local;  //变量类型
+		pos_t _libIndex = -1;
 		pos_t _classIndex = -1;
 		pos_t _varIndex = -1;
 	public:

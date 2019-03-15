@@ -174,12 +174,10 @@ void fay::FayClass::buildString(mirror::utils::StringBuilder* sb)
 	sb->decreaseIndent();
 }
 
-pos_t fay::FayLib::addClass(PTR(FayClass) clazz)
+void fay::FayLib::addClass(PTR(FayClass) clazz)
 {
 	//clazz->lib(this->shared_from_this());
 	this->classes.add(clazz);
-
-	return FayDomain::AddClass(clazz);
 }
 
 PTR(FayClass) fay::FayLib::findClass(const std::string &fullname)
@@ -517,9 +515,7 @@ pos_t fay::FayClass::addFun(PTR(FayFun) fun)
 		return this->_vft.addFun(fun);
 }
 
-std::vector<PTR(FayLib)> fay::FayDomain::libs;
-
-fay::IndexMap<fay::FayClass> fay::FayDomain::_classes;
+IndexMap<FayLib> fay::FayDomain::Libs;
 
 
 void fay::FayDomain::InitSysLib()
@@ -534,13 +530,34 @@ void fay::FayDomain::InitSysLib()
 void fay::FayDomain::AddLib(PTR(FayLib) lib)
 {
 	//先生成相互的引用关系
-	FayDomain::libs.add(lib);
+	FayDomain::Libs.add(lib);
+}
+
+PTR(FayLib) fay::FayDomain::FindLib(const std::string &name)
+{
+	PTR(FayLib) lib;
+
+	for(const auto &it : FayDomain::Libs.list())
+	{
+		if(it->name == name)
+		{
+			if(lib)
+			{
+				if(it->marjor > lib->marjor || (it->marjor == lib->marjor && it->minjor > lib->minjor))
+					lib = it;
+			}
+			else
+				lib = it;
+		}
+	}
+
+	return lib;
 }
 
 void fay::FayDomain::buildString(mirror::utils::StringBuilder* sb)
 {
 	sb->add("[FayDomain]")->endl();
-	for each(auto it in FayDomain::libs.list())
+	for each(auto it in FayDomain::Libs.list())
 		it->buildString(sb);
 	sb->decreaseIndent();
 }
@@ -562,7 +579,7 @@ PTR(FayClass) fay::FayDomain::FindClass(const std::string &fullname)
 
 PTR(FayClass) fay::FayDomain::FindClass(pos_t libIndex, pos_t lassIndex)
 {
-	PTR(FayLib) lib = FayDomain::libs.find(libIndex);
+	PTR(FayLib) lib = FayDomain::Libs.find(libIndex);
 	if(lib != nullptr)
 	{
 		PTR(FayClass) type = lib->classes.find(lassIndex);
@@ -596,6 +613,43 @@ std::vector<PTR(FayClass)> fay::FayDomain::FindClass(std::vector<std::string> &i
 	}
 
 	return types;
+}
+
+PTR(FayLib) fay::FayDomain::FindLib(const std::string &name, int marjor)
+{
+	return FayDomain::FindLib(name, marjor, 0);
+}
+
+PTR(FayLib) fay::FayDomain::FindLib(const std::string &name, int marjor, int minjor)
+{
+	PTR(FayLib) lib;
+
+	for(const auto &it : FayDomain::Libs.list())
+	{
+		if(it->name == name && it->marjor == marjor)
+		{
+			if(it->minjor == minjor)
+			{
+				lib = it;
+				break;
+			}
+
+			if(lib == nullptr || it->minjor > lib->minjor)
+				lib = it;
+		}
+	}
+
+	return lib;
+}
+
+PTR(FayLibSet) fay::FayDomain::CreateBestLibs()
+{
+	auto libs = MKPTR(FayLibSet)();
+
+	for(const auto &it : FayDomain::Libs.list())
+		libs->addLib(it);
+
+	return libs;
 }
 
 //TODO Delete
@@ -1574,4 +1628,44 @@ void fay::FayLibSet::addLib(PTR(FayLib) lib)
 	//如果之前没有，加到最后
 	if(i >= this->libs.size())
 		this->libs.push_back(lib);
+}
+
+void fay::FayLibSet::buildString(mirror::utils::StringBuilder* sb)
+{
+	sb->add("[LibSet]");
+	sb->increaseIndent();
+
+	for(auto it : this->libs)
+		sb->add(it->indexKey());
+
+	sb->decreaseIndent();
+}
+
+PTR(FayClass) fay::FayLibSet::findClass(const std::string &fullname)
+{
+	for(auto lib : this->libs)
+	{
+		auto clazz = lib->findClass(fullname);
+		if(clazz)
+			return clazz;
+	}
+
+	return nullptr;
+}
+
+LIST(PTR(FayClass)) fay::FayLibSet::findClassWithName(const std::string &name)
+{
+	LIST(PTR(FayClass)) list;
+
+	for(auto lib : this->libs)
+	{
+		auto cs = lib->findClassWithName(name);
+		if(cs.size() > 0)
+		{
+			for(auto c : cs)
+				list.push_back(c);
+		}
+	}
+
+	return list;
 }
