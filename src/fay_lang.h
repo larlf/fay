@@ -28,7 +28,7 @@ namespace fay
 
 		//在两个类型中选出要转换的目标类型
 		static ValueType WeightValueType(ValueType t1, ValueType t2);
-		static PTR(FayClass) WeightValueType(PTR(FayClass) t1, PTR(FayClass) t2);
+		static PTR(FayClass) WeightValueType(PTR(FayLibSet) deps, PTR(FayClass) t1, PTR(FayClass) t2);
 		//Class类型转换到ValueType类型
 		static ValueType ClassToValueType(PTR(FayClass) clazz);
 
@@ -131,7 +131,6 @@ namespace fay
 		std::string _package;
 		std::string _name;
 		std::string _fullname;
-		//WPTR(FayLib) _lib;
 
 		WPTR(FayClass) _superClass;  //父类
 		FunTable _sft;  //静态函数表
@@ -147,9 +146,13 @@ namespace fay
 		bool _isInited = false;
 
 	public:
-		PTR(FayLibSet) libs;  //依赖的所有库
+		PTR(FayLib) lib;
 
-		FayClass(const std::string &package, const std::string &name);
+		FayClass(PTR(FayLib) lib, const std::string &package, const std::string &name)
+			: lib(lib), _package(package), _name(name)
+		{
+			this->_fullname = (!package.empty() ? package + "." : "") + name;
+		}
 
 		inline const std::string &name() { return this->_name; }
 		inline const std::string &fullname() { return this->_fullname; }
@@ -328,7 +331,7 @@ namespace fay
 		//是否已经进行过预处理
 		bool isPrepared = false;
 		//对代码运行前做一些预处理
-		void prepareInsts();
+		void prepareInsts(PTR(FayLibSet) deps);
 
 	public:
 		FayInstFun(const std::string &name, bool isStatic, FunAccessType accessType, std::vector<PTR(FayParamDef)> &params, PTR(FayClass) returnValue)
@@ -423,18 +426,19 @@ namespace fay
 		int marjor = 0;  //主版本
 		int minjor = 0;  //小版本
 		std::string version;  //自定义版本
-
+		PTR(FayLibSet) deps;  //依赖的所有库
 		IndexMap<FayClass> classes;  //所有的Class
 
 		FayLib(const std::string &name, int marjor, int minjor, const std::string &version)
 			: name(name), marjor(marjor), minjor(minjor), version(version)
 		{
-			this->_indexKey = TOSTR(name << "_" << marjor << "." << minjor);
+			this->_indexKey = TOSTR(name << ":" << marjor);
 		}
 		virtual ~FayLib() {}
 
 		void addClass(PTR(FayClass) clazz);
 		PTR(FayClass) findClass(const std::string &fullname);
+		PTR(FayClass) findClass(ValueType type);
 		LIST(PTR(FayClass)) findClassWithName(const std::string &name);
 
 		//在库里查找Main函数的入口点
@@ -458,6 +462,7 @@ namespace fay
 
 		virtual void buildString(mirror::utils::StringBuilder* sb) override;
 		PTR(FayClass) findClass(const std::string &fullname);
+		PTR(FayClass) findClass(ValueType type);
 		LIST(PTR(FayClass)) findClassWithName(const std::string &name);
 	};
 
@@ -476,14 +481,14 @@ namespace fay
 		static PTR(FayLib) FindLib(const std::string &name, int marjor);
 		static PTR(FayLib) FindLib(const std::string &name, int marjor, int minjor);
 		//生成当前高版本的依赖库
-		static PTR(FayLibSet) CreateBestLibs();
+		static PTR(FayLibSet) AllLibs();
 
 		//根据类型的全称查找类型定义
-		static PTR(FayClass) FindClass(const std::string &fullname);
-		static PTR(FayClass) FindClass(ValueType type);
+		//static PTR(FayClass) FindClass(const std::string &fullname);
+		//static PTR(FayClass) FindClass(ValueType type);
 		static PTR(FayClass) FindClass(pos_t libIndex, pos_t lassIndex);
 		//根据引用和类型名，查找类型的定义
-		static std::vector<PTR(FayClass)> FindClass(std::vector<std::string> &imports, const std::string &typeName);
+		//static std::vector<PTR(FayClass)> FindClass(std::vector<std::string> &imports, const std::string &typeName);
 
 		//使用Class，在VM里用这个方法，会检查是否已经初始化
 		static PTR(FayClass) UseClass(pos_t index);

@@ -24,8 +24,8 @@ namespace fay
 		class VoidClass : public ObjectClass
 		{
 		public:
-			VoidClass(const std::string &package, const std::string &name)
-				: ObjectClass(package, name)
+			VoidClass(PTR(FayLib) lib, const std::string &package, const std::string &name)
+				: ObjectClass(lib, package, name)
 			{
 				this->_fullname = TypeDict::ToName(ValueType::Void);
 			}
@@ -36,8 +36,8 @@ namespace fay
 		class BoolClass : public ObjectClass
 		{
 		public:
-			BoolClass(const std::string &package, const std::string &name)
-				: ObjectClass(package, name)
+			BoolClass(PTR(FayLib) lib, const std::string &package, const std::string &name)
+				: ObjectClass(lib, package, name)
 			{
 				this->_fullname = TypeDict::ToName(ValueType::Bool);
 			}
@@ -48,8 +48,8 @@ namespace fay
 		class ByteClass : public ObjectClass
 		{
 		public:
-			ByteClass(const std::string &package, const std::string &name)
-				: ObjectClass(package, name)
+			ByteClass(PTR(FayLib) lib, const std::string &package, const std::string &name)
+				: ObjectClass(lib, package, name)
 			{
 				this->_fullname = TypeDict::ToName(ValueType::Byte);
 			}
@@ -60,8 +60,8 @@ namespace fay
 		class IntClass : public ObjectClass
 		{
 		public:
-			IntClass(const std::string &package, const std::string &name)
-				: ObjectClass(package, name)
+			IntClass(PTR(FayLib) lib, const std::string &package, const std::string &name)
+				: ObjectClass(lib, package, name)
 			{
 				this->_fullname = TypeDict::ToName(ValueType::Int);
 			}
@@ -72,8 +72,8 @@ namespace fay
 		class LongClass : public ObjectClass
 		{
 		public:
-			LongClass(const std::string &package, const std::string &name)
-				: ObjectClass(package, name)
+			LongClass(PTR(FayLib) lib, const std::string &package, const std::string &name)
+				: ObjectClass(lib, package, name)
 			{
 				this->_fullname = TypeDict::ToName(ValueType::Long);
 			}
@@ -84,8 +84,8 @@ namespace fay
 		class FloatClass : public ObjectClass
 		{
 		public:
-			FloatClass(const std::string &package, const std::string &name)
-				: ObjectClass(package, name)
+			FloatClass(PTR(FayLib) lib, const std::string &package, const std::string &name)
+				: ObjectClass(lib, package, name)
 			{
 				this->_fullname = TypeDict::ToName(ValueType::Float);
 			}
@@ -96,8 +96,8 @@ namespace fay
 		class DoubleClass : public ObjectClass
 		{
 		public:
-			DoubleClass(const std::string &package, const std::string &name)
-				: ObjectClass(package, name)
+			DoubleClass(PTR(FayLib) lib, const std::string &package, const std::string &name)
+				: ObjectClass(lib, package, name)
 			{
 				this->_fullname = TypeDict::ToName(ValueType::Double);
 			}
@@ -108,8 +108,8 @@ namespace fay
 		class StringClass : public ObjectClass
 		{
 		public:
-			StringClass(const std::string &package, const std::string &name)
-				: ObjectClass(package, name)
+			StringClass(PTR(FayLib) lib, const std::string &package, const std::string &name)
+				: ObjectClass(lib, package, name)
 			{
 				this->_fullname = TypeDict::ToName(ValueType::String);
 			}

@@ -41,7 +41,11 @@ namespace fay
 		//用于构造函数的参数
 		std::vector<PTR(FayParamDef)> params;
 
-		FayBuilder() {}
+		FayBuilder()
+		{
+			this->_deps = FayDomain::AllLibs();
+		}
+
 		~FayBuilder();
 
 		//log记录
@@ -51,6 +55,7 @@ namespace fay
 		PTR(FayLib) lib() { if(!this->_lib) LOG_ERROR("Lib is null");  return this->_lib; }
 		PTR(FayInstClass) clazz() { if(!this->_class) LOG_ERROR("class is null"); return this->_class; }
 		PTR(FayInstFun) fun() { if(!this->_fun) LOG_ERROR("Fun is null"); return this->_fun; }
+		PTR(FayLibSet) deps() { if(!this->_deps) LOG_ERROR("Deps is null"); return this->_deps; }
 
 		//文件的开始和结束
 		void bindFile(PTR(FayFile) file);

@@ -1,7 +1,4 @@
-﻿#include "fay_lang.h"
-#include "fay_lang.h"
-#include "fay_lang.h"
-#include <fay_lang.h>
+﻿#include <fay_lang.h>
 #include <mirror_utils_log.h>
 #include <mirror_utils_file.h>
 #include <fay_internal_fun.h>
@@ -12,12 +9,6 @@
 using namespace fay;
 using namespace fay::internal;
 using namespace mirror;
-
-fay::FayClass::FayClass(const std::string &package, const std::string &name)
-	: _package(package), _name(name)
-{
-	this->_fullname = (!package.empty() ? package + "." : "") + name;
-}
 
 void fay::FayClass::initClass()
 {
@@ -186,6 +177,20 @@ PTR(FayClass) fay::FayLib::findClass(const std::string &fullname)
 	return clazz;
 }
 
+PTR(FayClass) fay::FayLib::findClass(ValueType type)
+{
+	if(type >= ValueType::Object)
+		return nullptr;
+
+	for(const auto &it : this->classes.list())
+	{
+		if(it->valueType() == type)
+			return it;
+	}
+
+	return nullptr;
+}
+
 LIST(PTR(FayClass)) fay::FayLib::findClassWithName(const std::string &name)
 {
 	LIST(PTR(FayClass)) list;
@@ -231,7 +236,7 @@ const std::string &fay::FayLib::indexKey()
 	return this->_indexKey;
 }
 
-void fay::FayInstFun::prepareInsts()
+void fay::FayInstFun::prepareInsts(PTR(FayLibSet) deps)
 {
 	for(FayInst* inst : this->_insts)
 	{
@@ -241,7 +246,7 @@ void fay::FayInstFun::prepareInsts()
 			{
 				//取出调用方法的索引值
 				auto* cmd = static_cast<inst::CallStatic*>(inst);
-				auto clazz = FayDomain::FindClass(cmd->className);
+				auto clazz = deps->findClass(cmd->className);
 				if(!clazz)
 				{
 					LOG_ERROR("Cannot find class : " << cmd->className);
@@ -263,7 +268,7 @@ void fay::FayInstFun::prepareInsts()
 			{
 				//取出调用方法的索引值
 				auto* cmd = static_cast<inst::CallVirtual*>(inst);
-				auto clazz = FayDomain::FindClass(cmd->className);
+				auto clazz = deps->findClass(cmd->className);
 				if(!clazz)
 				{
 					LOG_ERROR("Cannot find class : " << cmd->className);
@@ -284,7 +289,7 @@ void fay::FayInstFun::prepareInsts()
 			case InstType::SetStatic:
 			{
 				auto* cmd = static_cast<inst::SetStatic*>(inst);
-				auto clazz = FayDomain::FindClass(cmd->className);
+				auto clazz = deps->findClass(cmd->className);
 				if(!clazz)
 				{
 					LOG_ERROR("Cannot find class : " << cmd->className);
@@ -305,7 +310,7 @@ void fay::FayInstFun::prepareInsts()
 			case InstType::LoadStatic:
 			{
 				auto* cmd = static_cast<inst::LoadStatic*>(inst);
-				auto clazz = FayDomain::FindClass(cmd->className);
+				auto clazz = deps->findClass(cmd->className);
 				if(!clazz)
 				{
 					LOG_ERROR("Cannot find class : " << cmd->className);
@@ -326,7 +331,7 @@ void fay::FayInstFun::prepareInsts()
 			case InstType::NewObject:
 			{
 				auto* cmd = static_cast<inst::NewObject*>(inst);
-				auto clazz = FayDomain::FindClass(cmd->className);
+				auto clazz = deps->findClass(cmd->className);
 				if(clazz == nullptr)
 					throw FayLangException("Cannot find class : " + cmd->className);
 
@@ -353,7 +358,7 @@ std::vector<FayInst*>* fay::FayInstFun::getPreparedInsts()
 {
 	if(!this->isPrepared)
 	{
-		this->prepareInsts();
+		this->prepareInsts(this->clazz()->lib->deps);
 		this->isPrepared = true;
 	}
 
@@ -517,11 +522,10 @@ pos_t fay::FayClass::addFun(PTR(FayFun) fun)
 
 IndexMap<FayLib> fay::FayDomain::Libs;
 
-
 void fay::FayDomain::InitSysLib()
 {
 	//添加系统库。因为存在循环依赖的问题，要分两次进行初始化
-	PTR(SystemLib) lib = MKPTR(SystemLib)("system", 1, 0, 0);
+	PTR(SystemLib) lib = MKPTR(SystemLib)("system", 1, 1, "0");
 	lib->preInit();
 	FayDomain::AddLib(lib);
 	lib->postInit();
@@ -570,12 +574,12 @@ std::string fay::FayDomain::ToString()
 }
 
 //TODO Delete
-PTR(FayClass) fay::FayDomain::FindClass(const std::string &fullname)
-{
-	//auto type = FayDomain::_classes.find(fullname);
-	//return type;
-	return nullptr;
-}
+//PTR(FayClass) fay::FayDomain::FindClass(const std::string &fullname)
+//{
+//	//auto type = FayDomain::_classes.find(fullname);
+//	//return type;
+//	return nullptr;
+//}
 
 PTR(FayClass) fay::FayDomain::FindClass(pos_t libIndex, pos_t lassIndex)
 {
@@ -589,31 +593,31 @@ PTR(FayClass) fay::FayDomain::FindClass(pos_t libIndex, pos_t lassIndex)
 	return nullptr;
 }
 
-PTR(FayClass) fay::FayDomain::FindClass(ValueType type)
-{
-	return FayDomain::FindClass(TypeDict::ToName(type));
-}
-
-std::vector<PTR(FayClass)> fay::FayDomain::FindClass(std::vector<std::string> &imports, const std::string &typeName)
-{
-	std::vector<PTR(FayClass)> types;
-
-	//直接根据名称查找
-	auto type = FayDomain::FindClass(typeName);
-	if(type)
-		types.push_back(type);
-
-	//加上import的前缀查找
-	for each(auto it in imports)
-	{
-		std::string typeFullname = it + "." + typeName;
-		auto type = FayDomain::FindClass(typeFullname);
-		if(type)
-			types.push_back(type);
-	}
-
-	return types;
-}
+//PTR(FayClass) fay::FayDomain::FindClass(ValueType type)
+//{
+//	return FayDomain::FindClass(TypeDict::ToName(type));
+//}
+//
+//std::vector<PTR(FayClass)> fay::FayDomain::FindClass(std::vector<std::string> &imports, const std::string &typeName)
+//{
+//	std::vector<PTR(FayClass)> types;
+//
+//	//直接根据名称查找
+//	auto type = FayDomain::FindClass(typeName);
+//	if(type)
+//		types.push_back(type);
+//
+//	//加上import的前缀查找
+//	for each(auto it in imports)
+//	{
+//		std::string typeFullname = it + "." + typeName;
+//		auto type = FayDomain::FindClass(typeFullname);
+//		if(type)
+//			types.push_back(type);
+//	}
+//
+//	return types;
+//}
 
 PTR(FayLib) fay::FayDomain::FindLib(const std::string &name, int marjor)
 {
@@ -642,7 +646,7 @@ PTR(FayLib) fay::FayDomain::FindLib(const std::string &name, int marjor, int min
 	return lib;
 }
 
-PTR(FayLibSet) fay::FayDomain::CreateBestLibs()
+PTR(FayLibSet) fay::FayDomain::AllLibs()
 {
 	auto libs = MKPTR(FayLibSet)();
 
@@ -711,10 +715,10 @@ fay::ValueType fay::FayLangUtils::WeightValueType(ValueType t1, ValueType t2)
 	return (t1 >= t2) ? t1 : t2;
 }
 
-PTR(FayClass) fay::FayLangUtils::WeightValueType(PTR(FayClass) t1, PTR(FayClass) t2)
+PTR(FayClass) fay::FayLangUtils::WeightValueType(PTR(FayLibSet) deps, PTR(FayClass) t1, PTR(FayClass) t2)
 {
 	if(t1->valueType() >= ValueType::String || t2->valueType() >= ValueType::String)
-		return FayDomain::FindClass(ValueType::String);
+		return deps->findClass(ValueType::String);
 
 	return (t1->valueType() >= t2->valueType()) ? t1 : t2;
 }
@@ -1648,6 +1652,17 @@ PTR(FayClass) fay::FayLibSet::findClass(const std::string &fullname)
 		auto clazz = lib->findClass(fullname);
 		if(clazz)
 			return clazz;
+	}
+
+	return nullptr;
+}
+
+PTR(FayClass) fay::FayLibSet::findClass(ValueType type)
+{
+	for(const auto &it : this->libs)
+	{
+		auto r = it->findClass(type);
+		if(r) return r;
 	}
 
 	return nullptr;

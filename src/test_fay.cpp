@@ -43,7 +43,8 @@ TEST_F(TestFay, Type)
 	PRINT(project->findSource("TypeTest.fay")->tokensStr());
 	PRINT(project->findSource("TypeTest.fay")->astStr());
 
-	auto type = FayDomain::FindClass("fay.dev.test.TypeTest");
+	auto deps = FayDomain::AllLibs();
+	auto type = deps->findClass("fay.dev.test.TypeTest");
 
 	{
 		auto funs = type->findFunByName("test1", true);
@@ -99,7 +100,8 @@ TEST_F(TestFay, Math)
 {
 	PRINT(project->findSource("MathTest.fay")->tokensStr());
 	PRINT(project->findSource("MathTest.fay")->astStr());
-	auto type = FayDomain::FindClass("fay.dev.test.MathTest");
+	auto deps = FayDomain::AllLibs();
+	auto type = deps->findClass("fay.dev.test.MathTest");
 
 	{
 		std::vector<PTR(FayFun)>funs = type->findFunByName("test1", true);
@@ -337,7 +339,7 @@ TEST_F(TestFay, Flow)
 {
 	PRINT(project->findSource("FlowTest.fay")->tokensStr());
 	PRINT(project->findSource("FlowTest.fay")->astStr());
-	auto type = FayDomain::FindClass("fay.dev.test.FlowTest");
+	auto type = FayDomain::AllLibs()->findClass("fay.dev.test.FlowTest");
 
 	std::vector<PTR(FayFun)> funs;
 	FayValue rs;
@@ -389,7 +391,7 @@ TEST_F(TestFay, String)
 {
 	PRINT(project->findSource("StringTest.fay")->tokensStr());
 	PRINT(project->findSource("StringTest.fay")->astStr());
-	auto type = FayDomain::FindClass("fay.dev.test.StringTest");
+	auto type = FayDomain::AllLibs()->findClass("fay.dev.test.StringTest");
 
 	std::vector<PTR(FayFun)> funs;
 	FayValue rs;
@@ -427,7 +429,7 @@ TEST_F(TestFay, OOP1)
 {
 	PRINT(project->findSource("OOPTest.fay")->tokensStr());
 	PRINT(project->findSource("OOPTest.fay")->astStr());
-	auto type = FayDomain::FindClass("fay.dev.test.OOPTest");
+	auto type = FayDomain::AllLibs()->findClass("fay.dev.test.OOPTest");
 
 	std::vector<PTR(FayFun)> funs;
 	FayValue rs;
@@ -485,7 +487,7 @@ TEST_F(TestFay, OOP2)
 	//type = FayDomain::FindClass("fay.dev.test.SubA");
 	//PRINT(type->toString());
 
-	auto type = FayDomain::FindClass("fay.dev.test.OOPTest");
+	auto type = FayDomain::AllLibs()->findClass("fay.dev.test.OOPTest");
 	auto funs = type->findFunByName("test6", true);
 	ASSERT_GT(funs.size(), 0);
 	PRINT(funs[0]->toString());

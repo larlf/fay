@@ -251,7 +251,13 @@ void fay::FayProject::executeThreads(std::function<void(BuildTaskQueue<BuildTask
 		taskQueue.add(it.second);
 
 	//定一下要开几个线程来进行处理
-	size_t threadCount = min((LogBus::IsDebug ? 1 : SystemEnv::CPUS), taskQueue.waitSize());
+	size_t threadCount = 1;
+	if(!LogBus::IsDebug())
+	{
+		threadCount = SystemEnv::CPUS;
+		if(taskQueue.waitSize() < threadCount)
+			threadCount = taskQueue.waitSize();
+	}
 
 	//启动进行语法分析的线程
 	for(auto i = 0; i < threadCount; ++i)
