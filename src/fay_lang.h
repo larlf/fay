@@ -155,6 +155,8 @@ namespace fay
 			this->_fullname = (!package.empty() ? package + "." : "") + name;
 		}
 
+		virtual void init() {}
+
 		inline const std::string &name() { return this->_name; }
 		inline const std::string &fullname() { return this->_fullname; }
 		inline const bool isInited() { return this->_isInited; }
@@ -450,12 +452,16 @@ namespace fay
 		}
 		virtual ~FayLib() {}
 
+		//进行初始化
+		virtual void init() {}
+
 		template<class T>
 		PTR(T) newClass(const std::string &package, const std::string &name)
 		{
 			//TODO 检查有没有重复创建
 
 			PTR(T) clazz = MKPTR(T)(this->shared_from_this(), package, name);
+			clazz->init();
 			this->classes.add(clazz);
 			return clazz;
 		}
@@ -498,8 +504,25 @@ namespace fay
 
 		//初始化系统库
 		static void InitSysLib();
-		//添加Lib
-		static void AddLib(PTR(FayLib) lib);
+
+		template<class T>
+		static PTR(T) NewLib(const std::string &name, PTR(FayLibSet) deps, int marjor, int minjor)
+		{
+			PTR(T) lib = MKPTR(T)(name, deps, marjor, minjor);
+			lib->init();
+			Libs.add(lib);
+			return nullptr;
+		}
+
+		template<class T>
+		static PTR(T) NewLib()
+		{
+			PTR(T) lib = MKPTR(T)();
+			lib->init();
+			Libs.add(lib);
+			return nullptr;
+		}
+
 		//查找LIb
 		static PTR(FayLib) FindLib(const std::string &name);
 		static PTR(FayLib) FindLib(const std::string &name, int marjor);
@@ -515,7 +538,7 @@ namespace fay
 		//static std::vector<PTR(FayClass)> FindClass(std::vector<std::string> &imports, const std::string &typeName);
 
 		//使用Class，在VM里用这个方法，会检查是否已经初始化
-		static PTR(FayClass) UseClass(pos_t index);
+		static PTR(FayClass) UseClass(pos_t libIndex, pos_t classIndex);
 
 		static void buildString(mirror::utils::StringBuilder* sb);
 		static std::string ToString();

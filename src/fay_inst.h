@@ -169,6 +169,7 @@ namespace fay
 		public:
 			std::string className;
 			std::string funName;
+			int32_t libIndex;
 			int32_t classIndex;
 			int32_t funIndex;
 			CallStatic(const std::string &className,const std::string &funName) : FayInst(InstType::CallStatic),className(className),funName(funName) {}
@@ -180,6 +181,7 @@ namespace fay
 		public:
 			std::string className;
 			std::string funName;
+			int32_t libIndex;
 			int32_t classIndex;
 			int32_t funIndex;
 			CallVirtual(const std::string &className,const std::string &funName) : FayInst(InstType::CallVirtual),className(className),funName(funName) {}
@@ -207,6 +209,7 @@ namespace fay
 		public:
 			std::string className;
 			std::string varName;
+			int32_t libIndex;
 			int32_t classIndex;
 			int32_t varIndex;
 			SetStatic(const std::string &className,const std::string &varName) : FayInst(InstType::SetStatic),className(className),varName(varName) {}
@@ -234,6 +237,7 @@ namespace fay
 		public:
 			std::string className;
 			std::string varName;
+			int32_t libIndex;
 			int32_t classIndex;
 			int32_t varIndex;
 			LoadStatic(const std::string &className,const std::string &varName) : FayInst(InstType::LoadStatic),className(className),varName(varName) {}
@@ -2329,6 +2333,7 @@ namespace fay
 		{ 
 		public:
 			std::string className;
+			int32_t libIndex;
 			int32_t classIndex;
 			NewObject(const std::string &className) : FayInst(InstType::NewObject),className(className) {}
 			virtual void buildString(mirror::utils::StringBuilder* sb) override;

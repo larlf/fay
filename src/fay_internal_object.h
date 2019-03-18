@@ -9,109 +9,109 @@ namespace fay
 		{
 			using FayLib::FayLib;
 		public:
-			void preInit();
-			void postInit();
+			SystemLib() : FayLib("fay", MKPTR(FayLibSet)(), 1, 1) {}
+			virtual void init() override;
 		};
 
 		class ObjectClass : public FayClass
 		{
 			using FayClass::FayClass;
 		public:
-			virtual PTR(FayClass) initInternalFun();
+			virtual void init() override;
 			virtual ValueType valueType() override { return ValueType::Object; }
 		};
 
-		class VoidClass : public ObjectClass
+		class VoidClass : public FayClass
 		{
 		public:
 			VoidClass(PTR(FayLib) lib, const std::string &package, const std::string &name)
-				: ObjectClass(lib, "", "void")
+				: FayClass(lib, package, name)
 			{
-				this->_fullname = TypeDict::ToName(ValueType::Void);
+				this->_fullname = name;
 			}
 
 			virtual ValueType valueType() override { return ValueType::Void; }
 		};
 
-		class BoolClass : public ObjectClass
+		class BoolClass : public FayClass
 		{
 		public:
 			BoolClass(PTR(FayLib) lib, const std::string &package, const std::string &name)
-				: ObjectClass(lib, package, name)
+				: FayClass(lib, package, name)
 			{
-				this->_fullname = TypeDict::ToName(ValueType::Bool);
+				this->_fullname = name;
 			}
 
 			virtual ValueType valueType() override { return ValueType::Bool; }
 		};
 
-		class ByteClass : public ObjectClass
+		class ByteClass : public FayClass
 		{
 		public:
 			ByteClass(PTR(FayLib) lib, const std::string &package, const std::string &name)
-				: ObjectClass(lib, package, name)
+				: FayClass(lib, package, name)
 			{
-				this->_fullname = TypeDict::ToName(ValueType::Byte);
+				this->_fullname = name;
 			}
 
 			virtual ValueType valueType() override { return ValueType::Byte; }
 		};
 
-		class IntClass : public ObjectClass
+		class IntClass : public FayClass
 		{
 		public:
 			IntClass(PTR(FayLib) lib, const std::string &package, const std::string &name)
-				: ObjectClass(lib, "", "int")
+				: FayClass(lib, package, name)
 			{
-				this->_fullname = TypeDict::ToName(ValueType::Int);
+				this->_fullname = name;
 			}
 
 			virtual ValueType valueType() override { return ValueType::Int; }
 		};
 
-		class LongClass : public ObjectClass
+		class LongClass : public FayClass
 		{
 		public:
 			LongClass(PTR(FayLib) lib, const std::string &package, const std::string &name)
-				: ObjectClass(lib, package, name)
+				: FayClass(lib, package, name)
 			{
-				this->_fullname = TypeDict::ToName(ValueType::Long);
+				this->_fullname = name;
 			}
 
 			virtual ValueType valueType() override { return ValueType::Long; }
 		};
 
-		class FloatClass : public ObjectClass
+		class FloatClass : public FayClass
 		{
 		public:
 			FloatClass(PTR(FayLib) lib, const std::string &package, const std::string &name)
-				: ObjectClass(lib, package, name)
+				: FayClass(lib, package, name)
 			{
-				this->_fullname = TypeDict::ToName(ValueType::Float);
+				this->_fullname = name;
 			}
 
 			virtual ValueType valueType() override { return ValueType::Float; }
 		};
 
-		class DoubleClass : public ObjectClass
+		class DoubleClass : public FayClass
 		{
 		public:
 			DoubleClass(PTR(FayLib) lib, const std::string &package, const std::string &name)
-				: ObjectClass(lib, package, name)
+				: FayClass(lib, package, name)
 			{
-				this->_fullname = TypeDict::ToName(ValueType::Double);
+				this->_fullname = name;
 			}
 
 			virtual ValueType valueType() override { return ValueType::Double; }
 		};
 
-		class StringClass : public ObjectClass
+		class StringClass : public FayClass
 		{
 		public:
 			StringClass(PTR(FayLib) lib, const std::string &package, const std::string &name)
-				: ObjectClass(lib, package, name)
+				: FayClass(lib, package, name)
 			{
-				this->_fullname = TypeDict::ToName(ValueType::String);
+				this->_fullname = name;
 			}
 
 			virtual ValueType valueType() override { return ValueType::String; }
@@ -120,24 +120,27 @@ namespace fay
 		class IOClass : public ObjectClass
 		{
 			using ObjectClass::ObjectClass;
+
 		public:
-			virtual PTR(FayClass) initInternalFun() override;
+			virtual void init() override;
 		};
 
 		class DateClass : public ObjectClass
 		{
 			using ObjectClass::ObjectClass;
+
 		public:
 			static void Now(PTR(std::stack<FayValue>) stack);
 
-			virtual PTR(FayClass) initInternalFun() override;
+			virtual void init() override;
 		};
 
 		class ErrorClass : public ObjectClass
 		{
 			using ObjectClass::ObjectClass;
+
 		public:
-			virtual PTR(FayClass) initInternalFun() override;
+			virtual void init() override;
 		};
 	}
 

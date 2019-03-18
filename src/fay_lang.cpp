@@ -260,6 +260,7 @@ void fay::FayInstFun::prepareInsts(PTR(FayLibSet) deps)
 					break;
 				}
 
+				cmd->libIndex = clazz->lib->indexValue();
 				cmd->classIndex = clazz->indexValue();
 				cmd->funIndex = fun->indexValue();
 				break;
@@ -282,6 +283,7 @@ void fay::FayInstFun::prepareInsts(PTR(FayLibSet) deps)
 					break;
 				}
 
+				cmd->libIndex = clazz->lib->indexValue();
 				cmd->classIndex = clazz->indexValue();
 				cmd->funIndex = fun->indexValue();
 				break;
@@ -295,6 +297,7 @@ void fay::FayInstFun::prepareInsts(PTR(FayLibSet) deps)
 					LOG_ERROR("Cannot find class : " << cmd->className);
 					break;
 				}
+				cmd->libIndex = clazz->lib->indexValue();
 				cmd->classIndex = clazz->indexValue();
 
 				auto var = clazz->findStaticVar(cmd->varName);
@@ -316,6 +319,7 @@ void fay::FayInstFun::prepareInsts(PTR(FayLibSet) deps)
 					LOG_ERROR("Cannot find class : " << cmd->className);
 					break;
 				}
+				cmd->libIndex = clazz->lib->indexValue();
 				cmd->classIndex = clazz->indexValue();
 
 				auto var = clazz->findStaticVar(cmd->varName);
@@ -335,6 +339,7 @@ void fay::FayInstFun::prepareInsts(PTR(FayLibSet) deps)
 				if(clazz == nullptr)
 					throw FayLangException("Cannot find class : " + cmd->className);
 
+				cmd->libIndex = clazz->lib->indexValue();
 				cmd->classIndex = clazz->indexValue();
 				break;
 			}
@@ -524,20 +529,7 @@ IndexMap<FayLib> fay::FayDomain::Libs;
 
 void fay::FayDomain::InitSysLib()
 {
-	//添加系统库。因为存在循环依赖的问题，要分两次进行初始化
-	PTR(FayLibSet) deps = MKPTR(FayLibSet)();
-	PTR(SystemLib) lib = MKPTR(SystemLib)("system", deps, 1, 1);
-	deps->addLib(lib);
-
-	lib->preInit();
-	FayDomain::AddLib(lib);
-	lib->postInit();
-}
-
-void fay::FayDomain::AddLib(PTR(FayLib) lib)
-{
-	//先生成相互的引用关系
-	FayDomain::Libs.add(lib);
+	FayDomain::NewLib<SystemLib>();
 }
 
 PTR(FayLib) fay::FayDomain::FindLib(const std::string &name)
@@ -559,6 +551,20 @@ PTR(FayLib) fay::FayDomain::FindLib(const std::string &name)
 	}
 
 	return lib;
+}
+
+PTR(FayClass) fay::FayDomain::UseClass(pos_t libIndex, pos_t classIndex)
+{
+	auto lib = Libs.find(libIndex);
+	if(lib)
+	{
+		auto clazz = lib->classes.find(classIndex);
+		if(clazz)
+			return clazz;
+	}
+
+	std::string msg = TOSTR("Unknow Class : " << libIndex << "," << classIndex);
+	throw std::exception(msg.c_str());
 }
 
 void fay::FayDomain::buildString(mirror::utils::StringBuilder* sb)
@@ -657,25 +663,6 @@ PTR(FayLibSet) fay::FayDomain::AllLibs()
 		libs->addLib(it);
 
 	return libs;
-}
-
-//TODO Delete
-PTR(FayClass) fay::FayDomain::UseClass(pos_t index)
-{
-	//PTR(FayClass) clazz = FayDomain::_classes[index];
-	//if(!clazz)
-	//{
-	//	LOG_ERROR("Cannot find fun : " << index);
-	//	return nullptr;
-	//}
-
-	////运行初始化方法
-	//if(!clazz->isInited())
-	//	clazz->initClass();
-
-	//return clazz;
-
-	return nullptr;
 }
 
 fay::FayParamDef::FayParamDef(const std::string &name, PTR(FayClass) type)
