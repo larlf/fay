@@ -525,7 +525,10 @@ IndexMap<FayLib> fay::FayDomain::Libs;
 void fay::FayDomain::InitSysLib()
 {
 	//添加系统库。因为存在循环依赖的问题，要分两次进行初始化
-	PTR(SystemLib) lib = MKPTR(SystemLib)("system", 1, 1, "0");
+	PTR(FayLibSet) deps = MKPTR(FayLibSet)();
+	PTR(SystemLib) lib = MKPTR(SystemLib)("system", deps, 1, 1);
+	deps->addLib(lib);
+
 	lib->preInit();
 	FayDomain::AddLib(lib);
 	lib->postInit();
@@ -547,7 +550,7 @@ PTR(FayLib) fay::FayDomain::FindLib(const std::string &name)
 		{
 			if(lib)
 			{
-				if(it->marjor > lib->marjor || (it->marjor == lib->marjor && it->minjor > lib->minjor))
+				if(it->ver.marjor > lib->ver.marjor || (it->ver.marjor == lib->ver.marjor && it->ver.minjor > lib->ver.minjor))
 					lib = it;
 			}
 			else
@@ -630,15 +633,15 @@ PTR(FayLib) fay::FayDomain::FindLib(const std::string &name, int marjor, int min
 
 	for(const auto &it : FayDomain::Libs.list())
 	{
-		if(it->name == name && it->marjor == marjor)
+		if(it->name == name && it->ver.marjor == marjor)
 		{
-			if(it->minjor == minjor)
+			if(it->ver.minjor == minjor)
 			{
 				lib = it;
 				break;
 			}
 
-			if(lib == nullptr || it->minjor > lib->minjor)
+			if(lib == nullptr || it->ver.minjor > lib->ver.minjor)
 				lib = it;
 		}
 	}
@@ -1627,7 +1630,7 @@ void fay::FayLibSet::addLib(PTR(FayLib) lib)
 		if(it->name == lib->name)
 		{
 			//如果新的比旧的新
-			if(lib->marjor > it->marjor || (lib->marjor == it->marjor && lib->minjor > it->minjor))
+			if(lib->ver.marjor > it->ver.marjor || (lib->ver.marjor == it->ver.marjor && lib->ver.minjor > it->ver.minjor))
 			{
 				this->libs[i] = lib;
 				break;

@@ -25,7 +25,7 @@ namespace fay
 		{
 		public:
 			VoidClass(PTR(FayLib) lib, const std::string &package, const std::string &name)
-				: ObjectClass(lib, package, name)
+				: ObjectClass(lib, "", "void")
 			{
 				this->_fullname = TypeDict::ToName(ValueType::Void);
 			}
@@ -61,7 +61,7 @@ namespace fay
 		{
 		public:
 			IntClass(PTR(FayLib) lib, const std::string &package, const std::string &name)
-				: ObjectClass(lib, package, name)
+				: ObjectClass(lib, "", "int")
 			{
 				this->_fullname = TypeDict::ToName(ValueType::Int);
 			}

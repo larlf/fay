@@ -416,6 +416,21 @@ namespace fay
 		virtual const std::string &indexKey() override { return this->_fullname; }
 	};
 
+	//库的版本信息
+	class FayLibVersion
+	{
+	public:
+		int marjor = 0;  //大版本
+		int minjor = 0;  //小版本
+		std::string desc;  //版本说明
+
+		FayLibVersion() {}
+		FayLibVersion(int marjor, int minjor)
+			: marjor(marjor), minjor(minjor) {}
+		FayLibVersion(int marjor, int minjor, const std::string &desc)
+			: marjor(marjor), minjor(minjor), desc(desc) {}
+	};
+
 	//库
 	class FayLib : public BaseObject, public std::enable_shared_from_this<FayLib>, public IndexMapItem<FayLib>
 	{
@@ -424,16 +439,14 @@ namespace fay
 
 	public:
 		std::string name;  //库的名字
-		int marjor = 0;  //主版本
-		int minjor = 0;  //小版本
-		std::string version;  //自定义版本
+		FayLibVersion ver; //版本
 		PTR(FayLibSet) deps;  //依赖的所有库
 		IndexMap<FayClass> classes;  //所有的Class
 
-		FayLib(const std::string &name, int marjor, int minjor, const std::string &version)
-			: name(name), marjor(marjor), minjor(minjor), version(version)
+		FayLib(const std::string &name, PTR(FayLibSet) deps, int marjor, int minjor)
+			: name(name), deps(deps), ver(marjor, minjor)
 		{
-			this->_indexKey = TOSTR(name << ":" << marjor);
+			this->_indexKey = TOSTR(name << ":" << ver.marjor);
 		}
 		virtual ~FayLib() {}
 
