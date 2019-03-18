@@ -165,12 +165,6 @@ void fay::FayClass::buildString(mirror::utils::StringBuilder* sb)
 	sb->decreaseIndent();
 }
 
-void fay::FayLib::addClass(PTR(FayClass) clazz)
-{
-	//clazz->lib(this->shared_from_this());
-	this->classes.add(clazz);
-}
-
 PTR(FayClass) fay::FayLib::findClass(const std::string &fullname)
 {
 	PTR(FayClass) clazz = this->classes.find(fullname);
@@ -260,7 +254,7 @@ void fay::FayInstFun::prepareInsts(PTR(FayLibSet) deps)
 					break;
 				}
 
-				cmd->libIndex = clazz->lib->indexValue();
+				cmd->libIndex = clazz->lib()->indexValue();
 				cmd->classIndex = clazz->indexValue();
 				cmd->funIndex = fun->indexValue();
 				break;
@@ -283,7 +277,7 @@ void fay::FayInstFun::prepareInsts(PTR(FayLibSet) deps)
 					break;
 				}
 
-				cmd->libIndex = clazz->lib->indexValue();
+				cmd->libIndex = clazz->lib()->indexValue();
 				cmd->classIndex = clazz->indexValue();
 				cmd->funIndex = fun->indexValue();
 				break;
@@ -297,7 +291,7 @@ void fay::FayInstFun::prepareInsts(PTR(FayLibSet) deps)
 					LOG_ERROR("Cannot find class : " << cmd->className);
 					break;
 				}
-				cmd->libIndex = clazz->lib->indexValue();
+				cmd->libIndex = clazz->lib()->indexValue();
 				cmd->classIndex = clazz->indexValue();
 
 				auto var = clazz->findStaticVar(cmd->varName);
@@ -319,7 +313,7 @@ void fay::FayInstFun::prepareInsts(PTR(FayLibSet) deps)
 					LOG_ERROR("Cannot find class : " << cmd->className);
 					break;
 				}
-				cmd->libIndex = clazz->lib->indexValue();
+				cmd->libIndex = clazz->lib()->indexValue();
 				cmd->classIndex = clazz->indexValue();
 
 				auto var = clazz->findStaticVar(cmd->varName);
@@ -339,7 +333,7 @@ void fay::FayInstFun::prepareInsts(PTR(FayLibSet) deps)
 				if(clazz == nullptr)
 					throw FayLangException("Cannot find class : " + cmd->className);
 
-				cmd->libIndex = clazz->lib->indexValue();
+				cmd->libIndex = clazz->lib()->indexValue();
 				cmd->classIndex = clazz->indexValue();
 				break;
 			}
@@ -363,7 +357,7 @@ std::vector<FayInst*>* fay::FayInstFun::getPreparedInsts()
 {
 	if(!this->isPrepared)
 	{
-		this->prepareInsts(this->clazz()->lib->deps);
+		this->prepareInsts(this->clazz()->lib()->deps);
 		this->isPrepared = true;
 	}
 
@@ -418,14 +412,14 @@ void fay::FayInstFun::buildString(mirror::utils::StringBuilder* sb)
 
 	sb->increaseIndent();
 
-	if(!this->_params.empty())
+	if(!this->params.empty())
 	{
 		sb->add("[Params] ")->endl();
 		sb->increaseIndent();
-		for(auto i = 0; i < this->_params.size(); ++i)
+		for(auto i = 0; i < this->params.size(); ++i)
 		{
 			sb->add(i)->add("> ");
-			this->_params[i]->buildString(sb);
+			this->params[i]->buildString(sb);
 		}
 		sb->decreaseIndent();
 	}
@@ -474,17 +468,17 @@ void fay::FayInstFun::buildString(mirror::utils::StringBuilder* sb)
 }
 
 fay::FayFun::FayFun(const std::string &name, FunType type, bool isStatic, FunAccessType accessType, std::vector<PTR(FayParamDef)> &params, PTR(FayClass) returnValue)
-	: _name(name), _type(type), _isStatic(isStatic), _accessType(accessType), _params(params), _returnValue(returnValue)
+	: name(name), type(type), isStatic(isStatic), accessType(accessType), params(params), returnValue(returnValue)
 {
 	std::string str;
-	for each(auto it in this->_params)
+	for each(auto it in this->params)
 	{
 		if(str.size() > 0)
 			str += ",";
 		str += it->fullname();
 	}
 
-	_fullname += this->_name;
+	_fullname += this->name;
 	_fullname += "(" + str + "):";
 
 	if(returnValue == nullptr)
@@ -498,12 +492,12 @@ fay::FayFun::FayFun(const std::string &name, FunType type, bool isStatic, FunAcc
 bool fay::FayFun::match(const std::vector<PTR(FayClass)> &paramsType)
 {
 	//参数不一致
-	if(paramsType.size() != this->_params.size())
+	if(paramsType.size() != this->params.size())
 		return false;
 
-	for(auto i = 0; i < this->_params.size(); ++i)
+	for(auto i = 0; i < this->params.size(); ++i)
 	{
-		PTR(FayParamDef) p = this->_params[i];
+		PTR(FayParamDef) p = this->params[i];
 		if(!p->type()->match(paramsType[i]))
 			return false;
 	}
@@ -519,7 +513,7 @@ void fay::FayFun::buildString(mirror::utils::StringBuilder* sb)
 pos_t fay::FayClass::addFun(PTR(FayFun) fun)
 {
 	fun->clazz(this->shared_from_this());
-	if(fun->isStatic())
+	if(fun->isStatic)
 		return this->_sft.addFun(fun);
 	else
 		return this->_vft.addFun(fun);
@@ -1439,7 +1433,7 @@ std::vector<PTR(FayFun)> fay::FunTable::matchFun(const std::string &funName, con
 
 	for(const auto &it : this->_funs)
 	{
-		if(it->name() == funName && it->match(paramsType))
+		if(it->name == funName && it->match(paramsType))
 			funs.push_back(it);
 	}
 
@@ -1479,7 +1473,7 @@ void fay::FunTable::findFunByName(const std::string &name, std::vector<PTR(FayFu
 {
 	for(const auto &fun : this->_funs)
 	{
-		if(fun->name() == name)
+		if(fun->name == name)
 			list.push_back(fun);
 	}
 }

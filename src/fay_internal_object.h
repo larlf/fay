@@ -24,11 +24,8 @@ namespace fay
 		class VoidClass : public FayClass
 		{
 		public:
-			VoidClass(PTR(FayLib) lib, const std::string &package, const std::string &name)
-				: FayClass(lib, package, name)
-			{
-				this->_fullname = name;
-			}
+			VoidClass(PTR(FayLib) lib)
+				: FayClass(lib, "", "void") {}
 
 			virtual ValueType valueType() override { return ValueType::Void; }
 		};
@@ -36,11 +33,8 @@ namespace fay
 		class BoolClass : public FayClass
 		{
 		public:
-			BoolClass(PTR(FayLib) lib, const std::string &package, const std::string &name)
-				: FayClass(lib, package, name)
-			{
-				this->_fullname = name;
-			}
+			BoolClass(PTR(FayLib) lib)
+				: FayClass(lib, "", "bool") {}
 
 			virtual ValueType valueType() override { return ValueType::Bool; }
 		};
@@ -48,11 +42,8 @@ namespace fay
 		class ByteClass : public FayClass
 		{
 		public:
-			ByteClass(PTR(FayLib) lib, const std::string &package, const std::string &name)
-				: FayClass(lib, package, name)
-			{
-				this->_fullname = name;
-			}
+			ByteClass(PTR(FayLib) lib)
+				: FayClass(lib, "", "byte") {}
 
 			virtual ValueType valueType() override { return ValueType::Byte; }
 		};
@@ -60,11 +51,8 @@ namespace fay
 		class IntClass : public FayClass
 		{
 		public:
-			IntClass(PTR(FayLib) lib, const std::string &package, const std::string &name)
-				: FayClass(lib, package, name)
-			{
-				this->_fullname = name;
-			}
+			IntClass(PTR(FayLib) lib)
+				: FayClass(lib, "", "int") {}
 
 			virtual ValueType valueType() override { return ValueType::Int; }
 		};
@@ -72,11 +60,8 @@ namespace fay
 		class LongClass : public FayClass
 		{
 		public:
-			LongClass(PTR(FayLib) lib, const std::string &package, const std::string &name)
-				: FayClass(lib, package, name)
-			{
-				this->_fullname = name;
-			}
+			LongClass(PTR(FayLib) lib)
+				: FayClass(lib, "", "long") {}
 
 			virtual ValueType valueType() override { return ValueType::Long; }
 		};
@@ -84,11 +69,8 @@ namespace fay
 		class FloatClass : public FayClass
 		{
 		public:
-			FloatClass(PTR(FayLib) lib, const std::string &package, const std::string &name)
-				: FayClass(lib, package, name)
-			{
-				this->_fullname = name;
-			}
+			FloatClass(PTR(FayLib) lib)
+				: FayClass(lib, "", "float") {}
 
 			virtual ValueType valueType() override { return ValueType::Float; }
 		};
@@ -96,11 +78,8 @@ namespace fay
 		class DoubleClass : public FayClass
 		{
 		public:
-			DoubleClass(PTR(FayLib) lib, const std::string &package, const std::string &name)
-				: FayClass(lib, package, name)
-			{
-				this->_fullname = name;
-			}
+			DoubleClass(PTR(FayLib) lib)
+				: FayClass(lib, "", "double") {}
 
 			virtual ValueType valueType() override { return ValueType::Double; }
 		};
@@ -108,11 +87,8 @@ namespace fay
 		class StringClass : public FayClass
 		{
 		public:
-			StringClass(PTR(FayLib) lib, const std::string &package, const std::string &name)
-				: FayClass(lib, package, name)
-			{
-				this->_fullname = name;
-			}
+			StringClass(PTR(FayLib) lib)
+				: FayClass(lib, "", "string") {}
 
 			virtual ValueType valueType() override { return ValueType::String; }
 		};

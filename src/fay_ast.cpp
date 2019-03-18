@@ -401,8 +401,7 @@ void fay::AstCall::dig3(FayBuilder* builder)
 		this->_fun = fun;
 
 		//以第一个参数的返回值为准
-		if(fun->returnValue())
-			this->_classType = fun->returnValue();
+		this->_classType = fun->returnValue.lock();
 	}
 	else
 	{
@@ -416,7 +415,7 @@ void fay::AstCall::dig4(FayBuilder* builder)
 	if(!fun)
 		this->throwError(builder->file(), this->token(), I18n::Err_NoFun, this->_text);
 
-	if(fun->isStatic())
+	if(fun->isStatic)
 	{
 		AstNode::dig4(builder);
 		builder->addInst(new inst::CallStatic(fun->clazz()->fullname(), fun->fullname()));
@@ -1115,12 +1114,12 @@ void fay::AstReturn::dig3(FayBuilder* builder)
 	{
 		PTR(FayFun) fun = builder->fun();
 
-		if(fun->returnValue() == nullptr || fun->returnValue()->valueType() == ValueType::Void)
+		if(!fun->returnValue.expired() || fun->returnValue.lock()->valueType() == ValueType::Void)
 			this->throwError(builder->file(), this->token(), I18n::Err_ReturnValue);
 
 		//先算出目标类型
 		auto t1 = this->_nodes[0]->classType();
-		auto t2 = fun->returnValue();
+		auto t2 = fun->returnValue.lock();
 
 		//如果和目标类型不一致，就转换一下
 		if(t1 != t2)

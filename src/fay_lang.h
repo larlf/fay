@@ -132,6 +132,7 @@ namespace fay
 		std::string _package;
 		std::string _name;
 		std::string _fullname;
+		WPTR(FayLib) _lib;
 
 		WPTR(FayClass) _superClass;  //父类
 		FunTable _sft;  //静态函数表
@@ -147,10 +148,9 @@ namespace fay
 		bool _isInited = false;
 
 	public:
-		PTR(FayLib) lib;
 
 		FayClass(PTR(FayLib) lib, const std::string &package, const std::string &name)
-			: lib(lib), _package(package), _name(name)
+			: _lib(lib), _package(package), _name(name)
 		{
 			this->_fullname = (!package.empty() ? package + "." : "") + name;
 		}
@@ -160,15 +160,11 @@ namespace fay
 		inline const std::string &name() { return this->_name; }
 		inline const std::string &fullname() { return this->_fullname; }
 		inline const bool isInited() { return this->_isInited; }
+		inline const PTR(FayLib) lib() { return this->_lib.lock(); }
 
 		//第一次使用的时候要对类进行一下初始化
 		void initClass();
 		void rebuild();
-
-		//Get or set
-		//ClassType type() { return this->_type; }
-		//void lib(PTR(FayLib) v) { this->_lib = v; }
-		//PTR(FayLib) lib() { return this->_lib.lock(); }
 
 		//处理父类
 		inline void superClass(PTR(FayClass) v) { this->_superClass = v; }
@@ -271,32 +267,27 @@ namespace fay
 	class FayFun : public BaseObject, public std::enable_shared_from_this<FayFun>
 	{
 	protected:
-		std::string _name;  //函数名称
 		WPTR(FayClass) _class;  //所属的Class
-		FunType _type;  //函数的类型
-		bool _isStatic;  //是否是静态函数，非静态函数需要有this参数
-		FunAccessType _accessType = FunAccessType::Public;  //访问权限
-		std::vector<PTR(FayParamDef)> _params;  //参数定义
-		WPTR(FayClass) _returnValue;  //返回值的类型，支持多返回值
 
 		std::string _fullname;
 		PTR(FayLabelTable) _labels = MKPTR(FayLabelTable)();  //标签表，以后可以判断下，运行期不用创建此对象
 		pos_t _indexValue = -1;
 
 	public:
+		std::string name;  //函数名称
+		FunType type;  //函数的类型
+		bool isStatic;  //是否是静态函数，非静态函数需要有this参数
+		FunAccessType accessType = FunAccessType::Public;  //访问权限
+		std::vector<PTR(FayParamDef)> params;  //参数定义
+		WPTR(FayClass) returnValue;  //返回值的类型
+
 		FayFun(const std::string &name, FunType type, bool isStatic, FunAccessType accessType, std::vector<PTR(FayParamDef)> &params, PTR(FayClass) returnValue);
 		virtual ~FayFun() {}
 
 		//Get & Set
-		inline const std::string &name() { return this->_name; }
 		inline const std::string &fullname() { return this->_fullname; }
-		inline const FunType type() { return this->_type; }
-		inline const bool isStatic() { return this->_isStatic; }
 		inline void clazz(PTR(FayClass) v) { this->_class = v; }
 		inline const PTR(FayClass) clazz() { return this->_class.lock(); }
-		inline const size_t paramsCount() { return this->_params.size(); }
-		inline const std::vector<PTR(FayParamDef)> params() { return this->_params; }
-		inline const PTR(FayClass) returnValue() { return this->_returnValue.lock(); }
 		inline const PTR(FayLabelTable) labels() { return this->_labels; }
 		inline pos_t indexValue() { return this->_indexValue; }
 
@@ -458,15 +449,21 @@ namespace fay
 		template<class T>
 		PTR(T) newClass(const std::string &package, const std::string &name)
 		{
-			//TODO 检查有没有重复创建
-
 			PTR(T) clazz = MKPTR(T)(this->shared_from_this(), package, name);
 			clazz->init();
 			this->classes.add(clazz);
 			return clazz;
 		}
 
-		void addClass(PTR(FayClass) clazz);
+		template<class T>
+		PTR(T) newClass()
+		{
+			PTR(T) clazz = MKPTR(T)(this->shared_from_this());
+			clazz->init();
+			this->classes.add(clazz);
+			return clazz;
+		}
+
 		PTR(FayClass) findClass(const std::string &fullname);
 		PTR(FayClass) findClass(ValueType type);
 		LIST(PTR(FayClass)) findClassWithName(const std::string &name);
