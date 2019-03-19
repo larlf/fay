@@ -61,19 +61,10 @@ void fay::FayBuilder::bindLib(PTR(FayLib) lib)
 
 PTR(FayInstClass) fay::FayBuilder::addClass(const std::string &name)
 {
-	this->_class = this->_lib->newClass<FayInstClass>(this->_package, name);
+	this->_class = MKPTR(FayInstClass)(this->_package, name);
+	this->_lib->addClass(this->_class);
 	return this->_class;
 }
-
-//void fay::FayBuilder::bindClass(pos_t index)
-//{
-//	this->_class = TOPTR(FayInstClass, FayDomain::FindClass(index));
-//}
-
-//std::vector<PTR(FayClass)> fay::FayBuilder::findClass(const std::string & name)
-//{
-//	return FayDomain::FindClass(this->_usings, name);
-//}
 
 pos_t fay::FayBuilder::addFun(PTR(FayInstFun) fun)
 {

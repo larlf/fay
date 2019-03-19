@@ -127,12 +127,12 @@ void fay::AstClass::dig2(FayBuilder* builder)
 			this->throwError(builder->file(), this->token(), I18n::Err_NoClass, this->superClassText);
 		if(types.size() > 1)
 			this->throwError(builder->file(), this->token(), I18n::Err_RepeatedClass, this->superClassText);
-		builder->clazz()->superClass(types[0]);
+		builder->clazz()->superClass = types[0];
 	}
 	else
 	{
 		//默认用Object当父类
-		builder->clazz()->superClass(builder->deps()->findClass("fay.system.Object"));
+		builder->clazz()->superClass = builder->deps()->findClass("fay.Object");
 	}
 
 	//添加特殊函数
@@ -418,13 +418,13 @@ void fay::AstCall::dig4(FayBuilder* builder)
 	if(fun->isStatic)
 	{
 		AstNode::dig4(builder);
-		builder->addInst(new inst::CallStatic(fun->clazz()->fullname(), fun->fullname()));
+		builder->addInst(new inst::CallStatic(fun->clazz.lock()->fullname(), fun->fullname()));
 	}
 	else
 	{
 		builder->addInst(new inst::LoadLocal(this->varIndex));
 		AstNode::dig4(builder);
-		builder->addInst(new inst::CallVirtual(fun->clazz()->fullname(), fun->fullname()));
+		builder->addInst(new inst::CallVirtual(fun->clazz.lock()->fullname(), fun->fullname()));
 	}
 }
 

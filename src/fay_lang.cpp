@@ -10,6 +10,14 @@ using namespace fay;
 using namespace fay::internal;
 using namespace mirror;
 
+const std::string &fay::FayClass::fullname()
+{
+	if(this->_fullname.empty())
+		this->_fullname = (!this->package.empty() ? this->package + "." : "") + this->name;
+
+	return this->_fullname;
+}
+
 void fay::FayClass::initClass()
 {
 	if(!this->_isInited)
@@ -29,7 +37,7 @@ void fay::FayClass::rebuild()
 	{
 		this->_isRebuild = true;
 
-		auto superClass = this->_superClass.lock();
+		auto superClass = this->superClass.lock();
 		if(superClass)
 		{
 			superClass->rebuild();
@@ -45,7 +53,7 @@ bool fay::FayClass::match(PTR(FayClass) type)
 	if(type && type.get() == this)
 		return true;
 
-	PTR(FayClass) parent = this->_superClass.lock();
+	PTR(FayClass) parent = this->superClass.lock();
 	if(parent && parent->match(type))
 		return true;
 
@@ -130,8 +138,8 @@ bool fay::FayClass::canCovertTo(PTR(FayClass) type)
 		if(type.get() == this)
 			return true;
 
-		if(!this->_superClass.expired())
-			return this->_superClass.lock()->canCovertTo(type);
+		if(!this->superClass.expired())
+			return this->superClass.lock()->canCovertTo(type);
 	}
 
 	return false;
@@ -140,8 +148,8 @@ bool fay::FayClass::canCovertTo(PTR(FayClass) type)
 void fay::FayClass::buildString(mirror::utils::StringBuilder* sb)
 {
 	sb->add("[Class] ")->add(this->fullname());
-	if(!this->_superClass.expired())
-		sb->add(" : ")->add(this->_superClass.lock()->fullname());
+	if(!this->superClass.expired())
+		sb->add(" : ")->add(this->superClass.lock()->fullname());
 	sb->endl();
 
 	sb->increaseIndent();
@@ -191,7 +199,7 @@ LIST(PTR(FayClass)) fay::FayLib::findClassWithName(const std::string &name)
 
 	for(auto it : this->classes.list())
 	{
-		if(it->name() == name)
+		if(it->name == name)
 			list.push_back(it);
 	}
 
@@ -254,7 +262,7 @@ void fay::FayInstFun::prepareInsts(PTR(FayLibSet) deps)
 					break;
 				}
 
-				cmd->libIndex = clazz->lib()->indexValue();
+				cmd->libIndex = clazz->lib.lock()->indexValue();
 				cmd->classIndex = clazz->indexValue();
 				cmd->funIndex = fun->indexValue();
 				break;
@@ -277,7 +285,7 @@ void fay::FayInstFun::prepareInsts(PTR(FayLibSet) deps)
 					break;
 				}
 
-				cmd->libIndex = clazz->lib()->indexValue();
+				cmd->libIndex = clazz->lib.lock()->indexValue();
 				cmd->classIndex = clazz->indexValue();
 				cmd->funIndex = fun->indexValue();
 				break;
@@ -291,7 +299,7 @@ void fay::FayInstFun::prepareInsts(PTR(FayLibSet) deps)
 					LOG_ERROR("Cannot find class : " << cmd->className);
 					break;
 				}
-				cmd->libIndex = clazz->lib()->indexValue();
+				cmd->libIndex = clazz->lib.lock()->indexValue();
 				cmd->classIndex = clazz->indexValue();
 
 				auto var = clazz->findStaticVar(cmd->varName);
@@ -313,7 +321,7 @@ void fay::FayInstFun::prepareInsts(PTR(FayLibSet) deps)
 					LOG_ERROR("Cannot find class : " << cmd->className);
 					break;
 				}
-				cmd->libIndex = clazz->lib()->indexValue();
+				cmd->libIndex = clazz->lib.lock()->indexValue();
 				cmd->classIndex = clazz->indexValue();
 
 				auto var = clazz->findStaticVar(cmd->varName);
@@ -333,7 +341,7 @@ void fay::FayInstFun::prepareInsts(PTR(FayLibSet) deps)
 				if(clazz == nullptr)
 					throw FayLangException("Cannot find class : " + cmd->className);
 
-				cmd->libIndex = clazz->lib()->indexValue();
+				cmd->libIndex = clazz->lib.lock()->indexValue();
 				cmd->classIndex = clazz->indexValue();
 				break;
 			}
@@ -357,7 +365,7 @@ std::vector<FayInst*>* fay::FayInstFun::getPreparedInsts()
 {
 	if(!this->isPrepared)
 	{
-		this->prepareInsts(this->clazz()->lib()->deps);
+		this->prepareInsts(this->clazz.lock()->lib.lock()->deps);
 		this->isPrepared = true;
 	}
 
@@ -470,23 +478,6 @@ void fay::FayInstFun::buildString(mirror::utils::StringBuilder* sb)
 fay::FayFun::FayFun(const std::string &name, FunType type, bool isStatic, FunAccessType accessType, std::vector<PTR(FayParamDef)> &params, PTR(FayClass) returnValue)
 	: name(name), type(type), isStatic(isStatic), accessType(accessType), params(params), returnValue(returnValue)
 {
-	std::string str;
-	for each(auto it in this->params)
-	{
-		if(str.size() > 0)
-			str += ",";
-		str += it->fullname();
-	}
-
-	_fullname += this->name;
-	_fullname += "(" + str + "):";
-
-	if(returnValue == nullptr)
-		_fullname += "void";
-	else
-		_fullname += returnValue->fullname();
-
-	//LOG_DEBUG("Fun : " << _fullname);
 }
 
 bool fay::FayFun::match(const std::vector<PTR(FayClass)> &paramsType)
@@ -505,6 +496,30 @@ bool fay::FayFun::match(const std::vector<PTR(FayClass)> &paramsType)
 	return true;
 }
 
+const std::string &fay::FayFun::fullname()
+{
+	if(this->_fullname.empty())
+	{
+		std::string str;
+		for each(auto it in this->params)
+		{
+			if(str.size() > 0)
+				str += ",";
+			str += it->fullname();
+		}
+
+		_fullname += this->name;
+		_fullname += "(" + str + "):";
+
+		if(returnValue.expired())
+			_fullname += "void";
+		else
+			_fullname += returnValue.lock()->fullname();
+	}
+
+	return this->_fullname;
+}
+
 void fay::FayFun::buildString(mirror::utils::StringBuilder* sb)
 {
 	sb->add("[FayFun]")->add(this->fullname())->endl();
@@ -512,7 +527,8 @@ void fay::FayFun::buildString(mirror::utils::StringBuilder* sb)
 
 pos_t fay::FayClass::addFun(PTR(FayFun) fun)
 {
-	fun->clazz(this->shared_from_this());
+	fun->onAddToClass(this->shared_from_this());
+
 	if(fun->isStatic)
 		return this->_sft.addFun(fun);
 	else
@@ -523,7 +539,7 @@ IndexMap<FayLib> fay::FayDomain::Libs;
 
 void fay::FayDomain::InitSysLib()
 {
-	FayDomain::NewLib<SystemLib>();
+	FayDomain::AddLib(MKPTR(SystemLib)());
 }
 
 PTR(FayLib) fay::FayDomain::FindLib(const std::string &name)
@@ -1373,7 +1389,7 @@ std::string fay::FayLangUtils::Fullname(const std::string &className, const std:
 fay::StaticFunRef::StaticFunRef(const std::string &fullname, PTR(FayFun) fun)
 	: _fullname(fullname)
 {
-	this->classIndex = fun->clazz()->indexValue();
+	this->classIndex = fun->clazz.lock()->indexValue();
 	this->funIndex = fun->indexValue();
 }
 

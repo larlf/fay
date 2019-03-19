@@ -1170,7 +1170,7 @@ label1:
 		//LOG_ERROR(e.what());
 
 		//生成错误对象
-		PTR(FayObject) errObj = MKPTR(FayObject)(fun->clazz()->lib()->deps->findClass("fay.system.Error"));
+		PTR(FayObject) errObj = MKPTR(FayObject)(fun->clazz.lock()->lib.lock()->deps->findClass("fay.system.Error"));
 		errObj->setVar("code", FayValue(1));
 		errObj->setVar("message", FayValue(e.what()));
 		error = MKPTR(FayValue)(errObj);

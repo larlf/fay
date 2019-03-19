@@ -129,16 +129,11 @@ namespace fay
 	class FayClass : public BaseObject, public std::enable_shared_from_this<FayClass>, public IndexMapItem<FayClass>
 	{
 	protected:
-		std::string _package;
-		std::string _name;
-		std::string _fullname;
-		WPTR(FayLib) _lib;
-
-		WPTR(FayClass) _superClass;  //父类
 		FunTable _sft;  //静态函数表
 		FunTable _vft;  //虚函数表
 		IndexMap<FayStaticVarDef> _staticVarDefs;  //静态变量表
 		IndexMap<FayVarDef> _varDefs;  //变量表
+		std::string _fullname;
 
 		//是否已经构建过
 		//这一步在解析完成后执行，主要用于创建OOP体系
@@ -148,27 +143,24 @@ namespace fay
 		bool _isInited = false;
 
 	public:
+		std::string package;
+		std::string name;
+		WPTR(FayClass) superClass;  //父类
+		WPTR(FayLib) lib;
 
-		FayClass(PTR(FayLib) lib, const std::string &package, const std::string &name)
-			: _lib(lib), _package(package), _name(name)
-		{
-			this->_fullname = (!package.empty() ? package + "." : "") + name;
-		}
+		FayClass(const std::string &package, const std::string &name)
+			: package(package), name(name) {}
 
-		virtual void init() {}
+		//在设置完成后调用
+		virtual void onAddToLib(PTR(FayLib) lib) { this->lib = lib; }
 
-		inline const std::string &name() { return this->_name; }
-		inline const std::string &fullname() { return this->_fullname; }
+		virtual const std::string &fullname();
+
 		inline const bool isInited() { return this->_isInited; }
-		inline const PTR(FayLib) lib() { return this->_lib.lock(); }
 
 		//第一次使用的时候要对类进行一下初始化
 		void initClass();
 		void rebuild();
-
-		//处理父类
-		inline void superClass(PTR(FayClass) v) { this->_superClass = v; }
-		PTR(FayClass) superClass() { return this->_superClass.lock(); }
 
 		//是否匹配
 		//当传入的类型和自己一样或是此类型的子类的时候为True
@@ -201,7 +193,7 @@ namespace fay
 		virtual void buildString(mirror::utils::StringBuilder* sb) override;
 
 		// Inherited via IndexMapItem
-		virtual const std::string &indexKey() override { return this->_fullname; }
+		virtual const std::string &indexKey() override { return this->fullname(); }
 
 	};
 
@@ -267,8 +259,6 @@ namespace fay
 	class FayFun : public BaseObject, public std::enable_shared_from_this<FayFun>
 	{
 	protected:
-		WPTR(FayClass) _class;  //所属的Class
-
 		std::string _fullname;
 		PTR(FayLabelTable) _labels = MKPTR(FayLabelTable)();  //标签表，以后可以判断下，运行期不用创建此对象
 		pos_t _indexValue = -1;
@@ -280,20 +270,22 @@ namespace fay
 		FunAccessType accessType = FunAccessType::Public;  //访问权限
 		std::vector<PTR(FayParamDef)> params;  //参数定义
 		WPTR(FayClass) returnValue;  //返回值的类型
+		WPTR(FayClass) clazz;  //所属的Class
 
 		FayFun(const std::string &name, FunType type, bool isStatic, FunAccessType accessType, std::vector<PTR(FayParamDef)> &params, PTR(FayClass) returnValue);
 		virtual ~FayFun() {}
 
 		//Get & Set
-		inline const std::string &fullname() { return this->_fullname; }
-		inline void clazz(PTR(FayClass) v) { this->_class = v; }
-		inline const PTR(FayClass) clazz() { return this->_class.lock(); }
 		inline const PTR(FayLabelTable) labels() { return this->_labels; }
 		inline pos_t indexValue() { return this->_indexValue; }
+
+		//添加到Class时调用
+		virtual void onAddToClass(PTR(FayClass) clazz) { this->clazz = clazz; }
 
 		//检查参数是否匹配
 		bool match(const std::vector<PTR(FayClass)> &paramsType);
 
+		virtual const std::string &fullname();
 		virtual void buildString(mirror::utils::StringBuilder* sb) override;
 
 		friend class FunTable;
@@ -444,24 +436,12 @@ namespace fay
 		virtual ~FayLib() {}
 
 		//进行初始化
-		virtual void init() {}
+		virtual void onAddToDomain() {}
 
-		template<class T>
-		PTR(T) newClass(const std::string &package, const std::string &name)
+		void addClass(PTR(FayClass) clazz)
 		{
-			PTR(T) clazz = MKPTR(T)(this->shared_from_this(), package, name);
-			clazz->init();
+			clazz->onAddToLib(this->shared_from_this());
 			this->classes.add(clazz);
-			return clazz;
-		}
-
-		template<class T>
-		PTR(T) newClass()
-		{
-			PTR(T) clazz = MKPTR(T)(this->shared_from_this());
-			clazz->init();
-			this->classes.add(clazz);
-			return clazz;
 		}
 
 		PTR(FayClass) findClass(const std::string &fullname);
@@ -502,22 +482,10 @@ namespace fay
 		//初始化系统库
 		static void InitSysLib();
 
-		template<class T>
-		static PTR(T) NewLib(const std::string &name, PTR(FayLibSet) deps, int marjor, int minjor)
+		static void AddLib(PTR(FayLib) lib)
 		{
-			PTR(T) lib = MKPTR(T)(name, deps, marjor, minjor);
-			lib->init();
+			lib->onAddToDomain();
 			Libs.add(lib);
-			return nullptr;
-		}
-
-		template<class T>
-		static PTR(T) NewLib()
-		{
-			PTR(T) lib = MKPTR(T)();
-			lib->init();
-			Libs.add(lib);
-			return nullptr;
 		}
 
 		//查找LIb

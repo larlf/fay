@@ -77,7 +77,6 @@ namespace fay
 
 		//进行编译
 		void build();
-
 	};
 
 }

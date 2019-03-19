@@ -10,22 +10,22 @@ namespace fay
 			using FayLib::FayLib;
 		public:
 			SystemLib() : FayLib("fay", MKPTR(FayLibSet)(), 1, 1) {}
-			virtual void init() override;
+			virtual void onAddToDomain() override;
 		};
 
 		class ObjectClass : public FayClass
 		{
 			using FayClass::FayClass;
 		public:
-			virtual void init() override;
+			virtual void onAddToLib(PTR(FayLib) lib) override;
 			virtual ValueType valueType() override { return ValueType::Object; }
 		};
 
 		class VoidClass : public FayClass
 		{
 		public:
-			VoidClass(PTR(FayLib) lib)
-				: FayClass(lib, "", "void") {}
+			VoidClass()
+				: FayClass("", "void") {}
 
 			virtual ValueType valueType() override { return ValueType::Void; }
 		};
@@ -33,8 +33,8 @@ namespace fay
 		class BoolClass : public FayClass
 		{
 		public:
-			BoolClass(PTR(FayLib) lib)
-				: FayClass(lib, "", "bool") {}
+			BoolClass()
+				: FayClass("", "bool") {}
 
 			virtual ValueType valueType() override { return ValueType::Bool; }
 		};
@@ -42,8 +42,8 @@ namespace fay
 		class ByteClass : public FayClass
 		{
 		public:
-			ByteClass(PTR(FayLib) lib)
-				: FayClass(lib, "", "byte") {}
+			ByteClass()
+				: FayClass("", "byte") {}
 
 			virtual ValueType valueType() override { return ValueType::Byte; }
 		};
@@ -51,8 +51,8 @@ namespace fay
 		class IntClass : public FayClass
 		{
 		public:
-			IntClass(PTR(FayLib) lib)
-				: FayClass(lib, "", "int") {}
+			IntClass()
+				: FayClass("", "int") {}
 
 			virtual ValueType valueType() override { return ValueType::Int; }
 		};
@@ -60,8 +60,8 @@ namespace fay
 		class LongClass : public FayClass
 		{
 		public:
-			LongClass(PTR(FayLib) lib)
-				: FayClass(lib, "", "long") {}
+			LongClass()
+				: FayClass("", "long") {}
 
 			virtual ValueType valueType() override { return ValueType::Long; }
 		};
@@ -69,8 +69,8 @@ namespace fay
 		class FloatClass : public FayClass
 		{
 		public:
-			FloatClass(PTR(FayLib) lib)
-				: FayClass(lib, "", "float") {}
+			FloatClass()
+				: FayClass("", "float") {}
 
 			virtual ValueType valueType() override { return ValueType::Float; }
 		};
@@ -78,8 +78,8 @@ namespace fay
 		class DoubleClass : public FayClass
 		{
 		public:
-			DoubleClass(PTR(FayLib) lib)
-				: FayClass(lib, "", "double") {}
+			DoubleClass()
+				: FayClass("", "double") {}
 
 			virtual ValueType valueType() override { return ValueType::Double; }
 		};
@@ -87,8 +87,8 @@ namespace fay
 		class StringClass : public FayClass
 		{
 		public:
-			StringClass(PTR(FayLib) lib)
-				: FayClass(lib, "", "string") {}
+			StringClass()
+				: FayClass("", "string") {}
 
 			virtual ValueType valueType() override { return ValueType::String; }
 		};
@@ -98,7 +98,7 @@ namespace fay
 			using ObjectClass::ObjectClass;
 
 		public:
-			virtual void init() override;
+			virtual void onAddToLib(PTR(FayLib) lib) override;
 		};
 
 		class DateClass : public ObjectClass
@@ -108,7 +108,7 @@ namespace fay
 		public:
 			static void Now(PTR(std::stack<FayValue>) stack);
 
-			virtual void init() override;
+			virtual void onAddToLib(PTR(FayLib) lib) override;
 		};
 
 		class ErrorClass : public ObjectClass
@@ -116,7 +116,7 @@ namespace fay
 			using ObjectClass::ObjectClass;
 
 		public:
-			virtual void init() override;
+			virtual void onAddToLib(PTR(FayLib) lib) override;
 		};
 	}
 
