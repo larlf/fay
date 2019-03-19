@@ -30,7 +30,7 @@ namespace fay
 		PTR(FayLib) _lib;
 		PTR(FayLibSet) _deps;
 		PTR(FayInstClass) _class;
-		PTR(FayInstFun) _fun;
+		PTR(FayCompileFun) _fun;
 		std::vector<std::string> _usings;
 		std::vector<FayInst*> _insts;
 		int64_t labelIndex = 1;  //用于生成label
@@ -54,7 +54,7 @@ namespace fay
 		PTR(FayFile) file() { if(!this->_file) LOG_ERROR("File is null"); return this->_file; }
 		PTR(FayLib) lib() { if(!this->_lib) LOG_ERROR("Lib is null");  return this->_lib; }
 		PTR(FayInstClass) clazz() { if(!this->_class) LOG_ERROR("class is null"); return this->_class; }
-		PTR(FayInstFun) fun() { if(!this->_fun) LOG_ERROR("Fun is null"); return this->_fun; }
+		PTR(FayCompileFun) fun() { if(!this->_fun) LOG_ERROR("Fun is null"); return this->_fun; }
 		PTR(FayLibSet) deps() { if(!this->_deps) LOG_ERROR("Deps is null"); return this->_deps; }
 
 		//文件的开始和结束
@@ -78,8 +78,8 @@ namespace fay
 		//std::vector<PTR(FayClass)> findClass(const std::string &name);
 
 		//函数定义相关的处理
-		pos_t addFun(PTR(FayInstFun) fun);
-		void bindFun(PTR(FayInstFun) fun) { this->_fun = fun; }
+		pos_t addFun(PTR(FayCompileFun) fun);
+		void bindFun(PTR(FayCompileFun) fun) { this->_fun = fun; }
 
 		//以下是代码生成相关的内容
 

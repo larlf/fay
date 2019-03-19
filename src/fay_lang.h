@@ -260,7 +260,6 @@ namespace fay
 	{
 	protected:
 		std::string _fullname;
-		PTR(FayLabelTable) _labels = MKPTR(FayLabelTable)();  //标签表，以后可以判断下，运行期不用创建此对象
 		pos_t _indexValue = -1;
 
 	public:
@@ -276,7 +275,6 @@ namespace fay
 		virtual ~FayFun() {}
 
 		//Get & Set
-		inline const PTR(FayLabelTable) labels() { return this->_labels; }
 		inline pos_t indexValue() { return this->_indexValue; }
 
 		//添加到Class时调用
@@ -360,6 +358,20 @@ namespace fay
 
 		//执行内部函数
 		inline void Invoke(PTR(std::stack<FayValue>) stack) { this->_fun(stack); }
+	};
+
+	//用于进行编译的函数
+	//里面有一些编译期才会用到的属性
+	class FayCompileFun : public FayInstFun
+	{
+		using FayInstFun::FayInstFun;
+
+	protected:
+		PTR(FayLabelTable) _labels = MKPTR(FayLabelTable)();  //标签表，以后可以判断下，运行期不用创建此对象
+
+	public:
+		inline const PTR(FayLabelTable) labels() { return this->_labels; }
+
 	};
 
 	//////////////////////////////////////////////////////////////////////

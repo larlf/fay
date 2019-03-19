@@ -66,7 +66,7 @@ PTR(FayInstClass) fay::FayBuilder::addClass(const std::string &name)
 	return this->_class;
 }
 
-pos_t fay::FayBuilder::addFun(PTR(FayInstFun) fun)
+pos_t fay::FayBuilder::addFun(PTR(FayCompileFun) fun)
 {
 	this->_fun = fun;
 	return this->_class->addFun(this->_fun);

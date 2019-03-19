@@ -151,9 +151,9 @@ namespace fay
 		//pos_t classIndex = -1;  //用于记录在domain中的位置
 		PTR(FayInstClass) _clazz;
 
-		PTR(FayInstFun) _initFun;
-		PTR(FayInstFun) _createFun;
-		PTR(FayInstFun) _destoryFun;
+		PTR(FayCompileFun) _initFun;
+		PTR(FayCompileFun) _createFun;
+		PTR(FayCompileFun) _destoryFun;
 
 	public:
 		std::string superClassText;
@@ -185,7 +185,7 @@ namespace fay
 	class AstFun : public AstNode
 	{
 	private:
-		PTR(FayInstFun) _fun;
+		PTR(FayCompileFun) _fun;
 		//bool isStatic = false;
 		std::vector<std::string> _descWords;
 

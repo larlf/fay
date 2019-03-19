@@ -137,10 +137,10 @@ void fay::AstClass::dig2(FayBuilder* builder)
 
 	//添加特殊函数
 
-	this->_initFun = MKPTR(FayInstFun)(FUN_STATIC_INIT, true, FunAccessType::Private, nullptr);
+	this->_initFun = MKPTR(FayCompileFun)(FUN_STATIC_INIT, true, FunAccessType::Private, nullptr);
 	builder->addFun(this->_initFun);
 
-	this->_createFun = MKPTR(FayInstFun)(FUN_CREATE, false, FunAccessType::Private, nullptr);
+	this->_createFun = MKPTR(FayCompileFun)(FUN_CREATE, false, FunAccessType::Private, nullptr);
 	this->_createFun->addVar("this", builder->clazz());
 	builder->addFun(this->_createFun);
 
@@ -206,7 +206,7 @@ void fay::AstFun::dig2(FayBuilder* builder)
 		this->_classType.reset();
 
 	//创建这个函数定义
-	this->_fun = MKPTR(FayInstFun)(this->_text, isStatic, _accessType, builder->params, this->_classType.lock());
+	this->_fun = MKPTR(FayCompileFun)(this->_text, isStatic, _accessType, builder->params, this->_classType.lock());
 
 	//添加初始化的变量
 	if(!isStatic)
