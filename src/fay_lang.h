@@ -17,6 +17,8 @@ namespace fay
 	class FayParamDef;
 	class FayDomain;
 	class FayClass;
+	class FunTable;
+	class FunTableItem;
 
 	//工具类
 	class FayLangUtils
@@ -64,6 +66,18 @@ namespace fay
 		virtual void buildString(mirror::utils::StringBuilder* sb) override;
 	};
 
+	//函数表的元素
+	class FunTableItem
+	{
+	protected:
+		pos_t _indexValue = -1;
+
+	public:
+		inline pos_t indexValue() { return this->_indexValue; }
+
+		friend class FunTable;
+	};
+
 	//函数表
 	class FunTable : public BaseObject
 	{
@@ -72,13 +86,17 @@ namespace fay
 
 	public:
 		size_t size() { return this->_funs.size(); }
+
 		//添加函数
 		pos_t addFun(PTR(FayFun) fun);
+
 		//取得函数
 		PTR(FayFun) getFun(pos_t index);
+
 		//根据父类的虚函数进行重建
 		void rebuild(std::vector<PTR(FayFun)> &parentFuns);
 		void rebuild(FunTable* parent);
+
 		//匹配函数
 		std::vector<PTR(FayFun)> matchFun(const std::string &funName, const std::vector<PTR(FayClass)> &paramsType);
 		pos_t getFunIndex(const std::string &fullname);
@@ -94,17 +112,14 @@ namespace fay
 	//变量
 	class FayVar : public BaseObject
 	{
-	protected:
-		std::string _name;  //名称
-		WPTR(FayClass) _classType;  //类型
-		std::string _fullname;
-
 	public:
-		FayVar(const std::string &name, PTR(FayClass) clazz);
+		std::string name;  //名称
+		WPTR(FayClass) classType;  //类型
 
-		inline const std::string &name() { return  this->_name; }
-		inline const std::string &fullname() { return  this->_fullname; }
-		inline PTR(FayClass) classType() { return this->_classType.lock(); }
+		FayVar(const std::string &name, PTR(FayClass) clazz)
+			: name(name), classType(clazz) {}
+
+		const std::string fullname();
 		virtual void buildString(mirror::utils::StringBuilder* sb) override;
 	};
 
@@ -113,7 +128,7 @@ namespace fay
 	{
 		using FayVar::FayVar;
 	public:
-		virtual const std::string &indexKey() override { return this->_name; }
+		virtual const std::string indexKey() override { return this->name; }
 	};
 
 	//静态变量定义
@@ -122,7 +137,7 @@ namespace fay
 	public:
 		FayValue value;
 		FayStaticVarDef(const std::string &name, PTR(FayClass) clazz);
-		virtual const std::string &indexKey() override { return this->_name; }
+		virtual const std::string indexKey() override { return this->name; }
 	};
 
 	//数据类型
@@ -133,7 +148,6 @@ namespace fay
 		FunTable _vft;  //虚函数表
 		IndexMap<FayStaticVarDef> _staticVarDefs;  //静态变量表
 		IndexMap<FayVarDef> _varDefs;  //变量表
-		std::string _fullname;
 
 		//是否已经构建过
 		//这一步在解析完成后执行，主要用于创建OOP体系
@@ -154,7 +168,7 @@ namespace fay
 		//在设置完成后调用
 		virtual void onAddToLib(PTR(FayLib) lib) { this->lib = lib; }
 
-		virtual const std::string &fullname();
+		virtual const std::string fullname();
 
 		inline const bool isInited() { return this->_isInited; }
 
@@ -193,7 +207,7 @@ namespace fay
 		virtual void buildString(mirror::utils::StringBuilder* sb) override;
 
 		// Inherited via IndexMapItem
-		virtual const std::string &indexKey() override { return this->fullname(); }
+		virtual const std::string indexKey() override { return this->fullname(); }
 
 	};
 
@@ -211,18 +225,13 @@ namespace fay
 	//函数的参数定义
 	class FayParamDef : public BaseObject, public std::enable_shared_from_this<FayParamDef>
 	{
-	private:
-		std::string _name;  //参数名
-		std::string _fullname;
-		WPTR(FayClass) _class;  //参数类型
-
 	public:
-		FayParamDef(const std::string &name, PTR(FayClass) type);
+		std::string name;  //参数名
+		WPTR(FayClass) type;  //参数类型
 
-		inline const std::string &name() { return this->_name; }
-		inline const std::string &fullname() { return this->_fullname; }
-		inline const PTR(FayClass) type() { return this->_class.lock(); }
-
+		FayParamDef(const std::string &name, PTR(FayClass) type)
+			: name(name), type(type) {}
+		const std::string fullname();
 		virtual void buildString(mirror::utils::StringBuilder* sb) override;
 	};
 
@@ -256,16 +265,12 @@ namespace fay
 
 	//函数
 	//包括函数、内部函数、匿名函数等
-	class FayFun : public BaseObject, public std::enable_shared_from_this<FayFun>
+	class FayFun : public BaseObject, public std::enable_shared_from_this<FayFun>, public FunTableItem
 	{
-	protected:
-		std::string _fullname;
-		pos_t _indexValue = -1;
-
 	public:
 		std::string name;  //函数名称
-		FunType type;  //函数的类型
-		bool isStatic;  //是否是静态函数，非静态函数需要有this参数
+		FunType type = FunType::Code; //函数的类型
+		bool isStatic = false; //是否是静态函数，非静态函数需要有this参数
 		FunAccessType accessType = FunAccessType::Public;  //访问权限
 		std::vector<PTR(FayParamDef)> params;  //参数定义
 		WPTR(FayClass) returnValue;  //返回值的类型
@@ -274,19 +279,15 @@ namespace fay
 		FayFun(const std::string &name, FunType type, bool isStatic, FunAccessType accessType, std::vector<PTR(FayParamDef)> &params, PTR(FayClass) returnValue);
 		virtual ~FayFun() {}
 
-		//Get & Set
-		inline pos_t indexValue() { return this->_indexValue; }
-
 		//添加到Class时调用
 		virtual void onAddToClass(PTR(FayClass) clazz) { this->clazz = clazz; }
 
 		//检查参数是否匹配
 		bool match(const std::vector<PTR(FayClass)> &paramsType);
 
-		virtual const std::string &fullname();
+		virtual const std::string fullname();
 		virtual void buildString(mirror::utils::StringBuilder* sb) override;
 
-		friend class FunTable;
 	};
 
 	//异常处理
@@ -390,7 +391,7 @@ namespace fay
 		StaticVarRef(const std::string &fullname, PTR(FayClass) clazz, PTR(FayStaticVarDef) var);
 		pos_t classIndex() { return this->_classIndex; }
 		pos_t varIndex() { return this->_varIndex; }
-		virtual const std::string &indexKey() override { return this->_fullname; }
+		virtual const std::string indexKey() override { return this->_fullname; }
 	};
 
 	//外部函数信息
@@ -410,7 +411,7 @@ namespace fay
 		virtual void buildString(mirror::utils::StringBuilder* sb) override;
 
 		// Inherited via IndexMapItem
-		virtual const std::string &indexKey() override { return this->_fullname; }
+		virtual const std::string indexKey() override { return this->_fullname; }
 	};
 
 	//库的版本信息
@@ -466,7 +467,7 @@ namespace fay
 		virtual void buildString(mirror::utils::StringBuilder* sb) override;
 
 		// Inherited via IndexMapItem
-		virtual const std::string &indexKey() override;
+		virtual const std::string indexKey() override;
 	};
 
 	//一组Lib的集合

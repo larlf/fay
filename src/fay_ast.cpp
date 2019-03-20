@@ -214,7 +214,7 @@ void fay::AstFun::dig2(FayBuilder* builder)
 
 	//添加参数变量
 	for(const auto &param : builder->params)
-		this->_fun->addVar(param->name(), param->type());
+		this->_fun->addVar(param->name, param->type.lock());
 
 	builder->addFun(this->_fun);
 }
@@ -371,7 +371,7 @@ void fay::AstCall::dig3(FayBuilder* builder)
 		{
 			this->varIndex = varDef->indexValue();
 
-			auto clazz = varDef->classType();
+			auto clazz = varDef->classType.lock();
 			if(!clazz)
 				this->throwError(builder->file(), this->token(), I18n::Err_NoClass, className);
 
@@ -609,7 +609,7 @@ void fay::AstID::dig3(FayBuilder* builder)
 		{
 			this->_type = VarType::Local;
 			this->_varIndex = var->indexValue();
-			this->_classType = var->classType();
+			this->_classType = var->classType;
 			return;
 		}
 	}
@@ -631,21 +631,21 @@ void fay::AstID::dig3(FayBuilder* builder)
 			this->_type = VarType::Error;
 			this->_classIndex = -1;
 			this->_varIndex = varDef->indexValue();
-			this->_classType = varDef->classType();
+			this->_classType = varDef->classType;
 		}
 		else
 		{
 			auto localVar = builder->fun()->findVar(className);
 			if(localVar)
 			{
-				auto varDef = localVar->classType()->findVar(varName);
+				auto varDef = localVar->classType.lock()->findVar(varName);
 				if(!varDef)
 					this->throwError(builder->file(), this->token(), I18n::Err_NoField, className, varName);
 
 				this->_type = VarType::Field;
 				this->_classIndex = localVar->indexValue();
 				this->_varIndex = varDef->indexValue();
-				this->_classType = varDef->classType();
+				this->_classType = varDef->classType;
 			}
 			else
 			{
@@ -662,7 +662,7 @@ void fay::AstID::dig3(FayBuilder* builder)
 				this->_type = VarType::Static;
 				this->_classIndex = classes[0]->indexValue();
 				this->_varIndex = var->indexValue();
-				this->_classType = var->classType();
+				this->_classType = var->classType;
 			}
 		}
 	}
@@ -682,7 +682,7 @@ void fay::AstID::dig4(FayBuilder* builder)
 			{
 				PTR(FayClass) clazz = FayDomain::FindClass(this->_libIndex, this->_classIndex);
 				PTR(FayStaticVarDef) var = clazz->findStaticVar(this->_varIndex);
-				builder->addInst(new inst::LoadStatic(clazz->fullname(), var->name()));
+				builder->addInst(new inst::LoadStatic(clazz->fullname(), var->name));
 				break;
 			}
 			case VarType::Field:

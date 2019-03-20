@@ -10,12 +10,10 @@ using namespace fay;
 using namespace fay::internal;
 using namespace mirror;
 
-const std::string &fay::FayClass::fullname()
+const std::string fay::FayClass::fullname()
 {
-	if(this->_fullname.empty())
-		this->_fullname = (!this->package.empty() ? this->package + "." : "") + this->name;
+	return TOSTR((!this->package.empty() ? this->package + "." : "") << this->name);
 
-	return this->_fullname;
 }
 
 void fay::FayClass::initClass()
@@ -233,7 +231,7 @@ void fay::FayLib::buildString(mirror::utils::StringBuilder* sb)
 	sb->decreaseIndent();
 }
 
-const std::string &fay::FayLib::indexKey()
+const std::string fay::FayLib::indexKey()
 {
 	return this->_indexKey;
 }
@@ -377,9 +375,9 @@ pos_t fay::FayInstFun::addVar(const std::string &name, PTR(FayClass) type)
 	auto it = this->_vars.find(name);
 	if(it)
 	{
-		if(it->classType() != type)
+		if(it->classType.lock() != type)
 		{
-			LOG_ERROR("Same var name, diff type : " << it->classType() << ", " << type);
+			LOG_ERROR("Same var name, diff type : " << it->classType.lock()->fullname() << ", " << type->fullname());
 			return -1;
 		}
 
@@ -439,7 +437,7 @@ void fay::FayInstFun::buildString(mirror::utils::StringBuilder* sb)
 		for(auto i = 0; i < this->_vars.list().size(); ++i)
 		{
 			auto it = this->_vars.list()[i];
-			sb->add(i)->add("> ")->add(it->name())->add(":")->add(it->classType()->fullname())->endl();
+			sb->add(i)->add("> ")->add(it->name)->add(":")->add(it->classType.lock()->fullname())->endl();
 		}
 		sb->decreaseIndent();
 	}
@@ -489,35 +487,31 @@ bool fay::FayFun::match(const std::vector<PTR(FayClass)> &paramsType)
 	for(auto i = 0; i < this->params.size(); ++i)
 	{
 		PTR(FayParamDef) p = this->params[i];
-		if(!p->type()->match(paramsType[i]))
+		if(!p->type.lock()->match(paramsType[i]))
 			return false;
 	}
 
 	return true;
 }
 
-const std::string &fay::FayFun::fullname()
+const std::string fay::FayFun::fullname()
 {
-	if(this->_fullname.empty())
+	std::string str;
+	for each(auto it in this->params)
 	{
-		std::string str;
-		for each(auto it in this->params)
-		{
-			if(str.size() > 0)
-				str += ",";
-			str += it->fullname();
-		}
-
-		_fullname += this->name;
-		_fullname += "(" + str + "):";
-
-		if(returnValue.expired())
-			_fullname += "void";
-		else
-			_fullname += returnValue.lock()->fullname();
+		if(str.size() > 0)
+			str += ",";
+		str += it->fullname();
 	}
 
-	return this->_fullname;
+	str = this->name + "(" + str + "):";
+
+	if(returnValue.expired())
+		str += "void";
+	else
+		str += returnValue.lock()->fullname();
+
+	return str;
 }
 
 void fay::FayFun::buildString(mirror::utils::StringBuilder* sb)
@@ -675,12 +669,9 @@ PTR(FayLibSet) fay::FayDomain::AllLibs()
 	return libs;
 }
 
-fay::FayParamDef::FayParamDef(const std::string &name, PTR(FayClass) type)
-	: _name(name), _class(type)
+const std::string fay::FayParamDef::fullname()
 {
-	this->_fullname = this->_name;
-	this->_fullname += ":";
-	this->_fullname += this->_class.expired() ? "?" : this->_class.lock()->fullname();
+	return TOSTR(this->name << ":" << (this->type.expired() ? "?" : this->type.lock()->fullname()));
 }
 
 void fay::FayParamDef::buildString(mirror::utils::StringBuilder* sb)
@@ -1503,10 +1494,9 @@ void fay::FunTable::buildString(mirror::utils::StringBuilder* sb)
 	}
 }
 
-fay::FayVar::FayVar(const std::string &name, PTR(FayClass) clazz)
-	: _name(name), _classType(clazz)
+const std::string fay::FayVar::fullname()
 {
-	this->_fullname = name + ":" + clazz->fullname();
+	return TOSTR(this->name << ":" << this->classType.lock()->fullname());
 }
 
 void fay::FayVar::buildString(mirror::utils::StringBuilder* sb)
@@ -1571,7 +1561,7 @@ fay::StaticVarRef::StaticVarRef(const std::string &fullname, PTR(FayClass) clazz
 {
 	this->_className = clazz->fullname();
 	this->_classIndex = clazz->indexValue();
-	this->_varName = var->name();
+	this->_varName = var->name;
 	this->_varIndex = var->indexValue();
 	this->_fullname = this->_className + "." + this->_varName;
 }

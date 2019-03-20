@@ -83,7 +83,7 @@ namespace fay
 		pos_t _index = -1;
 	public:
 		virtual pos_t indexValue() { return this->_index; }
-		virtual const std::string &indexKey() = 0;
+		virtual const std::string indexKey() = 0;
 		friend class IndexMap<T>;
 	};
 
