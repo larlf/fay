@@ -13,6 +13,7 @@ class MainClass
 	static fun Main():void
 	{
 		var a:ClassA=new ClassB();
+		//var a:ClassA;
 		a.fun1();
 	}
 }
