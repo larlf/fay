@@ -27,7 +27,9 @@ int main(int argc, char** argv)
 	fay::I18nBus::Init(I18nLang::CN);
 	SystemEnv::Init();
 	TypeDict::Init();
-	FayDomain::InitSysLib();
+
+	//初始化系统库
+	FayDomain::AddLib(MKPTR(fay::internal::SystemLib)());
 
 	//编译项目
 	FayProject project(parser.get("path"));

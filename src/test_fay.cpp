@@ -23,7 +23,8 @@ void test::TestFay::SetUpTestCase()
 	//初始化国际化信息
 	fay::I18nBus::Init(I18nLang::CN);
 
-	FayDomain::InitSysLib();
+	//初始化系统库
+	FayDomain::AddLib(MKPTR(fay::internal::SystemLib)());
 
 	//取得所有的代码文件
 	std::string projectPath = "../script/test1";

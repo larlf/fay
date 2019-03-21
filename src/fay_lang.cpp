@@ -171,6 +171,12 @@ void fay::FayClass::buildString(mirror::utils::StringBuilder* sb)
 	sb->decreaseIndent();
 }
 
+void fay::FayLib::addClass(PTR(FayClass) clazz)
+{
+	clazz->onAddToLib(this->shared_from_this());
+	this->classes.add(clazz);
+}
+
 PTR(FayClass) fay::FayLib::findClass(const std::string &fullname)
 {
 	PTR(FayClass) clazz = this->classes.find(fullname);
@@ -531,9 +537,10 @@ pos_t fay::FayClass::addFun(PTR(FayFun) fun)
 
 IndexMap<FayLib> fay::FayDomain::Libs;
 
-void fay::FayDomain::InitSysLib()
+void fay::FayDomain::AddLib(PTR(FayLib) lib)
 {
-	FayDomain::AddLib(MKPTR(SystemLib)());
+	lib->onAddToDomain();
+	Libs.add(lib);
 }
 
 PTR(FayLib) fay::FayDomain::FindLib(const std::string &name)

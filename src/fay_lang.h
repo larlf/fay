@@ -451,11 +451,7 @@ namespace fay
 		//进行初始化
 		virtual void onAddToDomain() {}
 
-		void addClass(PTR(FayClass) clazz)
-		{
-			clazz->onAddToLib(this->shared_from_this());
-			this->classes.add(clazz);
-		}
+		void addClass(PTR(FayClass) clazz);
 
 		PTR(FayClass) findClass(const std::string &fullname);
 		PTR(FayClass) findClass(ValueType type);
@@ -492,32 +488,24 @@ namespace fay
 	public:
 		static IndexMap<FayLib> Libs;
 
-		//初始化系统库
-		static void InitSysLib();
-
-		static void AddLib(PTR(FayLib) lib)
-		{
-			lib->onAddToDomain();
-			Libs.add(lib);
-		}
+		//添加库
+		static void AddLib(PTR(FayLib) lib);
 
 		//查找LIb
 		static PTR(FayLib) FindLib(const std::string &name);
 		static PTR(FayLib) FindLib(const std::string &name, int marjor);
 		static PTR(FayLib) FindLib(const std::string &name, int marjor, int minjor);
+
 		//生成当前高版本的依赖库
 		static PTR(FayLibSet) AllLibs();
 
-		//根据类型的全称查找类型定义
-		//static PTR(FayClass) FindClass(const std::string &fullname);
-		//static PTR(FayClass) FindClass(ValueType type);
-		static PTR(FayClass) FindClass(pos_t libIndex, pos_t lassIndex);
-		//根据引用和类型名，查找类型的定义
-		//static std::vector<PTR(FayClass)> FindClass(std::vector<std::string> &imports, const std::string &typeName);
+		//定位Class
+		static PTR(FayClass) FindClass(pos_t libIndex, pos_t classIndex);
 
 		//使用Class，在VM里用这个方法，会检查是否已经初始化
 		static PTR(FayClass) UseClass(pos_t libIndex, pos_t classIndex);
 
+		//输出Domain信息
 		static void buildString(mirror::utils::StringBuilder* sb);
 		static std::string ToString();
 	};
