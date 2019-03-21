@@ -106,7 +106,7 @@ void fay::AstClass::dig1(FayBuilder* builder)
 {
 	//检查是否重复
 	std::string fullname = FayLangUtils::ClassFullname(builder->package(), this->_text);
-	if(builder->deps()->findClass(fullname) != nullptr)
+	if(builder->lib()->findClass(fullname, true) != nullptr)
 		this->throwError(builder->file(), this->token(), I18n::Err_RepeatedClass, fullname);
 
 	//创建Class
@@ -122,7 +122,7 @@ void fay::AstClass::dig2(FayBuilder* builder)
 	//处理父类
 	if(!this->superClassText.empty())
 	{
-		auto types = builder->deps()->findClassWithName(this->superClassText);
+		auto types = builder->lib()->findClassWithName(this->superClassText, true);
 		if(types.empty())
 			this->throwError(builder->file(), this->token(), I18n::Err_NoClass, this->superClassText);
 		if(types.size() > 1)
@@ -132,7 +132,7 @@ void fay::AstClass::dig2(FayBuilder* builder)
 	else
 	{
 		//默认用Object当父类
-		builder->clazz()->superClass = builder->deps()->findClass("fay.Object");
+		builder->clazz()->superClass = builder->lib()->findClass("fay.Object", true);
 	}
 
 	//添加特殊函数
@@ -281,7 +281,7 @@ void fay::AstString::dig3(FayBuilder* builder)
 		this->_value.push_back(c);
 	}
 
-	this->_classType = builder->deps()->findClass(ValueType::String);
+	this->_classType = builder->lib()->findClass(ValueType::String, true);
 }
 
 void fay::AstString::dig4(FayBuilder* builder)
@@ -303,7 +303,7 @@ PTR(FayClass) fay::AstParamDefine::getType(FayBuilder* builder)
 
 void fay::AstParamDefine::dig2(FayBuilder* builder)
 {
-	this->_classType = builder->deps()->findClass(this->_nodes[0]->text());
+	this->_classType = builder->lib()->findClass(this->_nodes[0]->text(), true);
 	if(this->_classType.expired())
 		this->throwError(builder->file(), this->token(), I18n::Err_NoClass, this->_nodes[0]->text());
 
@@ -383,7 +383,7 @@ void fay::AstCall::dig3(FayBuilder* builder)
 		}
 		else
 		{
-			auto classes = builder->deps()->findClassWithName(className);
+			auto classes = builder->lib()->findClassWithName(className, true);
 			if(classes.empty())
 				this->throwError(builder->file(), this->token(), I18n::Err_NoClass, className);
 			else if(classes.size() > 1)
@@ -585,7 +585,7 @@ fay::AstNumber::AstNumber(const PTR(Token)& token, const std::string &text)
 
 void fay::AstNumber::dig3(FayBuilder* builder)
 {
-	this->_classType = builder->deps()->findClass(this->_val.type());
+	this->_classType = builder->lib()->findClass(this->_val.type(), true);
 
 	AstNode::dig3(builder);
 }
@@ -623,7 +623,7 @@ void fay::AstID::dig3(FayBuilder* builder)
 
 		if(className == "err")
 		{
-			PTR(FayClass) errType = builder->deps()->findClass("fay.system.Error");
+			PTR(FayClass) errType = builder->lib()->findClass("fay.system.Error", true);
 			PTR(FayVarDef) varDef = errType->findVar(varName);
 			if(!varDef)
 				this->throwError(builder->file(), this->token(), I18n::Err_NoField, className, varName);
@@ -649,7 +649,7 @@ void fay::AstID::dig3(FayBuilder* builder)
 			}
 			else
 			{
-				auto classes = builder->deps()->findClassWithName(className);
+				auto classes = builder->lib()->findClassWithName(className, true);
 				if(classes.empty())
 					this->throwError(builder->file(), this->token(), I18n::Err_NoClass, className);
 				if(classes.size() > 1)
@@ -717,7 +717,7 @@ void fay::AstLeftRightOP::dig3(FayBuilder* builder)
 	//先算出目标类型
 	auto t1 = this->_nodes[0]->classType();
 	auto t2 = this->_nodes[1]->classType();
-	auto t3 = FayLangUtils::WeightValueType(builder->deps(), t1, t2);
+	auto t3 = FayLangUtils::WeightValueType(builder->lib(), t1, t2);
 	this->_classType = t3;
 
 	//如果和目标类型不一致，就转换一下
@@ -798,7 +798,7 @@ void fay::AstBool::dig3(FayBuilder* builder)
 	else
 		this->_value = false;
 
-	this->_classType = builder->deps()->findClass(ValueType::Bool);
+	this->_classType = builder->lib()->findClass(ValueType::Bool, true);
 }
 
 void fay::AstBool::dig4(FayBuilder* builder)
@@ -874,14 +874,14 @@ void fay::AstIf::dig4(FayBuilder* builder)
 
 void fay::AstEqualityOP::dig3(FayBuilder* builder)
 {
-	this->_classType = builder->deps()->findClass(ValueType::Bool);
+	this->_classType = builder->lib()->findClass(ValueType::Bool, true);
 
 	AstNode::dig3(builder);
 
 	//先算出目标类型
 	auto t1 = this->_nodes[0]->classType();
 	auto t2 = this->_nodes[1]->classType();
-	auto t3 = FayLangUtils::WeightValueType(builder->deps(), t1, t2);
+	auto t3 = FayLangUtils::WeightValueType(builder->lib(), t1, t2);
 	this->_itemType = t3;
 
 	//如果和目标类型不一致，就转换一下
@@ -930,7 +930,7 @@ void fay::AstCondition::dig3(FayBuilder* builder)
 		//如果不是Bool，这里进行一下转换
 		auto type = this->_nodes[0]->classType();
 		if(type->valueType() != ValueType::Bool)
-			this->insertChldNode(0, MKPTR(AstTypeConvert)(this->_token, type, builder->deps()->findClass(ValueType::Bool)));
+			this->insertChldNode(0, MKPTR(AstTypeConvert)(this->_token, type, builder->lib()->findClass(ValueType::Bool, true)));
 	}
 
 }
@@ -951,7 +951,7 @@ void fay::AstFor::dig3(FayBuilder* builder)
 	//如果expr2不是Bool，这里进行一下转换
 	auto type = this->_nodes[1]->classType();
 	if(type->valueType() != ValueType::Bool)
-		this->insertChldNode(1, MKPTR(AstTypeConvert)(this->_token, type, builder->deps()->findClass(ValueType::Bool)));
+		this->insertChldNode(1, MKPTR(AstTypeConvert)(this->_token, type, builder->lib()->findClass(ValueType::Bool, true)));
 }
 
 void fay::AstFor::dig4(FayBuilder* builder)
@@ -1037,7 +1037,7 @@ void fay::AstPreOP::dig4(FayBuilder* builder)
 
 void fay::AstFixedNumber::dig3(FayBuilder* builder)
 {
-	this->_classType = builder->deps()->findClass(this->_type);
+	this->_classType = builder->lib()->findClass(this->_type, true);
 
 	AstNode::dig3(builder);
 }
@@ -1097,7 +1097,7 @@ void fay::AstType::dig2(FayBuilder* builder)
 {
 	AstNode::dig2(builder);
 
-	auto classes = builder->deps()->findClassWithName(this->_text);
+	auto classes = builder->lib()->findClassWithName(this->_text, true);
 	if(classes.empty())
 		this->throwError(builder->file(), this->token(), I18n::Err_NoClass, this->_text);
 	else if(classes.size() > 1)
@@ -1220,7 +1220,7 @@ void fay::AstBoolNot::dig3(FayBuilder* builder)
 {
 	AstNode::dig3(builder);
 
-	auto boolType = builder->deps()->findClass(ValueType::Bool);
+	auto boolType = builder->lib()->findClass(ValueType::Bool, true);
 	this->_classType = boolType;
 
 	auto subType = this->_nodes[0]->classType();
@@ -1252,7 +1252,7 @@ void fay::AstBitNot::dig4(FayBuilder* builder)
 void fay::AstCast::dig3(FayBuilder* builder)
 {
 	AstNode::dig3(builder);
-	this->_classType = builder->deps()->findClass(this->_text);
+	this->_classType = builder->lib()->findClass(this->_text, true);
 }
 
 void fay::AstCast::dig4(FayBuilder* builder)
@@ -1268,7 +1268,7 @@ void fay::AstBitOP::dig3(FayBuilder* builder)
 	//先算出目标类型
 	auto t1 = this->_nodes[0]->classType();
 	auto t2 = this->_nodes[1]->classType();
-	auto t3 = FayLangUtils::WeightValueType(builder->deps(), t1, t2);
+	auto t3 = FayLangUtils::WeightValueType(builder->lib(), t1, t2);
 	this->_classType = t3;
 
 	//限定要是整数
@@ -1309,7 +1309,7 @@ void fay::AstBoolOP::dig3(FayBuilder* builder)
 	//先算出目标类型
 	auto t1 = this->_nodes[0]->classType();
 	auto t2 = this->_nodes[1]->classType();
-	auto t3 = builder->deps()->findClass(ValueType::Bool);
+	auto t3 = builder->lib()->findClass(ValueType::Bool, true);
 	this->_classType = t3;
 
 	//如果和目标类型不一致，就转换一下
@@ -1344,12 +1344,12 @@ void fay::AstCondExpr::dig3(FayBuilder* builder)
 	//如果判断表达式不是Bool类型的，要转换成Boole类型
 	auto cond = this->_nodes[0];
 	if(cond->valueType() != ValueType::Bool)
-		this->insertChldNode(1, MKPTR(AstTypeConvert)(cond->token(), cond->classType(), builder->deps()->findClass(ValueType::Bool)));
+		this->insertChldNode(1, MKPTR(AstTypeConvert)(cond->token(), cond->classType(), builder->lib()->findClass(ValueType::Bool, true)));
 
 	//如果后面的两个项目返回的类型不一致，需要统一下
 	auto t1 = this->_nodes[1]->classType();
 	auto t2 = this->_nodes[2]->classType();
-	auto t3 = FayLangUtils::WeightValueType(builder->deps(), t1, t2);
+	auto t3 = FayLangUtils::WeightValueType(builder->lib(), t1, t2);
 	this->_classType = t3;
 
 	//如果和目标类型不一致，就转换一下
@@ -1394,7 +1394,7 @@ void fay::AstWhile::dig3(FayBuilder* builder)
 	//如果不是Bool，这里进行一下转换
 	auto type = this->_nodes[0]->classType();
 	if(type->valueType() != ValueType::Bool)
-		this->insertChldNode(0, MKPTR(AstTypeConvert)(this->_token, type, builder->deps()->findClass(ValueType::Bool)));
+		this->insertChldNode(0, MKPTR(AstTypeConvert)(this->_token, type, builder->lib()->findClass(ValueType::Bool, true)));
 
 	//生成开始和结束的标签
 	this->startLabel = builder->makeLabel();
@@ -1428,7 +1428,7 @@ void fay::AstDoWhile::dig3(FayBuilder* builder)
 	//如果不是Bool，这里进行一下转换
 	auto type = this->_nodes[1]->classType();
 	if(type->valueType() != ValueType::Bool)
-		this->insertChldNode(1, MKPTR(AstTypeConvert)(this->_token, type, builder->deps()->findClass(ValueType::Bool)));
+		this->insertChldNode(1, MKPTR(AstTypeConvert)(this->_token, type, builder->lib()->findClass(ValueType::Bool, true)));
 
 	//生成开始的标签
 	this->startLabel = builder->makeLabel();
@@ -1452,7 +1452,7 @@ void fay::AstNew::dig3(FayBuilder* builder)
 {
 	AstNode::dig3(builder);
 
-	auto classes = builder->deps()->findClassWithName(this->_text);
+	auto classes = builder->lib()->findClassWithName(this->_text, true);
 	if(classes.empty())
 		this->throwError(builder->file(), this->token(), I18n::Err_NoClass, this->_text);
 	else if(classes.size() > 1)

@@ -284,6 +284,7 @@ fay::FayProject::FayProject(const std::string &name, int marjor, int minjor)
 
 void fay::FayProject::build()
 {
+	//创建Lib并加入到Domain
 	this->_lib = MKPTR(FayLib)("default", FayDomain::AllLibs(), 0, 0);
 
 	this->step1CheckFiles();

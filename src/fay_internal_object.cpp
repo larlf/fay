@@ -31,31 +31,31 @@ void fay::internal::IOClass::onAddToLib(PTR(FayLib) lib)
 	PTR(FayInternalFun) fun;
 	std::vector<PTR(FayParamDef)> params;
 
-	params = { MKPTR(FayParamDef)("value", this->lib.lock()->findClass(ValueType::Bool)) };
+	params = { MKPTR(FayParamDef)("value", this->lib.lock()->findClass(ValueType::Bool, true)) };
 	fun = MKPTR(FayInternalFun)("Print", true, params, nullptr, fay::internal::InternalFun::Print_Bool);
 	this->addFun(fun);
 
-	params = { MKPTR(FayParamDef)("value", this->lib.lock()->findClass(ValueType::Byte)) };
+	params = { MKPTR(FayParamDef)("value", this->lib.lock()->findClass(ValueType::Byte, true)) };
 	fun = MKPTR(FayInternalFun)("Print", true, params, nullptr, fay::internal::InternalFun::Print_Byte);
 	this->addFun(fun);
 
-	params = { MKPTR(FayParamDef)("value", this->lib.lock()->findClass(ValueType::Int)) };
+	params = { MKPTR(FayParamDef)("value", this->lib.lock()->findClass(ValueType::Int, true)) };
 	fun = MKPTR(FayInternalFun)("Print", true, params, nullptr, fay::internal::InternalFun::Print_Int);
 	this->addFun(fun);
 
-	params = { MKPTR(FayParamDef)("value", this->lib.lock()->findClass(ValueType::Long)) };
+	params = { MKPTR(FayParamDef)("value", this->lib.lock()->findClass(ValueType::Long, true)) };
 	fun = MKPTR(FayInternalFun)("Print", true, params, nullptr, fay::internal::InternalFun::Print_Long);
 	this->addFun(fun);
 
-	params = { MKPTR(FayParamDef)("value", this->lib.lock()->findClass(ValueType::Float)) };
+	params = { MKPTR(FayParamDef)("value", this->lib.lock()->findClass(ValueType::Float, true)) };
 	fun = MKPTR(FayInternalFun)("Print", true, params, nullptr, fay::internal::InternalFun::Print_Float);
 	this->addFun(fun);
 
-	params = { MKPTR(FayParamDef)("value", this->lib.lock()->findClass(ValueType::Double)) };
+	params = { MKPTR(FayParamDef)("value", this->lib.lock()->findClass(ValueType::Double, true)) };
 	fun = MKPTR(FayInternalFun)("Print", true, params, nullptr, fay::internal::InternalFun::Print_Double);
 	this->addFun(fun);
 
-	params = { MKPTR(FayParamDef)("value", this->lib.lock()->findClass(ValueType::String)) };
+	params = { MKPTR(FayParamDef)("value", this->lib.lock()->findClass(ValueType::String, true)) };
 	fun = MKPTR(FayInternalFun)("Print", true, params, nullptr, fay::internal::InternalFun::Print_String);
 	this->addFun(fun);
 }
@@ -71,7 +71,7 @@ void fay::internal::DateClass::onAddToLib(PTR(FayLib) lib)
 	FayClass::onAddToLib(lib);
 
 	PTR(FayInternalFun) fun;
-	fun = MKPTR(FayInternalFun)("Now", true, this->lib.lock()->findClass(ValueType::Long), DateClass::Now);
+	fun = MKPTR(FayInternalFun)("Now", true, this->lib.lock()->findClass(ValueType::Long, true), DateClass::Now);
 	this->addFun(fun);
 }
 
@@ -79,8 +79,8 @@ void fay::internal::ErrorClass::onAddToLib(PTR(FayLib) lib)
 {
 	FayClass::onAddToLib(lib);
 
-	this->addVar("code", this->lib.lock()->findClass(ValueType::Int));
-	this->addVar("message", this->lib.lock()->findClass(ValueType::String));
+	this->addVar("code", this->lib.lock()->findClass(ValueType::Int, true));
+	this->addVar("message", this->lib.lock()->findClass(ValueType::String, true));
 }
 
 void fay::internal::ObjectClass::onAddToLib(PTR(FayLib) lib)
@@ -88,6 +88,6 @@ void fay::internal::ObjectClass::onAddToLib(PTR(FayLib) lib)
 	FayClass::onAddToLib(lib);
 
 	PTR(FayInternalFun) fun;
-	this->addFun(MKPTR(FayInternalFun)("toString", false, this->lib.lock()->findClass(ValueType::String), fay::internal::InternalFun::ToString));
+	this->addFun(MKPTR(FayInternalFun)("toString", false, this->lib.lock()->findClass(ValueType::String, true), fay::internal::InternalFun::ToString));
 }
 

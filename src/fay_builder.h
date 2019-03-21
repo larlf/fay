@@ -28,7 +28,6 @@ namespace fay
 		std::string _package;
 		PTR(FayFile) _file;
 		PTR(FayLib) _lib;
-		PTR(FayLibSet) _deps;
 		PTR(FayInstClass) _class;
 		PTR(FayCompileFun) _fun;
 		std::vector<std::string> _usings;
@@ -38,12 +37,12 @@ namespace fay
 	public:
 		//用于控制表达式中的模式，在赋值运算符左边和右边的处理不一样
 		BuildExprMode exprMode = BuildExprMode::RightValue;
+
 		//用于构造函数的参数
 		std::vector<PTR(FayParamDef)> params;
 
 		FayBuilder()
 		{
-			this->_deps = FayDomain::AllLibs();
 		}
 
 		~FayBuilder();
@@ -55,7 +54,6 @@ namespace fay
 		PTR(FayLib) lib() { if(!this->_lib) LOG_ERROR("Lib is null");  return this->_lib; }
 		PTR(FayInstClass) clazz() { if(!this->_class) LOG_ERROR("class is null"); return this->_class; }
 		PTR(FayCompileFun) fun() { if(!this->_fun) LOG_ERROR("Fun is null"); return this->_fun; }
-		PTR(FayLibSet) deps() { if(!this->_deps) LOG_ERROR("Deps is null"); return this->_deps; }
 
 		//文件的开始和结束
 		void bindFile(PTR(FayFile) file);
@@ -85,14 +83,19 @@ namespace fay
 
 		//向函数添加指令
 		void addInst(FayInst* inst);
+
 		//当前指令数量
 		size_t instsSize() { return this->_insts.size(); }
+
+		//优化指令
 		void optimizeInsts();
 
 		//生成一个新的Label，并放到Fun的LabelTable里
 		std::string makeLabel();
+
 		//把taget和label绑定起来
 		void useLabel(const std::string &label, int32_t* target);
+
 		//确定指定的label地址
 		void fixedLabel(const std::string &label);
 

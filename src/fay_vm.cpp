@@ -1167,20 +1167,24 @@ label1:
 	}
 	catch(std::exception e)
 	{
-		//LOG_ERROR(e.what());
-
-		//生成错误对象
-		PTR(FayObject) errObj = MKPTR(FayObject)(fun->clazz.lock()->lib.lock()->deps->findClass("fay.system.Error"));
-		errObj->setVar("code", FayValue(1));
-		errObj->setVar("message", FayValue(e.what()));
-		error = MKPTR(FayValue)(errObj);
-
 		//检查有没有Catch
 		TryHandler* handler = fun->findHandler(ip);
 		if(handler != nullptr)
 		{
+			//生成错误对象
+			PTR(FayObject) errObj = MKPTR(FayObject)(fun->clazz.lock()->lib.lock()->findClass("fay.Error", true));
+			errObj->setVar("code", FayValue(1));
+			errObj->setVar("message", FayValue(e.what()));
+			error = MKPTR(FayValue)(errObj);
+
+			//进入异常处理流程
 			ip = handler->target;
 			goto label1;
+		}
+		else
+		{
+			LOG_ERROR(e.what());
+			throw e;
 		}
 	}
 }

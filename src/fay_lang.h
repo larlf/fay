@@ -31,7 +31,7 @@ namespace fay
 
 		//在两个类型中选出要转换的目标类型
 		static ValueType WeightValueType(ValueType t1, ValueType t2);
-		static PTR(FayClass) WeightValueType(PTR(FayLibSet) deps, PTR(FayClass) t1, PTR(FayClass) t2);
+		static PTR(FayClass) WeightValueType(PTR(FayLib) deps, PTR(FayClass) t1, PTR(FayClass) t2);
 		//Class类型转换到ValueType类型
 		static ValueType ClassToValueType(PTR(FayClass) clazz);
 
@@ -316,7 +316,7 @@ namespace fay
 		//是否已经进行过预处理
 		bool isPrepared = false;
 		//对代码运行前做一些预处理
-		void prepareInsts(PTR(FayLibSet) deps);
+		void prepareInsts();
 
 	public:
 		FayInstFun(const std::string &name, bool isStatic, FunAccessType accessType, std::vector<PTR(FayParamDef)> &params, PTR(FayClass) returnValue)
@@ -453,9 +453,9 @@ namespace fay
 
 		void addClass(PTR(FayClass) clazz);
 
-		PTR(FayClass) findClass(const std::string &fullname);
-		PTR(FayClass) findClass(ValueType type);
-		LIST(PTR(FayClass)) findClassWithName(const std::string &name);
+		PTR(FayClass) findClass(const std::string &fullname, bool inDeps);
+		PTR(FayClass) findClass(ValueType type, bool inDeps);
+		LIST(PTR(FayClass)) findClassWithName(const std::string &name, bool inDeps);
 
 		//在库里查找Main函数的入口点
 		PTR(std::vector<PTR(FayFun)>) findMainFun();

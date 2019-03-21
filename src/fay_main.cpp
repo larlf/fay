@@ -38,6 +38,9 @@ int main(int argc, char** argv)
 	//编译没有错误才会运行代码
 	if(LogBus::Count(LogType::Error) <= 0)
 	{
+		//编译后要加到Domain才能运行
+		FayDomain::AddLib(project.lib());
+
 		//找到Main()方法并执行
 		PTR(std::vector<PTR(FayFun)>) mainFuns = project.lib()->findMainFun();
 		if(mainFuns->empty())

@@ -1,11 +1,26 @@
 using fay.system;
 
+class ClassA
+{
+	public fun fun1():void
+	{
+		IO.Print("This is ClassA");
+	}
+}
+
 class MainClass
 {
 	static fun Main():void
 	{
-		var a:int=-1*5;
-		IO.Print(a);
+		var a:ClassA=new ClassB();
+		a.fun1();
 	}
 }
 
+class ClassB : ClassA
+{
+	public fun fun1():void
+	{
+		IO.Print("This is ClassB");
+	}
+}
