@@ -178,7 +178,7 @@ namespace fay
 		virtual bool match(PTR(FayClass) type);
 
 		//添加静态变量
-		pos_t addStaticVar(const std::string &name, PTR(FayClass) classType);
+		PTR(FayStaticVarDef) addStaticVar(const std::string &name, PTR(FayClass) classType);
 
 		//查找静态变量
 		PTR(FayStaticVarDef) findStaticVar(const std::string &name);
@@ -188,7 +188,7 @@ namespace fay
 		FayValue &staticVar(pos_t index);
 
 		//添加字段变量
-		pos_t addVar(const std::string &name, PTR(FayClass) type);
+		PTR(FayVarDef) addVar(const std::string &name, PTR(FayClass) type);
 
 		//查找字段
 		PTR(FayVarDef) findVar(const std::string &name);

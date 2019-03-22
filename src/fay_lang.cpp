@@ -13,7 +13,6 @@ using namespace mirror;
 std::string fay::FayClass::makeFullname()
 {
 	return TOSTR((!this->package.empty() ? this->package + "." : "") << this->name);
-
 }
 
 void fay::FayClass::buildVFT()
@@ -45,10 +44,11 @@ bool fay::FayClass::match(PTR(FayClass) type)
 	return false;
 }
 
-pos_t fay::FayClass::addStaticVar(const std::string &name, PTR(FayClass) classType)
+PTR(FayStaticVarDef) fay::FayClass::addStaticVar(const std::string &name, PTR(FayClass) classType)
 {
 	PTR(FayStaticVarDef) var = MKPTR(FayStaticVarDef)(name, classType);
-	return this->_staticVarDefs.add(var);
+	this->_staticVarDefs.add(var);
+	return var;
 }
 
 PTR(FayStaticVarDef) fay::FayClass::findStaticVar(const std::string &name)
@@ -66,10 +66,11 @@ FayValue &fay::FayClass::staticVar(pos_t index)
 	return this->_staticVarDefs[index]->value;
 }
 
-pos_t fay::FayClass::addVar(const std::string &name, PTR(FayClass) type)
+PTR(FayVarDef) fay::FayClass::addVar(const std::string &name, PTR(FayClass) type)
 {
 	PTR(FayVarDef) field = MKPTR(FayVarDef)(name, type);
-	return this->_varDefs.add(field);
+	this->_varDefs.add(field);
+	return field;
 }
 
 PTR(FayVarDef) fay::FayClass::findVar(const std::string &name)

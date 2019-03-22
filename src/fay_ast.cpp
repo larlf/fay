@@ -1481,10 +1481,9 @@ void fay::AstField::dig2(FayBuilder* builder)
 		this->throwError(builder->file(), this->token(), I18n::Err_BadType);
 
 	if(this->isStatic())
-		this->varIndex = builder->clazz()->addStaticVar(this->_text, type);
+		this->varIndex = builder->clazz()->addStaticVar(this->_text, type)->indexValue();
 	else
-		this->varIndex = builder->clazz()->addVar(this->_text, type);
-
+		this->varIndex = builder->clazz()->addVar(this->_text, type)->indexValue();
 }
 
 void fay::AstField::dig4(FayBuilder* builder)
