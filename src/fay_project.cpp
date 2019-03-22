@@ -106,6 +106,10 @@ void fay::FayProject::step5ParseFieldAndMethod()
 		}
 	}
 
+	//重构所有的虚方法表
+	for(auto it : this->_lib->classes.list())
+		it->buildVFT();
+
 	if(LogBus::IsDebug())
 	{
 		std::string msg = this->_lib->toString();

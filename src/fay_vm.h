@@ -23,7 +23,7 @@ namespace fay
 		static void _run(PTR(std::stack<FayValue>) stack, PTR(FayValue) &error, PTR(FayFun) fun);
 
 		//检查对象不为空
-		static void chkObj(PTR(std::stack<FayValue>) stack)
+		static void checkObject(PTR(std::stack<FayValue>) stack)
 		{
 			if(stack->top().type() == ValueType::Void || stack->top().val()->ptrValue == nullptr)
 				throw std::exception("Null pointer");

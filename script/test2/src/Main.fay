@@ -1,4 +1,4 @@
-using fay.system;
+using fay.IO as IO;
 
 class ClassA
 {
@@ -20,6 +20,11 @@ class MainClass
 
 class ClassB : ClassA
 {
+	public fun fun2():void
+	{
+		IO.Print("This is ClassB.fun2()");
+	}
+	
 	public fun fun1():void
 	{
 		IO.Print("This is ClassB");

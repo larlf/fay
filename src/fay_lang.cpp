@@ -29,16 +29,16 @@ void fay::FayClass::initClass()
 	}
 }
 
-void fay::FayClass::rebuild()
+void fay::FayClass::buildVFT()
 {
 	if(!this->_isRebuild)
 	{
 		this->_isRebuild = true;
 
-		auto superClass = this->superClass.lock();
-		if(superClass)
+		if(!this->superClass.expired())
 		{
-			superClass->rebuild();
+			auto superClass = this->superClass.lock();
+			superClass->buildVFT();
 			this->_vft.rebuild(&superClass->_vft);
 		}
 	}

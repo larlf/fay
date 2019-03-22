@@ -138,7 +138,7 @@ label1:
 				}
 				case InstType::CallVirtual:
 				{
-					FayVM::chkObj(stack);
+					FayVM::checkObject(stack);
 					PTR(FayClass) clazz = stack->top().objVal<FayObject>()->clazz();
 					PTR(FayFun) fun = clazz->findFun(((inst::CallVirtual*)inst)->funIndex, false);
 					FayVM::_run(stack, error, fun);

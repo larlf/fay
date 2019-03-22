@@ -174,7 +174,9 @@ namespace fay
 
 		//第一次使用的时候要对类进行一下初始化
 		void initClass();
-		void rebuild();
+
+		//重构虚函数表
+		void buildVFT();
 
 		//是否匹配
 		//当传入的类型和自己一样或是此类型的子类的时候为True
