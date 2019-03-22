@@ -10,23 +10,10 @@ using namespace fay;
 using namespace fay::internal;
 using namespace mirror;
 
-const std::string fay::FayClass::fullname()
+std::string fay::FayClass::makeFullname()
 {
 	return TOSTR((!this->package.empty() ? this->package + "." : "") << this->name);
 
-}
-
-void fay::FayClass::initClass()
-{
-	if(!this->_isInited)
-	{
-		this->_isInited = true;
-
-		//执行初始化方法
-		auto funs = this->findFunByName(FUN_STATIC_INIT, true);
-		for(const auto &fun : funs)
-			FayVM::Run(fun);
-	}
 }
 
 void fay::FayClass::buildVFT()
@@ -516,7 +503,7 @@ bool fay::FayFun::match(const std::vector<PTR(FayClass)> &paramsType)
 	return true;
 }
 
-const std::string fay::FayFun::fullname()
+std::string fay::FayFun::makeFullname()
 {
 	std::string str;
 	for each(auto it in this->params)
@@ -692,7 +679,7 @@ PTR(FayLibSet) fay::FayDomain::AllLibs()
 	return libs;
 }
 
-const std::string fay::FayParamDef::fullname()
+std::string fay::FayParamDef::makeFullname()
 {
 	return TOSTR(this->name << ":" << (this->type.expired() ? "?" : this->type.lock()->fullname()));
 }
@@ -1470,17 +1457,6 @@ std::vector<PTR(FayFun)> fay::FunTable::matchFun(const std::string &funName, con
 	return funs;
 }
 
-pos_t fay::FunTable::getFunIndex(const std::string &fullname)
-{
-	for(auto i = 0; i < this->_funs.size(); ++i)
-	{
-		if(this->_funs[i]->fullname() == fullname)
-			return i;
-	}
-
-	return -1;
-}
-
 PTR(FayFun) fay::FunTable::findFun(const std::string &fullname)
 {
 	for(auto &fun : this->_funs)
@@ -1517,14 +1493,14 @@ void fay::FunTable::buildString(mirror::utils::StringBuilder* sb)
 	}
 }
 
-const std::string fay::FayVar::fullname()
-{
-	return TOSTR(this->name << ":" << this->classType.lock()->fullname());
-}
-
 void fay::FayVar::buildString(mirror::utils::StringBuilder* sb)
 {
 	sb->add(this->fullname());
+}
+
+std::string fay::FayVar::makeFullname()
+{
+	return TOSTR(this->name << ":" << this->classType.lock()->fullname());
 }
 
 void fay::FayLabel::addTarget(int32_t* target)
@@ -1572,11 +1548,6 @@ void fay::FayLabelTable::addTarget(const std::string &name, int32_t* target)
 void fay::FayLabelTable::setPos(const std::string &name, int32_t pos)
 {
 	this->findLabel(name)->setPos(pos);
-}
-
-fay::ValueType fay::FayInstClass::valueType()
-{
-	return ValueType::Object;
 }
 
 fay::StaticVarRef::StaticVarRef(const std::string &fullname, PTR(FayClass) clazz, PTR(FayStaticVarDef) var)
@@ -1707,4 +1678,12 @@ LIST(PTR(FayClass)) fay::FayLibSet::findClassWithName(const std::string &name)
 	}
 
 	return list;
+}
+
+void fay::FayInstClass::onStaticInit()
+{
+	//执行初始化方法
+	auto funs = this->findFunByName(FUN_STATIC_INIT, true);
+	for(const auto &fun : funs)
+		FayVM::Run(fun);
 }

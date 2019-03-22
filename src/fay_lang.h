@@ -69,13 +69,14 @@ namespace fay
 	//函数表的元素
 	class FunTableItem
 	{
+		friend class FunTable;
+
 	protected:
 		pos_t _indexValue = -1;
 
 	public:
+		//取得索引值
 		inline pos_t indexValue() { return this->_indexValue; }
-
-		friend class FunTable;
 	};
 
 	//函数表
@@ -99,7 +100,8 @@ namespace fay
 
 		//匹配函数
 		std::vector<PTR(FayFun)> matchFun(const std::string &funName, const std::vector<PTR(FayClass)> &paramsType);
-		pos_t getFunIndex(const std::string &fullname);
+
+		//查找函数
 		PTR(FayFun) findFun(const std::string &fullname);
 
 		//根据名字查找
@@ -109,8 +111,8 @@ namespace fay
 		virtual void buildString(mirror::utils::StringBuilder* sb) override;
 	};
 
-	//变量
-	class FayVar : public BaseObject
+	//变量的基础属性
+	class FayVar : public BaseObject, public FullnameModule
 	{
 	public:
 		std::string name;  //名称
@@ -119,29 +121,32 @@ namespace fay
 		FayVar(const std::string &name, PTR(FayClass) clazz)
 			: name(name), classType(clazz) {}
 
-		const std::string fullname();
+		virtual std::string makeFullname() override;
 		virtual void buildString(mirror::utils::StringBuilder* sb) override;
 	};
 
-	//变量定义
+	//类的字段定义
 	class FayVarDef : public FayVar, public IndexMapItem<FayVarDef>
 	{
 		using FayVar::FayVar;
+
 	public:
 		virtual const std::string indexKey() override { return this->name; }
 	};
 
-	//静态变量定义
+	//类的静态字段定义
 	class FayStaticVarDef : public FayVar, public IndexMapItem<FayStaticVarDef>
 	{
 	public:
 		FayValue value;
+
 		FayStaticVarDef(const std::string &name, PTR(FayClass) clazz);
+
 		virtual const std::string indexKey() override { return this->name; }
 	};
 
 	//数据类型
-	class FayClass : public BaseObject, public std::enable_shared_from_this<FayClass>, public IndexMapItem<FayClass>
+	class FayClass : public BaseObject, public FullnameModule, public StaticInitModule, public std::enable_shared_from_this<FayClass>, public IndexMapItem<FayClass>
 	{
 	protected:
 		FunTable _sft;  //静态函数表
@@ -152,13 +157,10 @@ namespace fay
 		//是否已经构建过
 		//这一步在解析完成后执行，主要用于创建OOP体系
 		bool _isRebuild = false;
-		//是否已经初始化过
-		//这一步在第一次使用这个类的时候执行，主要用于静态内容进行初始化
-		bool _isInited = false;
 
 	public:
-		std::string package;
-		std::string name;
+		std::string package;  //所在的包
+		std::string name;  //类名
 		WPTR(FayClass) superClass;  //父类
 		WPTR(FayLib) lib;
 
@@ -168,13 +170,6 @@ namespace fay
 		//在设置完成后调用
 		virtual void onAddToLib(PTR(FayLib) lib) { this->lib = lib; }
 
-		virtual const std::string fullname();
-
-		inline const bool isInited() { return this->_isInited; }
-
-		//第一次使用的时候要对类进行一下初始化
-		void initClass();
-
 		//重构虚函数表
 		void buildVFT();
 
@@ -182,34 +177,45 @@ namespace fay
 		//当传入的类型和自己一样或是此类型的子类的时候为True
 		virtual bool match(PTR(FayClass) type);
 
-		//静态变量
+		//添加静态变量
 		pos_t addStaticVar(const std::string &name, PTR(FayClass) classType);
+
+		//查找静态变量
 		PTR(FayStaticVarDef) findStaticVar(const std::string &name);
 		PTR(FayStaticVarDef) findStaticVar(pos_t index);
+
+		//直接操作静态变量的值
 		FayValue &staticVar(pos_t index);
 
-		//字段变量
+		//添加字段变量
 		pos_t addVar(const std::string &name, PTR(FayClass) type);
+
+		//查找字段
 		PTR(FayVarDef) findVar(const std::string &name);
 		PTR(FayVarDef) findVar(pos_t index);
+
+		//字段的数量
 		size_t varCount() { return this->_varDefs.size(); }
 
 		//添加函数
 		pos_t addFun(PTR(FayFun) fun);
+
 		//匹配符合要求的函数
+		std::vector<PTR(FayFun)> findFunByName(const std::string &name, bool isStatic);
 		std::vector<PTR(FayFun)> findFun(const std::string &funName, const std::vector<PTR(FayClass)> &paramsType, bool isStatic);
 		PTR(FayFun) findFun(pos_t index, bool isStatic);
 		PTR(FayFun) findFun(const std::string &fullname, bool isStatic);
-		std::vector<PTR(FayFun)> findFunByName(const std::string &name, bool isStatic);
 
 		//是否可以转换为指定的类型
 		bool canCovertTo(PTR(FayClass) type);
 
+		//取得这个类的ValueType
 		virtual ValueType valueType() { return ValueType::Void; }
-		virtual void buildString(mirror::utils::StringBuilder* sb) override;
 
-		// Inherited via IndexMapItem
 		virtual const std::string indexKey() override { return this->fullname(); }
+		virtual std::string makeFullname() override;
+		virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		virtual void onStaticInit() override {}
 
 	};
 
@@ -217,15 +223,16 @@ namespace fay
 	class FayInstClass : public FayClass
 	{
 		using FayClass::FayClass;
-	public:
-		virtual ValueType valueType() override;
 
+	public:
+		virtual ValueType valueType() override { return ValueType::Object; }
+		virtual void onStaticInit() override;
 	};
 
 	//////////////////////////////////////////////////////////////////
 
 	//函数的参数定义
-	class FayParamDef : public BaseObject, public std::enable_shared_from_this<FayParamDef>
+	class FayParamDef : public BaseObject, public FullnameModule, public std::enable_shared_from_this<FayParamDef>
 	{
 	public:
 		std::string name;  //参数名
@@ -233,7 +240,8 @@ namespace fay
 
 		FayParamDef(const std::string &name, PTR(FayClass) type)
 			: name(name), type(type) {}
-		const std::string fullname();
+
+		virtual std::string makeFullname() override;
 		virtual void buildString(mirror::utils::StringBuilder* sb) override;
 	};
 
@@ -249,6 +257,7 @@ namespace fay
 		FayLabel(const std::string &name) : _name(name) {}
 		void addTarget(int32_t* target);
 		void setPos(int32_t pos);
+
 		virtual void buildString(mirror::utils::StringBuilder* sb) override;
 	};
 
@@ -267,7 +276,7 @@ namespace fay
 
 	//函数
 	//包括函数、内部函数、匿名函数等
-	class FayFun : public BaseObject, public std::enable_shared_from_this<FayFun>, public FunTableItem
+	class FayFun : public BaseObject, public FullnameModule, public std::enable_shared_from_this<FayFun>, public FunTableItem
 	{
 	public:
 		std::string name;  //函数名称
@@ -287,9 +296,8 @@ namespace fay
 		//检查参数是否匹配
 		bool match(const std::vector<PTR(FayClass)> &paramsType);
 
-		virtual const std::string fullname();
+		virtual std::string makeFullname() override;
 		virtual void buildString(mirror::utils::StringBuilder* sb) override;
-
 	};
 
 	//异常处理
@@ -317,6 +325,7 @@ namespace fay
 		std::vector<TryHandler*> _handlers;
 		//是否已经进行过预处理
 		bool isPrepared = false;
+
 		//对代码运行前做一些预处理
 		void prepareInsts();
 
@@ -369,8 +378,8 @@ namespace fay
 	{
 		using FayInstFun::FayInstFun;
 
-	protected:
-		PTR(FayLabelTable) _labels = MKPTR(FayLabelTable)();  //标签表，以后可以判断下，运行期不用创建此对象
+	private:
+		PTR(FayLabelTable) _labels = MKPTR(FayLabelTable)();  //标签表
 
 	public:
 		inline const PTR(FayLabelTable) labels() { return this->_labels; }
@@ -401,7 +410,7 @@ namespace fay
 	//这个索引在call的时候，用于对方法进行快速的定位
 	class StaticFunRef : public BaseObject, public IndexMapItem<StaticFunRef>
 	{
-	private:
+	protected:
 		std::string _fullname;
 
 	public:
@@ -410,10 +419,8 @@ namespace fay
 
 		StaticFunRef(const std::string &fullname, PTR(FayFun) fun);
 
-		virtual void buildString(mirror::utils::StringBuilder* sb) override;
-
-		// Inherited via IndexMapItem
 		virtual const std::string indexKey() override { return this->_fullname; }
+		virtual void buildString(mirror::utils::StringBuilder* sb) override;
 	};
 
 	//库的版本信息
@@ -462,26 +469,28 @@ namespace fay
 		//在库里查找Main函数的入口点
 		PTR(std::vector<PTR(FayFun)>) findMainFun();
 
+		virtual const std::string indexKey() override;
 		virtual void buildString(mirror::utils::StringBuilder* sb) override;
 
-		// Inherited via IndexMapItem
-		virtual const std::string indexKey() override;
 	};
 
 	//一组Lib的集合
 	class FayLibSet : public BaseObject
 	{
+		using BaseObject::BaseObject;
+
 	public:
 		LIST(PTR(FayLib)) libs;
 
-		FayLibSet() {}
-
+		//添加库
 		void addLib(PTR(FayLib) lib);
 
-		virtual void buildString(mirror::utils::StringBuilder* sb) override;
+		//在所有库里查找Class
 		PTR(FayClass) findClass(const std::string &fullname);
 		PTR(FayClass) findClass(ValueType type);
 		LIST(PTR(FayClass)) findClassWithName(const std::string &name);
+
+		virtual void buildString(mirror::utils::StringBuilder* sb) override;
 	};
 
 	//当前总体管理类

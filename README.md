@@ -70,7 +70,15 @@ com_mylib.3.5.2.lib
 
 ```
 using com.lib.package1 as p1;
+... ...
+p1.ClassA.fun1();
 ```
+
+using语句可以给命名空间指定别名。using不是必须的，实际上大部分时候都可以不用using语句，直接写类名就行。
+
+
+
+### 任务
 - [ ] 不使用using时的类文件的查找
 - [ ] 使用using引入命名空间
 - [ ] 使用using引入类

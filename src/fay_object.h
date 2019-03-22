@@ -21,9 +21,34 @@ namespace fay
 		BaseObject() {}
 		virtual ~BaseObject() {}
 
+		//把自己的信息加入到字符串中
+		virtual void buildString(mirror::utils::StringBuilder* sb) {}
+
 		//生成字符串的方法
 		std::string toString();
-		virtual void buildString(mirror::utils::StringBuilder* sb) {}
+	};
+
+	//生成Fullname，并用Fullname当做indexKey的模块
+	class FullnameModule
+	{
+	private:
+		std::string _fullname;
+
+	public:
+		virtual std::string makeFullname() = 0;
+		const std::string &fullname();
+	};
+
+	//处理静态初始化的模块
+	class StaticInitModule
+	{
+	private:
+		bool _isStaticInited = false;
+
+	public:
+		bool isStaticInited() { return this->_isStaticInited; }
+		virtual void onStaticInit() = 0;
+		void staticInit();
 	};
 
 	//文件对象

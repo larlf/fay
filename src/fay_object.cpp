@@ -107,3 +107,20 @@ std::string fay::FilePart::print()
 	std::cout << std::endl;
 	return msg;
 }
+
+const std::string &fay::FullnameModule::fullname()
+{
+	if(this->_fullname.empty())
+		this->_fullname = this->makeFullname();
+
+	return this->_fullname;
+}
+
+void fay::StaticInitModule::staticInit()
+{
+	if(!this->_isStaticInited)
+	{
+		this->_isStaticInited = true;
+		this->onStaticInit();
+	}
+}
