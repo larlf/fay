@@ -24,52 +24,23 @@ void fay::FayBuilder::log(BuildLogLevel level, int line, int col, const std::str
 std::string fay::FayBuilder::makeLabel()
 {
 	std::string label = "__label__" + std::to_string(this->labelIndex++);
-	this->_fun->labels()->addLabel(label);
+	this->fun->labels()->addLabel(label);
 	return label;
 }
 
 void fay::FayBuilder::useLabel(const std::string &label, int32_t* target)
 {
-	this->_fun->labels()->addTarget(label, target);
+	this->fun->labels()->addTarget(label, target);
 }
 
 void fay::FayBuilder::fixedLabel(const std::string &label)
 {
-	this->_fun->labels()->setPos(label, this->instsSize());
-}
-
-void fay::FayBuilder::bindFile(PTR(FayFile) file)
-{
-	this->_file = file;
-	this->_usings.clear();
-}
-
-void fay::FayBuilder::unbindFile()
-{
-	this->_file.reset();
+	this->fun->labels()->setPos(label, this->instsSize());
 }
 
 void fay::FayBuilder::addUsing(const std::string &packageName)
 {
 	this->_usings.push_back(packageName);
-}
-
-void fay::FayBuilder::bindLib(PTR(FayLib) lib)
-{
-	this->_lib = lib;
-}
-
-PTR(FayInstClass) fay::FayBuilder::addClass(const std::string &name)
-{
-	this->_class = MKPTR(FayInstClass)(this->_package, name);
-	this->_lib->addClass(this->_class);
-	return this->_class;
-}
-
-pos_t fay::FayBuilder::addFun(PTR(FayCompileFun) fun)
-{
-	this->_fun = fun;
-	return this->_class->addFun(this->_fun);
 }
 
 void fay::FayBuilder::addInst(FayInst* inst)
@@ -80,13 +51,13 @@ void fay::FayBuilder::addInst(FayInst* inst)
 void fay::FayBuilder::optimizeInsts()
 {
 	//TODO 这里有对代码进行优化的过程
-	this->_fun->insts(this->_insts);
+	this->fun->insts(this->_insts);
 	this->_insts.clear();
 }
 
 PTR(FayVarDef) fay::FayBuilder::findVar(const std::string &name)
 {
-	auto var = this->_fun->findVar(name);
+	auto var = this->fun->findVar(name);
 
 	if(var) return var;
 
@@ -97,6 +68,6 @@ PTR(FayVarDef) fay::FayBuilder::findVar(const std::string &name)
 
 pos_t fay::FayBuilder::findVarIndex(const std::string &name)
 {
-	return this->_fun->getVarIndex(name);
+	return this->fun->getVarIndex(name);
 }
 

@@ -1570,22 +1570,22 @@ fay::FayStaticVarDef::FayStaticVarDef(const std::string &name, PTR(FayClass) cla
 void fay::FayObject::init()
 {
 	//调用构造方法
-	auto funs = this->_class->findFunByName(FUN_CREATE, false);
+	auto funs = this->clazz->findFunByName(FUN_CREATE, false);
 	for(auto fun : funs)
 		FayVM::Run(fun, FayValue(this->shared_from_this()));
 }
 
 void fay::FayObject::setVar(const std::string &name, FayValue &value)
 {
-	auto varDef = this->_class->findVar(name);
+	auto varDef = this->clazz->findVar(name);
 	if(!varDef)
 	{
-		LOG_ERROR("Cannot find var : " << name << " in " << this->_class->fullname());
+		LOG_ERROR("Cannot find var : " << name << " in " << this->clazz->fullname());
 		return;
 	}
 
 	//TODO 这里最好加一个类型的Check
-	this->_vars[varDef->indexValue()] = value;
+	this->vars[varDef->indexValue()] = value;
 }
 
 void fay::TryHandler::buildString(mirror::utils::StringBuilder* sb)

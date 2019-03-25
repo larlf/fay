@@ -521,32 +521,19 @@ namespace fay
 		static std::string ToString();
 	};
 
-	/////////////////////////////////////////////////
 
 	//类型的实例
 	class FayObject : public BaseObject, public std::enable_shared_from_this<FayObject>
 	{
-	private:
-		PTR(FayClass) _class;  //所属的类型
-		std::vector<FayValue> _vars;  //字段
-
 	public:
-		FayObject(PTR(FayClass) clazz) : _class(clazz), _vars(clazz->varCount()) {}
+		PTR(FayClass) clazz;  //所属的类型
+		std::vector<FayValue> vars;  //字段
 
-		PTR(FayClass) clazz() { return this->_class; }
+		FayObject(PTR(FayClass) clazz) : clazz(clazz), vars(clazz->varCount()) {}
+
 		void init();
-
-		std::vector<FayValue> &vars() { return this->_vars; }
 		void setVar(const std::string &name, FayValue &value);
 	};
 
-	/////////////////////////////////////////////////
-
-	//语言抛出的异常
-	class FayLangException : std::exception
-	{
-	public:
-		FayLangException(const std::string &msg) : std::exception(msg.c_str()) {}
-	};
 }
 

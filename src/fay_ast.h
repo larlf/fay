@@ -30,7 +30,7 @@ namespace fay
 		template<typename... Params>
 		void throwError(FayBuilder* builder, I18n code, Params... args)
 		{
-			throw CompileException(MKPTR(FilePart)(builder->file(), this->_token->line, this->_token->col, this->_token->count), code, args...);
+			throw CompileException(MKPTR(FilePart)(builder->file, this->_token->line, this->_token->col, this->_token->count), code, args...);
 		}
 
 	public:

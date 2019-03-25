@@ -25,16 +25,18 @@ namespace fay
 	class FayBuilder
 	{
 	private:
-		std::string _package;
-		PTR(FayFile) _file;
-		PTR(FayLib) _lib;
-		PTR(FayInstClass) _class;
-		PTR(FayCompileFun) _fun;
+
 		std::vector<std::string> _usings;
 		std::vector<FayInst*> _insts;
 		int64_t labelIndex = 1;  //用于生成label
 
 	public:
+		std::string package;
+		PTR(FayLib) lib;
+		PTR(FayFile) file;
+		PTR(FayInstClass) clazz;
+		PTR(FayCompileFun) fun;
+
 		//用于控制表达式中的模式，在赋值运算符左边和右边的处理不一样
 		BuildExprMode exprMode = BuildExprMode::RightValue;
 
@@ -50,34 +52,42 @@ namespace fay
 		//log记录
 		void log(BuildLogLevel level, int line, int col, const std::string &msg);
 
-		PTR(FayFile) file() { if(!this->_file) LOG_ERROR("File is null"); return this->_file; }
-		PTR(FayLib) lib() { if(!this->_lib) LOG_ERROR("Lib is null");  return this->_lib; }
-		PTR(FayInstClass) clazz() { if(!this->_class) LOG_ERROR("class is null"); return this->_class; }
-		PTR(FayCompileFun) fun() { if(!this->_fun) LOG_ERROR("Fun is null"); return this->_fun; }
+		//文件的开始
+		void bindFile(PTR(FayFile) file)
+		{
+			this->file = file;
+			this->_usings.clear();
+		}
 
-		//文件的开始和结束
-		void bindFile(PTR(FayFile) file);
-		void unbindFile();
+		//文件的结束
+		void exitFile()
+		{
+			this->file.reset();
+		}
 
 		//Lib相关的处理
-		void bindLib(PTR(FayLib) lib);
+		void bindLib(PTR(FayLib) lib)
+		{
+			this->lib = lib;
+		}
+
+		//Class相关的处理
+		//PTR(FayInstClass) addClass(const std::string &name);
+		void bindClass(PTR(FayInstClass) clazz)
+		{
+			this->clazz = clazz;
+		}
+
+		//函数定义相关的处理
+		void bindFun(PTR(FayCompileFun) fun)
+		{
+			this->fun = fun;
+		}
+
 
 		//引用相关的处理
 		void addUsing(const std::string &packageName);
 		std::vector<std::string> &usings() { return this->_usings; }
-
-		//包名相关的处理
-		void package(const std::string &name) { this->_package = name; }
-		const std::string &package() { return this->_package; }
-
-		//Class相关的处理
-		PTR(FayInstClass) addClass(const std::string &name);
-		void bindClass(PTR(FayInstClass) clazz) { this->_class = clazz; }
-		//std::vector<PTR(FayClass)> findClass(const std::string &name);
-
-		//函数定义相关的处理
-		pos_t addFun(PTR(FayCompileFun) fun);
-		void bindFun(PTR(FayCompileFun) fun) { this->_fun = fun; }
 
 		//以下是代码生成相关的内容
 

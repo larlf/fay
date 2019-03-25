@@ -171,7 +171,7 @@ void fay::internal::InternalFun::ToString(PTR(std::stack<FayValue>) stack)
 		case fay::ValueType::Object:
 		{
 			PTR(FayObject) obj = stack->top().objVal<FayObject>();
-			str = obj->clazz()->fullname()+"<" + std::to_string((int64_t)stack->top().ptrVal<void>()) + ">";
+			str = obj->clazz->fullname() + "<" + std::to_string((int64_t)stack->top().ptrVal<void>()) + ">";
 			break;
 		}
 		case fay::ValueType::Function:

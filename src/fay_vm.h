@@ -4,18 +4,6 @@
 
 namespace fay
 {
-	//运行时的异常
-	class FayRuntimeException : public std::exception
-	{
-	public:
-		FayRuntimeException(const std::string &msg) : std::exception(msg.c_str()) {}
-	};
-
-	class FayThread
-	{
-
-	};
-
 	class FayVM
 	{
 	private:

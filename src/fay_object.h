@@ -14,92 +14,6 @@ namespace fay
 {
 	template<class T> class IndexMap;
 
-	//所有对象的基类
-	class BaseObject
-	{
-	public:
-		BaseObject() {}
-		virtual ~BaseObject() {}
-
-		//把自己的信息加入到字符串中
-		virtual void buildString(mirror::utils::StringBuilder* sb) {}
-
-		//生成字符串的方法
-		std::string toString();
-	};
-
-	//生成Fullname，并用Fullname当做indexKey的模块
-	class FullnameModule
-	{
-	private:
-		std::string _fullname;
-
-	public:
-		virtual std::string makeFullname() = 0;
-		const std::string &fullname();
-	};
-
-	//处理静态初始化的模块
-	class StaticInitModule
-	{
-	private:
-		bool _isStaticInited = false;
-
-	public:
-		bool isStaticInited() { return this->_isStaticInited; }
-		virtual void onStaticInit() = 0;
-		void staticInit();
-	};
-
-	//文件对象
-	class FayFile : public BaseObject
-	{
-	public:
-		std::string filename;  //文件的名称
-		std::string text;  //文件的内容
-
-		FayFile(const std::string &filename, const std::string &text)
-			: filename(filename), text(text) {}
-	};
-
-	//代码片段
-	class FilePart
-	{
-	private:
-		static int ContextLines;
-
-	public:
-		PTR(FayFile) file;
-		int line;
-		int col;
-		int count;
-
-		//file : 所属的文件
-		//line : 第几行
-		//col : 第几列
-		//count : 字符数
-		FilePart(PTR(FayFile) file, int line, int col, int count)
-			: file(file), line(line), col(col), count(count) {}
-
-		//输出到终端，并返回内容
-		std::string print();
-	};
-
-	//用于处理报错信息的异常
-	class CompileException : public std::exception
-	{
-	public:
-		PTR(FilePart) part;
-		std::string trace;
-
-		template<typename... Params>
-		CompileException(PTR(FilePart) part, I18n code, Params... args)
-			: part(part), std::exception(I18nBus::Get(code, args...).c_str())
-		{
-			this->trace = mirror::log::SysTrace::TraceInfo();
-		}
-	};
-
 	//放向IndexMap的元素
 	template<class T>
 	class IndexMapItem
@@ -245,5 +159,113 @@ namespace fay
 			}
 		}
 	};
+
+	/////////////////////////////////////////////////////////////////////////////////////
+
+	//所有对象的基类
+	class BaseObject
+	{
+	public:
+		BaseObject() {}
+		virtual ~BaseObject() {}
+
+		//把自己的信息加入到字符串中
+		virtual void buildString(mirror::utils::StringBuilder* sb) {}
+
+		//生成字符串的方法
+		std::string toString();
+	};
+
+	//文件对象
+	class FayFile : public BaseObject
+	{
+	public:
+		std::string filename;  //文件的名称
+		std::string text;  //文件的内容
+
+		FayFile(const std::string &filename, const std::string &text)
+			: filename(filename), text(text) {}
+	};
+
+	//代码片段
+	class FilePart
+	{
+	private:
+		static int ContextLines;
+
+	public:
+		PTR(FayFile) file;
+		int line;
+		int col;
+		int count;
+
+		//file : 所属的文件
+		//line : 第几行
+		//col : 第几列
+		//count : 字符数
+		FilePart(PTR(FayFile) file, int line, int col, int count)
+			: file(file), line(line), col(col), count(count) {}
+
+		//输出到终端，并返回内容
+		std::string print();
+	};
+
+	//////////////////////////////////////////////////////////////////////////////////////////
+
+	//生成Fullname，并用Fullname当做indexKey的模块
+	class FullnameModule
+	{
+	private:
+		std::string _fullname;
+
+	public:
+		virtual std::string makeFullname() = 0;
+		const std::string &fullname();
+	};
+
+	//处理静态初始化的模块
+	class StaticInitModule
+	{
+	private:
+		bool _isStaticInited = false;
+
+	public:
+		bool isStaticInited() { return this->_isStaticInited; }
+		virtual void onStaticInit() = 0;
+		void staticInit();
+	};
+
+
+	///////////////////////////////////////////////////////////////////////////////////
+
+	//用于处理报错信息的异常
+	class CompileException : public std::exception
+	{
+	public:
+		PTR(FilePart) part;
+		std::string trace;
+
+		template<typename... Params>
+		CompileException(PTR(FilePart) part, I18n code, Params... args)
+			: part(part), std::exception(I18nBus::Get(code, args...).c_str())
+		{
+			this->trace = mirror::log::SysTrace::TraceInfo();
+		}
+	};
+
+	//语言抛出的异常
+	class FayLangException : std::exception
+	{
+	public:
+		FayLangException(const std::string &msg) : std::exception(msg.c_str()) {}
+	};
+
+	//运行时的异常
+	class FayRuntimeException : public std::exception
+	{
+	public:
+		FayRuntimeException(const std::string &msg) : std::exception(msg.c_str()) {}
+	};
+
 
 }
