@@ -317,22 +317,22 @@ void fay::AstParamDefine::dig2(FayBuilder* builder)
 void fay::AstPackage::dig1(FayBuilder* builder)
 {
 	builder->package = this->_text;
-	builder->addUsing(this->_text);
+	//builder->addUsing(this->_text);
 }
 
 void fay::AstPackage::dig2(FayBuilder* builder)
 {
-	builder->addUsing(this->_text);
+	//builder->addUsing(this->_text);
 }
 
 void fay::AstPackage::dig3(FayBuilder* builder)
 {
-	builder->addUsing(this->_text);
+	//builder->addUsing(this->_text);
 }
 
 void fay::AstPackage::dig4(FayBuilder* builder)
 {
-	builder->addUsing(this->_text);
+	//builder->addUsing(this->_text);
 }
 
 void fay::AstCall::dig3(FayBuilder* builder)
@@ -1076,22 +1076,22 @@ void fay::AstAssign::dig4(FayBuilder* builder)
 
 void fay::AstUsing::dig1(FayBuilder* builder)
 {
-	builder->addUsing(this->_text);
+	builder->addUsing(this->alias, this->package);
 }
 
 void fay::AstUsing::dig2(FayBuilder* builder)
 {
-	builder->addUsing(this->_text);
+	builder->addUsing(this->alias, this->package);
 }
 
 void fay::AstUsing::dig3(FayBuilder* builder)
 {
-	builder->addUsing(this->_text);
+	builder->addUsing(this->alias, this->package);
 }
 
 void fay::AstUsing::dig4(FayBuilder* builder)
 {
-	builder->addUsing(this->_text);
+	builder->addUsing(this->alias, this->package);
 }
 
 void fay::AstType::dig2(FayBuilder* builder)

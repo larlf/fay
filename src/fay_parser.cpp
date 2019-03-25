@@ -59,14 +59,25 @@ PTR(AstNode) fay::Parser::_MakeBoolOPNode(std::function<PTR(AstNode)(TokenStack*
 
 PTR(AstNode) fay::Parser::_Using(TokenStack* stack)
 {
-	PTR(AstNode) node;
+	PTR(AstUsing) node;
 
 	if(stack->now()->is(TokenType::Using))
 	{
+		node = MKPTR(AstUsing)(stack->now());
+
 		if(!stack->next()->is(TokenType::ID))
 			_Error(stack, I18n::Err_BadFormat, "using");
 
-		node = MKPTR(AstUsing)(stack->now());
+		node->package = stack->now()->text;
+		stack->next();
+
+		if(stack->now()->is(TokenType::As))
+		{
+			if(!stack->next()->is(TokenType::ID))
+				_Error(stack, I18n::Err_BadFormat, "using");
+
+			node->alias = stack->now()->text;
+		}
 
 		if(!stack->next()->is(TokenType::Semicolon))
 			_Error(stack, I18n::Err_Expect, ";");

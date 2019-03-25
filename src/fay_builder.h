@@ -25,13 +25,12 @@ namespace fay
 	class FayBuilder
 	{
 	private:
-
-		std::vector<std::string> _usings;
 		std::vector<FayInst*> _insts;
 		int64_t labelIndex = 1;  //用于生成label
 
 	public:
 		std::string package;
+		MAP<std::string, std::string> usings;
 		PTR(FayLib) lib;
 		PTR(FayFile) file;
 		PTR(FayInstClass) clazz;
@@ -52,11 +51,17 @@ namespace fay
 		//log记录
 		void log(BuildLogLevel level, int line, int col, const std::string &msg);
 
+		//引用相关的处理
+		void addUsing(const std::string &alias, const std::string &packageName)
+		{
+			this->usings[alias] = packageName;
+		}
+
 		//文件的开始
 		void bindFile(PTR(FayFile) file)
 		{
 			this->file = file;
-			this->_usings.clear();
+			this->usings.clear();
 		}
 
 		//文件的结束
@@ -83,11 +88,6 @@ namespace fay
 		{
 			this->fun = fun;
 		}
-
-
-		//引用相关的处理
-		void addUsing(const std::string &packageName);
-		std::vector<std::string> &usings() { return this->_usings; }
 
 		//以下是代码生成相关的内容
 

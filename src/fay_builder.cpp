@@ -38,11 +38,6 @@ void fay::FayBuilder::fixedLabel(const std::string &label)
 	this->fun->labels()->setPos(label, this->instsSize());
 }
 
-void fay::FayBuilder::addUsing(const std::string &packageName)
-{
-	this->_usings.push_back(packageName);
-}
-
 void fay::FayBuilder::addInst(FayInst* inst)
 {
 	this->_insts.push_back(inst);

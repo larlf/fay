@@ -116,7 +116,11 @@ namespace fay
 	class AstUsing : public AstNode
 	{
 		using AstNode::AstNode;
+
 	public:
+		std::string package;
+		std::string alias;
+
 		virtual void dig1(FayBuilder* builder) override;
 		virtual void dig2(FayBuilder* builder) override;
 		virtual void dig3(FayBuilder* builder) override;
